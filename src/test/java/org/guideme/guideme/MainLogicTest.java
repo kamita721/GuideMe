@@ -33,7 +33,7 @@ public class MainLogicTest {
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private GuideSettings guideSettings;
 	private XmlGuideReader xmlGuideReader = XmlGuideReader.getXmlGuideReader();
-	private String dataDirectory = "Y:\\TM\\Teases";
+	private String dataDirectory = "Teases";
 	private Boolean singlePage = false;
 	private Boolean allGuides = false;
 	private Boolean oneGuide = true;
