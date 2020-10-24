@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import org.guideme.guideme.settings.ComonFunctions;
 
 public class Page {
-	private String text = ""; //HTML to display
-	private String leftText = ""; //HTML to display in the left pane instead of an image
 	private String id; //Page Name
+	private ArrayList<Text> text = new ArrayList<Text>(); //HTML to display
+	private ArrayList<Text> leftText = new ArrayList<Text>(); //HTML to display in the left pane instead of an image
 	private ArrayList<Button> button = new ArrayList<Button>();
 	private ArrayList<WebcamButton> webcamButton = new ArrayList<WebcamButton>();
 	private ArrayList<Delay> delay = new ArrayList<Delay>(); 
@@ -18,6 +18,7 @@ public class Page {
 	private ArrayList<Image> image = new ArrayList<Image>();
 	private ArrayList<LoadGuide> loadGuide = new ArrayList<LoadGuide>();
 	private ArrayList<Audio> audio = new ArrayList<Audio>();
+	private ArrayList<Audio> audio2 = new ArrayList<Audio>();
 	private ArrayList<Metronome> metronome = new ArrayList<Metronome>();
 	private String ifSet;
 	private String ifNotSet;
@@ -29,12 +30,16 @@ public class Page {
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	
 	
-	public String getLeftText() {
-		return leftText;
+	public Text getLeftText(int txtIndex) {
+		return leftText.get(txtIndex);
 	}
 
-	public void setLeftText(String leftText) {
-		this.leftText = leftText;
+	public void addLeftText(Text leftText) {
+		this.leftText.add(leftText);
+	}
+
+	public int getLeftTextCount() {
+		return this.leftText.size();
 	}
 
 	public Page(String id) {
@@ -215,12 +220,16 @@ public class Page {
 		return audio.size();
 	}
 
-	public String getText() {
-		return text;
+	public Text getText(int txtIndex) {
+		return text.get(txtIndex);
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public void addText(Text text) {
+		this.text.add(text);
+	}
+
+	public int getTextCount() {
+		return this.text.size();
 	}
 
 	public String getjScript() {
@@ -271,4 +280,15 @@ public class Page {
 		}
 	}
 
+	public Audio getAudio2(int audIndex) {
+		return audio2.get(audIndex);
+	}
+	
+	public void addAudio2(Audio audio) {
+		this.audio2.add(audio);
+	}
+
+	public int getAudio2Count() {
+		return audio2.size();
+	}
 }
