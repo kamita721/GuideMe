@@ -1,44 +1,42 @@
 <?xml version="1.0"?>
 <settings>
-  <Title>Tease Me User Settings</Title>
+  <Title>Tease Me Benutzereinstellungen</Title>
   <Pages>
     <Page id="start">
       <Text><div></div></Text>
       <Image id="settings1.jpg" />
-      <Button target="page1" onclick="savePref()">Nächster</Button>
+      <Button target="page1" onclick="savePref()">weiter</Button>
       <javascript><![CDATA[
 		function pageLoad() {
 			if (userSettings.keyExists("myName", "String") == false ) {
-				userSettings.addPref("myName", "Hero", "My Name")
+				userSettings.addPref("myName", "Hero", "Mein Name")
 			}
 			if (userSettings.keyExists("mySubName", "String") == false ) {
-				userSettings.addPref("mySubName", "Toy", "My Sub Name")
+				userSettings.addPref("mySubName", "Toy", "Mein Sub Name")
 			}
-			
 			if (userSettings.keyExists("mistress1", "String") == false ) {
-				userSettings.addPref("mistress1", "Kate", "Mistress 1")
+				userSettings.addPref("mistress1", "Kate", "Herrin 1")
 			}
 			if (userSettings.keyExists("mistress2", "String") == false ) {
-				userSettings.addPref("mistress2", "Gisele", "Mistress 2")
+				userSettings.addPref("mistress2", "Gisele", "Herrin 2")
 			}
 			if (userSettings.keyExists("femSub1", "String") == false ) {
-				userSettings.addPref("femSub1", "Karen", "Female Sub 1")
+				userSettings.addPref("femSub1", "Karen", "Weibliche Sub 1")
 			}
 			if (userSettings.keyExists("femSub2", "String") == false ) {
-				userSettings.addPref("femSub2", "Kara", "Female Sub 2")
+				userSettings.addPref("femSub2", "Kara", "Weibliche Sub 2")
 			}
-			
 			if (userSettings.keyExists("master1", "String") == false ) {
-				userSettings.addPref("master1", "Kevin", "Master 1")
+				userSettings.addPref("master1", "Kevin", "Meister 1")
 			}
 			if (userSettings.keyExists("master2", "String") == false ) {
-				userSettings.addPref("master2", "George", "Master 2")
+				userSettings.addPref("master2", "George", "Meister 2")
 			}
 			if (userSettings.keyExists("maleSub1", "String") == false ) {
-				userSettings.addPref("maleSub1", "Oswald", "Männlich unterwürfig 1")
+				userSettings.addPref("maleSub1", "Oswald", "Männlicher Sub 1")
 			}
 			if (userSettings.keyExists("maleSub2", "String") == false ) {
-				userSettings.addPref("maleSub2", "Steve", "Male Sub 2")
+				userSettings.addPref("maleSub2", "Steve", "Männlicher Sub 2")
 			}
 
 			var html = '<form><table>';
@@ -84,23 +82,23 @@
     <Page id="page1">
       <Text><div></div></Text>
       <Image id="settings2.jpg" />
-      <Button target="page2" onclick="savePref()">Nächster</Button>
+      <Button target="page2" onclick="savePref()">weiter</Button>
       <javascript><![CDATA[
 		function pageLoad() {
 			if (userSettings.keyExists("myage", "Number") == false ) {
-				userSettings.addPref("myage", 21.0, "What is your Age?")
+				userSettings.addPref("myage", 21.0, "Wie ist dein Alter?")
 			}
 			if (userSettings.keyExists("male", "Boolean") == false ) {
-				userSettings.addPref("male", true, "Are you male?")
+				userSettings.addPref("male", true, "Bist du männlich?")
 			}
 			if (userSettings.keyExists("straight", "Boolean") == false ) {
-				userSettings.addPref("straight", true, "Are you straight?")
+				userSettings.addPref("straight", true, "Bist du Heterosexuell?")
 			}
 			if (userSettings.keyExists("bi", "Boolean") == false ) {
-				userSettings.addPref("bi", true, "Are you bi?")
+				userSettings.addPref("bi", true, "Bist du Bisexuell?")
 			}
 			if (userSettings.keyExists("gay", "Boolean") == false ) {
-				userSettings.addPref("gay", true, "Are you gay?")
+				userSettings.addPref("gay", true, "Bist du Homosexuell?")
 			}
 
 			var html = '<form><table>';
@@ -177,83 +175,83 @@
     <Page id="page2">
       <Text><div></div></Text>
       <Image id="settings3.jpg" />
-      <Button target="page3" onclick="savePref()">Nächster</Button>
+      <Button target="page3" onclick="savePref()">weiter</Button>
       <javascript><![CDATA[
 		function pageLoad() {
 			if (userSettings.keyExists("anal", "Boolean") == false ) {
-				userSettings.addPref("anal", true, "Do you like anal?")
+				userSettings.addPref("anal", true, "Magst du Anal?")
 			}
 
 			if (userSettings.keyExists("bondage", "Boolean") == false ) {
-				userSettings.addPref("bondage", true, "Do you like bondage?")
+				userSettings.addPref("bondage", true, "Magst du Bondage?")
 			}
 
 			if (userSettings.keyExists("cbt", "Boolean") == false ) {
-				userSettings.addPref("cbt", true, "Do you like cbt?")
+				userSettings.addPref("cbt", true, "Magst du cbt (Cock- and Balltorture / Schwanz- und Hodenqualen)?")
 			}
 
 			if (userSettings.keyExists("sph", "Boolean") == false ) {
-				userSettings.addPref("sph", true, "Do you like small penis humiliation?")
+				userSettings.addPref("sph", true, "Magst du kleine Penis Demütigung?")
 			}
 
 			if (userSettings.keyExists("chastity", "Boolean") == false ) {
-				userSettings.addPref("chastity", true, "Do you like chastity?")
+				userSettings.addPref("chastity", true, "Magst du Keuschheit?")
 			}
 
 			if (userSettings.keyExists("cumeating", "Boolean") == false ) {
-				userSettings.addPref("cumeating", true, "Do you like cum eating?")
+				userSettings.addPref("cumeating", true, "Magst du Sperma essen?")
 			}
 
 			if (userSettings.keyExists("feminization", "Boolean") == false ) {
-				userSettings.addPref("feminization", true, "Do you like feminization?")
+				userSettings.addPref("feminization", true, "Magst du Feminisierung?")
 			}
 
 			if (userSettings.keyExists("forcedorgasms", "Boolean") == false ) {
-				userSettings.addPref("forcedorgasms", true, "Do you like forced orgasms?")
+				userSettings.addPref("forcedorgasms", true, "Magst du erzwungene Orgasmen?")
 			}
 
 			if (userSettings.keyExists("nippletorture", "Boolean") == false ) {
-				userSettings.addPref("nippletorture", true, "Do you like nipple torture?")
+				userSettings.addPref("nippletorture", true, "Magst du Nippel Folter?")
 			}
 
 			if (userSettings.keyExists("orgasmdenial", "Boolean") == false ) {
-				userSettings.addPref("orgasmdenial", true, "Do you like orgasm denial?")
+				userSettings.addPref("orgasmdenial", true, "Magst du Orgasmusverweigerung?")
 			}
 
 			if (userSettings.keyExists("pain", "Boolean") == false ) {
-				userSettings.addPref("pain", true, "Do you like pain?")
+				userSettings.addPref("pain", true, "Magst du Schmerz?")
 			}
 
 			if (userSettings.keyExists("humiliation", "Boolean") == false ) {
-				userSettings.addPref("humiliation", true, "Do you like humiliation?")
+				userSettings.addPref("humiliation", true, "Magst du Demütigung?")
 			}
 
 			if (userSettings.keyExists("spanking", "Boolean") == false ) {
-				userSettings.addPref("spanking", true, "Do you like spanking?")
+				userSettings.addPref("spanking", true, "Magst du Spanking?")
 			}
 
 			if (userSettings.keyExists("shaving", "Boolean") == false ) {
-				userSettings.addPref("shaving", true, "Do you like shaving?")
+				userSettings.addPref("shaving", true, "Magst du Rasieren?")
 			}
 
 			if (userSettings.keyExists("chores", "Boolean") == false ) {
-				userSettings.addPref("chores", true, "Do you like chores?")
+				userSettings.addPref("chores", true, "Magst du Hausarbeiten?")
 			}
 
 			if (userSettings.keyExists("exhibitionism", "Boolean") == false ) {
-				userSettings.addPref("exhibitionism", true, "Do you like exhibitionism?")
+				userSettings.addPref("exhibitionism", true, "Magst du Exhibitionismus?")
 			}
 
 			if (userSettings.keyExists("edging", "Boolean") == false ) {
-				userSettings.addPref("edging", true, "Do you like edging?")
+				userSettings.addPref("edging", true, "Magst du Edging?")
 			}
 
 			if (userSettings.keyExists("urineplay", "Boolean") == false ) {
-				userSettings.addPref("urineplay", true, "Do you like urine play?")
+				userSettings.addPref("urineplay", true, "Magst du Urin spiele?")
 			}
 
 			if (userSettings.keyExists("scat", "Boolean") == false ) {
-				userSettings.addPref("scat", true, "Do you like scat play?")
+				userSettings.addPref("scat", true, "Magst du Scat spiele?")
 			}
 
 			var html = '<form><table>';
@@ -535,63 +533,63 @@
     <Page id="page3">
       <Text><div></div></Text>
       <Image id="settings4.jpg" />
-      <Button target="page4" onclick="savePref()">Next</Button>
+      <Button target="page4" onclick="savePref()">weiter</Button>
       <javascript><![CDATA[
 		function pageLoad() {
 			if (userSettings.keyExists("chastitydevice", "Boolean") == false ) {
-				userSettings.addPref("chastitydevice", true, "Do you own a chastity device?")
+				userSettings.addPref("chastitydevice", true, "Besitzt du einen Keuschheitsgürtel?")
 			}
 
 			if (userSettings.keyExists("clothespins", "Boolean") == false ) {
-				userSettings.addPref("clothespins", true, "Do you own clothes pins?")
+				userSettings.addPref("clothespins", true, "Besitzt du Wäscheklammern?")
 			}
 
 			if (userSettings.keyExists("panties", "Boolean") == false ) {
-				userSettings.addPref("panties", true, "Do you own panties?")
+				userSettings.addPref("panties", true, "Besitzt du Höschen?")
 			}
 
 			if (userSettings.keyExists("bra", "Boolean") == false ) {
-				userSettings.addPref("bra", true, "Do you own a bra?")
+				userSettings.addPref("bra", true, "Besitzt du einen BH?")
 			}
 
 			if (userSettings.keyExists("collar", "Boolean") == false ) {
-				userSettings.addPref("collar", true, "Do you own a collar?")
+				userSettings.addPref("collar", true, "Besitzt du ein Halsband?")
 			}
 
 			if (userSettings.keyExists("stockings", "Boolean") == false ) {
-				userSettings.addPref("stockings", true, "Do you own stockings?")
+				userSettings.addPref("stockings", true, "Besitzt du Strümpfe?")
 			}
 
 			if (userSettings.keyExists("heels", "Boolean") == false ) {
-				userSettings.addPref("heels", true, "Do you own heels?")
+				userSettings.addPref("heels", true, "Besitzt du High Heels?")
 			}
 
 			if (userSettings.keyExists("dress", "Boolean") == false ) {
-				userSettings.addPref("dress", true, "Do you own a dress?")
+				userSettings.addPref("dress", true, "Besitzt du ein Kleid?")
 			}
 
 			if (userSettings.keyExists("candles", "Boolean") == false ) {
-				userSettings.addPref("candles", true, "Do you own candles?")
+				userSettings.addPref("candles", true, "Besitzt du Kerzen?")
 			}
 
 			if (userSettings.keyExists("shoelaces", "Boolean") == false ) {
-				userSettings.addPref("shoelaces", true, "Do you own shoelaces?")
+				userSettings.addPref("shoelaces", true, "Besitzt du Schnürsenkel?")
 			}
 
 			if (userSettings.keyExists("vibrator", "Boolean") == false ) {
-				userSettings.addPref("vibrator", true, "Do you own a vibrator?")
+				userSettings.addPref("vibrator", true, "Besitzt du einen Vibrator?")
 			}
 
 			if (userSettings.keyExists("dildo", "Boolean") == false ) {
-				userSettings.addPref("dildo", true, "Do you own a dildo?")
+				userSettings.addPref("dildo", true, "Besitzt du einen Dildo?")
 			}
 
 			if (userSettings.keyExists("icecubes", "Boolean") == false ) {
-				userSettings.addPref("icecubes", true, "Do you have icecubes?")
+				userSettings.addPref("icecubes", true, "Hast du Eiswürfel?")
 			}
 
 			if (userSettings.keyExists("icyhot", "Boolean") == false ) {
-				userSettings.addPref("icyhot", true, "Do you have icy hot?")
+				userSettings.addPref("icyhot", true, "Hast du Icy Hot?")
 			}
 
 			var html = '<form><table>';
@@ -803,7 +801,7 @@
     <Page id="page4">
       <Image id="settings5.jpg" />
       <Text>
-        <div>You have finished entering settings</div>
+        <div>Du hast die Einstellungen abgeschlossen</div>
       </Text>
     </Page>
   </Pages>

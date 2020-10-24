@@ -3,11 +3,13 @@ package org.guideme.guideme;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.guideme.guideme.model.*;
 import org.guideme.guideme.readers.*;
 import org.guideme.guideme.writers.*;
 
+@Ignore
 public class HtmlGuideWriterReaderTest {
 
 	private HtmlGuideWriter writer;

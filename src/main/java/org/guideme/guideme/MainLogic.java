@@ -91,7 +91,9 @@ public class MainLogic {
 				song.open(audioIn);
 				GetGlobalScriptVariables();
 				//FloatControl gainControl = (FloatControl) song.getControl(FloatControl.Type.MASTER_GAIN);
-				//gainControl.setValue(-35.0f);			
+				//gainControl.setValue(-35.0f);
+			} catch (IllegalArgumentException e) {
+				logger.error("audio clip Exception ", e);
 	        } catch (UnsupportedAudioFileException e) {
 				logger.error("audio clip Exception ", e);
 			} catch (IOException e) {
