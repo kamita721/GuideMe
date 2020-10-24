@@ -3,8 +3,10 @@ package org.guideme.guideme.readers;
 import static org.junit.Assert.*;
 
 import org.guideme.guideme.model.Guide;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class MilovanaHtmlReaderTest {
 
 	@Test
