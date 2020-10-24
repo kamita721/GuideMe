@@ -13,29 +13,29 @@ jar: target/GuideMe.jar
 dist: target/artifacts/GuideMe.Slim.zip target/artifacts/GuideMe.32-bit.zip target/artifacts/GuideMe.64-bit.zip
 
 test:
-	mvn test
+	mvn -B test
 
 target/GuideMe.jar:
-	mvn install
+	mvn -B install
 
 target/vendor/java32:
 	mkdir -p target/vendor/java32
-	curl -L -o target/vendor/java32.zip "$(JRE_32_ZIP)"
+	curl -sL -o target/vendor/java32.zip "$(JRE_32_ZIP)"
 	unzip target/vendor/java32.zip -d target/vendor/java32
 
 target/vendor/java64:
 	mkdir -p target/vendor/java64
-	curl -L -o target/vendor/java64.zip "$(JRE_64_ZIP)"
+	curl -sL -o target/vendor/java64.zip "$(JRE_64_ZIP)"
 	unzip target/vendor/java64.zip -d target/vendor/java64
 
 target/vendor/vlc32:
 	mkdir -p target/vendor/vlc32
-	curl -L -o target/vendor/vlc32.zip "$(VLC_32_ZIP)"
+	curl -sL -o target/vendor/vlc32.zip "$(VLC_32_ZIP)"
 	unzip target/vendor/vlc32.zip -d target/vendor/vlc32
 
 target/vendor/vlc64:
 	mkdir -p target/vendor/vlc64
-	curl -L -o target/vendor/vlc64.zip "$(VLC_32_ZIP)"
+	curl -sL -o target/vendor/vlc64.zip "$(VLC_32_ZIP)"
 	unzip target/vendor/vlc64.zip -d target/vendor/vlc64
 
 target/dist/GuideMe.jar: target/GuideMe.jar
@@ -53,7 +53,7 @@ target/artifacts/GuideMe.Slim.zip: target/dist/GuideMe.jar
 	cp start.bat target/dist_slim/
 	cp start.sh target/dist_slim/
 	mkdir -p target/artifacts
-	cd target/dist_slim;	zip -r ../artifacts/GuideMe.Slim.zip *
+	cd target/dist_slim; zip -r ../artifacts/GuideMe.Slim.zip *
 
 target/artifacts/GuideMe.32-bit.zip: target/dist/GuideMe.jar target/vendor/java32 target/vendor/vlc32
 	cp -rf target/dist target/dist_32
@@ -78,4 +78,4 @@ target/artifacts/GuideMe.64-bit.zip: target/dist/GuideMe.jar target/vendor/java6
 	cd target/dist_64; zip -r ../artifacts/GuideMe.64-bit.zip *
 
 clean:
-	mvn clean
+	mvn -B clean
