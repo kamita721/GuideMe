@@ -23,9 +23,33 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+      - name: Upload Slim Release
+        id: upload-slim
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: release-artifacts
-          path: target/artifacts
-          if-no-files-found: error
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/artifacts/GuideMe.Slim.zip
+          asset_name: GuideMe.Slim.zip
+          asset_content_type: application/zip
+      - name: Upload 32-bit Release
+        id: upload-32-bit
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/artifacts/GuideMe.32-bit.zip
+          asset_name: GuideMe.32-bit.zip
+          asset_content_type: application/zip
+      - name: Upload 64-bit Release
+        id: upload-64-bit
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/artifacts/GuideMe.64-bit.zip
+          asset_name: GuideMe.64-bit.zip
+          asset_content_type: application/zip
