@@ -279,13 +279,13 @@ public class AppSettings {
 			appSettingsProperties.setProperty("sash2Weights0", String.valueOf(sash2Weights[0]));
 			appSettingsProperties.setProperty("sash2Weights1", String.valueOf(sash2Weights[1]));
 			appSettingsProperties.setProperty("sash2Weights2", String.valueOf(sash2Weights[2]));
-			appSettingsProperties.storeToXML(new FileOutputStream(settingsLocation), null);
 			appSettingsProperties.setProperty("maxImageScale", String.valueOf(maxImageScale));
 			appSettingsProperties.setProperty("hideMenu", String.valueOf(hideMenu));
 			appSettingsProperties.setProperty("thumbnailSize", String.valueOf(thumbnailSize));
 			appSettingsProperties.setProperty("imgOffset", String.valueOf(imgOffset));
 			appSettingsProperties.setProperty("country", country);
 			appSettingsProperties.setProperty("language", language);
+			appSettingsProperties.storeToXML(new FileOutputStream(settingsLocation), null);
 		}
 		catch (Exception e) {
 			logger.error(e.getLocalizedMessage(), e);
