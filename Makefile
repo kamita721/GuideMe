@@ -35,7 +35,7 @@ target/vendor/vlc32:
 
 target/vendor/vlc64:
 	mkdir -p target/vendor/vlc64
-	curl -sL -o target/vendor/vlc64.zip "$(VLC_32_ZIP)"
+	curl -sL -o target/vendor/vlc64.zip "$(VLC_64_ZIP)"
 	unzip target/vendor/vlc64.zip -d target/vendor/vlc64
 
 target/dist/GuideMe.jar: target/GuideMe.jar
