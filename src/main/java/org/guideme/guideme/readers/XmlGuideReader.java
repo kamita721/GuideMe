@@ -14,6 +14,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import com.fasterxml.jackson.core.Version;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.model.Audio;
@@ -59,6 +60,7 @@ public class XmlGuideReader {
 
 	private enum TagName
 	{
+		Tease,
 		pref, 
 		Title, 
 		Author, 
@@ -116,7 +118,7 @@ public class XmlGuideReader {
 
 			// Return to where we left off
 			try {
-				if (guideSettings.isForceStartPage()) {
+				if (guideSettings.isForceStartPage() && !guideSettings.getPage().equals("GuideMeVersionNotMet")) {
 					guideSettings.setPage("start");
 				}
 				strPage = guideSettings.getPage();
@@ -153,9 +155,15 @@ public class XmlGuideReader {
 		String btnDefault;
 		boolean defaultBtn;
 
+		guideSettings = guide.getSettings();
+
 		Page page404 = new Page("GuideMe404Error","", "", "", "", false, "", "");
 		chapter.getPages().put(page404.getId(), page404);
-		guideSettings = guide.getSettings();
+
+		Page pageVersionNotMet = new Page("GuideMeVersionNotMet");
+		String nextPage = guideSettings.getPage().equals(pageVersionNotMet.getId()) ? "start" : guideSettings.getPage();
+		pageVersionNotMet.addButton(new Button(nextPage, "Continue"));
+		chapter.getPages().put(pageVersionNotMet.getId(), pageVersionNotMet);
 
 		try {
 			FileInputStream fis = new FileInputStream(xmlFileName);
@@ -178,6 +186,40 @@ public class XmlGuideReader {
 					strTag = reader.getName().getLocalPart();
 
 					switch (TagName.toTag(strTag)) {
+					case Tease:
+						String minVersionString = reader.getAttributeValue(null, "minimumVersion");
+						String currentVersionString = ComonFunctions.getVersion();
+						if (minVersionString == null || minVersionString.equals("")) {
+							break;
+						}
+
+						String[] minVersionParts = minVersionString.split("\\.");
+						String[] currentVersionParts = currentVersionString.split("\\.");
+						if (minVersionParts.length != 3 || currentVersionParts.length != 3) {
+							break;
+						}
+
+						Version minVersion = new Version(
+								Integer.parseUnsignedInt(minVersionParts[0]),
+								Integer.parseUnsignedInt(minVersionParts[1]),
+								Integer.parseUnsignedInt(minVersionParts[2]),
+								"", null, null);
+						Version currentVersion = new Version(
+								Integer.parseUnsignedInt(currentVersionParts[0]),
+								Integer.parseUnsignedInt(currentVersionParts[1]),
+								Integer.parseUnsignedInt(currentVersionParts[2]),
+								"", null, null);
+
+						if (currentVersion.compareTo(minVersion) < 0) {
+							chapter.getPages().get(pageVersionNotMet.getId()).addLeftText(new Text(
+									"<p><h1>App Version Not Supported</h1>" +
+									"<p>This tease specifies a minimum GuideMe version of " + minVersionString +
+									" but you're running " + currentVersionString + "." +
+									"<br/>Please consider updating or this tease may not function as designed.</p>"
+							));
+							guideSettings.setPage(pageVersionNotMet.getId());
+						}
+						break;
 					case pref:
 						String key;
 						String screen = "";
