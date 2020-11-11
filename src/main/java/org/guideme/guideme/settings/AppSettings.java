@@ -58,6 +58,10 @@ public class AppSettings {
 	private String language;
 	private String country;
 
+	private String videoDevice;
+	private String audioOneDevice;
+	private String audioTwoDevice;
+
 	public void setDisplayText(ResourceBundle displayText) {
 		this.displayText = displayText;
 	}
@@ -133,6 +137,9 @@ public class AppSettings {
 				imgOffset = Double.parseDouble(appSettingsProperties.getProperty("imgOffset", "0.99"));
 				language = appSettingsProperties.getProperty("language", "en");
 				country = appSettingsProperties.getProperty("country", "UK");
+				videoDevice = appSettingsProperties.getProperty("videoDevice", "");
+				audioOneDevice = appSettingsProperties.getProperty("audioOneDevice", "");
+				audioTwoDevice = appSettingsProperties.getProperty("audioTwoDevice", "");
 			}
 			catch (Exception ex) {
 				logger.error(ex.getLocalizedMessage(), ex);
@@ -285,6 +292,9 @@ public class AppSettings {
 			appSettingsProperties.setProperty("imgOffset", String.valueOf(imgOffset));
 			appSettingsProperties.setProperty("country", country);
 			appSettingsProperties.setProperty("language", language);
+			appSettingsProperties.setProperty("videoDevice", videoDevice);
+			appSettingsProperties.setProperty("audioOneDevice", audioOneDevice);
+			appSettingsProperties.setProperty("audioTwoDevice", audioTwoDevice);
 			appSettingsProperties.storeToXML(new FileOutputStream(settingsLocation), null);
 		}
 		catch (Exception e) {
@@ -496,4 +506,27 @@ public class AppSettings {
 		this.imgOffset = imgOffset;
 	}
 
+	public String getAudioOneDevice() {
+		return audioOneDevice;
+	}
+
+	public void setAudioOneDevice(String audioOneDevice) {
+		this.audioOneDevice = audioOneDevice;
+	}
+
+	public String getAudioTwoDevice() {
+		return audioTwoDevice;
+	}
+
+	public void setAudioTwoDevice(String audioTwoDevice) {
+		this.audioTwoDevice = audioTwoDevice;
+	}
+
+	public String getVideoDevice() {
+		return videoDevice;
+	}
+
+	public void setVideoDevice(String videoDevice) {
+		this.videoDevice = videoDevice;
+	}
 }

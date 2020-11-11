@@ -89,6 +89,8 @@ import com.github.sarxos.webcam.WebcamPanel;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.binding.internal.libvlc_instance_t;
+import uk.co.caprica.vlcj.component.AudioMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.AudioDevice;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -471,7 +473,11 @@ public class MainShell {
 					mediaPlayer = new SwtEmbeddedMediaPlayer(libvlc, instance);
 					mediaPlayer.setVideoSurface(new CompositeVideoSurface(mediaPanel, getVideoSurfaceAdapter()));
 					mediaPlayer.addMediaPlayerEventListener(new MediaListener());
-					
+
+					String videoOutputDevice = appSettings.getVideoDevice();
+					if (videoOutputDevice != null && !videoOutputDevice.equals("")) {
+						mediaPlayer.setAudioOutputDevice(null, appSettings.getVideoDevice());
+					}
 				}
 				catch (Exception vlcex) {
 					logger.error("VLC intialisation error " + vlcex.getLocalizedMessage(), vlcex);
@@ -651,6 +657,82 @@ public class MainShell {
 			MenuItem ResizeGuideItem = new MenuItem (toolsSubMenu, SWT.PUSH);
 			ResizeGuideItem.setText (displayText.getString("MainToolsResizeImage"));
 			ResizeGuideItem.addSelectionListener(new ResizeGuideListener());
+
+			// Audio Output Menus
+			MenuItem audioItem = new MenuItem(MenuBar, SWT.CASCADE);
+			audioItem.setText(displayText.getString("MainAudio"));
+
+			Menu audioSubMenu = new Menu(shell, SWT.DROP_DOWN);
+			audioItem.setMenu(audioSubMenu);
+
+			MenuItem videoOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
+			videoOutputItem.setText(displayText.getString("VideoDev"));
+
+			MenuItem audioOneOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
+			audioOneOutputItem.setText(displayText.getString("AudioDevOne"));
+
+			MenuItem audioTwoOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
+			audioTwoOutputItem.setText(displayText.getString("AudioDevTwo"));
+
+			Menu videoSubMenu = new Menu(shell, SWT.DROP_DOWN);
+			videoOutputItem.setMenu(videoSubMenu);
+
+			Menu audioOneSubMenu = new Menu(shell, SWT.DROP_DOWN);
+			audioOneOutputItem.setMenu(audioOneSubMenu);
+
+			Menu audioTwoSubMenu = new Menu(shell, SWT.DROP_DOWN);
+			audioTwoOutputItem.setMenu(audioTwoSubMenu);
+
+			boolean userDeviceVideoAvailable = false;
+			boolean userDeviceOneAvailable = false;
+			boolean userDeviceTwoAvailable = false;
+			AudioMediaPlayerComponent mediaPlayerComponent = new AudioMediaPlayerComponent();
+			List<AudioDevice> outputs = mediaPlayerComponent.getMediaPlayer().getAudioOutputDevices();
+			for (AudioDevice device : outputs) {
+				boolean userDeviceVideo = device.getDeviceId().equals(appSettings.getVideoDevice());
+				boolean userDeviceOne = device.getDeviceId().equals(appSettings.getAudioOneDevice());
+				boolean userDeviceTwo = device.getDeviceId().equals(appSettings.getAudioTwoDevice());
+
+				MenuItem videoDevice = new MenuItem (videoSubMenu, SWT.RADIO);
+				videoDevice.setText(device.getLongName());
+				videoDevice.setData("device-id", device.getDeviceId());
+				videoDevice.setSelection(userDeviceVideo);
+				videoDevice.addSelectionListener(new VideoDeviceChangedListener());
+
+				MenuItem audioOneDevice = new MenuItem (audioOneSubMenu, SWT.RADIO);
+				audioOneDevice.setText(device.getLongName());
+				audioOneDevice.setData("device-id", device.getDeviceId());
+				audioOneDevice.setSelection(userDeviceOne);
+				audioOneDevice.addSelectionListener(new AudioOneDeviceChangedListener());
+
+				MenuItem audioTwoDevice = new MenuItem (audioTwoSubMenu, SWT.RADIO);
+				audioTwoDevice.setText(device.getLongName());
+				audioTwoDevice.setData("device-id", device.getDeviceId());
+				audioTwoDevice.setSelection(userDeviceTwo);
+				audioTwoDevice.addSelectionListener(new AudioTwoDeviceChangedListener());
+
+				userDeviceVideoAvailable |= userDeviceVideo;
+				userDeviceOneAvailable |= userDeviceOne;
+				userDeviceTwoAvailable |= userDeviceTwo;
+			}
+			if (!userDeviceVideoAvailable) {
+				logger.info("User selected Video device not available. Resetting to default");
+				MenuItem videoDefault = videoSubMenu.getItem(0);
+				videoDefault.setSelection(true);
+				appSettings.setVideoDevice(videoDefault.getData("device-id").toString());
+			}
+			if (!userDeviceOneAvailable) {
+				logger.info("User selected Audio device not available. Resetting to default");
+				MenuItem oneDefault = audioOneSubMenu.getItem(0);
+				oneDefault.setSelection(true);
+				appSettings.setAudioOneDevice(oneDefault.getData("device-id").toString());
+			}
+			if (!userDeviceTwoAvailable) {
+				logger.info("User selected Audio2 device not available. Resetting to default");
+				MenuItem twoDefault = audioTwoSubMenu.getItem(0);
+				twoDefault.setSelection(true);
+				appSettings.setAudioTwoDevice(twoDefault.getData("device-id").toString());
+			}
 			
 			if (appSettings.getDebug())
 			{
@@ -1270,6 +1352,45 @@ public class MainShell {
 			super.widgetSelected(e);
 		}
 
+	}
+
+	class VideoDeviceChangedListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			if (((MenuItem) e.widget).getSelection()) {
+				String newOutputDevice = e.widget.getData("device-id").toString();
+				appSettings.setVideoDevice(newOutputDevice);
+				if (newOutputDevice != null && !newOutputDevice.equals("")) {
+					mediaPlayer.setAudioOutputDevice(null, newOutputDevice);
+				}
+			}
+		}
+	}
+
+	class AudioOneDeviceChangedListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			if (((MenuItem) e.widget).getSelection()) {
+				String newOutputDevice = e.widget.getData("device-id").toString();
+				appSettings.setAudioOneDevice(newOutputDevice);
+				if (threadAudioPlayer != null && newOutputDevice != null && !newOutputDevice.equals("")) {
+					audioPlayer.setAudioDevice(newOutputDevice);
+				}
+			}
+		}
+	}
+
+	class AudioTwoDeviceChangedListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			if (((MenuItem) e.widget).getSelection()) {
+				String newOutputDevice = e.widget.getData("device-id").toString();
+				appSettings.setAudioTwoDevice(newOutputDevice);
+				if (threadAudioPlayer2 != null && newOutputDevice != null && !newOutputDevice.equals("")) {
+					audioPlayer2.setAudioDevice(newOutputDevice);
+				}
+			}
+		}
 	}
 	
 	
@@ -2150,7 +2271,8 @@ public class MainShell {
 				audioPlayer.audioStop();
 				logger.trace("playAudio audioStop");
 			}
-			audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, volume);
+			String outputDevice = appSettings.getAudioOneDevice();
+			audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, outputDevice, volume);
 			threadAudioPlayer = new Thread(audioPlayer, "audioPlayer");
 			threadAudioPlayer.setName("threadAudioPlayer");
 			threadAudioPlayer.start();
@@ -2166,7 +2288,8 @@ public class MainShell {
 				audioPlayer2.audioStop();
 				logger.trace("playAudio2 audioStop");
 			}
-			audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, volume);
+			String outputDevice = appSettings.getAudioTwoDevice();
+			audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, outputDevice, volume);
 			threadAudioPlayer2 = new Thread(audioPlayer2, "audioPlayer");
 			threadAudioPlayer2.setName("threadAudioPlayer2");
 			threadAudioPlayer2.start();
@@ -2174,7 +2297,6 @@ public class MainShell {
 			logger.error("playAudio2 " + e.getLocalizedMessage(), e);		
 		}
 	}
-	
 
 	public void setBrwsText(String brwsText, String overRideStyle) {
 		//set HTML to be displayed in the browser control to the right of the screen
@@ -2817,7 +2939,7 @@ public class MainShell {
 			try {
 				if (mediaPlayer != null && mediaPlayer.isPlayable()) {
 					logger.debug("MainShell VideoStop run: Stopping media player " + mediaPlayer.mrl());
-					mediaPlayer.stop();
+					mediaPlayer.pause();
 					if (shellClosing)
 					{
 						mediaPlayer.release();
