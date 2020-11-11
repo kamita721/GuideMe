@@ -900,14 +900,18 @@ public class MainLogic {
 	private void ProcessAudio2(Page objCurrPage, Guide guide, MainShell mainShell, String fileSeparator, AppSettings appSettings)
 	{
 		boolean blnAudio = false;
-		Audio objAudio = null;
+		Audio objAudio = overRide.getAudio2();
 		try {
-			if (objCurrPage.getAudio2Count() > 0) {
-				for (int i2 = 0; i2 < objCurrPage.getAudio2Count(); i2++) {
-					objAudio = objCurrPage.getAudio2(i2);
-					if (objAudio.canShow(guide.getFlags())) {
-						blnAudio = true;
-						break;
+			if (objAudio != null) {
+				blnAudio = true;
+			} else {
+				if (objCurrPage.getAudio2Count() > 0) {
+					for (int i2 = 0; i2 < objCurrPage.getAudio2Count(); i2++) {
+						objAudio = objCurrPage.getAudio2(i2);
+						if (objAudio.canShow(guide.getFlags())) {
+							blnAudio = true;
+							break;
+						}
 					}
 				}
 			}
