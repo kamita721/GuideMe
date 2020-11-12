@@ -10,8 +10,9 @@ public class Page {
 	private ArrayList<Text> text = new ArrayList<Text>(); //HTML to display
 	private ArrayList<Text> leftText = new ArrayList<Text>(); //HTML to display in the left pane instead of an image
 	private ArrayList<Button> button = new ArrayList<Button>();
+	private ArrayList<GlobalButton> globalButton = new ArrayList<GlobalButton>();
 	private ArrayList<WebcamButton> webcamButton = new ArrayList<WebcamButton>();
-	private ArrayList<Delay> delay = new ArrayList<Delay>(); 
+	private ArrayList<Delay> delay = new ArrayList<Delay>();
 	private ArrayList<Timer> timer = new ArrayList<Timer>(); 
 	private ArrayList<Video> video = new ArrayList<Video>();
 	private ArrayList<Webcam> webcam = new ArrayList<Webcam>();
@@ -291,4 +292,20 @@ public class Page {
 	public int getAudio2Count() {
 		return audio2.size();
 	}
+
+	public GlobalButton getGlobalButton(int butIndex)
+	{
+		return globalButton.get(butIndex);
+	}
+
+	public void addGlobalButton(GlobalButton button)
+	{
+		globalButton.add(button);
+	}
+
+	public int getGlobalButtonCount()
+	{
+		return globalButton.size();
+	}
+
 }

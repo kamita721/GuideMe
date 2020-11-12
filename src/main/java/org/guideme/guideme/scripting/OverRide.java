@@ -3,19 +3,14 @@ package org.guideme.guideme.scripting;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Display;
-import org.guideme.guideme.model.Audio;
-import org.guideme.guideme.model.Button;
-import org.guideme.guideme.model.Delay;
-import org.guideme.guideme.model.Metronome;
-import org.guideme.guideme.model.Timer;
-import org.guideme.guideme.model.Video;
-import org.guideme.guideme.model.Webcam;
-import org.guideme.guideme.model.WebcamButton;
+import org.guideme.guideme.model.*;
 
 
 public class OverRide {
 	/** @exclude */
 	private ArrayList<Button> button = new ArrayList<Button>();
+	/** @exclude */
+	private ArrayList<GlobalButton> globalButton = new ArrayList<GlobalButton>();
 	/** @exclude */
 	private ArrayList<WebcamButton> webcamButton = new ArrayList<WebcamButton>();
 	/** @exclude */
@@ -213,7 +208,135 @@ public class OverRide {
 	public int buttonCount() {
 		return button.size();
 	}
-	
+
+
+	/**
+	 * Adds a global button to the page
+	 *
+	 * @param id the id of the button
+	 * @param target the page to go to
+	 * @param text the text to be displayed on the button
+	 * @param set the flags to set if the button is pressed
+	 * @param unSet the flags to clear if the button is pressed
+	 * @param jScript the Java Script function to run if the button is pressed
+	 * @param image the background image for the button
+	 */
+	public void addGlobalButton(String id, String target, String text, String set, String unSet, String jScript, String image) {
+		addGlobalButton(id, target, text, set, unSet, jScript, image, "", "bottom", "1");
+	}
+
+	/**
+	 * Adds a global button to the page
+	 *
+	 * @param id the id of the button
+	 * @param target the page to go to
+	 * @param text the text to be displayed on the button
+	 * @param set the flags to set if the button is pressed
+	 * @param unSet the flags to clear if the button is pressed
+	 * @param jScript the Java Script function to run if the button is pressed
+	 * @param image the background image for the button
+	 * @param hotKey the hot key assigned to the button
+	 */
+	public void addGlobalButton(String id, String target, String text, String set, String unSet, String jScript, String image, String hotKey) {
+		addGlobalButton(id, target, text, set, unSet, jScript, image, hotKey, "bottom", "1");
+	}
+
+	/**
+	 * Adds a global button to the page
+	 *
+	 * @param id the id of the button
+	 * @param target the page to go to
+	 * @param text the text to be displayed on the button
+	 * @param set the flags to set if the button is pressed
+	 * @param unSet the flags to clear if the button is pressed
+	 * @param jScript the Java Script function to run if the button is pressed
+	 * @param image the background image for the button
+	 * @param hotKey the hot key assigned to the button
+	 * @param placement the placement of the global button, top or bottom
+	 */
+	public void addGlobalButton(String id, String target, String text, String set, String unSet, String jScript, String image, String hotKey, String placement) {
+		addGlobalButton(id, target, text, set, unSet, jScript, image, hotKey, placement, "1");
+	}
+
+	/**
+	 * Adds a global button to the page
+	 *
+	 * @param id the id of the button
+	 * @param target the page to go to
+	 * @param text the text to be displayed on the button
+	 * @param set the flags to set if the button is pressed
+	 * @param unSet the flags to clear if the button is pressed
+	 * @param jScript the Java Script function to run if the button is pressed
+	 * @param image the background image for the button
+	 * @param hotKey the hot key assigned to the button
+	 * @param placement the placement of the global button, top or bottom
+	 * @param sortOrder the sort order value (used to sort the buttons)
+	 */
+	public void addGlobalButton(String id, String target, String text, String set, String unSet, String jScript, String image, String hotKey, String placement, String sortOrder) {
+		GlobalButtonThread buttonThread = new GlobalButtonThread();
+		buttonThread.overRide = this;
+		buttonThread.id = id;
+		buttonThread.target = target;
+		buttonThread.text = text;
+		buttonThread.set = set;
+		buttonThread.unSet = unSet;
+		buttonThread.jScript = jScript;
+		buttonThread.image = image;
+		buttonThread.hotKey = hotKey;
+		buttonThread.sortOrder = sortOrder;
+		buttonThread.placement = placement;
+		buttonThread.action = GlobalButton.Action.ADD;
+		Display.getDefault().syncExec(buttonThread);
+	}
+
+	/**
+	 * Removes a global button from the page
+	 *
+	 * @param id the id of the button
+	 */
+	public void removeGlobalButton(String id) {
+		GlobalButtonThread buttonThread = new GlobalButtonThread();
+		buttonThread.overRide = this;
+		buttonThread.id = id;
+		buttonThread.action = GlobalButton.Action.REMOVE;
+		Display.getDefault().syncExec(buttonThread);
+	}
+
+	private class GlobalButtonThread implements Runnable
+	{
+		public OverRide overRide;
+		public String id;
+		public String target;
+		public String text;
+		public String set;
+		public String unSet;
+		public String jScript;
+		public String image;
+		public String hotKey;
+		public String sortOrder;
+		public String placement;
+		public GlobalButton.Action action;
+
+		public void run()
+		{
+			GlobalButton.Placement placement = this.placement.equals("top")
+					? GlobalButton.Placement.TOP
+					: GlobalButton.Placement.BOTTOM;
+
+			GlobalButton button = new GlobalButton(id, target, text, "", "", set, unSet, jScript, image, hotKey, placement, action);
+			overRide.globalButton.add(button);
+		}
+	}
+
+	/** @exclude */
+	public GlobalButton getGlobalButton(int i) {
+		return globalButton.get(i);
+	}
+
+	/** @exclude */
+	public int globalButtonCount() {
+		return globalButton.size();
+	}
 	
 	/**
 	 * Adds a webcam button to the page
