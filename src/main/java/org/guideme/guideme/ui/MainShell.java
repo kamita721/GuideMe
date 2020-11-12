@@ -1040,8 +1040,10 @@ public class MainShell {
 							strTag = (String) hotKeyButton.getData("Target");
 							String javascript = (String) hotKeyButton.getData("javascript");
 							runJscript(javascript, false);
-							mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings,
-									guideSettings, debugShell);
+							if (!strTag.equals("")) {
+								mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings,
+										guideSettings, debugShell);
+							}
 						}
 					}
 				}
@@ -2564,8 +2566,7 @@ public class MainShell {
 				
 				logger.trace("Enter DynamicButtonListner");
 				String strTag;
-				com.snapps.swt.SquareButton btnClicked;
-				btnClicked = (com.snapps.swt.SquareButton) event.widget;
+				com.snapps.swt.SquareButton btnClicked = (com.snapps.swt.SquareButton) event.widget;
 				strTag = (String) btnClicked.getData("Set");
 				if (!strTag.equals("")) {
 					comonFunctions.SetFlags(strTag, guide.getFlags());
@@ -2579,7 +2580,9 @@ public class MainShell {
 				strTag = (String) btnClicked.getData("Target");
 				String javascript = (String) btnClicked.getData("javascript");
 				runJscript(javascript, false);
-				mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
+				if (!strTag.equals("")) {
+					mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
+				}
 			}
 			catch (Exception ex) {
 				logger.error(" DynamicButtonListner " + ex.getLocalizedMessage(), ex);
