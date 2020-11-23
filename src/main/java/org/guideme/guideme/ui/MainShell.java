@@ -1362,7 +1362,7 @@ public class MainShell {
 			if (((MenuItem) e.widget).getSelection()) {
 				String newOutputDevice = e.widget.getData("device-id").toString();
 				appSettings.setVideoDevice(newOutputDevice);
-				if (newOutputDevice != null && !newOutputDevice.equals("")) {
+				if (newOutputDevice != null) {
 					mediaPlayer.setAudioOutputDevice(null, newOutputDevice);
 				}
 			}
@@ -1375,7 +1375,7 @@ public class MainShell {
 			if (((MenuItem) e.widget).getSelection()) {
 				String newOutputDevice = e.widget.getData("device-id").toString();
 				appSettings.setAudioOneDevice(newOutputDevice);
-				if (threadAudioPlayer != null && newOutputDevice != null && !newOutputDevice.equals("")) {
+				if (threadAudioPlayer != null && newOutputDevice != null) {
 					audioPlayer.setAudioDevice(newOutputDevice);
 				}
 			}
@@ -1388,7 +1388,7 @@ public class MainShell {
 			if (((MenuItem) e.widget).getSelection()) {
 				String newOutputDevice = e.widget.getData("device-id").toString();
 				appSettings.setAudioTwoDevice(newOutputDevice);
-				if (threadAudioPlayer2 != null && newOutputDevice != null && !newOutputDevice.equals("")) {
+				if (threadAudioPlayer2 != null && newOutputDevice != null) {
 					audioPlayer2.setAudioDevice(newOutputDevice);
 				}
 			}
