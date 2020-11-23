@@ -811,10 +811,10 @@ public class MainLogic {
 		}
 		Collections.sort(globalBottomButtons);
 
-		// Add all buttons in order
-		button.addAll(globalTopButtons);
-		button.addAll(pageButtons);
+		// Add all buttons in reverse order
 		button.addAll(globalBottomButtons);
+		button.addAll(pageButtons);
+		button.addAll(globalTopButtons);
 
 		for (int i1 = button.size() - 1; i1 >= 0; i1--) {
 			try {
