@@ -238,6 +238,9 @@ public class MainLogic {
 				logger.error("displayPage PageFlags Exception " + e1.getLocalizedMessage(), e1);
 			}
 
+			// Start all media at the same time
+			mainShell.startDeferredMedia();
+
 			guide.getSettings().setPage(strPageId);
 			strFlags = comonFunctions.GetFlags(guide.getFlags());
 			logger.debug("displayPage End Flags " + strFlags);
@@ -481,7 +484,7 @@ public class MainLogic {
 				catch (NumberFormatException nfe) {
 				}
 				// Play video
-				mainShell.playVideo(imgPath, intStartAt, intStopAt, repeat, objVideo.getTarget(), objVideo.getJscript(), objVideo.getScriptVar(), objVideo.getVolume());
+				mainShell.playVideo(imgPath, intStartAt, intStopAt, repeat, objVideo.getTarget(), objVideo.getJscript(), objVideo.getScriptVar(), objVideo.getVolume(), true);
 			}
 		} catch (Exception e1) {
 			logger.trace("displayPage Video Exception " + e1.getLocalizedMessage());
@@ -930,7 +933,7 @@ public class MainLogic {
 
 				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator, appSettings, guide);
 				strAudioTarget = objAudio.getTarget();
-				mainShell.playAudio(imgPath,startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume());
+				mainShell.playAudio(imgPath,startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume(), true);
 				logger.debug("displayPage Audio target " + strAudioTarget);
 			}
 		} catch (Exception e) {
@@ -986,7 +989,7 @@ public class MainLogic {
 
 				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator, appSettings, guide);
 				strAudioTarget = objAudio.getTarget();
-				mainShell.playAudio2(imgPath,startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume());
+				mainShell.playAudio2(imgPath,startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume(), true);
 				logger.debug("displayPage Audio target " + strAudioTarget);
 			}
 		} catch (Exception e) {

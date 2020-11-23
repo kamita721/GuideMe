@@ -1106,7 +1106,7 @@ public class Guide {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		
 		String imgPath = comonFunctions.getMediaFullPath(audio, appSettings.getFileSeparator(), appSettings, guide);
-		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, 100);
+		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, 100, false);
 	}
 
 	/**
@@ -1148,7 +1148,7 @@ public class Guide {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		
 		String imgPath = comonFunctions.getMediaFullPath(audio, appSettings.getFileSeparator(), appSettings, guide);
-		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, volume);
+		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, volume, false);
 	}
 
 	 /**

@@ -30,9 +30,13 @@ public class AudioPlayer  implements Runnable {
 	private String scriptVar;
 	private String outputDevice;
 	private int volume;
+	private ArrayList<String> vlcArgs;
 
 	public AudioPlayer(String audioFile, int startAt, int stopAt, int loops, String target, MainShell mainShell, String jscript, String scriptVar, String outputDevice, int volume) {
 		//function to allow us to pass stuff to the new thread
+		int mediaVolume = AppSettings.getAppSettings().getMusicVolume();
+		volume = Math.min(Math.max(volume, 0), 100); // Bound between 0 and 100
+
 		this.audioFile = audioFile;
 		this.loops = loops;
 		this.mainShell = mainShell;
@@ -42,17 +46,17 @@ public class AudioPlayer  implements Runnable {
 		this.stopAt = stopAt;
 		this.scriptVar = scriptVar;
 		this.outputDevice = outputDevice;
-		if (volume > 100)
-		{
-			this.volume = 100;
-		} 
-		else if (volume < 0)
-		{
-			volume = 0;
+		this.volume = (int) ((double) mediaVolume * ((double) volume / (double) 100));
+
+		this.vlcArgs = new ArrayList<>();
+		if (startAt > 0) {
+			this.vlcArgs.add("start-time=" + startAt);
 		}
-		else
-		{
-			this.volume = volume;
+		if (stopAt > 0) {
+			this.vlcArgs.add("stop-time=" + stopAt);
+		}
+		if (loops > 0) {
+			this.vlcArgs.add("input-repeat=" + loops);
 		}
 	}
 
@@ -79,32 +83,10 @@ public class AudioPlayer  implements Runnable {
 				mediaPlayer.setAudioOutputDevice(null, this.outputDevice);
 			}
 			mediaPlayer.addMediaPlayerEventListener(mediaListener);
-			int mediaVolume = AppSettings.getAppSettings().getMusicVolume();
-			if (volume < 100)
-			{
-				if (volume == 0)
-				{
-					mediaVolume = 0;
-				}
-				else
-				{
-					mediaVolume = (int) ((double) mediaVolume * ((double) volume / (double) 100));
-				}
-			}
-			mediaPlayer.setVolume(mediaVolume);
-			if (startAt == 0 && stopAt == 0 && loops == 0) {
+			mediaPlayer.setVolume(volume);
+			if (this.vlcArgs.isEmpty()) {
 				mediaPlayer.playMedia(audioFile);
 			} else {
-				List<String> vlcArgs = new ArrayList<String>();
-				if (startAt > 0) {
-					vlcArgs.add("start-time=" + startAt);
-				}
-				if (stopAt > 0) {
-					vlcArgs.add("stop-time=" + stopAt);
-				}
-				if (loops > 0) {
-					vlcArgs.add("input-repeat=" + loops);
-				}
 				mediaPlayer.playMedia(audioFile, vlcArgs.toArray(new String[vlcArgs.size()]));
 			}
 			synchronized(this) {

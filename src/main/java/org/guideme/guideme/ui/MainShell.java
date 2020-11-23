@@ -166,6 +166,7 @@ public class MainShell {
 	private Thread threadAudioPlayer;
 	private AudioPlayer audioPlayer2;
 	private Thread threadAudioPlayer2;
+	private Thread threadVideoPlayer;
 	private Boolean videoOn = true;
 	private Boolean webcamOn = true;
 	private String style = "";
@@ -192,6 +193,9 @@ public class MainShell {
 	private boolean videoPlayed = false;
 	private ResourceBundle displayText;
 	private String ProcStatusText = "";
+	private boolean hasVideoDeferred = false;
+	private boolean hasAudioDeferred = false;
+	private boolean hasAudio2Deferred = false;
 	//private boolean exitTriggered = false;
 
 	public Shell createShell(final Display display) {
@@ -2152,7 +2156,7 @@ public class MainShell {
 		return webcam != null;
 	}
 
-	public void playVideo(String video, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume) {
+	public void playVideo(String video, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume, boolean deferStart) {
 		//plays a video in the area to the left of the screen
 		//sets the number of loops, start / stop time and any page to display if the video finishes
 		//starts the video using a non UI thread so VLC can't hang the application
@@ -2174,10 +2178,14 @@ public class MainShell {
 				logger.debug("MainShell playVideo: " + mrlVideo + " videoLoops: " + videoLoops + " videoTarget: " + videoTarget + " videoPlay: " + videoPlay);
 				VideoPlay videoPlay = new VideoPlay();
 				videoPlay.setVideoPlay(mediaPlayer, mrlVideo, volume);
-				Thread videoPlayThread = new Thread(videoPlay, "videoPlay");
-				videoPlayThread.setName("videoPlayThread");
-				videoPlayThread.start();
-				videoPlayed = true;
+				threadVideoPlayer = new Thread(videoPlay, "videoPlay");
+				threadVideoPlayer.setName("videoPlayThread");
+				if (deferStart) {
+					hasVideoDeferred = true;
+				} else {
+					threadVideoPlayer.start();
+					videoPlayed = true;
+				}
 			} catch (Exception e) {
 				logger.error("playVideo " + e.getLocalizedMessage(), e);		
 			}
@@ -2189,49 +2197,25 @@ public class MainShell {
 		private SwtEmbeddedMediaPlayer mediaPlayer;
 		private String video;
 		private int volume;
+		private ArrayList<String> vlcArgs;
 		
 		@Override
 		public void run() {
 			try {
 				logger.debug("MainShell VideoPlay new Thread " + video);
-				int mediaVolume = appSettings.getVideoVolume();
-				if (volume < 100)
-				{
-					if (volume == 0)
-					{
-						mediaVolume = 0;
-					}
-					else
-					{
-						mediaVolume = (int) ((double) mediaVolume * ((double) volume / (double) 100));
-					}
-				}
-				
-				mediaPlayer.setVolume(mediaVolume);
+
+				mediaPlayer.setVolume(volume);
 				mediaPlayer.setPlaySubItems(true);
-				if (videoStartAt == 0 && videoStopAt == 0 && videoLoops == 0) {
+				if (this.vlcArgs.isEmpty()) {
 					mediaPlayer.playMedia(video);
 				} else {
-					 List<String> vlcArgs = new ArrayList<String>();
-					 if (videoStartAt > 0) {
-						 vlcArgs.add("start-time=" + videoStartAt);
-					 }
-					 if (videoStopAt > 0) {
-						 vlcArgs.add("stop-time=" + videoStopAt);
-					 }
-					 if (videoLoops > 0) {
-						 vlcArgs.add("input-repeat=" + videoLoops);
-					 }
-					myDisplay.syncExec(
-							new Runnable() {
-								public void run(){
-									mediaPanel.setVisible(true);
-									webcamPanel.setVisible(false);
-									imageLabel.setVisible(false);
-									leftFrame.layout(true);
-								}
-							});											
-					 mediaPlayer.playMedia(video, vlcArgs.toArray(new String[vlcArgs.size()]));
+					myDisplay.syncExec(() -> {
+						mediaPanel.setVisible(true);
+						webcamPanel.setVisible(false);
+						imageLabel.setVisible(false);
+						leftFrame.layout(true);
+					});
+					mediaPlayer.playMedia(video, vlcArgs.toArray(new String[vlcArgs.size()]));
 						//run on the main UI thread
 				}
 			} catch (Exception e) {
@@ -2240,19 +2224,22 @@ public class MainShell {
 		}
 
 		public void setVideoPlay(SwtEmbeddedMediaPlayer mediaPlayer, String video, int volume) {
+			int mediaVolume = appSettings.getVideoVolume();
+			volume = Math.min(Math.max(volume, 0), 100); // Bound between 0 and 100
+
 			this.mediaPlayer = mediaPlayer;
 			this.video = video;
-			if (volume > 100)
-			{
-				this.volume = 100;
-			} 
-			else if (volume < 0)
-			{
-				volume = 0;
+			this.volume = (int) ((double) mediaVolume * ((double) volume / (double) 100));
+
+			this.vlcArgs = new ArrayList<>();
+			if (videoStartAt > 0) {
+				this.vlcArgs.add("start-time=" + videoStartAt);
 			}
-			else
-			{
-				this.volume = volume;
+			if (videoStopAt > 0) {
+				this.vlcArgs.add("stop-time=" + videoStopAt);
+			}
+			if (videoLoops > 0) {
+				this.vlcArgs.add("input-repeat=" + videoLoops);
 			}
 		}
 
@@ -2266,7 +2253,7 @@ public class MainShell {
 
 	
 	
-	public void playAudio(String audio, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume) {
+	public void playAudio(String audio, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume, boolean deferStart) {
 		// run audio on another thread
 		try {
 			if (audioPlayer != null) {
@@ -2277,13 +2264,17 @@ public class MainShell {
 			audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, outputDevice, volume);
 			threadAudioPlayer = new Thread(audioPlayer, "audioPlayer");
 			threadAudioPlayer.setName("threadAudioPlayer");
-			threadAudioPlayer.start();
+			if (deferStart) {
+				hasAudioDeferred = true;
+			} else {
+				threadAudioPlayer.start();
+			}
 		} catch (Exception e) {
 			logger.error("playAudio " + e.getLocalizedMessage(), e);		
 		}
 	}
 	
-	public void playAudio2(String audio, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume) {
+	public void playAudio2(String audio, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume, boolean deferStart) {
 		// run audio on another thread
 		try {
 			if (audioPlayer2 != null) {
@@ -2294,9 +2285,30 @@ public class MainShell {
 			audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, outputDevice, volume);
 			threadAudioPlayer2 = new Thread(audioPlayer2, "audioPlayer");
 			threadAudioPlayer2.setName("threadAudioPlayer2");
-			threadAudioPlayer2.start();
+			if (deferStart) {
+				hasAudio2Deferred = true;
+			} else {
+				threadAudioPlayer2.start();
+			}
 		} catch (Exception e) {
 			logger.error("playAudio2 " + e.getLocalizedMessage(), e);		
+		}
+	}
+
+	public void startDeferredMedia()
+	{
+		if (hasVideoDeferred) {
+			threadVideoPlayer.start();
+			videoPlayed = true;
+			hasVideoDeferred = false;
+		}
+		if (hasAudioDeferred) {
+			threadAudioPlayer.start();
+			hasAudioDeferred = false;
+		}
+		if (hasAudio2Deferred) {
+			threadAudioPlayer2.start();
+			hasAudio2Deferred = false;
 		}
 	}
 
@@ -2919,6 +2931,7 @@ public class MainShell {
 						webcamPanel.setVisible(false);
 						imageLabel.setVisible(true);
 						leftFrame.layout(true);
+						threadVideoPlayer = null;
 						videoStopThread.start();
 					}
 				}
