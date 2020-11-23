@@ -545,28 +545,35 @@ public class XmlGuideReader {
 							}
 
 							//reader.next();
-							String BtnText = "";
-							if (reader.getName().getLocalPart().equals("GlobalButton")) {
-								try {
-									BtnText = processText(reader, "GlobalButton");
-								}
-								catch (Exception ex) {
-									logger.error("loadXML " + PresName + " Global Button Exception Text " + ex.getLocalizedMessage(), ex);
-								}
-							}
+
 
 							GlobalButton.Placement placement = GlobalButton.Placement.BOTTOM;
 							String btnPlacement = reader.getAttributeValue(null, "placement");
-							if (btnPlacement.equals("top")) {
+							if (btnPlacement != null && btnPlacement.equals("top")) {
 								placement = GlobalButton.Placement.TOP;
 							}
 
 							GlobalButton.Action action = GlobalButton.Action.NONE;
 							String btnAction = reader.getAttributeValue(null, "action");
-							if (btnAction.equals("add")) {
-								action = GlobalButton.Action.ADD;
-							} else if (btnAction.equals("remove")) {
-								action = GlobalButton.Action.REMOVE;
+							if (btnAction != null) {
+								if (btnAction.equals("add")) {
+									action = GlobalButton.Action.ADD;
+								} else if (btnAction.equals("remove")) {
+									action = GlobalButton.Action.REMOVE;
+								}
+							}
+
+							String BtnText = "";
+							if (action == GlobalButton.Action.ADD) {
+								// Remove action may use the XML shorthand <GlobalButton ... />
+								// and will not contain text
+								if (reader.getName().getLocalPart().equals("GlobalButton")) {
+									try {
+										BtnText = processText(reader, "GlobalButton");
+									} catch (Exception ex) {
+										logger.error("loadXML " + PresName + " Global Button Exception Text " + ex.getLocalizedMessage(), ex);
+									}
+								}
 							}
 
 							GlobalButton button = new GlobalButton(btnId, strTarget, BtnText, ifSet, ifNotSet, Set, UnSet, javascript, image, hotKey, fontName, fontHeight, fontColor, bgColor1, bgColor2, sortOrder, ifAfter, ifBefore, disabled, scriptVar, defaultBtn, placement, action);
