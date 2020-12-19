@@ -43,6 +43,16 @@ public class OverRide {
 	private String rightCss = "";
 	/** @exclude */
 	private String leftCss = "";
+
+	/**
+	 * Adds a button to the page
+	 *
+	 * @param target the page to go to
+	 * @param text the text to be displayed on the button
+	 */
+	public void addButton(String target, String text) {
+		addButton(target, text, "", "", "", "", "");
+	}
 	
 	/**
 	 * Adds a button to the page
@@ -209,6 +219,16 @@ public class OverRide {
 		return button.size();
 	}
 
+	/**
+	 * Adds a global button to the page
+	 *
+	 * @param id the id of the button
+	 * @param target the page to go to
+	 * @param text the text to be displayed on the button
+	 */
+	public void addGlobalButton(String id, String target, String text) {
+		addGlobalButton(id, target, text, "", "", "", "", "", "bottom", "1");
+	}
 
 	/**
 	 * Adds a global button to the page
