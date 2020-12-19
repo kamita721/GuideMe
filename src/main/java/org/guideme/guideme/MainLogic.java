@@ -27,18 +27,7 @@ import java.util.Iterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.guideme.guideme.model.Audio;
-import org.guideme.guideme.model.Button;
-import org.guideme.guideme.model.Delay;
-import org.guideme.guideme.model.Text;
-import org.guideme.guideme.model.Timer;
-import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.model.Image;
-import org.guideme.guideme.model.LoadGuide;
-import org.guideme.guideme.model.Metronome;
-import org.guideme.guideme.model.Page;
-import org.guideme.guideme.model.Video;
-import org.guideme.guideme.model.Webcam;
+import org.guideme.guideme.model.*;
 import org.guideme.guideme.readers.XmlGuideReader;
 import org.guideme.guideme.scripting.OverRide;
 import org.guideme.guideme.settings.AppSettings;
@@ -248,6 +237,9 @@ public class MainLogic {
 			} catch (Exception e1) {
 				logger.error("displayPage PageFlags Exception " + e1.getLocalizedMessage(), e1);
 			}
+
+			// Start all media at the same time
+			mainShell.startDeferredMedia();
 
 			guide.getSettings().setPage(strPageId);
 			strFlags = comonFunctions.GetFlags(guide.getFlags());
@@ -492,7 +484,7 @@ public class MainLogic {
 				catch (NumberFormatException nfe) {
 				}
 				// Play video
-				mainShell.playVideo(imgPath, intStartAt, intStopAt, repeat, objVideo.getTarget(), objVideo.getJscript(), objVideo.getScriptVar(), objVideo.getVolume());
+				mainShell.playVideo(imgPath, intStartAt, intStopAt, repeat, objVideo.getTarget(), objVideo.getJscript(), objVideo.getScriptVar(), objVideo.getVolume(), true);
 			}
 		} catch (Exception e1) {
 			logger.trace("displayPage Video Exception " + e1.getLocalizedMessage());
@@ -740,39 +732,92 @@ public class MainLogic {
 	{
 		Button objButton;
 		GuideSettings guideSettings = guide.getSettings();
+		ArrayList<Button> button = new ArrayList<>();
+
+		// process global buttons on page
+		for (int i1 = 0; i1 < objCurrPage.getGlobalButtonCount(); i1++) {
+			GlobalButton objGlobalButton = objCurrPage.getGlobalButton(i1);
+			switch (objGlobalButton.getAction()) {
+				case ADD:
+					guide.addGlobalButton(objGlobalButton.getId(), objGlobalButton);
+					break;
+				case REMOVE:
+					guide.removeGlobalButton(objGlobalButton.getId());
+					break;
+				default:
+					logger.error("displayPage Global Button invalid action " + objGlobalButton.getAction());
+			}
+		}
+		for (int i1 = 0; i1 < overRide.globalButtonCount(); i1++) {
+			GlobalButton objGlobalButton = overRide.getGlobalButton(i1);
+			switch (objGlobalButton.getAction()) {
+				case ADD:
+					guide.addGlobalButton(objGlobalButton.getId(), objGlobalButton);
+					debugShell.addOverrideButton(objGlobalButton);
+					break;
+				case REMOVE:
+					guide.removeGlobalButton(objGlobalButton.getId());
+					break;
+				default:
+					logger.error("displayPage Global Button overRide invalid action " + objGlobalButton.getAction());
+			}
+		}
 		
 		// remove old buttons
 		mainShell.removeButtons();
 
+		// add top placement global buttons
+		ArrayList<Button> globalTopButtons = new ArrayList<>();
+		for (GlobalButton globalButton : guide.getGlobalButtons()) {
+			if (globalButton.canShow(guide.getFlags()) && globalButton.getPlacement() == GlobalButton.Placement.TOP) {
+				globalTopButtons.add(globalButton);
+			}
+		}
+		Collections.sort(globalTopButtons);
+
 		// add new buttons
-		ArrayList<Button> button = new ArrayList<Button>();
+		ArrayList<Button> pageButtons = new ArrayList<>();
 		for (int i1 = 0; i1 < objCurrPage.getButtonCount(); i1++) {
 			objButton = objCurrPage.getButton(i1);
 			if (objButton.canShow(guide.getFlags())) {
-				button.add(objButton);
+				pageButtons.add(objButton);
 			}
 		}
 		for (int i1 = 0; i1 < overRide.buttonCount(); i1++) {
 			objButton = overRide.getButton(i1);
 			if (objButton.canShow(guide.getFlags())) {
-				button.add(objButton);
+				pageButtons.add(objButton);
 				debugShell.addOverrideButton(objButton);
 			}
 		}
 		for (int i1 = 0; i1 < objCurrPage.getWebcamButtonCount(); i1++) {
 			objButton = objCurrPage.getWebcamButton(i1);
 			if (objButton.canShow(guide.getFlags())) {
-				button.add(objButton);
+				pageButtons.add(objButton);
 			}
 		}
 		for (int i1 = 0; i1 < overRide.webcamButtonCount(); i1++) {
 			objButton = overRide.getWebcamButton(i1);
 			if (objButton.canShow(guide.getFlags())) {
-				button.add(objButton);
+				pageButtons.add(objButton);
 				debugShell.addOverrideButton(objButton);
 			}
 		}
-		Collections.sort(button);
+		Collections.sort(pageButtons);
+
+		// add bottom placement global buttons
+		ArrayList<Button> globalBottomButtons = new ArrayList<>();
+		for (GlobalButton globalButton : guide.getGlobalButtons()) {
+			if (globalButton.canShow(guide.getFlags()) && globalButton.getPlacement() == GlobalButton.Placement.BOTTOM) {
+				globalBottomButtons.add(globalButton);
+			}
+		}
+		Collections.sort(globalBottomButtons);
+
+		// Add all buttons in reverse order
+		button.addAll(globalBottomButtons);
+		button.addAll(pageButtons);
+		button.addAll(globalTopButtons);
 
 		for (int i1 = button.size() - 1; i1 >= 0; i1--) {
 			try {
@@ -888,7 +933,7 @@ public class MainLogic {
 
 				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator, appSettings, guide);
 				strAudioTarget = objAudio.getTarget();
-				mainShell.playAudio(imgPath,startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume());
+				mainShell.playAudio(imgPath,startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume(), true);
 				logger.debug("displayPage Audio target " + strAudioTarget);
 			}
 		} catch (Exception e) {
@@ -900,14 +945,18 @@ public class MainLogic {
 	private void ProcessAudio2(Page objCurrPage, Guide guide, MainShell mainShell, String fileSeparator, AppSettings appSettings)
 	{
 		boolean blnAudio = false;
-		Audio objAudio = null;
+		Audio objAudio = overRide.getAudio2();
 		try {
-			if (objCurrPage.getAudio2Count() > 0) {
-				for (int i2 = 0; i2 < objCurrPage.getAudio2Count(); i2++) {
-					objAudio = objCurrPage.getAudio2(i2);
-					if (objAudio.canShow(guide.getFlags())) {
-						blnAudio = true;
-						break;
+			if (objAudio != null) {
+				blnAudio = true;
+			} else {
+				if (objCurrPage.getAudio2Count() > 0) {
+					for (int i2 = 0; i2 < objCurrPage.getAudio2Count(); i2++) {
+						objAudio = objCurrPage.getAudio2(i2);
+						if (objAudio.canShow(guide.getFlags())) {
+							blnAudio = true;
+							break;
+						}
 					}
 				}
 			}
@@ -940,7 +989,7 @@ public class MainLogic {
 
 				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator, appSettings, guide);
 				strAudioTarget = objAudio.getTarget();
-				mainShell.playAudio2(imgPath,startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume());
+				mainShell.playAudio2(imgPath,startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume(), true);
 				logger.debug("displayPage Audio target " + strAudioTarget);
 			}
 		} catch (Exception e) {

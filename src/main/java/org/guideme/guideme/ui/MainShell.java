@@ -89,6 +89,8 @@ import com.github.sarxos.webcam.WebcamPanel;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.binding.internal.libvlc_instance_t;
+import uk.co.caprica.vlcj.component.AudioMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.AudioDevice;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -164,6 +166,7 @@ public class MainShell {
 	private Thread threadAudioPlayer;
 	private AudioPlayer audioPlayer2;
 	private Thread threadAudioPlayer2;
+	private Thread threadVideoPlayer;
 	private Boolean videoOn = true;
 	private Boolean webcamOn = true;
 	private String style = "";
@@ -190,6 +193,9 @@ public class MainShell {
 	private boolean videoPlayed = false;
 	private ResourceBundle displayText;
 	private String ProcStatusText = "";
+	private boolean hasVideoDeferred = false;
+	private boolean hasAudioDeferred = false;
+	private boolean hasAudio2Deferred = false;
 	//private boolean exitTriggered = false;
 
 	public Shell createShell(final Display display) {
@@ -471,7 +477,11 @@ public class MainShell {
 					mediaPlayer = new SwtEmbeddedMediaPlayer(libvlc, instance);
 					mediaPlayer.setVideoSurface(new CompositeVideoSurface(mediaPanel, getVideoSurfaceAdapter()));
 					mediaPlayer.addMediaPlayerEventListener(new MediaListener());
-					
+
+					String videoOutputDevice = appSettings.getVideoDevice();
+					if (videoOutputDevice != null && !videoOutputDevice.equals("")) {
+						mediaPlayer.setAudioOutputDevice(null, appSettings.getVideoDevice());
+					}
 				}
 				catch (Exception vlcex) {
 					logger.error("VLC intialisation error " + vlcex.getLocalizedMessage(), vlcex);
@@ -651,6 +661,82 @@ public class MainShell {
 			MenuItem ResizeGuideItem = new MenuItem (toolsSubMenu, SWT.PUSH);
 			ResizeGuideItem.setText (displayText.getString("MainToolsResizeImage"));
 			ResizeGuideItem.addSelectionListener(new ResizeGuideListener());
+
+			// Audio Output Menus
+			MenuItem audioItem = new MenuItem(MenuBar, SWT.CASCADE);
+			audioItem.setText(displayText.getString("MainAudio"));
+
+			Menu audioSubMenu = new Menu(shell, SWT.DROP_DOWN);
+			audioItem.setMenu(audioSubMenu);
+
+			MenuItem videoOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
+			videoOutputItem.setText(displayText.getString("VideoDev"));
+
+			MenuItem audioOneOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
+			audioOneOutputItem.setText(displayText.getString("AudioDevOne"));
+
+			MenuItem audioTwoOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
+			audioTwoOutputItem.setText(displayText.getString("AudioDevTwo"));
+
+			Menu videoSubMenu = new Menu(shell, SWT.DROP_DOWN);
+			videoOutputItem.setMenu(videoSubMenu);
+
+			Menu audioOneSubMenu = new Menu(shell, SWT.DROP_DOWN);
+			audioOneOutputItem.setMenu(audioOneSubMenu);
+
+			Menu audioTwoSubMenu = new Menu(shell, SWT.DROP_DOWN);
+			audioTwoOutputItem.setMenu(audioTwoSubMenu);
+
+			boolean userDeviceVideoAvailable = false;
+			boolean userDeviceOneAvailable = false;
+			boolean userDeviceTwoAvailable = false;
+			AudioMediaPlayerComponent mediaPlayerComponent = new AudioMediaPlayerComponent();
+			List<AudioDevice> outputs = mediaPlayerComponent.getMediaPlayer().getAudioOutputDevices();
+			for (AudioDevice device : outputs) {
+				boolean userDeviceVideo = device.getDeviceId().equals(appSettings.getVideoDevice());
+				boolean userDeviceOne = device.getDeviceId().equals(appSettings.getAudioOneDevice());
+				boolean userDeviceTwo = device.getDeviceId().equals(appSettings.getAudioTwoDevice());
+
+				MenuItem videoDevice = new MenuItem (videoSubMenu, SWT.RADIO);
+				videoDevice.setText(device.getLongName());
+				videoDevice.setData("device-id", device.getDeviceId());
+				videoDevice.setSelection(userDeviceVideo);
+				videoDevice.addSelectionListener(new VideoDeviceChangedListener());
+
+				MenuItem audioOneDevice = new MenuItem (audioOneSubMenu, SWT.RADIO);
+				audioOneDevice.setText(device.getLongName());
+				audioOneDevice.setData("device-id", device.getDeviceId());
+				audioOneDevice.setSelection(userDeviceOne);
+				audioOneDevice.addSelectionListener(new AudioOneDeviceChangedListener());
+
+				MenuItem audioTwoDevice = new MenuItem (audioTwoSubMenu, SWT.RADIO);
+				audioTwoDevice.setText(device.getLongName());
+				audioTwoDevice.setData("device-id", device.getDeviceId());
+				audioTwoDevice.setSelection(userDeviceTwo);
+				audioTwoDevice.addSelectionListener(new AudioTwoDeviceChangedListener());
+
+				userDeviceVideoAvailable |= userDeviceVideo;
+				userDeviceOneAvailable |= userDeviceOne;
+				userDeviceTwoAvailable |= userDeviceTwo;
+			}
+			if (!userDeviceVideoAvailable) {
+				logger.info("User selected Video device not available. Resetting to default");
+				MenuItem videoDefault = videoSubMenu.getItem(0);
+				videoDefault.setSelection(true);
+				appSettings.setVideoDevice(videoDefault.getData("device-id").toString());
+			}
+			if (!userDeviceOneAvailable) {
+				logger.info("User selected Audio device not available. Resetting to default");
+				MenuItem oneDefault = audioOneSubMenu.getItem(0);
+				oneDefault.setSelection(true);
+				appSettings.setAudioOneDevice(oneDefault.getData("device-id").toString());
+			}
+			if (!userDeviceTwoAvailable) {
+				logger.info("User selected Audio2 device not available. Resetting to default");
+				MenuItem twoDefault = audioTwoSubMenu.getItem(0);
+				twoDefault.setSelection(true);
+				appSettings.setAudioTwoDevice(twoDefault.getData("device-id").toString());
+			}
 			
 			if (appSettings.getDebug())
 			{
@@ -958,8 +1044,10 @@ public class MainShell {
 							strTag = (String) hotKeyButton.getData("Target");
 							String javascript = (String) hotKeyButton.getData("javascript");
 							runJscript(javascript, false);
-							mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings,
-									guideSettings, debugShell);
+							if (!strTag.equals("")) {
+								mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings,
+										guideSettings, debugShell);
+							}
 						}
 					}
 				}
@@ -1270,6 +1358,45 @@ public class MainShell {
 			super.widgetSelected(e);
 		}
 
+	}
+
+	class VideoDeviceChangedListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			if (((MenuItem) e.widget).getSelection()) {
+				String newOutputDevice = e.widget.getData("device-id").toString();
+				appSettings.setVideoDevice(newOutputDevice);
+				if (newOutputDevice != null) {
+					mediaPlayer.setAudioOutputDevice(null, newOutputDevice);
+				}
+			}
+		}
+	}
+
+	class AudioOneDeviceChangedListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			if (((MenuItem) e.widget).getSelection()) {
+				String newOutputDevice = e.widget.getData("device-id").toString();
+				appSettings.setAudioOneDevice(newOutputDevice);
+				if (threadAudioPlayer != null && newOutputDevice != null) {
+					audioPlayer.setAudioDevice(newOutputDevice);
+				}
+			}
+		}
+	}
+
+	class AudioTwoDeviceChangedListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			if (((MenuItem) e.widget).getSelection()) {
+				String newOutputDevice = e.widget.getData("device-id").toString();
+				appSettings.setAudioTwoDevice(newOutputDevice);
+				if (threadAudioPlayer2 != null && newOutputDevice != null) {
+					audioPlayer2.setAudioDevice(newOutputDevice);
+				}
+			}
+		}
 	}
 	
 	
@@ -2029,7 +2156,7 @@ public class MainShell {
 		return webcam != null;
 	}
 
-	public void playVideo(String video, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume) {
+	public void playVideo(String video, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume, boolean deferStart) {
 		//plays a video in the area to the left of the screen
 		//sets the number of loops, start / stop time and any page to display if the video finishes
 		//starts the video using a non UI thread so VLC can't hang the application
@@ -2051,10 +2178,14 @@ public class MainShell {
 				logger.debug("MainShell playVideo: " + mrlVideo + " videoLoops: " + videoLoops + " videoTarget: " + videoTarget + " videoPlay: " + videoPlay);
 				VideoPlay videoPlay = new VideoPlay();
 				videoPlay.setVideoPlay(mediaPlayer, mrlVideo, volume);
-				Thread videoPlayThread = new Thread(videoPlay, "videoPlay");
-				videoPlayThread.setName("videoPlayThread");
-				videoPlayThread.start();
-				videoPlayed = true;
+				threadVideoPlayer = new Thread(videoPlay, "videoPlay");
+				threadVideoPlayer.setName("videoPlayThread");
+				if (deferStart) {
+					hasVideoDeferred = true;
+				} else {
+					threadVideoPlayer.start();
+					videoPlayed = true;
+				}
 			} catch (Exception e) {
 				logger.error("playVideo " + e.getLocalizedMessage(), e);		
 			}
@@ -2066,49 +2197,25 @@ public class MainShell {
 		private SwtEmbeddedMediaPlayer mediaPlayer;
 		private String video;
 		private int volume;
+		private ArrayList<String> vlcArgs;
 		
 		@Override
 		public void run() {
 			try {
 				logger.debug("MainShell VideoPlay new Thread " + video);
-				int mediaVolume = appSettings.getVideoVolume();
-				if (volume < 100)
-				{
-					if (volume == 0)
-					{
-						mediaVolume = 0;
-					}
-					else
-					{
-						mediaVolume = (int) ((double) mediaVolume * ((double) volume / (double) 100));
-					}
-				}
-				
-				mediaPlayer.setVolume(mediaVolume);
+
+				mediaPlayer.setVolume(volume);
 				mediaPlayer.setPlaySubItems(true);
-				if (videoStartAt == 0 && videoStopAt == 0 && videoLoops == 0) {
+				if (this.vlcArgs.isEmpty()) {
 					mediaPlayer.playMedia(video);
 				} else {
-					 List<String> vlcArgs = new ArrayList<String>();
-					 if (videoStartAt > 0) {
-						 vlcArgs.add("start-time=" + videoStartAt);
-					 }
-					 if (videoStopAt > 0) {
-						 vlcArgs.add("stop-time=" + videoStopAt);
-					 }
-					 if (videoLoops > 0) {
-						 vlcArgs.add("input-repeat=" + videoLoops);
-					 }
-					myDisplay.syncExec(
-							new Runnable() {
-								public void run(){
-									mediaPanel.setVisible(true);
-									webcamPanel.setVisible(false);
-									imageLabel.setVisible(false);
-									leftFrame.layout(true);
-								}
-							});											
-					 mediaPlayer.playMedia(video, vlcArgs.toArray(new String[vlcArgs.size()]));
+					myDisplay.syncExec(() -> {
+						mediaPanel.setVisible(true);
+						webcamPanel.setVisible(false);
+						imageLabel.setVisible(false);
+						leftFrame.layout(true);
+					});
+					mediaPlayer.playMedia(video, vlcArgs.toArray(new String[vlcArgs.size()]));
 						//run on the main UI thread
 				}
 			} catch (Exception e) {
@@ -2117,19 +2224,22 @@ public class MainShell {
 		}
 
 		public void setVideoPlay(SwtEmbeddedMediaPlayer mediaPlayer, String video, int volume) {
+			int mediaVolume = appSettings.getVideoVolume();
+			volume = Math.min(Math.max(volume, 0), 100); // Bound between 0 and 100
+
 			this.mediaPlayer = mediaPlayer;
 			this.video = video;
-			if (volume > 100)
-			{
-				this.volume = 100;
-			} 
-			else if (volume < 0)
-			{
-				volume = 0;
+			this.volume = (int) ((double) mediaVolume * ((double) volume / (double) 100));
+
+			this.vlcArgs = new ArrayList<>();
+			if (videoStartAt > 0) {
+				this.vlcArgs.add("start-time=" + videoStartAt);
 			}
-			else
-			{
-				this.volume = volume;
+			if (videoStopAt > 0) {
+				this.vlcArgs.add("stop-time=" + videoStopAt);
+			}
+			if (videoLoops > 0) {
+				this.vlcArgs.add("input-repeat=" + videoLoops);
 			}
 		}
 
@@ -2143,38 +2253,64 @@ public class MainShell {
 
 	
 	
-	public void playAudio(String audio, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume) {
+	public void playAudio(String audio, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume, boolean deferStart) {
 		// run audio on another thread
 		try {
 			if (audioPlayer != null) {
 				audioPlayer.audioStop();
 				logger.trace("playAudio audioStop");
 			}
-			audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, volume);
+			String outputDevice = appSettings.getAudioOneDevice();
+			audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, outputDevice, volume);
 			threadAudioPlayer = new Thread(audioPlayer, "audioPlayer");
 			threadAudioPlayer.setName("threadAudioPlayer");
-			threadAudioPlayer.start();
+			if (deferStart) {
+				hasAudioDeferred = true;
+			} else {
+				threadAudioPlayer.start();
+			}
 		} catch (Exception e) {
 			logger.error("playAudio " + e.getLocalizedMessage(), e);		
 		}
 	}
 	
-	public void playAudio2(String audio, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume) {
+	public void playAudio2(String audio, int startAt, int stopAt, int loops, String target, String jscript, String scriptVar, int volume, boolean deferStart) {
 		// run audio on another thread
 		try {
 			if (audioPlayer2 != null) {
 				audioPlayer2.audioStop();
 				logger.trace("playAudio2 audioStop");
 			}
-			audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, volume);
+			String outputDevice = appSettings.getAudioTwoDevice();
+			audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar, outputDevice, volume);
 			threadAudioPlayer2 = new Thread(audioPlayer2, "audioPlayer");
 			threadAudioPlayer2.setName("threadAudioPlayer2");
-			threadAudioPlayer2.start();
+			if (deferStart) {
+				hasAudio2Deferred = true;
+			} else {
+				threadAudioPlayer2.start();
+			}
 		} catch (Exception e) {
 			logger.error("playAudio2 " + e.getLocalizedMessage(), e);		
 		}
 	}
-	
+
+	public void startDeferredMedia()
+	{
+		if (hasVideoDeferred) {
+			threadVideoPlayer.start();
+			videoPlayed = true;
+			hasVideoDeferred = false;
+		}
+		if (hasAudioDeferred) {
+			threadAudioPlayer.start();
+			hasAudioDeferred = false;
+		}
+		if (hasAudio2Deferred) {
+			threadAudioPlayer2.start();
+			hasAudio2Deferred = false;
+		}
+	}
 
 	public void setBrwsText(String brwsText, String overRideStyle) {
 		//set HTML to be displayed in the browser control to the right of the screen
@@ -2442,8 +2578,7 @@ public class MainShell {
 				
 				logger.trace("Enter DynamicButtonListner");
 				String strTag;
-				com.snapps.swt.SquareButton btnClicked;
-				btnClicked = (com.snapps.swt.SquareButton) event.widget;
+				com.snapps.swt.SquareButton btnClicked = (com.snapps.swt.SquareButton) event.widget;
 				strTag = (String) btnClicked.getData("Set");
 				if (!strTag.equals("")) {
 					comonFunctions.SetFlags(strTag, guide.getFlags());
@@ -2457,7 +2592,9 @@ public class MainShell {
 				strTag = (String) btnClicked.getData("Target");
 				String javascript = (String) btnClicked.getData("javascript");
 				runJscript(javascript, false);
-				mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
+				if (!strTag.equals("")) {
+					mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
+				}
 			}
 			catch (Exception ex) {
 				logger.error(" DynamicButtonListner " + ex.getLocalizedMessage(), ex);
@@ -2794,6 +2931,7 @@ public class MainShell {
 						webcamPanel.setVisible(false);
 						imageLabel.setVisible(true);
 						leftFrame.layout(true);
+						threadVideoPlayer = null;
 						videoStopThread.start();
 					}
 				}
@@ -2817,7 +2955,7 @@ public class MainShell {
 			try {
 				if (mediaPlayer != null && mediaPlayer.isPlayable()) {
 					logger.debug("MainShell VideoStop run: Stopping media player " + mediaPlayer.mrl());
-					mediaPlayer.stop();
+					mediaPlayer.pause();
 					if (shellClosing)
 					{
 						mediaPlayer.release();

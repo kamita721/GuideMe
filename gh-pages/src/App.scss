@@ -1,0 +1,27 @@
+@import "~bootstrap/scss/bootstrap";
+
+@media screen {
+  html, body {
+    overflow: hidden;
+    height: 100%;
+  }
+
+  body {
+    padding-top: 5rem;
+  }
+
+  #root {
+     height: 100%;
+     overflow: auto;
+  }
+}
+
+@media print {
+  body {
+    overflow: auto;
+  }
+
+  pre code {
+    white-space: pre-wrap !important;
+  }
+}

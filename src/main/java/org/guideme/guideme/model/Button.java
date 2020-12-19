@@ -30,6 +30,11 @@ public class Button  implements Comparable<Button>
 	private String scriptVar;
 	private boolean defaultBtn; //button activated by enter
 
+	public Button (String target, String text)
+	{
+		this(target, text, "", "", "", "", "", "", "");
+	}
+
 	public Button(String target, String text, String ifSet, String ifNotSet, String set, String unSet, String jScript, String image, String hotKey)
 	{
 		this(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, "", "", "", "", "", 1, "", "", false, "", "", false);

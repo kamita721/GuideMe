@@ -14,22 +14,10 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import com.fasterxml.jackson.core.Version;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.guideme.guideme.model.Audio;
-import org.guideme.guideme.model.Button;
-import org.guideme.guideme.model.Chapter;
-import org.guideme.guideme.model.Delay;
-import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.model.Image;
-import org.guideme.guideme.model.LoadGuide;
-import org.guideme.guideme.model.Metronome;
-import org.guideme.guideme.model.Page;
-import org.guideme.guideme.model.Text;
-import org.guideme.guideme.model.Timer;
-import org.guideme.guideme.model.Video;
-import org.guideme.guideme.model.Webcam;
-import org.guideme.guideme.model.WebcamButton;
+import org.guideme.guideme.model.*;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
@@ -59,6 +47,7 @@ public class XmlGuideReader {
 
 	private enum TagName
 	{
+		Tease,
 		pref, 
 		Title, 
 		Author, 
@@ -73,7 +62,8 @@ public class XmlGuideReader {
 		Webcam, 
 		Delay, 
 		Timer, 
-		Button, 
+		Button,
+		GlobalButton,
 		WebcamButton, 
 		LeftText, 
 		Text, 
@@ -116,7 +106,7 @@ public class XmlGuideReader {
 
 			// Return to where we left off
 			try {
-				if (guideSettings.isForceStartPage()) {
+				if (guideSettings.isForceStartPage() && !guideSettings.getPage().equals("GuideMeVersionNotMet")) {
 					guideSettings.setPage("start");
 				}
 				strPage = guideSettings.getPage();
@@ -153,9 +143,15 @@ public class XmlGuideReader {
 		String btnDefault;
 		boolean defaultBtn;
 
+		guideSettings = guide.getSettings();
+
 		Page page404 = new Page("GuideMe404Error","", "", "", "", false, "", "");
 		chapter.getPages().put(page404.getId(), page404);
-		guideSettings = guide.getSettings();
+
+		Page pageVersionNotMet = new Page("GuideMeVersionNotMet");
+		String nextPage = guideSettings.getPage().equals(pageVersionNotMet.getId()) ? "start" : guideSettings.getPage();
+		pageVersionNotMet.addButton(new Button(nextPage, "Continue"));
+		chapter.getPages().put(pageVersionNotMet.getId(), pageVersionNotMet);
 
 		try {
 			FileInputStream fis = new FileInputStream(xmlFileName);
@@ -178,6 +174,40 @@ public class XmlGuideReader {
 					strTag = reader.getName().getLocalPart();
 
 					switch (TagName.toTag(strTag)) {
+					case Tease:
+						String minVersionString = reader.getAttributeValue(null, "minimumVersion");
+						String currentVersionString = ComonFunctions.getVersion();
+						if (minVersionString == null || minVersionString.equals("")) {
+							break;
+						}
+
+						String[] minVersionParts = minVersionString.split("\\.");
+						String[] currentVersionParts = currentVersionString.split("\\.");
+						if (minVersionParts.length != 3 || currentVersionParts.length != 3) {
+							break;
+						}
+
+						Version minVersion = new Version(
+								Integer.parseUnsignedInt(minVersionParts[0]),
+								Integer.parseUnsignedInt(minVersionParts[1]),
+								Integer.parseUnsignedInt(minVersionParts[2]),
+								"", null, null);
+						Version currentVersion = new Version(
+								Integer.parseUnsignedInt(currentVersionParts[0]),
+								Integer.parseUnsignedInt(currentVersionParts[1]),
+								Integer.parseUnsignedInt(currentVersionParts[2]),
+								"", null, null);
+
+						if (currentVersion.compareTo(minVersion) < 0) {
+							chapter.getPages().get(pageVersionNotMet.getId()).addLeftText(new Text(
+									"<p><h1>App Version Not Supported</h1>" +
+									"<p>This tease specifies a minimum GuideMe version of " + minVersionString +
+									" but you're running " + currentVersionString + "." +
+									"<br/>Please consider updating or this tease may not function as designed.</p>"
+							));
+							guideSettings.setPage(pageVersionNotMet.getId());
+						}
+						break;
 					case pref:
 						String key;
 						String screen = "";
@@ -439,6 +469,118 @@ public class XmlGuideReader {
 							logger.trace("loadXML " + PresName + " Button " + strTarget+ "|" + BtnText + "|" + ifSet+ "|" + ifNotSet+ "|" + Set+ "|" + UnSet + "|" + javascript);
 						} catch (Exception e1) {
 							logger.error("loadXML " + PresName + " Button Exception " + e1.getLocalizedMessage(), e1);
+						}
+						break;
+					case GlobalButton:
+						try {
+							String strTarget;
+							String scriptVar;
+							strTarget = reader.getAttributeValue(null, "target");
+							if (strTarget == null) strTarget = "";
+							Set = reader.getAttributeValue(null, "set");
+							if (Set == null) Set = "";
+							UnSet = reader.getAttributeValue(null, "unset");
+							if (UnSet == null) UnSet = "";
+							ifSet = reader.getAttributeValue(null, "if-set");
+							if (ifSet == null) ifSet = "";
+							ifNotSet = reader.getAttributeValue(null, "if-not-set");
+							if (ifNotSet == null) ifNotSet = "";
+							ifBefore = reader.getAttributeValue(null, "if-before");
+							if (ifBefore == null) ifBefore = "";
+							ifAfter = reader.getAttributeValue(null, "if-after");
+							if (ifAfter == null) ifAfter = "";
+							String javascript = reader.getAttributeValue(null, "onclick");
+							if (javascript == null) javascript = "";
+							String image = reader.getAttributeValue(null, "image");
+							if (image == null) image = "";
+							String hotKey;
+							hotKey = reader.getAttributeValue(null, "hotkey");
+							if (hotKey == null) hotKey = "";
+
+							scriptVar = reader.getAttributeValue(null, "scriptvar");
+							if (scriptVar == null) scriptVar = "";
+
+							String fontName;
+							fontName = reader.getAttributeValue(null, "fontName");
+							if (fontName == null) fontName = "";
+							String fontHeight;
+							fontHeight = reader.getAttributeValue(null, "fontHeight");
+							if (fontHeight == null) fontHeight = "";
+							String bgColor1;
+							bgColor1 = reader.getAttributeValue(null, "bgColor1");
+							if (bgColor1 == null) bgColor1 = "";
+							String bgColor2;
+							bgColor2 = reader.getAttributeValue(null, "bgColor2");
+							if (bgColor2 == null) bgColor2 = "";
+							String fontColor;
+							fontColor = reader.getAttributeValue(null, "fontColor");
+							if (fontColor == null) fontColor = "";
+							String sort;
+							sort = reader.getAttributeValue(null, "sortOrder");
+							if (sort == null) sort = "1";
+							try {
+								sortOrder = Integer.parseInt(sort);
+							} catch (Exception ex) {
+								sortOrder = 1;
+							}
+							btnDis = reader.getAttributeValue(null, "disabled");
+							if (btnDis == null) btnDis = "false";
+							try {
+								disabled = Boolean.valueOf(btnDis);
+							} catch (Exception ex) {
+								disabled = false;
+							}
+							btnDefault = reader.getAttributeValue(null, "default");
+							if (btnDefault == null) btnDefault = "false";
+							try {
+								defaultBtn = Boolean.valueOf(btnDefault);
+							} catch (Exception ex) {
+								defaultBtn = false;
+							}
+							String btnId;
+							btnId = reader.getAttributeValue(null, "id");
+							if (btnId == null) {
+								logger.error("loadXML " + PresName + " Global Button No ID provided");
+								break;
+							}
+
+							//reader.next();
+
+
+							GlobalButton.Placement placement = GlobalButton.Placement.BOTTOM;
+							String btnPlacement = reader.getAttributeValue(null, "placement");
+							if (btnPlacement != null && btnPlacement.equals("top")) {
+								placement = GlobalButton.Placement.TOP;
+							}
+
+							GlobalButton.Action action = GlobalButton.Action.NONE;
+							String btnAction = reader.getAttributeValue(null, "action");
+							if (btnAction != null) {
+								if (btnAction.equals("add")) {
+									action = GlobalButton.Action.ADD;
+								} else if (btnAction.equals("remove")) {
+									action = GlobalButton.Action.REMOVE;
+								}
+							}
+
+							String BtnText = "";
+							if (action == GlobalButton.Action.ADD) {
+								// Remove action may use the XML shorthand <GlobalButton ... />
+								// and will not contain text
+								if (reader.getName().getLocalPart().equals("GlobalButton")) {
+									try {
+										BtnText = processText(reader, "GlobalButton");
+									} catch (Exception ex) {
+										logger.error("loadXML " + PresName + " Global Button Exception Text " + ex.getLocalizedMessage(), ex);
+									}
+								}
+							}
+
+							GlobalButton button = new GlobalButton(btnId, strTarget, BtnText, ifSet, ifNotSet, Set, UnSet, javascript, image, hotKey, fontName, fontHeight, fontColor, bgColor1, bgColor2, sortOrder, ifAfter, ifBefore, disabled, scriptVar, defaultBtn, placement, action);
+							page.addGlobalButton(button);
+							logger.trace("loadXML " + PresName + " Global Button " + btnId+ "|" + strTarget+ "|" + BtnText + "|" + ifSet+ "|" + ifNotSet+ "|" + Set+ "|" + UnSet + "|" + javascript + "|" + placement + "|" + action);
+						} catch (Exception e1) {
+							logger.error("loadXML " + PresName + " Global Button Exception " + e1.getLocalizedMessage(), e1);
 						}
 						break;
 					case WebcamButton:

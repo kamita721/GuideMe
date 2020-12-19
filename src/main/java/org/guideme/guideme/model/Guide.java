@@ -2,12 +2,7 @@ package org.guideme.guideme.model;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,6 +64,8 @@ public class Guide {
 	private String css; // css style sheet
 	/** @exclude */
 	private Boolean inPrefGuide;
+	/** @exclude */
+	private HashMap<String, GlobalButton> globalButtons = new HashMap<>();
 	/** @exclude */
 	private static Logger logger = LogManager.getLogger();
 	/** @exclude */
@@ -356,6 +353,7 @@ public class Guide {
 			css = "";
 			inPrefGuide = false;
 			globaljScript = "";
+			globalButtons = new HashMap<>();
 		} catch (Exception e) {
 			logger.error("Guide reset " + e.getLocalizedMessage(), e);
 		}
@@ -1108,7 +1106,7 @@ public class Guide {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		
 		String imgPath = comonFunctions.getMediaFullPath(audio, appSettings.getFileSeparator(), appSettings, guide);
-		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, 100);
+		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, 100, false);
 	}
 
 	/**
@@ -1150,7 +1148,7 @@ public class Guide {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		
 		String imgPath = comonFunctions.getMediaFullPath(audio, appSettings.getFileSeparator(), appSettings, guide);
-		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, volume);
+		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, volume, false);
 	}
 
 	 /**
@@ -1161,4 +1159,41 @@ public class Guide {
 		return AppSettings.getAppSettings().getDataDirectory();
 	}
 
+	/**
+	 * Get all global buttons
+	 * @return Global buttons
+	 */
+	public List<GlobalButton> getGlobalButtons()
+	{
+		return new ArrayList<>(globalButtons.values());
+	}
+
+	/**
+	 * Get a specific global button
+	 * @param id ID of button
+	 * @return Global button object
+	 */
+	public GlobalButton getGlobalButton(String id)
+	{
+	return globalButtons.get(id);
+	}
+
+	/**
+	 * Adds a new global button
+	 * @param id ID of button
+	 * @param button Button object
+	 */
+	public void addGlobalButton(String id, GlobalButton button)
+	{
+		globalButtons.put(id, button);
+	}
+
+	/**
+	 * Removes a global button by ID
+	 * @param id ID to remove
+	 */
+	public void removeGlobalButton(String id)
+	{
+		globalButtons.remove(id);
+	}
 }

@@ -21,35 +21,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          draft: true
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-      - name: Upload Slim Release
-        id: upload-slim
+  publish:
+    name: Publish Artifacts
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        os: [Linux, Windows]
+        arch: [32-bit, 64-bit]
+        exclude:
+          os: Linux
+          arch: 32-bit
+        include:
+          os: Windows
+          arch: Slim
+    steps:
+      - name: Upload ${{ os }} ${{ arch }} Artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/artifacts/GuideMe.Slim.zip
-          asset_name: GuideMe.Slim.zip
-          asset_content_type: application/zip
-      - name: Upload 32-bit Release
-        id: upload-32-bit
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/artifacts/GuideMe.32-bit.zip
-          asset_name: GuideMe.32-bit.zip
-          asset_content_type: application/zip
-      - name: Upload 64-bit Release
-        id: upload-64-bit
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/artifacts/GuideMe.64-bit.zip
-          asset_name: GuideMe.64-bit.zip
+          asset_path: target/artifacts/GuideMe.${{ os }}.${{ arch }}.zip
+          asset_name: GuideMe-${GITHUB_REF#refs/tags/}-${{ os }}.${{ arch }}.zip
           asset_content_type: application/zip
