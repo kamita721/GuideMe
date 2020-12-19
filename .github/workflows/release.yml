@@ -40,12 +40,12 @@ jobs:
           - os: Windows
             arch: Slim
     steps:
-      - name: Upload ${{ os }} ${{ arch }} Artifact
+      - name: Upload ${{ matrix.os }} ${{ matrix.arch }} Artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/artifacts/GuideMe.${{ os }}.${{ arch }}.zip
-          asset_name: GuideMe-${GITHUB_REF#refs/tags/}-${{ os }}.${{ arch }}.zip
+          asset_path: target/artifacts/GuideMe.${{ matrix.os }}.${{ matrix.arch }}.zip
+          asset_name: GuideMe-${github.ref#refs/tags/}-${{ matrix.os }}.${{ matrix.arch }}.zip
           asset_content_type: application/zip
