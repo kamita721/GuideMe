@@ -1,7 +1,8 @@
 name: Build Release Packages
 on:
   push:
-    tags: 'v*'
+    tags:
+      - 'v*'
 jobs:
   build:
     name: Create Release
@@ -33,11 +34,11 @@ jobs:
         os: [Linux, Windows]
         arch: [32-bit, 64-bit]
         exclude:
-          os: Linux
-          arch: 32-bit
+          - os: Linux
+            arch: 32-bit
         include:
-          os: Windows
-          arch: Slim
+          - os: Windows
+            arch: Slim
     steps:
       - name: Upload ${{ os }} ${{ arch }} Artifact
         uses: actions/upload-release-asset@v1
