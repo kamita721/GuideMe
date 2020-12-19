@@ -193,7 +193,7 @@ public class DebugShell {
 			TabItem tabVariables = new TabItem(tabFolder, SWT.NONE);
 			tabVariables.setText(displayText.getString("DebugShellTabVariables"));
 			
-			varScrlComp = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
+			varScrlComp = new ScrolledComposite(tabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
 		    
 			varComp = new Composite(varScrlComp, SWT.NONE);
 			FormLayout varlayout = new FormLayout();
