@@ -96,6 +96,7 @@ public class DebugShell {
 			guide = Guide.getGuide();
 			mainShell = mainshell;
 			shell = new Shell(myDisplay);
+			shell.setText("GuideMe Debug Shell");
 			shell.setSize(appSettings.getJsDebugWidth(), appSettings.getJsDebugHeight());
 		    shell.addListener(SWT.Close, new Listener() {
 		        public void handleEvent(Event event) {
