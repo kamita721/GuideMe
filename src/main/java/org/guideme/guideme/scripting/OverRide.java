@@ -627,6 +627,20 @@ public class OverRide {
 
 	/**
 	 * Play a video
+	 *
+	 * id :
+	 *	File must be in the media directory (or subdirectory)
+	 * 	Wild cards can be used
+	 * 	e.g. kate/home*.*  would select a video in the sub directory kate with a file name starting with home
+	 *
+	 * @param id the file name for the video
+	 */
+	public void setVideo(String id) {
+		this.video = new Video(id, "", "", "", "", "", "", "", "", "", "", "", "", 100);
+	}
+
+	/**
+	 * Play a video
 	 * 
 	 * id : 
 	 *	File must be in the media directory (or subdirectory)
