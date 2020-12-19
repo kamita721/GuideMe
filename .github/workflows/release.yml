@@ -7,16 +7,6 @@ jobs:
   publish:
     name: Create and Publish Artifacts
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [Linux, Windows]
-        arch: [32-bit, 64-bit]
-        exclude:
-          - os: Linux
-            arch: 32-bit
-        include:
-          - os: Windows
-            arch: Slim
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -35,12 +25,39 @@ jobs:
           draft: true
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-      - name: Upload ${{ matrix.os }} ${{ matrix.arch }} Artifact
+      - name: Upload Linux 64-bit Artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/artifacts/GuideMe.${{ matrix.os }}.${{ matrix.arch }}.zip
-          asset_name: GuideMe-${github.ref#refs/tags/}-${{ matrix.os }}.${{ matrix.arch }}.zip
+          asset_path: target/artifacts/GuideMe.Linux.64-bit.zip
+          asset_name: GuideMe-${github.ref#refs/tags/}-Linux.64-bit.zip
+          asset_content_type: application/zip
+      - name: Upload Windows Slim Artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/artifacts/GuideMe.Windows.Slim.zip
+          asset_name: GuideMe-${github.ref#refs/tags/}-Windows.Slim.zip
+          asset_content_type: application/zip
+      - name: Upload Windows 32-bit Artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/artifacts/GuideMe.Windows.32-bit.zip
+          asset_name: GuideMe-${github.ref#refs/tags/}-Windows.32-bit.zip
+          asset_content_type: application/zip
+      - name: Upload Windows 64-bit Artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/artifacts/GuideMe.Windows.64-bit.zip
+          asset_name: GuideMe-${github.ref#refs/tags/}-Windows.64-bit.zip
           asset_content_type: application/zip
