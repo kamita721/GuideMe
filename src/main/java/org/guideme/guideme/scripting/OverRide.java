@@ -664,6 +664,20 @@ public class OverRide {
 
 	/**
 	 * Play an audio file
+	 *
+	 * id :
+	 *   File must be in the media directory (or subdirectory)
+	 * 	 Wild cards can be used
+	 * 	 e.g. kate/home*.*  would select an audio file in the sub directory kate with a file name starting with home
+	 *
+	 * @param id the file name for the audio
+	 */
+	public void setAudio(String id) {
+		this.audio = new Audio(id, "", "", "", "", "", "", "", "", "", "", "", "", 100);
+	}
+
+	/**
+	 * Play an audio file
 	 * 
 	 * id :
 	 *   File must be in the media directory (or subdirectory)
@@ -716,6 +730,20 @@ public class OverRide {
 	/** @exclude */
 	public Audio getAudio2() {
 		return audio2;
+	}
+
+	/**
+	 * Play an audio file on Audio2
+	 *
+	 * id :
+	 *   File must be in the media directory (or subdirectory)
+	 * 	 Wild cards can be used
+	 * 	 e.g. kate/home*.*  would select an audio file in the sub directory kate with a file name starting with home
+	 *
+	 * @param id the file name for the audio
+	 */
+	public void setAudio2(String id) {
+		this.audio2 = new Audio(id, "", "", "", "", "", "", "", "", "", "", "", "", 100);
 	}
 
 	/**
