@@ -318,6 +318,15 @@ public class OverRide {
 		GlobalButtonThread buttonThread = new GlobalButtonThread();
 		buttonThread.overRide = this;
 		buttonThread.id = id;
+		buttonThread.target = "";
+		buttonThread.text = "";
+		buttonThread.set = "";
+		buttonThread.unSet = "";
+		buttonThread.jScript = "";
+		buttonThread.image = "";
+		buttonThread.hotKey = "";
+		buttonThread.sortOrder = "";
+		buttonThread.placement = "";
 		buttonThread.action = GlobalButton.Action.REMOVE;
 		Display.getDefault().syncExec(buttonThread);
 	}
@@ -344,6 +353,7 @@ public class OverRide {
 					: GlobalButton.Placement.BOTTOM;
 
 			GlobalButton button = new GlobalButton(id, target, text, "", "", set, unSet, jScript, image, hotKey, placement, action);
+			overRide.globalButton.removeIf(btn -> btn.getId().equals(id));
 			overRide.globalButton.add(button);
 		}
 	}
