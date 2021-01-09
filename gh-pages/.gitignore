@@ -1,3 +1,6 @@
 .idea
 build
 node_modules
+
+# Include Files Ignored by Parent .gitignore #
+!src/documentation/data/
