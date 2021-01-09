@@ -7,6 +7,13 @@ const audioUsage = [
   `<Audio id="music.mp3" start-at="00:01:11" stop-at="00:02:11" onTriggered="audioP2()" target="Page3" loops="1" if-set="flag1+flag2" if-not-set="flag3" />`
 ];
 
+
+//language=XML
+const audio2Usage = [
+  `<Audio2 id="music.mp3" />`,
+  `<Audio2 id="music.mp3" start-at="00:01:11" stop-at="00:02:11" onTriggered="audioP2()" target="Page3" loops="1" if-set="flag1+flag2" if-not-set="flag3" />`
+];
+
 //language=XML
 const authorUsage =
 [`<Author id="12345">
@@ -631,7 +638,7 @@ export const XmlData = [
           to <code>Audio</code> but allows for a
           second concurrent audio file to be played, potentially with a different output device.</p>
       </>,
-      usage: audioUsage,
+      usage: audio2Usage,
       attributes: audioAttributes
     },
   {
