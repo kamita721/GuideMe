@@ -2953,7 +2953,7 @@ public class MainShell {
 		@Override
 		public void run() {
 			try {
-				if (mediaPlayer != null && mediaPlayer.isPlayable()) {
+				if (mediaPlayer != null && mediaPlayer.isPlaying()) {
 					logger.debug("MainShell VideoStop run: Stopping media player " + mediaPlayer.mrl());
 					mediaPlayer.pause();
 					if (shellClosing)
