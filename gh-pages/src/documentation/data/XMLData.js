@@ -150,6 +150,12 @@ const textUsage = [`<Text>${sharedTextUsage}</Text>`];
 const leftTextUsage = [`<LeftText>${sharedTextUsage}</LeftText>`];
 
 //language=XML
+const timerUsage = [
+  `<Timer seconds="10" imageId="image1.jpg" />`,
+  `<Timer seconds="10" imageId="image1.jpg">This text will appear on the right side</Timer>`
+];
+
+//language=XML
 const titleUsage = [`<Title>My Tease Title</Title>`];
 
 //language=XML
@@ -1106,6 +1112,86 @@ export const XmlData = [
     </>,
     usage: leftTextUsage,
     attributes: []
+  },
+  {
+    name: "Timer",
+    required: false,
+    minVersion: null,
+    deprecated: false,
+    removed: null,
+    parents: "Page",
+    min: 0,
+    max: <span>&infin;</span>,
+    description: <>
+      <p>
+        Creates a timer which results in an action after a number of seconds.
+        Similar to a delay but designed to update the current page not go to a new one.
+      </p>
+      <p>Text within the node will display in the right text pane.</p>
+    </>,
+    usage: timerUsage,
+    attributes: [
+      {
+        name: "seconds",
+        required: true,
+        format: <span>10</span>,
+        description: <span>Number of seconds for the timer.</span>
+      },
+      {
+        name: "if-set",
+        required: false,
+        format: <span>1<br/>1+2+3<br/>1|2|3</span>,
+        description: "Only run this timer if the given flags are set. \"+\" indicates AND, \"|\" indicates OR."
+      },
+      {
+        name: "if-not-set",
+        required: false,
+        format: <span>1<br/>1+2+3<br/>1|2|3</span>,
+        description: "Only run this timer if the given flags are NOT set. \"+\" indicates AND, \"|\" indicates OR."
+      },
+      {
+        name: "if-before",
+        required: false,
+        format: "13:30",
+        description: "Time of day (hh:mm) the timer will only be run before."
+      },
+      {
+        name: "if-after",
+        required: false,
+        format: "13:30",
+        description: "Time of day (hh:mm) the timer will only be run after."
+      },
+      {
+        name: "set",
+        required: false,
+        format: <span>1<br/>1,2,3<br/></span>,
+        description: "Flags to set when timer reaches zero."
+      },
+      {
+        name: "unset",
+        required: false,
+        format: <span>1<br/>1,2,3<br/></span>,
+        description: "Flags to unset when timer reaches zero."
+      },
+      {
+        name: "imageId",
+        required: false,
+        format: "image1.jpg",
+        description: "Image to change to when the timer reaches zero."
+      },
+      {
+        name: "id",
+        required: false,
+        format: "1",
+        description: "ID of the timer. Used to re-run this timer."
+      },
+      {
+        name: "onTriggered",
+        required: false,
+        format: "myFunction()",
+        description: "JavaScript action to execute when the timer reaches zero."
+      },
+    ]
   },
   {
     name: "Video",
