@@ -57,6 +57,7 @@ public class MainLogicTest {
 	public void testDisplayPageOneGuide() {
 		if (oneGuide) {
 			appSettings.setDataDirectory(dataDirectory);
+			appSettings.setPageSound(false); // Don't try to play sound, this can break testing on headless machines
 			String guideId = "SWTPortTest";
 			String guideFileName = "\\" + guideId + ".xml";
 			guide.reset(guideId);
