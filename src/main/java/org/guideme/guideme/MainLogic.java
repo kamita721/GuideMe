@@ -36,6 +36,7 @@ import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.DebugShell;
 import org.guideme.guideme.ui.MainShell;
+import org.guideme.guideme.util.PageFilter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.ScriptableObject;
@@ -55,6 +56,7 @@ public class MainLogic {
     private static URL songPath;
 	private static HashMap<String, Object> globalScriptVariables = new HashMap<String, Object>(); //variables used by javascript
 	private static String filename; //name of file to store persistent state
+	private final PageFilter pageFilter = new PageFilter();
     
 
 	public static HashMap<String, Object> getGlobalScriptVariables() {
@@ -126,7 +128,7 @@ public class MainLogic {
 			overRide.clear();
 			guideSettings.setChapter(chapterName);
 			// handle random page
-			strPageId = ProcessPageName(pageId, guide, chapterName);
+			strPageId = pageFilter.getSingleMatchingPage(pageId, guide, chapterName);
 			// get the page to display
 			objCurrPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
 			if (objCurrPage == null) {
@@ -252,70 +254,6 @@ public class MainLogic {
 		} catch (Exception e) {
 			logger.error("displayPage Exception ", e);
 		}
-	}
-
-	private String ProcessPageName(String pageId, Guide guide, String chapterName)
-	{
-		String strPre = "";
-		String strPost = "";
-		String strPageId = pageId;
-		int intPos1;
-		int intPos2;
-		int intPos3;
-		int intMin;
-		int intMax;
-		String strMin;
-		String strMax;
-		intPos1 = strPageId.indexOf("(");
-		if (intPos1 > -1) {
-			intPos2 = strPageId.indexOf("..", intPos1);
-			if (intPos2 > -1) {
-				intPos3 = strPageId.indexOf(")", intPos2);
-				if (intPos3 > -1) {
-					strMin = strPageId.substring(intPos1 + 1, intPos2);
-					intMin = Integer.parseInt(strMin);
-					strMax = strPageId.substring(intPos2 + 2, intPos3);
-					intMax = Integer.parseInt(strMax);
-					if (intPos1 > 0) {
-						strPre = strPageId.substring(0, intPos1);
-					} else {
-						strPre = "";
-					}
-					strPost = strPageId.substring(intPos3 + 1);
-					logger.debug("displayPage Random Page Min " + strMin + " Max " + strMax + " Pre " + strPre + " strPost " + strPost);
-					String[] strPageArray;
-					strPageArray = new String[(intMax - intMin) + 1];
-					int intPageArrayCount = -1;
-					Page tmpPage;
-					// Check if we are allowed to display the pages
-					for (int i = intMin; i <= intMax; i++) {
-						strPageId = strPre + i + strPost;
-						if (guide.getChapters().get(chapterName).getPages().containsKey(strPageId)) {
-							tmpPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
-							if (tmpPage.canShow(guide.getFlags())) {
-								logger.debug("displayPage PageAllowed " + strPageId + " Yes");
-								intPageArrayCount++;
-								strPageArray[intPageArrayCount] = strPageId;
-							} else {
-								logger.debug("displayPage PageAllowed " + strPageId + " No");
-							}
-						} else {
-							logger.debug("displayPage PageAllowed " + strPageId + " No");
-						}
-					}
-					int i1 = 0;
-					if (intPageArrayCount > 0) {
-						// show one of the allowed random pages
-						i1 = comonFunctions.getRandom("(0.." + intPageArrayCount +")");
-						//i1 = rndGen.nextInt(intPageArrayCount + 1);
-						logger.debug("random number between 0 and " + intPageArrayCount + " generates " + i1);
-					}
-					strPageId = strPageArray[i1];
-					logger.debug("displayPage PageChosen " + strPageId);
-				}
-			}
-		}
-		return strPageId;
 	}
 	
 	private Page Generate404Page(Guide guide, String chapterName, String strPageId)
@@ -1072,7 +1010,7 @@ public class MainLogic {
 				
 				if (!strTarget.equals(""))
 				{
-					strPageId = ProcessPageName(strTarget, guide, chapterName );
+					strPageId = pageFilter.getSingleMatchingPage(strTarget, guide, chapterName);
 				}
 				else
 				{
