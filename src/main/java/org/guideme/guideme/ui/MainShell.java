@@ -116,6 +116,7 @@ public class MainShell {
 	private int MintHtmlFontSize;
 	private int MintTimerFontSize;
 	private String strGuidePath;
+	private String guideFile;
 	private int videoLoops = 0;
 	private int videoStartAt = 0;
 	private int videoStopAt = 0;
@@ -611,6 +612,11 @@ public class MainShell {
 			MenuItem fileRestartItem = new MenuItem (fileSubMenu, SWT.PUSH);
 			fileRestartItem.setText (displayText.getString("MainRestart"));
 			fileRestartItem.addSelectionListener(new FileRestartListener());
+
+			//File Reload menu item
+			MenuItem fileReloadItem = new MenuItem (fileSubMenu, SWT.PUSH);
+			fileReloadItem.setText (displayText.getString("MainReload"));
+			fileReloadItem.addSelectionListener(new FileReloadListener());
 
 			//File Preferences menu item
 			MenuItem filePreferencesItem = new MenuItem (fileSubMenu, SWT.PUSH);
@@ -1198,18 +1204,17 @@ public class MainShell {
 				dialog.setFilterNames (filterNames);
 				dialog.setFilterExtensions (filterExtensions);
 				dialog.setFilterPath (appSettings.getDataDirectory());
-				String strFileToLoad;
 				try {
-					strFileToLoad = dialog.open();
+					guideFile = dialog.open();
 					try {
-						if (strFileToLoad != null) {
+						if (guideFile != null) {
 							//if a guide file has been chosen load it 
 							//default the initial directory for future loads to the current one
 							strGuidePath = dialog.getFilterPath() + appSettings.getFileSeparator();
 							appSettings.setDataDirectory(strGuidePath);
 							//load the file it will return the start page and populate the guide object
 							//TODO Need to change this here to implement the new html format
-							loadGuide(strFileToLoad);
+							loadGuide(guideFile);
 							debugShell.clearJConsole();
 						}
 					}
@@ -1464,6 +1469,13 @@ public class MainShell {
 		}
 		catch (Exception ex) {
 			logger.error("Load Guide " + ex.getLocalizedMessage(), ex);
+		}
+	}
+
+	class FileReloadListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			loadGuide(guideFile);
 		}
 	}
 
