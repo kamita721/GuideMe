@@ -22,7 +22,7 @@ jobs:
         run: ls -R
         working-directory: gh-pages/build
       - name: Deploy GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@4
+        uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           branch: gh-pages
           folder: gh-pages/build
