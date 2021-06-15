@@ -12,11 +12,12 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: '14'
+      - name: Install Packages
+        run: npm install
+        working-directory: gh-pages
       - name: Build React Application
-        run: >
-          npm install
-          npm build --production
+        run: npm run build
         working-directory: gh-pages
       - name: Print File List
         run: ls -R
