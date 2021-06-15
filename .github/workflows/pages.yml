@@ -1,0 +1,29 @@
+on: 
+  push:
+    branches:
+      - pages-automation
+jobs:
+  publish:
+    name: Publish GitHub Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Setup NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Build React Application
+        run: >
+          npm install
+          npm build --production
+        working-directory: gh-pages
+      - name: Print File List
+        run: ls -R
+        working-directory: gh-pages/build
+      - name: Deploy GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4
+        with:
+          branch: gh-pages
+          folder: gh-pages/build
+          dry-run: true
