@@ -1,7 +1,7 @@
 on: 
   push:
     branches:
-      - pages-automation
+      - master
 jobs:
   publish:
     name: Publish GitHub Pages
@@ -27,4 +27,3 @@ jobs:
         with:
           branch: gh-pages
           folder: gh-pages/build
-          dry-run: true
