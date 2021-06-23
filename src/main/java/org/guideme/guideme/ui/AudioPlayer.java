@@ -74,6 +74,20 @@ public class AudioPlayer  implements Runnable {
 		}
 	}
 
+	public void audioPause() {
+		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+			mediaPlayer.pause();
+		}
+		logger.trace("AudioPlayer Pause");
+	}
+
+	public void audioResume() {
+		if (mediaPlayer != null && mediaPlayer.isPlayable()) {
+			mediaPlayer.play();
+		}
+		logger.trace("AudioPlayer Resume");
+	}
+
 	public void run() {
 		try {
 			//Play the audio set up by AudioPlayer
