@@ -756,14 +756,12 @@ public class MainShell {
 			    final MenuItem debugCheck = new MenuItem(debugSubMenu, SWT.CHECK);
 			    debugCheck.setText(displayText.getString("MainDebugDebug"));
 			    debugCheck.setSelection(appSettings.getDebug());
-			    debugCheck.addListener(SWT.Selection, new Listener() {
-			      public void handleEvent(Event event) {
-			        appSettings.setDebug(debugCheck.getSelection());
-			        if (delayButton != null && !delayButton.isDisposed()) {
+			    debugCheck.addListener(SWT.Selection, event -> {
+					appSettings.setDebug(debugCheck.getSelection());
+					if (delayButton != null && !delayButton.isDisposed()) {
 						delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
 					}
-			      }
-			    });			
+				});
 				
 			    //Debug Javascript Debug Menu Item
 			    final MenuItem jsdebugCheck = new MenuItem(debugSubMenu, SWT.CHECK);
