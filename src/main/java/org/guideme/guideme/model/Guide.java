@@ -964,6 +964,15 @@ public class Guide {
 	public void resetTimer(String id, String delay) {
 		mainshell.resetTimer(id, (int) (comonFunctions.getRandomDouble(delay) * 1000));
 	}
+
+	/**
+	 * Stops the count on a timer
+	 *
+	 * @param id the id set when the timer was created
+	 */
+	public void stopTimer(String id) {
+		mainshell.stopTimer(id);
+	}
 	
 	/**
 	 * Writes to the java script console in the debug window

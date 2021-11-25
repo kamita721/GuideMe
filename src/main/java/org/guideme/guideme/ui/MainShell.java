@@ -1859,8 +1859,13 @@ public class MainShell {
 								//logger.debug("Timer: " + objTimer.getId() + " Now: " + cal.getTime());
 								if (cal.after(calTemp)) {
 									logger.debug("Timer: " + objTimer.getId() + " Triggered");
-									//add a year to the timer so we don't trigger it again
-									calTemp.add(Calendar.YEAR, 1);
+									if (objTimer.getRepeat() == null) {
+										//add a year to the timer so we don't trigger it again
+										calTemp.add(Calendar.YEAR, 1);
+									}
+									else {
+										calTemp.add(Calendar.MILLISECOND, objTimer.getRepeatMSec());
+									}
 									pair.getValue().setTimerEnd(calTemp);
 									comonFunctions.SetFlags(objTimer.getSet(), guide.getFlags());
 									comonFunctions.UnsetFlags(objTimer.getUnSet(), guide.getFlags());
@@ -3084,6 +3089,13 @@ public class MainShell {
 		Calendar timCountDown = Calendar.getInstance();
 		timCountDown.add(Calendar.MILLISECOND, delay);
 		objTimer.setTimerEnd(timCountDown);		
+	}
+
+	public void stopTimer(String id) {
+		Timer objTimer = timer.get(id);
+		Calendar timCountDown = Calendar.getInstance();
+		timCountDown.add(Calendar.YEAR, 1);
+		objTimer.setTimerEnd(timCountDown);
 	}
 	
 	public void updateJConsole(String logText) {
