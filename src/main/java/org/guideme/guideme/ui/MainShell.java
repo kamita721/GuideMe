@@ -1816,7 +1816,7 @@ public class MainShell {
 									//Normal delay so display seconds left 
 									//(plus any offset if you are being sneaky) 
 									diff = calCountDown.getTimeInMillis() - cal.getTimeInMillis();
-									diff = diff + (guide.getDelStartAtOffSet() * 1000);
+									diff = diff + (guide.getDelStartAtOffSet());
 									intSeconds = (int) ((diff / 1000) + 1);
 									intMinutes = intSeconds / 60;
 									intSeconds = intSeconds - (intMinutes * 60);

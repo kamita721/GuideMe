@@ -932,7 +932,7 @@ public class Guide {
 	public void addTimer(String delay, String jScript, String imageId, String text, String set, String unSet, String id) {
 		Timer timer = new Timer(delay, jScript, imageId, text, "", "", set, unSet, "", "", id);
 		Calendar timCountDown = Calendar.getInstance();
-		timCountDown.add(Calendar.SECOND, timer.getTimerSec());
+		timCountDown.add(Calendar.MILLISECOND, timer.getTimerMSec());
 		timer.setTimerEnd(timCountDown);
 		mainshell.addTimer(timer);		
 	}
@@ -950,7 +950,7 @@ public class Guide {
 	public void addTimer(String delay, String jScript, String set, String unSet, String id, String target) {
 		Timer timer = new Timer(delay, jScript, "", "", "", "", set, unSet, "", "", id, target);
 		Calendar timCountDown = Calendar.getInstance();
-		timCountDown.add(Calendar.SECOND, timer.getTimerSec());
+		timCountDown.add(Calendar.MILLISECOND, timer.getTimerMSec());
 		timer.setTimerEnd(timCountDown);
 		mainshell.addTimer(timer);		
 	}
