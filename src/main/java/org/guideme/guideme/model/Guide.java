@@ -962,7 +962,7 @@ public class Guide {
 	 * @param delay the time in seconds (from now) before the timer triggers
 	 */
 	public void resetTimer(String id, String delay) {
-		mainshell.resetTimer(id, comonFunctions.getRandom(delay));
+		mainshell.resetTimer(id, (int) (comonFunctions.getRandomDouble(delay) * 1000));
 	}
 	
 	/**

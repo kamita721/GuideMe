@@ -3082,7 +3082,7 @@ public class MainShell {
 	public void resetTimer(String id, int delay) {
 		Timer objTimer = timer.get(id);
 		Calendar timCountDown = Calendar.getInstance();
-		timCountDown.add(Calendar.SECOND, delay);
+		timCountDown.add(Calendar.MILLISECOND, delay);
 		objTimer.setTimerEnd(timCountDown);		
 	}
 	
