@@ -966,6 +966,16 @@ public class Guide {
 	}
 
 	/**
+	 * Resets the count on a timer and changes the repeat time.
+	 *
+	 * @param id the id set when the timer was created
+	 * @param delay the time in seconds (from now) before the timer triggers
+	 */
+	public void resetTimer(String id, String delay, String repeat) {
+		mainshell.resetTimer(id, (int) (comonFunctions.getRandomDouble(delay) * 1000), repeat);
+	}
+
+	/**
 	 * Stops the count on a timer
 	 *
 	 * @param id the id set when the timer was created

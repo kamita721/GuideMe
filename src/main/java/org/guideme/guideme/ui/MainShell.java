@@ -3093,6 +3093,14 @@ public class MainShell {
 		objTimer.setTimerEnd(timCountDown);		
 	}
 
+	public void resetTimer(String id, int delay, String repeat) {
+		Timer objTimer = timer.get(id);
+		Calendar timCountDown = Calendar.getInstance();
+		timCountDown.add(Calendar.MILLISECOND, delay);
+		objTimer.setTimerEnd(timCountDown);
+		objTimer.setRepeat(repeat);
+	}
+
 	public void stopTimer(String id) {
 		Timer objTimer = timer.get(id);
 		Calendar timCountDown = Calendar.getInstance();
