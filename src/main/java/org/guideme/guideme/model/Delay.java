@@ -55,7 +55,7 @@ public class Delay {
 
 	//It's odd that this is randomized every time it's called, but in practice it shouldn't matter,
 	//since the only thing that matters for the call in displayPage is whether or not it's non-zero.
-	public int getDelayMSec() { return comonFunctions.getRandom(delay) * 1000;}
+	public int getDelayMSec() { return (int) (comonFunctions.getRandomDouble(delay) * 1000);}
 
 	public String getTarget() {
 		return target;

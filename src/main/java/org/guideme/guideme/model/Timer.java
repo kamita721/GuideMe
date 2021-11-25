@@ -58,7 +58,7 @@ public class Timer {
 		}
 	}
 
-	public int getTimerMSec() { return comonFunctions.getRandom(delay) * 1000; }
+	public int getTimerMSec() { return (int) (comonFunctions.getRandomDouble(delay) * 1000); }
 
 	public String getjScript() {
 		return jScript;
