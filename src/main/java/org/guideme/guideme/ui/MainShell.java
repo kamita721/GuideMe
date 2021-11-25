@@ -1859,12 +1859,14 @@ public class MainShell {
 								//logger.debug("Timer: " + objTimer.getId() + " Now: " + cal.getTime());
 								if (cal.after(calTemp)) {
 									logger.debug("Timer: " + objTimer.getId() + " Triggered");
-									if (objTimer.getRepeat() == null) {
-										//add a year to the timer so we don't trigger it again
-										calTemp.add(Calendar.YEAR, 1);
+									if (objTimer.isRepeating()) {
+										int repeat = objTimer.getRepeatMSec();
+										calTemp.add(Calendar.MILLISECOND, repeat);
+										//logger.debug("Timer: " + objTimer.getId() + " Repeat: " + repeat);
 									}
 									else {
-										calTemp.add(Calendar.MILLISECOND, objTimer.getRepeatMSec());
+										//add a year to the timer so we don't trigger it again
+										calTemp.add(Calendar.YEAR, 1);
 									}
 									pair.getValue().setTimerEnd(calTemp);
 									comonFunctions.SetFlags(objTimer.getSet(), guide.getFlags());

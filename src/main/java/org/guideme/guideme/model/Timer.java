@@ -139,7 +139,7 @@ public class Timer {
 	}
 
 	public void setRepeat(String repeat) {
-		if (repeat.equals("")) {
+		if (repeat == "") {
 			this.repeat = null;
 		} else {
 			this.repeat = repeat;
@@ -147,6 +147,8 @@ public class Timer {
 	}
 
 	public String getRepeat() { return repeat; }
+
+	public boolean isRepeating() { return repeat != null;}
 
 	public int getRepeatMSec() {
 		if (this.repeat == null) {
