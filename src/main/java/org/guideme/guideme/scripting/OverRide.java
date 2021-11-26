@@ -561,28 +561,9 @@ public class OverRide {
 	 * @param text the html to set the right html pane to when the timer triggers
 	 * @param set the flags to set when the timer triggers
 	 * @param unSet the flags to clear when the timer triggers
-	 * @param id the identifier (name) of the new timer to manipulate the timer later
 	 */
 	public void addTimer(String delay, String jScript, String imageId, String text, String set, String unSet, String id) {
 		Timer timer = new Timer(delay, jScript, imageId, text, "", "", set, unSet, "", "", id);
-		this.timer.add(timer);
-	}
-
-	/**
-	 * Adds a timer to change various aspects of the screen / run a javascript function
-	 *
-	 * @param delay the time in seconds before the timer triggers
-	 * @param repeat the repeat time in seconds after the initial activation
-	 * @param jScript the Java Script function to run when the timer triggers
-	 * @param imageId the image to change to when the timer triggers
-	 * @param text the html to set the right html pane to when the timer triggers
-	 * @param set the flags to set when the timer triggers
-	 * @param unSet the flags to clear when the timer triggers
-	 * @param id the identifier (name) of the new timer to manipulate the timer later
-	 */
-	public void addRepeatTimer(String delay, String repeat, String jScript, String imageId, String text, String set, String unSet, String id) {
-		Timer timer = new Timer(delay, jScript, imageId, text, "", "", set, unSet, "", "", id);
-		timer.setRepeat(repeat);
 		this.timer.add(timer);
 	}
 
