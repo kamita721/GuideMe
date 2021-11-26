@@ -167,7 +167,7 @@ public class MainLogic {
 			objDelay = ProcessDelay(mainShell, guide, objCurrPage);
 			
 			//If we are going straight to another page we can skip this section
-			if ((objDelay == null || objDelay.getDelayMSec() > 0) && overRide.getPage().equals("")) {
+			if ((objDelay == null || objDelay.getDelaySec() > 0) && overRide.getPage().equals("")) {
 				//add timers
 				AddTimers(mainShell, objCurrPage, guide);
 				
@@ -270,11 +270,11 @@ public class MainLogic {
 		Delay objDelay = null;
 		mainShell.setLblRight("");
 		boolean blnDelay = false;
-		int intDelMSeconds = 1000;
+		int intDelSeconds = 1;
 		// override page
 		try {
 			if (!overRide.getPage().equals("")) {
-				intDelMSeconds = 0;
+				intDelSeconds = 0;
 				guide.setDelStyle("hidden");
 				guide.setDelTarget(overRide.getPage());
 				guide.setDelayjScript("");
@@ -282,7 +282,7 @@ public class MainLogic {
 				guide.setDelaySet("");
 				guide.setDelayUnSet("");
 				Calendar calCountDown = Calendar.getInstance();
-				calCountDown.add(Calendar.MILLISECOND, intDelMSeconds);
+				calCountDown.add(Calendar.SECOND, intDelSeconds);
 				mainShell.setCalCountDown(calCountDown);
 			} else {
 				objDelay = overRide.getDelay();
@@ -306,10 +306,10 @@ public class MainLogic {
 					guide.setDelayjScript(objDelay.getjScript());
 					guide.setDelayScriptVar(objDelay.getScriptVar());
 					String strDelStartAt = objDelay.getStartWith();
-					intDelMSeconds = objDelay.getDelayMSec();
+					intDelSeconds = objDelay.getDelaySec();
 					try {
-						guide.setDelStartAtOffSet((int)(Float.parseFloat(strDelStartAt)) * 1000);
-						guide.setDelStartAtOffSet(guide.getDelStartAtOffSet() - intDelMSeconds);
+						guide.setDelStartAtOffSet(Integer.parseInt(strDelStartAt));
+						guide.setDelStartAtOffSet(guide.getDelStartAtOffSet() - intDelSeconds);
 					} catch (Exception etemp) {
 						guide.setDelStartAtOffSet(0);
 					}
@@ -317,9 +317,9 @@ public class MainLogic {
 					// record any delay set / unset
 					guide.setDelaySet(objDelay.getSet());
 					guide.setDelayUnSet(objDelay.getUnSet());
-					logger.debug("displayPage Delay Seconds " + (intDelMSeconds / 1000.0) + " Style " + guide.getDelStyle() + " Target " + guide.getDelTarget() + " Set " + guide.getDelaySet() + " UnSet " + guide.getDelayUnSet());
+					logger.debug("displayPage Delay Seconds " + intDelSeconds + " Style " + guide.getDelStyle() + " Target " + guide.getDelTarget() + " Set " + guide.getDelaySet() + " UnSet " + guide.getDelayUnSet());
 					Calendar calCountDown = Calendar.getInstance();
-					calCountDown.add(Calendar.MILLISECOND, intDelMSeconds);
+					calCountDown.add(Calendar.SECOND, intDelSeconds);
 					mainShell.setCalCountDown(calCountDown);
 				} else {
 					mainShell.setLblLeft("");
@@ -347,7 +347,7 @@ public class MainLogic {
 			for (int i2 = 0; i2 < overRide.timerCount(); i2++) {
 				objTimer = overRide.getTimer(i2);
 				Calendar timCountDown = Calendar.getInstance();
-				timCountDown.add(Calendar.MILLISECOND, objTimer.getTimerMSec());
+				timCountDown.add(Calendar.SECOND, objTimer.getTimerSec());
 				objTimer.setTimerEnd(timCountDown);
 				mainShell.addTimer(objTimer);
 			}
@@ -357,7 +357,7 @@ public class MainLogic {
 				objTimer = objCurrPage.getTimer(i2);
 				if (objTimer.canShow(guide.getFlags())) {
 					Calendar timCountDown = Calendar.getInstance();
-					timCountDown.add(Calendar.MILLISECOND, objTimer.getTimerMSec());
+					timCountDown.add(Calendar.SECOND, objTimer.getTimerSec());
 					objTimer.setTimerEnd(timCountDown);
 					mainShell.addTimer(objTimer);
 				}

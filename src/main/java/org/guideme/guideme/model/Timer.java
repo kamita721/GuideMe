@@ -20,7 +20,6 @@ public class Timer {
 	private LocalTime ifAfter; //Time of day must be after this time
 	private String id;
 	private String target;
-	private String repeat = null;
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	
 	public Timer(String delay, String jScript) {
@@ -59,7 +58,10 @@ public class Timer {
 		}
 	}
 
-	public int getTimerMSec() { return (int) (comonFunctions.getRandomDouble(delay) * 1000); }
+	public int getTimerSec() {
+		return comonFunctions.getRandom(delay);
+	}
+	
 
 	public String getjScript() {
 		return jScript;
@@ -136,27 +138,6 @@ public class Timer {
 
 	public String getId() {
 		return id;
-	}
-
-	public void setRepeat(String repeat) {
-		if (repeat == "") {
-			this.repeat = null;
-		} else {
-			this.repeat = repeat;
-		}
-	}
-
-	public String getRepeat() { return repeat; }
-
-	public boolean isRepeating() { return repeat != null;}
-
-	public int getRepeatMSec() {
-		if (this.repeat == null) {
-			return Integer.MAX_VALUE;
-		}
-		else {
-			return (int) (comonFunctions.getRandomDouble(repeat) * 1000);
-		}
 	}
 
 }
