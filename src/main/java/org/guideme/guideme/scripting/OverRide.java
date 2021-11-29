@@ -367,6 +367,9 @@ public class OverRide {
 	public int globalButtonCount() {
 		return globalButton.size();
 	}
+
+	/** @exclude */
+	public void clearGlobalButtons() { globalButton.clear(); }
 	
 	/**
 	 * Adds a webcam button to the page

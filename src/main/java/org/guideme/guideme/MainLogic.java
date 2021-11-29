@@ -672,6 +672,13 @@ public class MainLogic {
 		GuideSettings guideSettings = guide.getSettings();
 		ArrayList<Button> button = new ArrayList<>();
 
+		// Move global buttons into page object.
+		for (int i1 = 0; i1 < overRide.globalButtonCount(); i1++) {
+			GlobalButton objGlobalButton = overRide.getGlobalButton(i1);
+			objCurrPage.addGlobalButton(objGlobalButton);
+		}
+		overRide.clearGlobalButtons();
+
 		// process global buttons on page
 		for (int i1 = 0; i1 < objCurrPage.getGlobalButtonCount(); i1++) {
 			GlobalButton objGlobalButton = objCurrPage.getGlobalButton(i1);
@@ -686,21 +693,7 @@ public class MainLogic {
 					logger.error("displayPage Global Button invalid action " + objGlobalButton.getAction());
 			}
 		}
-		for (int i1 = 0; i1 < overRide.globalButtonCount(); i1++) {
-			GlobalButton objGlobalButton = overRide.getGlobalButton(i1);
-			switch (objGlobalButton.getAction()) {
-				case ADD:
-					guide.addGlobalButton(objGlobalButton.getId(), objGlobalButton);
-					debugShell.addOverrideButton(objGlobalButton);
-					break;
-				case REMOVE:
-					guide.removeGlobalButton(objGlobalButton.getId());
-					break;
-				default:
-					logger.error("displayPage Global Button overRide invalid action " + objGlobalButton.getAction());
-			}
-		}
-		
+
 		// remove old buttons
 		mainShell.removeButtons();
 
@@ -709,6 +702,7 @@ public class MainLogic {
 		for (GlobalButton globalButton : guide.getGlobalButtons()) {
 			if (globalButton.canShow(guide.getFlags()) && globalButton.getPlacement() == GlobalButton.Placement.TOP) {
 				globalTopButtons.add(globalButton);
+				debugShell.addOverrideButton(globalButton);
 			}
 		}
 		Collections.sort(globalTopButtons);
@@ -748,6 +742,7 @@ public class MainLogic {
 		for (GlobalButton globalButton : guide.getGlobalButtons()) {
 			if (globalButton.canShow(guide.getFlags()) && globalButton.getPlacement() == GlobalButton.Placement.BOTTOM) {
 				globalBottomButtons.add(globalButton);
+				debugShell.addOverrideButton(globalButton);
 			}
 		}
 		Collections.sort(globalBottomButtons);

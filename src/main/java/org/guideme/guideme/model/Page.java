@@ -308,4 +308,8 @@ public class Page {
 		return globalButton.size();
 	}
 
+	public void clearGlobalButtons()
+	{
+		globalButton.clear();
+	}
 }
