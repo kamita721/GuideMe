@@ -351,8 +351,15 @@ public class OverRide {
 			GlobalButton.Placement placement = this.placement.equals("top")
 					? GlobalButton.Placement.TOP
 					: GlobalButton.Placement.BOTTOM;
+			int iSortOrder;
+			try {
+				iSortOrder = Integer.parseInt(sortOrder);
+			}
+			catch (NumberFormatException e) {
+				iSortOrder = 1;
+			}
 
-			GlobalButton button = new GlobalButton(id, target, text, "", "", set, unSet, jScript, image, hotKey, placement, action);
+			GlobalButton button = new GlobalButton(id, target, text, "", "", set, unSet, jScript, image, hotKey, iSortOrder, placement, action);
 			overRide.globalButton.removeIf(btn -> btn.getId().equals(id));
 			overRide.globalButton.add(button);
 		}
