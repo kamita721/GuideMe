@@ -79,8 +79,10 @@ public class Jscript  implements Runnable
 			if (nodeType == Token.CALL && !foundCall) {
 				foundCall = true;
 				for (AstNode n2 : ((FunctionCall) node).getArguments()) {
-					//args.add(n2.toSource());
-					args.add(nodeToObj(n2));
+					if (guideSettings.isConvertArgumentTypes())
+						args.add(nodeToObj(n2));
+					else
+						args.add(n2.toSource());
 				}
 			}
 
