@@ -19,9 +19,7 @@ import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.MainShell;
 import org.mozilla.javascript.*;
-import org.mozilla.javascript.ast.AstNode;
-import org.mozilla.javascript.ast.AstRoot;
-import org.mozilla.javascript.ast.NodeVisitor;
+import org.mozilla.javascript.ast.*;
 import org.mozilla.javascript.tools.debugger.Main;
 
 public class Jscript  implements Runnable
@@ -68,10 +66,8 @@ public class Jscript  implements Runnable
 
 	public class SimpleNodeVisitor implements NodeVisitor
 	{
-		private AstNode firstCall = null;
+		private boolean foundCall = false;
 		private ArrayList<Object> args = new ArrayList<Object>();
-		private boolean seenName = false; 	//Used to handle "the first item with the function as the parent will be the name of the function".
-											//This is probably not the best way to handle this. Actually, could a name as an argument even work?
 
 		@Override
 		public boolean visit(AstNode node) {
@@ -79,23 +75,21 @@ public class Jscript  implements Runnable
 				return false;
 
 			int nodeType = node.getType();
-			if (nodeType == Token.CALL && firstCall == null) {
-				firstCall = node;
+			if (nodeType == Token.CALL && !foundCall) {
+				foundCall = true;
+				for (AstNode n2 : ((FunctionCall) node).getArguments()) {
+					args.add(n2.toSource());
+				}
 			}
 
-			AstNode parent = node.getParent();
-			if (parent == firstCall && parent != null && (seenName || nodeType != Token.NAME)) {
-				args.add(node.toSource());
-			}
-
-			if (nodeType == Token.NAME)
-				seenName = true;
 			return true;
 		}
 
 		public ArrayList<Object> getArgs() {
 			return args;
 		}
+
+
 	}
 
 
