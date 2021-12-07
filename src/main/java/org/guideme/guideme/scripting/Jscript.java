@@ -4,6 +4,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -78,7 +79,8 @@ public class Jscript  implements Runnable
 			if (nodeType == Token.CALL && !foundCall) {
 				foundCall = true;
 				for (AstNode n2 : ((FunctionCall) node).getArguments()) {
-					args.add(n2.toSource());
+					//args.add(n2.toSource());
+					args.add(nodeToObj(n2));
 				}
 			}
 
@@ -89,7 +91,49 @@ public class Jscript  implements Runnable
 			return args;
 		}
 
+		private Object nodeToObj(AstNode node) {
+			return nodeToObj(node, true);
+		}
 
+		private Object nodeToObj(AstNode node, Boolean convertName) {
+			//TODO: Ideally, there should be a better way to handle this than this obnoxious chain of if/else statements.
+			if (node instanceof StringLiteral)
+				return ((StringLiteral)node).getValue(); //Will not include enclosing quotes.
+			else if (node instanceof NumberLiteral)
+				return ((NumberLiteral)node).getNumber();
+			else if (node instanceof ArrayLiteral) {
+				ArrayList<Object> arr = new ArrayList<Object>();
+				for (AstNode ae : ((ArrayLiteral) node).getElements())
+					arr.add(nodeToObj(ae));
+				return arr.toArray();
+			}
+			else if (node instanceof KeywordLiteral) {
+				int nodeType = node.getType();
+				if (nodeType == Token.NULL)
+					return null;
+				else if (nodeType == Token.TRUE)
+					return true;
+				else if (nodeType == Token.FALSE)
+					return false;
+				else
+					return node.toSource();
+			}
+			else if (node instanceof ObjectLiteral) {
+				HashMap<Object, Object> obj = new HashMap<Object, Object>();
+				for (ObjectProperty op : ((ObjectLiteral) node).getElements())
+					obj.put(nodeToObj(op.getLeft(), false), nodeToObj(op.getRight()));
+				return obj;
+			}
+			else if (node instanceof Name) {
+				String key = ((Name) node).getIdentifier();
+				if (convertName)
+					return guideSettings.getScriptVariables().get(key);
+				else
+					return key;
+			}
+			else
+				return node.toSource();
+		}
 	}
 
 
