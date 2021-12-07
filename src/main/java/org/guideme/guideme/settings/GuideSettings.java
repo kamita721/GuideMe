@@ -50,6 +50,7 @@ public class GuideSettings{
 	private boolean pageSound = true;
 	private boolean forceStartPage = false;
 	private boolean globalScriptLogged = false;
+	private boolean convertArgumentTypes = false;
 	private static Logger logger = LogManager.getLogger();
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private Scriptable scope;
@@ -569,6 +570,10 @@ public class GuideSettings{
 	public void setGlobalScriptLogged(boolean globalScriptLogged) {
 		this.globalScriptLogged = globalScriptLogged;
 	}
+
+	public boolean isConvertArgumentTypes() { return convertArgumentTypes; }
+
+	public void setConvertArgumentTypes(boolean convertArgumentTypes) {this.convertArgumentTypes = convertArgumentTypes; }
 
 	public void setScriptVar(String key, Object var) {
 		scriptVariables.put(key, var);
