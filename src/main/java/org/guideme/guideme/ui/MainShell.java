@@ -2796,7 +2796,7 @@ public class MainShell {
 							guideSettings.setScriptVar(name, value);
 						}
 					}
-					if (type.equals("text")) {
+					if (type.equals("text") || type.equals("textarea")) {
 						guideSettings.setFormField(name, value);
 						guideSettings.setScriptVar(name, value);
 					}
@@ -2832,7 +2832,7 @@ public class MainShell {
 							guideSettings.setScriptVar(name, value);
 						}
 					}
-					if (type.equals("text")) {
+					if (type.equals("text") || type.equals("textarea")) {
 						guideSettings.setFormField(name, value);
 						guideSettings.setScriptVar(name, value);
 					}
