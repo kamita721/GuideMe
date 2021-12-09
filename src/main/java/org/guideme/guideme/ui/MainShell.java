@@ -1427,19 +1427,24 @@ public class MainShell {
 	// Checks the text for "commands" that GuideMe understands
 	// Original implementation is to move to HTML buttons where the onclick javascript needs to trigger Guideme
 	// Needs a pipe | separated string containing the command and parameters
-	// ButtonClick|Set|UnSet|scriptVar|javaScript
+	// ButtonClick|Set|UnSet|scriptVar|target|javaScript|filler
+	// The filler item is not strictly required, but commands without a javaScript item will require something
+	// in there due to how the split function works. It's contents are ignored.
+	// If the exact same command string is used repeatedly, it will be ignored.
+	// To prevent this, use varying text in the filler, such as the time or a counter to the command string.
 	class EventStatusTextListener implements StatusTextListener {
 		@Override
 		public void changed(StatusTextEvent event) {
 			if (!ProcStatusText.equals(event.text))
 			{
 				String statusText = event.text;
-				ProcStatusText = event.text;
+
 				String[] eventArgs = statusText.split("\\|");
 				if (eventArgs[0].equals("ButtonClick") && eventArgs.length > 5)
 				{
+					ProcStatusText = event.text;
 					try {
-						logger.trace("Enter DynamicButtonListner");
+						logger.trace("Enter StatusTextListener");
 						String strTag;
 						strTag = eventArgs[1];//Set
 						if (!strTag.equals("")) {
@@ -1454,12 +1459,13 @@ public class MainShell {
 						strTag = eventArgs[4];//Target
 						String javascript = eventArgs[5];//javaScript
 						runJscript(javascript, false);
-						mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
+						if (!strTag.equals(""))
+							mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
 					}
 					catch (Exception ex) {
-						logger.error(" DynamicButtonListner " + ex.getLocalizedMessage(), ex);
+						logger.error(" StatusTextListener " + ex.getLocalizedMessage(), ex);
 					}
-					logger.trace("Exit DynamicButtonListner");
+					logger.trace("Exit StatusTextListener");
 				}
 			}
 		}
