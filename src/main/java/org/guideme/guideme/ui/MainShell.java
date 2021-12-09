@@ -1489,11 +1489,13 @@ public class MainShell {
 	class FileReloadListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-			dialog.setMessage("Do you really want to reload the guide?\n(All current status will be lost)");
-			int returnCode = dialog.open();
-			if (returnCode == SWT.CANCEL)
-				return;
+			if (appSettings.isFileActionConfirmations()) {
+				MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+				dialog.setMessage("Do you really want to reload the guide?\n(All current status will be lost)");
+				int returnCode = dialog.open();
+				if (returnCode == SWT.CANCEL)
+					return;
+			}
 			loadGuide(guideFile);
 		}
 	}
@@ -1504,11 +1506,13 @@ public class MainShell {
 		// will restart the Guide from the start page
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-			dialog.setMessage("Do you really want to reload the guide?\n(All current status will be lost)");
-			int returnCode = dialog.open();
-			if (returnCode == SWT.CANCEL)
-				return;
+			if (appSettings.isFileActionConfirmations()) {
+				MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+				dialog.setMessage("Do you really want to restart the guide?\n(All current status will be lost)");
+				int returnCode = dialog.open();
+				if (returnCode == SWT.CANCEL)
+					return;
+			}
 			try {
 				logger.trace("Enter Menu Restart");
 				//stop all activity for the current page to prevent timers jumping to a different page
