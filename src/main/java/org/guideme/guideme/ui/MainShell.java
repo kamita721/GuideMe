@@ -50,17 +50,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Monitor;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.*;
 import org.guideme.guideme.MainLogic;
 import org.guideme.guideme.model.Button;
 import org.guideme.guideme.model.Chapter;
@@ -1499,6 +1489,11 @@ public class MainShell {
 	class FileReloadListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
+			MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+			dialog.setMessage("Do you really want to reload the guide?\n(All current status will be lost)");
+			int returnCode = dialog.open();
+			if (returnCode == SWT.CANCEL)
+				return;
 			loadGuide(guideFile);
 		}
 	}
@@ -1509,6 +1504,11 @@ public class MainShell {
 		// will restart the Guide from the start page
 		@Override
 		public void widgetSelected(SelectionEvent e) {
+			MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+			dialog.setMessage("Do you really want to reload the guide?\n(All current status will be lost)");
+			int returnCode = dialog.open();
+			if (returnCode == SWT.CANCEL)
+				return;
 			try {
 				logger.trace("Enter Menu Restart");
 				//stop all activity for the current page to prevent timers jumping to a different page
