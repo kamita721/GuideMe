@@ -101,6 +101,7 @@ const settingsUsage = [`<Settings>
     <AutoSetPageWhenSeen>true</AutoSetPageWhenSeen>
     <PageSound>false</PageSound>
     <ForceStartPage>true</ForceStartPage>
+    <ConvertArgumentTypes>true</ConvertArgumentTypes>
 </Settings>`];
 
 //language=XML
@@ -999,6 +1000,7 @@ export const XmlData = [
         <li><b>AutoSetPageWhenSeen</b>: Adds the page name as a flag when the page is viewed. <RequiredBadge/></li>
         <li><b>PageSound</b>: Play the page change sound when changing pages. <RequiredBadge/></li>
         <li><b>ForceStartPage</b>: Force the guide to start on the "start" page every time it is loaded. <RequiredBadge/></li>
+        <li><b>ConvertArgumentTypes</b>: Convert arguments from javascript called by buttons, timers, etc. to non-string types when appropriate. <RequiredBadge/></li>
       </ul>
     </>,
     usage: settingsUsage,

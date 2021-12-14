@@ -911,7 +911,14 @@ public class XmlGuideReader {
 										} else {
 											guideSettings.setPageSound(false); 
 										}
-									}	        				 
+									} else if (reader.getName().getLocalPart().equals("ConvertArgumentTypes")) {
+										reader.next();
+										if (reader.getEventType() == XMLStreamConstants.CHARACTERS) {
+											guideSettings.setConvertArgumentTypes(Boolean.parseBoolean(reader.getText()));
+										} else {
+											guideSettings.setConvertArgumentTypes(false);
+										}
+									}
 								}
 								eventType2 = reader.next();
 								if (eventType2 == XMLStreamConstants.END_ELEMENT) {

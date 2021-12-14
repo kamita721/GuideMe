@@ -2,7 +2,9 @@ package org.guideme.guideme.scripting;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -17,13 +19,8 @@ import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.MainShell;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.FunctionObject;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.*;
+import org.mozilla.javascript.ast.*;
 import org.mozilla.javascript.tools.debugger.Main;
 
 public class Jscript  implements Runnable
@@ -67,6 +64,80 @@ public class Jscript  implements Runnable
 		logger.info(JSCRIPT_MARKER, strMessage);
 		guide.updateJConsole(strMessage);
 	}
+
+	public class SimpleNodeVisitor implements NodeVisitor
+	{
+		private boolean foundCall = false;
+		private ArrayList<Object> args = new ArrayList<Object>();
+
+		@Override
+		public boolean visit(AstNode node) {
+			if (node == null)
+				return false;
+
+			int nodeType = node.getType();
+			if (nodeType == Token.CALL && !foundCall) {
+				foundCall = true;
+				for (AstNode n2 : ((FunctionCall) node).getArguments()) {
+					if (guideSettings.isConvertArgumentTypes())
+						args.add(nodeToObj(n2));
+					else
+						args.add(n2.toSource());
+				}
+			}
+
+			return true;
+		}
+
+		public ArrayList<Object> getArgs() {
+			return args;
+		}
+
+		private Object nodeToObj(AstNode node) {
+			return nodeToObj(node, true);
+		}
+
+		private Object nodeToObj(AstNode node, Boolean convertName) {
+			//TODO: Ideally, there should be a better way to handle this than this obnoxious chain of if/else statements.
+			if (node instanceof StringLiteral)
+				return ((StringLiteral)node).getValue(); //Will not include enclosing quotes.
+			else if (node instanceof NumberLiteral)
+				return ((NumberLiteral)node).getNumber();
+			else if (node instanceof ArrayLiteral) {
+				ArrayList<Object> arr = new ArrayList<Object>();
+				for (AstNode ae : ((ArrayLiteral) node).getElements())
+					arr.add(nodeToObj(ae));
+				return arr.toArray();
+			}
+			else if (node instanceof KeywordLiteral) {
+				int nodeType = node.getType();
+				if (nodeType == Token.NULL)
+					return null;
+				else if (nodeType == Token.TRUE)
+					return true;
+				else if (nodeType == Token.FALSE)
+					return false;
+				else
+					return node.toSource();
+			}
+			else if (node instanceof ObjectLiteral) {
+				HashMap<Object, Object> obj = new HashMap<Object, Object>();
+				for (ObjectProperty op : ((ObjectLiteral) node).getElements())
+					obj.put(nodeToObj(op.getLeft(), false), nodeToObj(op.getRight()));
+				return obj;
+			}
+			else if (node instanceof Name) {
+				String key = ((Name) node).getIdentifier();
+				if (convertName)
+					return guideSettings.getScriptVariables().get(key);
+				else
+					return key;
+			}
+			else
+				return node.toSource();
+		}
+	}
+
 
 	public void run() {
 		try {
@@ -189,6 +260,7 @@ public class Jscript  implements Runnable
 				int argEnd;
 				String argstring = "";
 				String[] argArray;
+				String javaFunctionFull = javaFunction;
 				argStart = javaFunction.indexOf("(");
 				argEnd = javaFunction.indexOf(")");
 				if (argStart > -1) {
@@ -201,10 +273,25 @@ public class Jscript  implements Runnable
 				}
 				if ((fObj instanceof Function)) {
 					Object args[] = { "" };
-					if (argstring.length() > 0) {
-						argArray = argstring.split(",");
-						args = argArray;
+					try {
+						IRFactory factory = new IRFactory(new CompilerEnvirons());
+						AstRoot rootNode = factory.parse(javaFunctionFull, null, 0);
+						SimpleNodeVisitor nodeVisitor = new SimpleNodeVisitor();
+						rootNode.visit(nodeVisitor);
+						logger.info("AstParseForArguments: " + nodeVisitor.getArgs().toString());
+						args = nodeVisitor.getArgs().toArray();
 					}
+					catch (Exception ex) {
+						logger.error(JSCRIPT_MARKER, " AstParseForArguments " + ex.getLocalizedMessage(), ex);
+						guide.updateJConsole("AstParseForArguments " + ex.getLocalizedMessage());
+						logger.error(" AstParseForArguments " + ex.getLocalizedMessage(), ex);
+						//If the parser fails, default to the naive and hope to salvage something.
+						if (argstring.length() > 0) {
+							argArray = argstring.split(",");
+							args = argArray;
+						}
+					}
+
 					Function fct = (Function)fObj;
 					fct.call(cntx, scope, scope, args);
 				} else {
