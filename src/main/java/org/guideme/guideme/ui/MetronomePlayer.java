@@ -29,6 +29,7 @@ public class MetronomePlayer  implements Runnable {
 	private Sequencer sequencer;
 	private static Logger logger = LogManager.getLogger();
 	private Boolean isPlaying = true;
+	private boolean isPaused = false;
 
 	public MetronomePlayer() {
 	}
@@ -50,6 +51,26 @@ public class MetronomePlayer  implements Runnable {
 			sequencer.stop();
 		}
 		logger.trace("MetronomePlayer Stop ");	
+	}
+
+	public boolean isPaused() {
+		return isPaused;
+	}
+
+	public void metronomePause() {
+		if (sequencer != null && sequencer.isRunning()) {
+			sequencer.stop();
+			isPaused = true;
+		}
+		logger.trace("MetronomePlayer Pause");
+	}
+
+	public void metronomeResume() {
+		if (sequencer != null) {
+			sequencer.start();
+			isPaused = false;
+		}
+		logger.trace("MetronomePlayer Resume");
 	}
 
 	public void metronomeKill() {

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
+import com.snapps.swt.SquareButton;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.SWT;
@@ -23,14 +24,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.StatusTextEvent;
 import org.eclipse.swt.browser.StatusTextListener;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -139,6 +133,7 @@ public class MainShell {
 	private Composite btnComp;
 	private Composite leftFrame;
 	private Calendar calCountDown = null;
+	private Calendar pausedAt = null;
 	private Shell shell;
 	private Shell shell2;
 	//private Shell shell3;
@@ -161,6 +156,7 @@ public class MainShell {
 	private MainLogic mainLogic = MainLogic.getMainLogic();
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private XmlGuideReader xmlGuideReader = XmlGuideReader.getXmlGuideReader();
+	private SquareButton delayButton = null;
 	private MetronomePlayer metronome;
 	private Thread threadMetronome;
 	private AudioPlayer audioPlayer;
@@ -197,6 +193,7 @@ public class MainShell {
 	private boolean hasVideoDeferred = false;
 	private boolean hasAudioDeferred = false;
 	private boolean hasAudio2Deferred = false;
+	private boolean pauseRequested = false;
 	//private boolean exitTriggered = false;
 
 	public Shell createShell(final Display display) {
@@ -759,11 +756,12 @@ public class MainShell {
 			    final MenuItem debugCheck = new MenuItem(debugSubMenu, SWT.CHECK);
 			    debugCheck.setText(displayText.getString("MainDebugDebug"));
 			    debugCheck.setSelection(appSettings.getDebug());
-			    debugCheck.addListener(SWT.Selection, new Listener() {
-			      public void handleEvent(Event event) {
-			        appSettings.setDebug(debugCheck.getSelection());
-			      }
-			    });			
+			    debugCheck.addListener(SWT.Selection, event -> {
+					appSettings.setDebug(debugCheck.getSelection());
+					if (delayButton != null && !delayButton.isDisposed()) {
+						delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
+					}
+				});
 				
 			    //Debug Javascript Debug Menu Item
 			    final MenuItem jsdebugCheck = new MenuItem(debugSubMenu, SWT.CHECK);
@@ -800,7 +798,27 @@ public class MainShell {
 			      public void handleEvent(Event event) {
 			        appSettings.setJsDebugExit(jsdebugExitCheck.getSelection());
 			      }
-			    });			
+			    });
+				//Debug Pause Item
+				final MenuItem debugPause = new MenuItem(debugSubMenu, SWT.CHECK);
+				debugPause.setText(displayText.getString("MainDebugPause"));
+				debugPause.addListener(SWT.Selection, event -> {
+					pauseRequested = debugPause.getSelection();
+					if (!pauseRequested) {
+						resumeAll();
+					}
+				});
+				new MenuItem(debugSubMenu, SWT.SEPARATOR);
+				//Debug ShowDelay Item
+				final MenuItem showDelay = new MenuItem(debugSubMenu, SWT.CHECK);
+				showDelay.setText(displayText.getString("MainDebugShowDelay"));
+				showDelay.setSelection(appSettings.getShowDelayBtn());
+				showDelay.addListener(SWT.Selection, event -> {
+					appSettings.setShowDelayBtn(showDelay.getSelection());
+					if (delayButton != null && !delayButton.isDisposed()) {
+						delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
+					}
+				});
 			}
 			// Add the menu bar to the shell
 			shell.setMenuBar (MenuBar);
@@ -1776,6 +1794,11 @@ public class MainShell {
 		public void run() {
 			try {
 				//logger.trace("Enter shellTimer");
+				if (pauseRequested) {
+					logger.debug("pausing timers");
+					pauseAll();
+					return;
+				}
 				if (!lblRight.isDisposed()) {
 					DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 					Calendar cal = Calendar.getInstance();
@@ -2433,25 +2456,27 @@ public class MainShell {
 		//add a delay button
 		//used when debug is on to simulate the delay without actually waiting for it
 		try {
-			com.snapps.swt.SquareButton btnDynamic = new com.snapps.swt.SquareButton(btnComp, SWT.PUSH );
-			btnDynamic.setFont(buttonFont);
-			btnDynamic.setText("Delay");
+			delayButton = new com.snapps.swt.SquareButton(btnComp, SWT.PUSH );
+			delayButton.setFont(buttonFont);
+			delayButton.setText("Delay");
 
 			// record any button set / unset
 			if (!guide.getDelaySet().equals("")) {
-				btnDynamic.setData("Set", guide.getDelaySet());
+				delayButton.setData("Set", guide.getDelaySet());
 			} else {
-				btnDynamic.setData("Set", "");
+				delayButton.setData("Set", "");
 			}
 			if (!guide.getDelayUnSet().equals("")) {
-				btnDynamic.setData("UnSet", guide.getDelayUnSet());
+				delayButton.setData("UnSet", guide.getDelayUnSet());
 			} else {
-				btnDynamic.setData("UnSet", "");
+				delayButton.setData("UnSet", "");
 			}
-			btnDynamic.setData("Target", guide.getDelTarget());
-			btnDynamic.setData("scriptVar", guide.getDelayScriptVar());
-			btnDynamic.setData("javascript", guide.getDelayjScript());
-			btnDynamic.addSelectionListener(new DynamicButtonListner());
+			delayButton.setData("Target", guide.getDelTarget());
+			delayButton.setData("scriptVar", guide.getDelayScriptVar());
+			delayButton.setData("javascript", guide.getDelayjScript());
+			delayButton.addSelectionListener(new DynamicButtonListner());
+
+			delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
 		} catch (Exception e) {
 			logger.error("addDelayButton " + e.getLocalizedMessage(), e);		
 		}
@@ -2586,6 +2611,9 @@ public class MainShell {
     // Click event code for the dynamic buttons
 	class DynamicButtonListner extends SelectionAdapter {
 		public void widgetSelected(SelectionEvent event) {
+			if (pauseRequested) {
+				return;
+			}
 			try {
 				
 				logger.trace("Enter DynamicButtonListner");
@@ -2614,7 +2642,6 @@ public class MainShell {
 			logger.trace("Exit DynamicButtonListner");
 		}
 	}
-
 	
 	/*private static BufferedImage convertToType(BufferedImage sourceImage, int targetType) {
 		BufferedImage image;
@@ -2952,7 +2979,7 @@ public class MainShell {
 			}
 		}
 	}
-	
+
 	class VideoStop implements Runnable {
 		private SwtEmbeddedMediaPlayer mediaPlayer;
 		private boolean shellClosing;
@@ -2990,6 +3017,57 @@ public class MainShell {
 		catch (Exception ex) {
 			logger.error(" stopDelay " + ex.getLocalizedMessage(), ex);
 		}
+	}
+
+	public void pauseAll() {
+		pausedAt = Calendar.getInstance();
+
+		if (audioPlayer != null) {
+			audioPlayer.audioPause();
+		}
+		if (audioPlayer2 != null) {
+			audioPlayer2.audioPause();
+		}
+		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+			mediaPlayer.pause();
+		}
+		if (metronome != null) {
+			metronome.metronomePause();
+		}
+	}
+
+	public void resumeAll() {
+		Calendar resumedAt = Calendar.getInstance();
+		int pausedForSeconds = (int)(resumedAt.getTimeInMillis() - pausedAt.getTimeInMillis()) / 1000;
+
+		// Add to countdown timer
+		if (calCountDown != null) {
+			calCountDown.add(Calendar.SECOND, pausedForSeconds);
+		}
+
+		// Update any Timer entities
+		for (Timer t : timer.values()) {
+			Calendar endTime = t.getTimerEnd();
+			endTime.add(Calendar.SECOND, pausedForSeconds);
+			t.setTimerEnd(endTime);
+		}
+
+		// Resume media
+		if (audioPlayer != null) {
+			audioPlayer.audioResume();
+		}
+		if (audioPlayer2 != null) {
+			audioPlayer2.audioResume();
+		}
+		if (mediaPlayer != null && mediaPlayer.isPlayable()) {
+			mediaPlayer.play();
+		}
+		if (metronome != null && metronome.isPaused()) {
+			metronome.metronomeResume();
+		}
+
+		// Start shell timer
+		myDisplay.timerExec(100, new shellTimer());
 	}
 
 	public void stopAll(boolean shellClosing) {
