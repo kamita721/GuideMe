@@ -8,12 +8,12 @@
 	<packaging>jar</packaging>
 
 	<name>GuideMe</name>
-	<url>https://github.com/hiss-remi/GuideMe</url>
+	<url>https://github.com/EroticDevelopment/GuideMe</url>
 	<inceptionYear>2013</inceptionYear>
 	<description>An interactive story viewer.</description>
 
 	<issueManagement>
-		<url>https://github.com/hiss-remi/GuideMe/issues</url>
+		<url>https://github.com/EroticDevelopment/GuideMe/issues</url>
 		<system>GitHub</system>
 	</issueManagement>
 
