@@ -63,6 +63,8 @@ public class AppSettings {
 	private String audioOneDevice;
 	private String audioTwoDevice;
 
+	private boolean fileActionConfirmations = false;
+
 	public void setDisplayText(ResourceBundle displayText) {
 		this.displayText = displayText;
 	}
@@ -142,6 +144,7 @@ public class AppSettings {
 				videoDevice = appSettingsProperties.getProperty("videoDevice", "");
 				audioOneDevice = appSettingsProperties.getProperty("audioOneDevice", "");
 				audioTwoDevice = appSettingsProperties.getProperty("audioTwoDevice", "");
+				fileActionConfirmations = Boolean.parseBoolean(appSettingsProperties.getProperty("fileActionConfirmations", "false"));
 			}
 			catch (Exception ex) {
 				logger.error(ex.getLocalizedMessage(), ex);
@@ -306,6 +309,7 @@ public class AppSettings {
 			appSettingsProperties.setProperty("videoDevice", videoDevice);
 			appSettingsProperties.setProperty("audioOneDevice", audioOneDevice);
 			appSettingsProperties.setProperty("audioTwoDevice", audioTwoDevice);
+			appSettingsProperties.setProperty("fileActionConfirmations", String.valueOf(fileActionConfirmations));
 			appSettingsProperties.storeToXML(new FileOutputStream(settingsLocation), null);
 		}
 		catch (Exception e) {
@@ -540,4 +544,8 @@ public class AppSettings {
 	public void setVideoDevice(String videoDevice) {
 		this.videoDevice = videoDevice;
 	}
+
+	public boolean isFileActionConfirmations() { return fileActionConfirmations; }
+
+	public void setFileActionConfirmations(boolean fileActionConfirmations) { this.fileActionConfirmations = fileActionConfirmations; }
 }

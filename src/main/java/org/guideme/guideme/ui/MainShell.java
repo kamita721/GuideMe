@@ -50,17 +50,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Monitor;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.*;
 import org.guideme.guideme.MainLogic;
 import org.guideme.guideme.model.Button;
 import org.guideme.guideme.model.Chapter;
@@ -1427,19 +1417,24 @@ public class MainShell {
 	// Checks the text for "commands" that GuideMe understands
 	// Original implementation is to move to HTML buttons where the onclick javascript needs to trigger Guideme
 	// Needs a pipe | separated string containing the command and parameters
-	// ButtonClick|Set|UnSet|scriptVar|javaScript
+	// ButtonClick|Set|UnSet|scriptVar|target|javaScript|filler
+	// The filler item is not strictly required, but commands without a javaScript item will require something
+	// in there due to how the split function works. It's contents are ignored.
+	// If the exact same command string is used repeatedly, it will be ignored.
+	// To prevent this, use varying text in the filler, such as the time or a counter to the command string.
 	class EventStatusTextListener implements StatusTextListener {
 		@Override
 		public void changed(StatusTextEvent event) {
 			if (!ProcStatusText.equals(event.text))
 			{
 				String statusText = event.text;
-				ProcStatusText = event.text;
+
 				String[] eventArgs = statusText.split("\\|");
 				if (eventArgs[0].equals("ButtonClick") && eventArgs.length > 5)
 				{
+					ProcStatusText = event.text;
 					try {
-						logger.trace("Enter DynamicButtonListner");
+						logger.trace("Enter StatusTextListener");
 						String strTag;
 						strTag = eventArgs[1];//Set
 						if (!strTag.equals("")) {
@@ -1454,12 +1449,13 @@ public class MainShell {
 						strTag = eventArgs[4];//Target
 						String javascript = eventArgs[5];//javaScript
 						runJscript(javascript, false);
-						mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
+						if (!strTag.equals(""))
+							mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
 					}
 					catch (Exception ex) {
-						logger.error(" DynamicButtonListner " + ex.getLocalizedMessage(), ex);
+						logger.error(" StatusTextListener " + ex.getLocalizedMessage(), ex);
 					}
-					logger.trace("Exit DynamicButtonListner");
+					logger.trace("Exit StatusTextListener");
 				}
 			}
 		}
@@ -1493,6 +1489,13 @@ public class MainShell {
 	class FileReloadListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
+			if (appSettings.isFileActionConfirmations()) {
+				MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+				dialog.setMessage("Do you really want to reload the guide?\n(All current status will be lost)");
+				int returnCode = dialog.open();
+				if (returnCode == SWT.CANCEL)
+					return;
+			}
 			loadGuide(guideFile);
 		}
 	}
@@ -1503,6 +1506,13 @@ public class MainShell {
 		// will restart the Guide from the start page
 		@Override
 		public void widgetSelected(SelectionEvent e) {
+			if (appSettings.isFileActionConfirmations()) {
+				MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+				dialog.setMessage("Do you really want to restart the guide?\n(All current status will be lost)");
+				int returnCode = dialog.open();
+				if (returnCode == SWT.CANCEL)
+					return;
+			}
 			try {
 				logger.trace("Enter Menu Restart");
 				//stop all activity for the current page to prevent timers jumping to a different page
@@ -2789,7 +2799,7 @@ public class MainShell {
 							guideSettings.setScriptVar(name, value);
 						}
 					}
-					if (type.equals("text")) {
+					if (type.equals("text") || type.equals("textarea")) {
 						guideSettings.setFormField(name, value);
 						guideSettings.setScriptVar(name, value);
 					}
@@ -2825,7 +2835,7 @@ public class MainShell {
 							guideSettings.setScriptVar(name, value);
 						}
 					}
-					if (type.equals("text")) {
+					if (type.equals("text") || type.equals("textarea")) {
 						guideSettings.setFormField(name, value);
 						guideSettings.setScriptVar(name, value);
 					}
