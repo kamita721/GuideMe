@@ -32,6 +32,7 @@ public class AppSettings {
 	private boolean JsDebugError = true;
 	private boolean JsDebugEnter = false;
 	private boolean JsDebugExit = false;
+	private boolean showDelayBtn = false;
 	private boolean video = false;
 	private boolean webcam = false;
 	private boolean hideMenu = false;
@@ -61,6 +62,8 @@ public class AppSettings {
 	private String videoDevice;
 	private String audioOneDevice;
 	private String audioTwoDevice;
+
+	private boolean fileActionConfirmations = false;
 
 	public void setDisplayText(ResourceBundle displayText) {
 		this.displayText = displayText;
@@ -112,6 +115,7 @@ public class AppSettings {
 				musicVolume = Integer.parseInt(appSettingsProperties.getProperty("musicVolume", "100"));
 				videoVolume = Integer.parseInt(appSettingsProperties.getProperty("videoVolume", "100"));
 				Debug = Boolean.parseBoolean(appSettingsProperties.getProperty("Debug", "false"));
+				showDelayBtn = Boolean.parseBoolean(appSettingsProperties.getProperty("showDelayBtn", String.valueOf(Debug)));
 				JsDebug = Boolean.parseBoolean(appSettingsProperties.getProperty("JsDebug", "false"));
 				jsDebugHeight = Integer.parseInt(appSettingsProperties.getProperty("jsDebugHeight", "600"));
 				jsDebugWidth = Integer.parseInt(appSettingsProperties.getProperty("jsDebugWidth", "800"));
@@ -140,6 +144,7 @@ public class AppSettings {
 				videoDevice = appSettingsProperties.getProperty("videoDevice", "");
 				audioOneDevice = appSettingsProperties.getProperty("audioOneDevice", "");
 				audioTwoDevice = appSettingsProperties.getProperty("audioTwoDevice", "");
+				fileActionConfirmations = Boolean.parseBoolean(appSettingsProperties.getProperty("fileActionConfirmations", "false"));
 			}
 			catch (Exception ex) {
 				logger.error(ex.getLocalizedMessage(), ex);
@@ -182,6 +187,14 @@ public class AppSettings {
 
 	public void setDebug(boolean debug) {
 		Debug = debug;
+	}
+
+	public boolean getShowDelayBtn() {
+		return showDelayBtn;
+	}
+
+	public void setShowDelayBtn(boolean showDelayBtn) {
+		this.showDelayBtn = showDelayBtn;
 	}
 
 	public boolean getJsDebug() {
@@ -267,6 +280,7 @@ public class AppSettings {
 			appSettingsProperties.setProperty("musicVolume", String.valueOf(musicVolume));
 			appSettingsProperties.setProperty("videoVolume", String.valueOf(videoVolume));
 			appSettingsProperties.setProperty("Debug", String.valueOf(Debug));
+			appSettingsProperties.setProperty("showDelayBtn", String.valueOf(showDelayBtn));
 			appSettingsProperties.setProperty("JsDebug", String.valueOf(JsDebug));
 			appSettingsProperties.setProperty("jsDebugHeight", String.valueOf(jsDebugHeight));
 			appSettingsProperties.setProperty("jsDebugWidth", String.valueOf(jsDebugWidth));
@@ -295,6 +309,7 @@ public class AppSettings {
 			appSettingsProperties.setProperty("videoDevice", videoDevice);
 			appSettingsProperties.setProperty("audioOneDevice", audioOneDevice);
 			appSettingsProperties.setProperty("audioTwoDevice", audioTwoDevice);
+			appSettingsProperties.setProperty("fileActionConfirmations", String.valueOf(fileActionConfirmations));
 			appSettingsProperties.storeToXML(new FileOutputStream(settingsLocation), null);
 		}
 		catch (Exception e) {
@@ -529,4 +544,8 @@ public class AppSettings {
 	public void setVideoDevice(String videoDevice) {
 		this.videoDevice = videoDevice;
 	}
+
+	public boolean isFileActionConfirmations() { return fileActionConfirmations; }
+
+	public void setFileActionConfirmations(boolean fileActionConfirmations) { this.fileActionConfirmations = fileActionConfirmations; }
 }

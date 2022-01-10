@@ -163,7 +163,10 @@ public class PreferenceShell {
 			AddBooleanField(grpApp, displayText.getString("FileAppPrefTTSClipboard"), appWidgets.get("AppPageSoundBlnCtrl"), appWidgets.get("AppPageSoundBlnCtrl"), myAppSettings.isToclipboard(), "AppToClipboard");			
 
 			//Store state in data directory
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefDataDirState"), appWidgets.get("AppToClipboardBlnCtrl"), appWidgets.get("AppToClipboardBlnCtrl"), myAppSettings.isStateInDataDir(), "AppStateInDataDir");			
+			AddBooleanField(grpApp, displayText.getString("FileAppPrefDataDirState"), appWidgets.get("AppToClipboardBlnCtrl"), appWidgets.get("AppToClipboardBlnCtrl"), myAppSettings.isStateInDataDir(), "AppStateInDataDir");
+
+			//Ask for confirmation on reloading or restarting guide
+			AddBooleanField(grpApp, displayText.getString("FileAppPrefFileActionConfirmations"), appWidgets.get("AppStateInDataDirBlnCtrl"), appWidgets.get("AppStateInDataDirBlnCtrl"), myAppSettings.isFileActionConfirmations(), "FileActionConfirmations");
 
 			//Auto Hide Menu
 			//AddBooleanField(grpApp, "Auto hide the menu", appWidgets.get("AppToClipboardBlnCtrl"), appWidgets.get("AppToClipboardBlnCtrl"), myAppSettings.isHideMenu(), "AppHideMenu");			
@@ -173,7 +176,7 @@ public class PreferenceShell {
 
 			//midiInstrument
 			//AddTextField(grpApp, "Midi Instrument (35 - 81)", appWidgets.get("AppDataDirCtrl"), appWidgets.get("AppDataDirCtrl"), String.valueOf(myAppSettings.getMidiInstrument()), "AppMidiInstrument", true);
-			AddTextField(grpApp, displayText.getString("FileAppPrefMidiInstrument"), appWidgets.get("AppStateInDataDirBlnCtrl"), appWidgets.get("AppStateInDataDirBlnCtrl"), String.valueOf(myAppSettings.getMidiInstrument()), "AppMidiInstrument", true);
+			AddTextField(grpApp, displayText.getString("FileAppPrefMidiInstrument"), appWidgets.get("FileActionConfirmationsBlnCtrl"), appWidgets.get("FileActionConfirmationsBlnCtrl"), String.valueOf(myAppSettings.getMidiInstrument()), "AppMidiInstrument", true);
 
 			//midiVolume
 			AddTextField(grpApp, displayText.getString("FileAppPrefMidiVol"), appWidgets.get("AppMidiInstrumentNumCtrl"), appWidgets.get("AppMidiInstrumentNumCtrl"), String.valueOf(myAppSettings.getMidiVolume()), "AppMidiVolume", true);
@@ -333,6 +336,9 @@ public class PreferenceShell {
 				
 				btnTmp = (Button) appWidgets.get("AppStateInDataDirBlnCtrl");
 				myAppSettings.setStateInDataDir(btnTmp.getSelection());
+
+				btnTmp = (Button) appWidgets.get("FileActionConfirmationsBlnCtrl");
+				myAppSettings.setFileActionConfirmations(btnTmp.getSelection());
 				
 				//btnTmp = (Button) appWidgets.get("AppHideMenuBlnCtrl");
 				//myAppSettings.setHideMenu(btnTmp.getSelection());
