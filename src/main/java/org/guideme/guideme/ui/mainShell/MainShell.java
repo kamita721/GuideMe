@@ -32,16 +32,9 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URLConnection;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 
-import javax.imageio.ImageIO;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
@@ -65,7 +58,6 @@ import org.guideme.guideme.ui.CompositeVideoSurface;
 import org.guideme.guideme.ui.DebugShell;
 import org.guideme.guideme.ui.MetronomePlayer;
 import org.guideme.guideme.ui.SwtEmbeddedMediaPlayer;
-import org.imgscalr.Scalr;
 import org.mozilla.javascript.ContextFactory;
 
 import com.github.sarxos.webcam.Webcam;
@@ -388,29 +380,10 @@ public class MainShell {
 			strHtml = strHtml.replace("DefaultStyle", defaultStyle);
 			imageLabel = new Browser(leftFrame, SWT.WEBKIT);
 			imageLabel.setJavascriptEnabled(true);
-			imageLabel.setText("");
+			imageLabel.setText(leftHTML);
 			imageLabel.setBackground(colourBlack);
 			imageLabel.addStatusTextListener(new EventStatusTextListener(this));
-			
-			imageLabel.addProgressListener(new ProgressListener() {
-				
-				//TODO
-				@Override
-				public void completed(ProgressEvent arg0) {
-					String imgPath = (String) imageLabel.getData("imgPath");
-					
-					System.err.println("Loaded");
-					System.err.println(imageLabel.execute("document.getElementById('imgContainer').src=\""+ imgPath + "\"; 1"));
-					
-				}
-				
-				@Override
-				public void changed(ProgressEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
-			// imageLabel.setAlignment(SWT.CENTER);
+			shell.pack();
 
 			if (!multiMonitor) {
 				sashform2 = new SashForm(sashform, SWT.VERTICAL);
@@ -822,9 +795,6 @@ public class MainShell {
 			// Add the menu bar to the shell
 			shell.setMenuBar(MenuBar);
 
-			// Resize the image if the control containing it changes size
-			imageLabel.addControlListener(new ImageControlAdapter(this));
-
 			// tell SWT to display the correct screen info
 			shell.pack();
 			shell.setMaximized(true);
@@ -1000,34 +970,13 @@ public class MainShell {
 	}
 
 	public void setImage(String imgPath) {
-
-		// display an image in the area to the left of the screen
 		imgOverRide = false;
-
-		Image memImage = new Image(myDisplay, imgPath);
 		imageLabel.setData("imgPath", imgPath);
-		ImageData imgData = memImage.getImageData();
-		double dblImageRatio = (double) imgData.height / (double) imgData.width;
-
-		int maxImageScale = appSettings.getMaxImageScale();
-		int maxheight = (imgData.height * maxImageScale) / 100;
-		int maxwidth = (imgData.width * maxImageScale) / 100;
-
-		imageLabel.setData("imageRatio", Double.valueOf(dblImageRatio));
-		imageLabel.setData("maxImageScale", maxImageScale);
-		imageLabel.setData("maxheight", maxheight);
-		imageLabel.setData("maxwidth", maxwidth);
-
-		memImage.dispose();
-
-		String strHtml = this.mainShell.leftHTML.replace("IMG_SRC", imgPath);
-		imageLabel.setText(strHtml, true);
+		System.err.println(imageLabel.execute("setImage(\"" + imgPath + "\"); 1"));
 
 		mediaPanel.setVisible(false);
 		webcamPanel.setVisible(false);
 		imageLabel.setVisible(true);
-
-		shell.pack();
 	}
 
 	public String getStyle() {
@@ -1035,17 +984,14 @@ public class MainShell {
 	}
 
 	public void setImageHtml(String leftHtml) {
-		try {
-			logger.trace("setImageHtml: " + leftHtml);
-			imgOverRide = true;
-			imageLabel.setText(leftHtml, true);
-			mediaPanel.setVisible(false);
-			webcamPanel.setVisible(false);
-			this.imageLabel.setVisible(true);
-			leftFrame.layout(true);
-		} catch (Exception ex) {
-			logger.error("setImageHtml error " + ex.getLocalizedMessage(), ex);
-		}
+		logger.error("MainShell.setImageHtml() not implemented");
+		/*
+		 * try { logger.trace("setImageHtml: " + leftHtml); imgOverRide = true;
+		 * imageLabel.setText(leftHtml, true); mediaPanel.setVisible(false);
+		 * webcamPanel.setVisible(false); imageLabel.setVisible(true);
+		 * leftFrame.layout(true); } catch (Exception ex) {
+		 * logger.error("setImageHtml error " + ex.getLocalizedMessage(), ex); }
+		 */
 	}
 
 	public boolean showWebcam() {
@@ -1125,9 +1071,10 @@ public class MainShell {
 	}
 
 	public void clearImage() {
+		logger.error("MainShell.clearImage not implemtneted");
 		// imageLabel.setImage(null);
-		String strHTML = leftHTML.replace("DefaultStyle", defaultStyle + " body { overflow:hidden }");
-		imageLabel.setText(strHTML, true);
+//		String strHTML = leftHTML.replace("DefaultStyle", defaultStyle + " body { overflow:hidden }");
+//		imageLabel.setText(strHTML, true);
 	}
 
 	public void playAudio(String audio, int startAt, int stopAt, int loops, String target, String jscript,
@@ -1236,6 +1183,8 @@ public class MainShell {
 	}
 
 	public void setLeftText(String brwsText, String overRideStyle) {
+		logger.error("MainShell.setLeftText() not implemented");
+		/*
 		// set HTML to be displayed in the browser control to the left of the
 		// screen
 		if (overRideStyle.equals("")) {
@@ -1267,9 +1216,12 @@ public class MainShell {
 		webcamPanel.setVisible(false);
 		this.imageLabel.setVisible(true);
 		leftFrame.layout(true);
+		*/
 	}
 
 	public void setLeftHtml(String strHTML) {
+		logger.error("MainShell.setLeftHTML() not implemented");
+		/*
 		// set HTML to be displayed in the browser control to the left of the
 		// screen
 		try {
@@ -1284,6 +1236,7 @@ public class MainShell {
 		webcamPanel.setVisible(false);
 		this.imageLabel.setVisible(true);
 		leftFrame.layout(true);
+		*/
 	}
 
 	public void removeButtons() {

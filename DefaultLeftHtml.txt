@@ -22,9 +22,15 @@
             	text-align: center; 
             }
         </style>
+        <script>
+            function setImage(url){
+                document.getElementById('imgContainer').src=url;
+            }
+        </script>
     </head>
     <body>
         <img id="imgContainer" src="IMG_SRC" style="object-fit:contain;"/>
+        <div id="test">test</div>
     </body>
 </html>
 
