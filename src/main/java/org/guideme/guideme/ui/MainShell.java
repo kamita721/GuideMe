@@ -197,7 +197,8 @@ public class MainShell {
 			logger.trace("Get appSettings");
 			appSettings = AppSettings.getAppSettings();
 
-			Locale locale = new Locale(appSettings.getLanguage(), appSettings.getCountry());
+			Locale locale = new Locale.Builder().setLanguage(appSettings.getLanguage())
+					.setRegion(appSettings.getCountry()).build();
 			displayText = ResourceBundle.getBundle("DisplayBundle", locale);
 			appSettings.setDisplayText(displayText);
 
@@ -251,7 +252,7 @@ public class MainShell {
 			}
 			logger.trace("shell add listener");
 			shell.addShellListener(new shellCloseListen());
-			//Good
+			// Good
 			logger.trace("key filter");
 			keyListener = new shellKeyEventListener();
 			myDisplay.addFilter(SWT.KeyDown, keyListener);
@@ -430,7 +431,7 @@ public class MainShell {
 			RowLayout layout2 = new RowLayout();
 			btnComp.setLayout(layout2);
 
-			//Good
+			// Good
 			if (videoOn) {
 				logger.trace("Video Enter");
 				try {
@@ -462,7 +463,7 @@ public class MainShell {
 
 					String videoOutputDevice = appSettings.getVideoDevice();
 					if (videoOutputDevice != null && !videoOutputDevice.equals("")) {
-						//TODO this doesn't seem quite right
+						// TODO this doesn't seem quite right
 						mediaPlayer.audio().setOutputDevice(null, appSettings.getVideoDevice());
 					}
 				} catch (Exception vlcex) {
@@ -601,8 +602,8 @@ public class MainShell {
 			filePreferencesItem.setText(displayText.getString("MainAppPref"));
 			filePreferencesItem.addSelectionListener(new FilePreferences());
 
-			//good
-			
+			// good
+
 			// File Preferences Guide menu item
 			MenuItem filePreferencesGuideItem = new MenuItem(fileSubMenu, SWT.PUSH);
 			filePreferencesGuideItem.setText(displayText.getString("MainUserPref"));
@@ -648,7 +649,7 @@ public class MainShell {
 			ResizeGuideItem.setText(displayText.getString("MainToolsResizeImage"));
 			ResizeGuideItem.addSelectionListener(new ResizeGuideListener());
 
-			//good
+			// good
 			// Audio Output Menus
 			MenuItem audioItem = new MenuItem(MenuBar, SWT.CASCADE);
 			audioItem.setText(displayText.getString("MainAudio"));
@@ -674,14 +675,14 @@ public class MainShell {
 			Menu audioTwoSubMenu = new Menu(shell, SWT.DROP_DOWN);
 			audioTwoOutputItem.setMenu(audioTwoSubMenu);
 
-			//good
+			// good
 			boolean userDeviceVideoAvailable = false;
 			boolean userDeviceOneAvailable = false;
 			boolean userDeviceTwoAvailable = false;
-			
+
 			List<AudioDevice> outputs = mediaPlayer.audio().outputDevices();
 
-			//bad
+			// bad
 			for (AudioDevice device : outputs) {
 				boolean userDeviceVideo = device.getDeviceId().equals(appSettings.getVideoDevice());
 				boolean userDeviceOne = device.getDeviceId().equals(appSettings.getAudioOneDevice());
@@ -1114,7 +1115,7 @@ public class MainShell {
 		// Video has finished
 		@Override
 		public void finished(MediaPlayer mediaPlayer) {
-			//TODO, this should be displaying what media finished
+			// TODO, this should be displaying what media finished
 			logger.debug("MediaListener finished " + mediaPlayer.media().info().mrl());
 			super.finished(mediaPlayer);
 			try {
@@ -1349,7 +1350,7 @@ public class MainShell {
 				String newOutputDevice = e.widget.getData("device-id").toString();
 				appSettings.setVideoDevice(newOutputDevice);
 				if (newOutputDevice != null) {
-					//TODO this doesn't seem quite right
+					// TODO this doesn't seem quite right
 					mediaPlayer.audio().setOutputDevice(null, newOutputDevice);
 				}
 			}
@@ -1711,13 +1712,14 @@ public class MainShell {
 					logger.error("Shell Resize error " + ex7.getLocalizedMessage(), ex7);
 				}
 			}
-			if(testI==2){
+			if (testI == 2) {
 				logger.trace("About to crash");
 			}
 			logger.trace("Exit addControlListener: " + testI++);
 		}
 	}
-static int testI=0;
+
+	static int testI = 0;
 	/*
 	 * // Returns the image passed in resized to the width and height passed in
 	 * private static Image resize(Image image, int width, int height) { try {
@@ -2228,7 +2230,7 @@ static int testI=0;
 				logger.debug("MainShell VideoPlay new Thread " + video);
 
 				mediaPlayer.audio().setVolume(volume);
-				//TODO this setting seems to have disappeared
+				// TODO this setting seems to have disappeared
 //				mediaPlayer.setPlaySubItems(true);
 				if (this.vlcArgs.isEmpty()) {
 					mediaPlayer.media().play(video);

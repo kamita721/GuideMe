@@ -18,6 +18,7 @@ public class CompositeVideoSurface extends VideoSurface {
     /**
 	 * 
 	 */
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = -602915292932819950L;
 	private final long compositeHandle;
 

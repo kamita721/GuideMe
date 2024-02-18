@@ -1,7 +1,6 @@
 package org.guideme.guideme.ui;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,9 +19,6 @@ public class AudioPlayer  implements Runnable {
 	private MediaPlayer mediaPlayer;
 	private Boolean isPlaying = true;
 	private String audioFile = "";
-	private int loops = 0;
-	private int startAt = 0;
-	private int stopAt = 0;
 	private String target;
 	private MainShell mainShell;
 	private String jscript;
@@ -37,12 +33,9 @@ public class AudioPlayer  implements Runnable {
 		volume = Math.min(Math.max(volume, 0), 100); // Bound between 0 and 100
 
 		this.audioFile = audioFile;
-		this.loops = loops;
 		this.mainShell = mainShell;
 		this.target = target;
 		this.jscript = jscript;
-		this.startAt = startAt;
-		this.stopAt = stopAt;
 		this.scriptVar = scriptVar;
 		this.outputDevice = outputDevice;
 		this.volume = (int) ((double) mediaVolume * ((double) volume / (double) 100));

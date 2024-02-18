@@ -2,7 +2,6 @@ package org.guideme.guideme.settings;
 
 import static org.junit.Assert.*;
 
-import org.guideme.guideme.settings.AppSettings;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

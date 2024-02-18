@@ -364,7 +364,8 @@ public class PreferenceShell {
 				txtTmp = (Text) appWidgets.get("AppImgOffsetNumCtrl");
 				myAppSettings.setImgOffset(Double.parseDouble(txtTmp.getText()));
 
-				Locale locale = new Locale(myAppSettings.getLanguage(), myAppSettings.getCountry());
+				Locale locale = new Locale.Builder().setLanguage(myAppSettings.getLanguage())
+						.setRegion(myAppSettings.getCountry()).build();
 				ResourceBundle displayText = ResourceBundle.getBundle("DisplayBundle", locale);
 				myAppSettings.setDisplayText(displayText);
 				

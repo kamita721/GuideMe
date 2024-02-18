@@ -34,7 +34,8 @@ import org.mozilla.javascript.Wrapper;
  */
 public class NativeMap implements Scriptable, Wrapper
 {
-    private static final long serialVersionUID = 3664761893203964569L;
+    @SuppressWarnings("unused")
+	private static final long serialVersionUID = 3664761893203964569L;
     
     private Map<Object, Object> map;
     private Scriptable parentScope;
@@ -104,7 +105,7 @@ public class NativeMap implements Scriptable, Wrapper
     {
         Object value =  null;
         int i=0;
-        Iterator itrValues = map.values().iterator();
+        Iterator<Object> itrValues = map.values().iterator();
         while (i++ <= index && itrValues.hasNext())
         {
             value = itrValues.next();
@@ -132,7 +133,6 @@ public class NativeMap implements Scriptable, Wrapper
     /* (non-Javadoc)
      * @see org.mozilla.javascript.Scriptable#put(java.lang.String, org.mozilla.javascript.Scriptable, java.lang.Object)
      */
-    @SuppressWarnings("unchecked")
     public void put(String name, Scriptable start, Object value)
     {
         map.put(name, value);
@@ -160,7 +160,7 @@ public class NativeMap implements Scriptable, Wrapper
     public void delete(int index)
     {
         int i=0;
-        Iterator itrKeys = map.keySet().iterator();
+        Iterator<Object> itrKeys = map.keySet().iterator();
         while (i <= index && itrKeys.hasNext())
         {
             Object key = itrKeys.next();
@@ -215,7 +215,7 @@ public class NativeMap implements Scriptable, Wrapper
     /* (non-Javadoc)
      * @see org.mozilla.javascript.Scriptable#getDefaultValue(java.lang.Class)
      */
-    public Object getDefaultValue(Class hint)
+    public Object getDefaultValue(Class<?> hint)
     {
         return null;
     }

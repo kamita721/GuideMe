@@ -60,7 +60,8 @@ public final class ScriptValueConverter
      * 
      * @return unwrapped and converted value.
      */
-    public static Object unwrapValue(Object value)
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Object unwrapValue(Object value)
     {
         if (value == null)
         {
@@ -154,7 +155,7 @@ public final class ScriptValueConverter
         else if (value instanceof Map && !(value instanceof JSONObject))
         {
             // ensure each value in the Map is unwrapped (which may have been an unwrapped NativeMap!)
-            final Map<Object, Object> map = (Map<Object, Object>)value;
+			final Map<Object, Object> map = (Map)value;
             final Map<Object, Object> copyMap = new HashMap<Object, Object>(map.size());
             for (Object key : map.keySet())
             {
@@ -180,7 +181,8 @@ public final class ScriptValueConverter
      * 
      * @return Value safe for scripting usage
      */
-    public static Object wrapValue(Scriptable scope, Object value)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Object wrapValue(Scriptable scope, Object value)
     {
         // perform conversions from Java objects to JavaScript scriptable instances
         if (value == null)

@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 
 import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.settings.AppSettings;
-import org.guideme.guideme.settings.GuideSettings;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
