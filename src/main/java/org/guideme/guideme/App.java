@@ -59,7 +59,9 @@ public class App
 			});
 			  
 			for(File deletableFile:toBeDeleted){
-				deletableFile.delete();
+				if(!deletableFile.delete()) {
+					logger.error("Failed to delete file: "+ deletableFile);
+				}
 			}
 			
 			if (args.length > 1) {
