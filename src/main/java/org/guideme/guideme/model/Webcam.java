@@ -3,7 +3,7 @@ package org.guideme.guideme.model;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-import org.guideme.guideme.settings.ComonFunctions;
+import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Webcam
 {

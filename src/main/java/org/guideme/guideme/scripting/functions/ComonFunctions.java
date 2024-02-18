@@ -1,4 +1,4 @@
-package org.guideme.guideme.settings;
+package org.guideme.guideme.scripting.functions;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -52,6 +52,9 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.guideme.guideme.model.Guide;
 import org.guideme.guideme.model.Library;
+import org.guideme.guideme.settings.AppSettings;
+import org.guideme.guideme.settings.GuideSettings;
+import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.util.ImageManager;
 import org.imgscalr.Scalr;
 import org.mozilla.javascript.Context;
@@ -1161,7 +1164,7 @@ public class ComonFunctions {
 			try {
 				// ignore hidden files and directories
 				if (f.isHidden() || f.isDirectory() || f.getName().equalsIgnoreCase("thumbs.db")) {
-					logger.debug("WildCardFileFilter No Match {}", f.getName());
+					logger.debug(() -> "WildCardFileFilter No Match {}" + f.getName());
 					return false;
 				}
 				// convert the regular patern to regex
@@ -1880,46 +1883,5 @@ public class ComonFunctions {
 		return returnVal;
 	}
 
-	/*
-	 * public Object xmlFileToObject(String xmlFileName) {
-	 * 
-	 * String strTag; String strTop = ""; String strValue; String fullFileName;
-	 * 
-	 * try { AppSettings appSettings = AppSettings.getAppSettings(); Guide guide =
-	 * Guide.getGuide(); String fileSeparator = appSettings.getFileSeparator();
-	 * 
-	 * String dataDirectory; String prefix = ""; dataDirectory =
-	 * appSettings.getDataDirectory(); if (dataDirectory.startsWith("/")) { prefix =
-	 * "/"; } dataDirectory = prefix + fixSeparator(appSettings.getDataDirectory(),
-	 * fileSeparator); String mediaDirectory =
-	 * fixSeparator(guide.getMediaDirectory(), fileSeparator); dataDirectory =
-	 * dataDirectory + fileSeparator + mediaDirectory;
-	 * 
-	 * 
-	 * fullFileName = fixSeparator(xmlFileName, fileSeparator); fullFileName =
-	 * dataDirectory + fileSeparator + fullFileName; logger.trace("loadXML: " +
-	 * fullFileName);
-	 * 
-	 * FileInputStream fis = new FileInputStream(fullFileName);
-	 * UnicodeBOMInputStream ubis = new UnicodeBOMInputStream(fis); ubis.skipBOM();
-	 * 
-	 * XMLInputFactory factory = XMLInputFactory.newInstance(); XMLStreamReader
-	 * reader = factory.createXMLStreamReader(ubis);
-	 * 
-	 * while (reader.hasNext()) { int eventType = reader.next(); switch (eventType)
-	 * { case XMLStreamConstants.START_DOCUMENT: logger.trace("loadXML " +
-	 * xmlFileName + " Start document "); break; case
-	 * XMLStreamConstants.END_DOCUMENT: logger.trace("loadXML " + xmlFileName +
-	 * " End document"); break; case XMLStreamConstants.START_ELEMENT: strTag =
-	 * reader.getName().getLocalPart(); if (strTop.equals("")) { strTop = strTag; }
-	 * try { reader.next(); if (reader.getEventType() ==
-	 * XMLStreamConstants.CHARACTERS) { strValue = reader.getText(); } else {
-	 * strValue = ""; } } catch (Exception e1) { logger.error("loadXML " +
-	 * xmlFileName + " Tag Exception " + e1.getLocalizedMessage(), e1); }
-	 * logger.trace("loadXML " + xmlFileName + " Tag: " + strTag + " Value: " +
-	 * strValue); break; case XMLStreamConstants.END_ELEMENT: break; case
-	 * XMLStreamConstants.CHARACTERS: break; } } } catch (Exception e) {
-	 * logger.error("loadXML " + xmlFileName + " Exception ", e); } }
-	 */
 
 }

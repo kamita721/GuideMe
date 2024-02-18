@@ -28,14 +28,6 @@ public class Test {
 	private static Logger logger = LogManager.getLogger();
 	
 	public static void main(String[] args) {
-		try {
-			fail();
-		}catch(Exception e) {
-			logger.error("fail {}", "Foo".toLowerCase(), e);
-		}
 	}
 	
-	public static void fail() {
-		throw new RuntimeException("E");
-	}
 }

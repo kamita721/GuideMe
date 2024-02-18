@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.guideme.guideme.settings.ComonFunctions;
+import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Button  implements Comparable<Button>
 {

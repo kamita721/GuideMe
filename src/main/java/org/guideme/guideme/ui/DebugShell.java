@@ -39,8 +39,8 @@ import org.guideme.guideme.model.Image;
 import org.guideme.guideme.model.Metronome;
 import org.guideme.guideme.model.Page;
 import org.guideme.guideme.model.Video;
+import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
-import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.ui.main_shell.MainShell;
 
 import com.snapps.swt.SquareButton;

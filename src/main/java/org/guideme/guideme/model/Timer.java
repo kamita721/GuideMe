@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.guideme.guideme.settings.ComonFunctions;
+import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Timer {
 	private String delay;

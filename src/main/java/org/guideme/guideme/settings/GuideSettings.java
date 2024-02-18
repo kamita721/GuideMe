@@ -22,6 +22,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.model.Preference;
+import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;

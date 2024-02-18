@@ -7,8 +7,8 @@ import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
+import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
-import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.ui.main_shell.MainShell;
 

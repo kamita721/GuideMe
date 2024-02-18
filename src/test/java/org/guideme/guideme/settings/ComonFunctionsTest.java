@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
+import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.junit.Test;
 
 public class ComonFunctionsTest {
