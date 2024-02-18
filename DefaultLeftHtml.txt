@@ -1,8 +1,30 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<meta http-equiv='Content-type' content='text/html;charset=UTF-8' />
-		<style type='text/css'>DefaultStyle</style>
-	</head>
-	<body>BodyContent</body>
+    <head>
+        <meta http-equiv='Content-type' content='text/html;charset=UTF-8' />
+        <style type="text/css">
+            body { 
+            	background-color: black; 
+                color: white;
+            }
+            html, body, img, #wrapper { 
+            	height:100%; 
+            	width: 100%; 
+            	margin: 0; 
+            	padding: 0; 
+            	border: 0; 
+                object-fit:contain;
+                max-height: 100vh; /* You would think that 100vh would be fine here. However, that still crops vertically slightly for some reason*/
+                overflow: hidden;
+            }
+            #wrapper td { 
+            	vertical-align: middle; 
+            	text-align: center; 
+            }
+        </style>
+    </head>
+    <body>
+        <img id="imgContainer" src="IMG_SRC" style="object-fit:contain;"/>
+    </body>
 </html>
+

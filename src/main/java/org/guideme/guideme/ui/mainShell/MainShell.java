@@ -167,8 +167,6 @@ public class MainShell {
 	private String rightHTML;
 	String leftHTML;
 	private ContextFactory factory;
-	private File oldImage;
-	private File oldImage2;
 	private boolean videoPlayed = false;
 	private ResourceBundle displayText;
 	String ProcStatusText = "";
@@ -387,6 +385,7 @@ public class MainShell {
 			String strHtml = rightHTML.replace("BodyContent", "");
 			strHtml = strHtml.replace("DefaultStyle", defaultStyle);
 			imageLabel = new Browser(leftFrame, 0);
+			imageLabel.setJavascriptEnabled(true);
 			imageLabel.setText("");
 			imageLabel.setBackground(colourBlack);
 			imageLabel.addStatusTextListener(new EventStatusTextListener(this));
@@ -430,23 +429,20 @@ public class MainShell {
 				logger.trace("Video Enter");
 				try {
 					/*
-					 * videoFrame = SWT_AWT.new_Frame(mediaPanel);
-					 * videoSurfaceCanvas = new Canvas();
+					 * videoFrame = SWT_AWT.new_Frame(mediaPanel); videoSurfaceCanvas = new
+					 * Canvas();
 					 * 
 					 * videoSurfaceCanvas.setBackground(java.awt.Color.black);
 					 * videoFrame.add(videoSurfaceCanvas);
 					 * 
-					 * mediaPlayerFactory = new
-					 * MediaPlayerFactory("--no-video-title-show"); mediaPlayer
-					 * = mediaPlayerFactory.newEmbeddedMediaPlayer();
+					 * mediaPlayerFactory = new MediaPlayerFactory("--no-video-title-show");
+					 * mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer();
 					 * 
-					 * videoSurface =
-					 * mediaPlayerFactory.newVideoSurface(videoSurfaceCanvas);
+					 * videoSurface = mediaPlayerFactory.newVideoSurface(videoSurfaceCanvas);
 					 * 
 					 * mediaPlayer.setVideoSurface(videoSurface);
 					 * 
-					 * mediaPlayer.addMediaPlayerEventListener(new
-					 * MediaListener());
+					 * mediaPlayer.addMediaPlayerEventListener(new MediaListener());
 					 */
 
 					libvlc_instance_t instance = LibVlc.libvlc_new(0, null);
@@ -907,13 +903,12 @@ public class MainShell {
 	/*
 	 * // Returns the image passed in resized to the width and height passed in
 	 * private static Image resize(Image image, int width, int height) { try {
-	 * logger.trace("Enter resize"); Image scaled = new
-	 * Image(Display.getDefault(), width, height); GC gc = new GC(scaled);
-	 * gc.setAntialias(SWT.ON); gc.setInterpolation(SWT.HIGH);
-	 * gc.drawImage(image, 0, 0, image.getBounds().width,
-	 * image.getBounds().height, 0, 0, width, height); gc.dispose();
-	 * logger.trace("Exit resize"); return scaled; } catch (Exception ex) {
-	 * logger.error(" resize " + ex.getLocalizedMessage(), ex);
+	 * logger.trace("Enter resize"); Image scaled = new Image(Display.getDefault(),
+	 * width, height); GC gc = new GC(scaled); gc.setAntialias(SWT.ON);
+	 * gc.setInterpolation(SWT.HIGH); gc.drawImage(image, 0, 0,
+	 * image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+	 * gc.dispose(); logger.trace("Exit resize"); return scaled; } catch (Exception
+	 * ex) { logger.error(" resize " + ex.getLocalizedMessage(), ex);
 	 * logger.trace("Exit resize"); return null; }
 	 * 
 	 * }
@@ -984,156 +979,33 @@ public class MainShell {
 	}
 
 	public void setImage(String imgPath) {
-		// delete old image if it exists
-		if (oldImage != null && oldImage.exists()) {
-			oldImage.delete();
-			oldImage = null;
-		}
-		if (oldImage2 != null && oldImage2.exists()) {
-			oldImage2.delete();
-			oldImage2 = null;
-		}
 
 		// display an image in the area to the left of the screen
-		HashMap<String, Integer> imageDimentions;
 		imgOverRide = false;
-
-		if (imgPath.lastIndexOf(".") == -1) {
-			try {
-				boolean newFile = false;
-				String extension = "";
-				File tmpFile = new File(imgPath);
-				URLConnection con = tmpFile.toURI().toURL().openConnection();
-				String mimeType = con.getContentType();
-				con = null;
-
-				switch (mimeType) {
-				case "image/jpeg":
-					extension = ".jpg";
-					newFile = true;
-					break;
-				case "image/bmp":
-					extension = ".bmp";
-					newFile = true;
-					break;
-				case "image/gif":
-					extension = ".gif";
-					newFile = true;
-					break;
-				case "image/png":
-					extension = ".png";
-					newFile = true;
-					break;
-				case "image/tiff":
-					extension = ".tiff";
-					newFile = true;
-					break;
-				}
-				if (newFile) {
-					String tmpPath = appSettings.getTempDir();
-					oldImage2 = File.createTempFile("TempImage2", extension, new File(tmpPath));
-					oldImage2.deleteOnExit();
-					FileInputStream strSrc = new FileInputStream(tmpFile);
-					FileChannel src = strSrc.getChannel();
-					FileOutputStream strDest = new FileOutputStream(oldImage2);
-					FileChannel dest = strDest.getChannel();
-					dest.transferFrom(src, 0, src.size());
-					strSrc.close();
-					strDest.close();
-					src.close();
-					dest.close();
-					imgPath = oldImage2.getAbsolutePath();
-				}
-			} catch (IOException e1) {
-			}
-		}
 
 		Image memImage = new Image(myDisplay, imgPath);
 		imageLabel.setData("imgPath", imgPath);
-		try {
-			String tmpImagePath;
-			String strHtml;
-			ImageData imgData = memImage.getImageData();
-			Rectangle RectImage = imageLabel.getBounds();
-			double dblScreenRatio = (double) RectImage.height / (double) RectImage.width;
-			logger.trace("dblScreenRatio: " + dblScreenRatio);
-			double dblImageRatio = (double) imgData.height / (double) imgData.width;
-			imageLabel.setData("imageRatio", Double.valueOf(dblImageRatio));
-			logger.trace("Lable Height: " + RectImage.height);
-			logger.trace("Lable Width: " + RectImage.width);
-			logger.trace("Image Height: " + imgData.height);
-			logger.trace("Image Width: " + imgData.width);
+		ImageData imgData = memImage.getImageData();
+		double dblImageRatio = (double) imgData.height / (double) imgData.width;
 
-			int maxImageScale = appSettings.getMaxImageScale();
-			int maxheight = (imgData.height * maxImageScale) / 100;
-			int maxwidth = (imgData.width * maxImageScale) / 100;
+		int maxImageScale = appSettings.getMaxImageScale();
+		int maxheight = (imgData.height * maxImageScale) / 100;
+		int maxwidth = (imgData.width * maxImageScale) / 100;
 
-			imageLabel.setData("maxImageScale", maxImageScale);
-			imageLabel.setData("maxheight", maxheight);
-			imageLabel.setData("maxwidth", maxwidth);
+		imageLabel.setData("imageRatio", Double.valueOf(dblImageRatio));
+		imageLabel.setData("maxImageScale", maxImageScale);
+		imageLabel.setData("maxheight", maxheight);
+		imageLabel.setData("maxwidth", maxwidth);
 
-			imageDimentions = GetNewDimentions(dblImageRatio, RectImage.height, RectImage.width,
-					appSettings.getImgOffset(), maxImageScale != 0, maxheight, maxwidth);
+		memImage.dispose();
 
-			if (imgPath.endsWith(".gif")) {
-				memImage.dispose();
-				memImage = null;
-				tmpImagePath = imgPath;
-				strHtml = leftHTML.replace("DefaultStyle", defaultStyle + " body { overflow:hidden }");
-				strHtml = strHtml.replace("BodyContent",
-						"<table id=\"wrapper\"><tr><td><img src=\"" + tmpImagePath + "\" height=\""
-								+ imageDimentions.get("newHeight") + "\" width=\"" + imageDimentions.get("newWidth")
-								+ "\" /></td></tr></table>");
-			} else {
-				BufferedImage img = null;
-				try {
-					ImageIO.setUseCache(false);
-					img = ImageIO.read(new File(imgPath));
-				} catch (IOException e) {
-					logger.error("Failed to read image file: " + imgPath, e);
-					return;
-				}
-				if (img.getColorModel().hasAlpha()) {
-					img = comonFunctions.dropAlphaChannel(img);
-				}
-				BufferedImage imageNew = Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC,
-						imageDimentions.get("newWidth"), imageDimentions.get("newHeight"), Scalr.OP_ANTIALIAS);
-				String imgType = "";
-				int pos = imgPath.lastIndexOf(".");
-				if (pos > -1) {
-					imgType = imgPath.substring(pos + 1);
-				}
-				String tmpPath = appSettings.getTempDir();
-				File newImage = File.createTempFile("tmpImage", "." + imgType, new File(tmpPath));
-				oldImage = newImage;
-				newImage.deleteOnExit();
-				tmpImagePath = newImage.getAbsolutePath();
-				ImageIO.write(imageNew, imgType.toLowerCase(), newImage);
-				// tmpImagePath = System.getProperty("user.dir") +
-				// File.pathSeparator + "tmpImage." + imgType;
-				// ImageIO.write(imagenew, imgType, new File(tmpImagePath));
-				// Image tmpImage2 = imageLabel.getImage();
-				// imageLabel.setImage(resize(memImage, newWidth, newHeight));
-				memImage.dispose();
-				memImage = null;
-				// if (tmpImage2 != null) {
-				// tmpImage2.dispose();
-				// }
-				strHtml = leftHTML.replace("DefaultStyle", defaultStyle + " body { overflow:hidden }");
-				strHtml = strHtml.replace("BodyContent",
-						"<table id=\"wrapper\"><tr><td><img src=\"" + tmpImagePath + "\" height=\""
-								+ imageDimentions.get("newHeight") + "\" width=\"" + imageDimentions.get("newWidth")
-								+ "\" /></td></tr></table>");
-			}
-			imageLabel.setText(strHtml, true);
-			logger.trace("Open: " + imgPath);
-		} catch (Exception ex6) {
-			logger.error("Process Image error " + ex6.getLocalizedMessage(), ex6);
-		}
+		String strHtml = this.mainShell.leftHTML.replace("IMG_SRC", imgPath);
+		imageLabel.setText(strHtml, true);
+
 		mediaPanel.setVisible(false);
 		webcamPanel.setVisible(false);
-		this.imageLabel.setVisible(true);
-		leftFrame.layout(true);
+		imageLabel.setVisible(true);
+
 		shell.pack();
 	}
 
@@ -1802,7 +1674,7 @@ public class MainShell {
 	}
 
 	public void stopVideo(boolean shellClosing) {
-		if (videoOn) {
+		if (videoOn && mediaPlayer.media().info() != null) {
 			try {
 				if (mediaPlayer != null) {
 					videoLoops = 0;
