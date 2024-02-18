@@ -1803,7 +1803,7 @@ public class MainShell {
 	public void stopVideo(boolean shellClosing) {
 		if (videoOn) {
 			try {
-				if (mediaPlayer != null) {
+				if (mediaPlayer != null && mediaPlayer.media().info() != null) {
 					videoLoops = 0;
 					videoTarget = "";
 					videoPlay = false;
