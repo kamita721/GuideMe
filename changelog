@@ -1,0 +1,4 @@
+Resolve segfault on Linux (Update VLCJ library)
+Rework how static images are handled
+Cache static images
+Code Cleanup
