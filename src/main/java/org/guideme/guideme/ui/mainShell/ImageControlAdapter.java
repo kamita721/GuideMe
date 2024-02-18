@@ -74,37 +74,32 @@ class ImageControlAdapter extends ControlAdapter {
 					// + "\" /></td></tr></table></body></html>";
 					if (imgPath.endsWith(".gif")) {
 						tmpImagePath = imgPath;
-						strHtml = this.mainShell.leftHTML.replace("DefaultStyle", this.mainShell.defaultStyle + " body { overflow:hidden }");
+						strHtml = this.mainShell.leftHTML.replace("DefaultStyle",
+								this.mainShell.defaultStyle + " body { overflow:hidden }");
 						strHtml = strHtml.replace("BodyContent",
 								"<table id=\"wrapper\"><tr><td><img src=\"" + tmpImagePath + "\" height=\""
 										+ imageDimentions.get("newHeight") + "\" width=\""
 										+ imageDimentions.get("newWidth") + "\" /></td></tr></table>");
 					} else {
-						BufferedImage img = null;
-						try {
-							ImageIO.setUseCache(false);
-							img = ImageIO.read(new File(imgPath));
-						} catch (IOException e1) {
-						}
-						if (img.getColorModel().hasAlpha()) {
-							img = this.mainShell.comonFunctions.dropAlphaChannel(img);
-						}
-						BufferedImage imagenew = Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC,
-								imageDimentions.get("newWidth"), imageDimentions.get("newHeight"),
-								Scalr.OP_ANTIALIAS);
-						String imgType = imgPath.substring(imgPath.length() - 3);
-						String tmpPath = this.mainShell.appSettings.getTempDir();
-						File newImage = File.createTempFile("tmpImage", imgType, new File(tmpPath));
-						newImage.deleteOnExit();
-						tmpImagePath = newImage.getAbsolutePath();
-						ImageIO.write(imagenew, imgType, newImage);
-						strHtml = this.mainShell.leftHTML.replace("DefaultStyle", this.mainShell.defaultStyle + " body { overflow:hidden }");
+						//TODO read this info in once on load
+//						BufferedImage img = null;
+//						try {
+//							ImageIO.setUseCache(false);
+//							img = ImageIO.read(new File(imgPath));
+//						} catch (IOException e1) {
+//						}
+//						if (img.getColorModel().hasAlpha()) {
+//							img = this.mainShell.comonFunctions.dropAlphaChannel(img);
+//						}
+						strHtml = this.mainShell.leftHTML.replace("DefaultStyle",
+								this.mainShell.defaultStyle + " body { overflow:hidden }");
 						strHtml = strHtml.replace("BodyContent",
-								"<table id=\"wrapper\"><tr><td><img src=\"" + tmpImagePath + "\" height=\""
+								"<table id=\"wrapper\"><tr><td><img src=\"" + imgPath + "\" height=\""
 										+ imageDimentions.get("newHeight") + "\" width=\""
 										+ imageDimentions.get("newWidth") + "\" /></td></tr></table>");
 					}
 					me.setText(strHtml, true);
+					System.err.println(me.getText());
 					// Image tmpImage = me.getImage();
 					// me.setImage(resize(myImage, newWidth, newHeight));
 					// tmpImage.dispose();
@@ -113,9 +108,5 @@ class ImageControlAdapter extends ControlAdapter {
 				MainShell.logger.error("Shell Resize error " + ex7.getLocalizedMessage(), ex7);
 			}
 		}
-		if (MainShell.testI == 2) {
-			MainShell.logger.trace("About to crash");
-		}
-		MainShell.logger.trace("Exit addControlListener: " + MainShell.testI++);
 	}
 }

@@ -2,7 +2,7 @@ package org.guideme.guideme.settings;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.guideme.guideme.ui.PreferenceShell;
+import org.guideme.guideme.ui.preference_shell.PreferenceShell;
 
 public class PreferenceShellTest {
 	public PreferenceShellTest() {
@@ -11,9 +11,8 @@ public class PreferenceShellTest {
 
 	public static void main(String[] args) {
 		Display myDisplay = new Display();
-		UserSettings userSettings = UserSettings.getUserSettings();
 		AppSettings appSettings = AppSettings.getAppSettings();
-		Shell prefShell = new PreferenceShell().createShell(myDisplay, userSettings, appSettings);
+		Shell prefShell = new PreferenceShell().createShell(myDisplay, appSettings);
 		prefShell.open();
 		while (!prefShell.isDisposed()) {
 			if (!myDisplay.readAndDispatch())

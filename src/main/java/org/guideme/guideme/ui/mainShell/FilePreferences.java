@@ -3,7 +3,7 @@ package org.guideme.guideme.ui.mainShell;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Shell;
-import org.guideme.guideme.ui.PreferenceShell;
+import org.guideme.guideme.ui.preference_shell.PreferenceShell;
 
 class FilePreferences extends SelectionAdapter {
 	/**
@@ -25,7 +25,7 @@ class FilePreferences extends SelectionAdapter {
 			MainShell.logger.trace("Enter FilePreferences");
 			// display a modal shell to change the preferences
 			this.mainShell.inPrefShell = true;
-			Shell prefShell = new PreferenceShell().createShell(this.mainShell.myDisplay, this.mainShell.userSettings, this.mainShell.appSettings);
+			Shell prefShell = new PreferenceShell().createShell(this.mainShell.myDisplay, this.mainShell.appSettings);
 			prefShell.open();
 			while (!prefShell.isDisposed()) {
 				if (!this.mainShell.myDisplay.readAndDispatch())

@@ -1,7 +1,6 @@
-package org.guideme.guideme.ui;
+package org.guideme.guideme.ui.preference_shell;
 
 import java.util.HashMap;
-//import java.util.Set;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -23,7 +22,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -31,19 +29,17 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
-import org.guideme.guideme.settings.UserSettings;
 
 import com.snapps.swt.SquareButton;
 
 public class PreferenceShell {
 	private Shell shell = null;
-	private Display myDisplay;
-	//private UserSettings myUserSettings;
+	
 	private AppSettings myAppSettings;
 	private static Logger logger = LogManager.getLogger();
 	private Font controlFont;
-	private HashMap<String, FormData> appFormdata = new HashMap<String, FormData>();
-	private HashMap<String, Control> appWidgets = new HashMap<String, Control>();
+	private HashMap<String, FormData> appFormdata = new HashMap<>();
+	private HashMap<String, Control> appWidgets = new HashMap<>();
 	private boolean isFullScreen;
 	private boolean isMultiMonitor;
 	private int mainMonitor;
@@ -52,16 +48,12 @@ public class PreferenceShell {
 		super();
 	}
 
-	public Shell createShell(final Display display, UserSettings userSettings, AppSettings appSettings) {
+	public Shell createShell(final Display display, AppSettings appSettings) {
+  Display myDisplay;
 		logger.trace("Enter createShell");
 		try {
-			//Control tmpWidget;
-			//Control tmpWidget2;
-			
-			
 			//Create the main UI elements
 			myDisplay = display;
-			//myUserSettings = userSettings;
 			myAppSettings = appSettings;
 			ResourceBundle displayText = appSettings.getDisplayText();
 			
@@ -96,8 +88,6 @@ public class PreferenceShell {
 			grpApp.setText("Application (" + ComonFunctions.getVersion() + ")");
 			FormLayout layout5 = new FormLayout();
 			grpApp.setLayout(layout5);
-			//tmpWidget = grpApp;
-			//tmpWidget2 = grpApp;
 			
 			//Font Size
 			AddTextField(grpApp, displayText.getString("FileAppPrefFontSize"), grpApp, grpApp, String.valueOf(myAppSettings.getFontSize()), "AppFontSize", true);
