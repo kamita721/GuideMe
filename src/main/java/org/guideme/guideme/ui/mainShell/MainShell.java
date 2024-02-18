@@ -344,21 +344,25 @@ public class MainShell {
 			mediaPanel.setLayout(layout3);
 			mediaPanel.setBackground(colourBlack);
 			mediaPanel.addControlListener(new mediaPanelListener(this));
+			mediaPanel.setData("name", "mediaPanel");
 
 			webcamPanel = new Composite(leftFrame, SWT.EMBEDDED);
 			FormLayout layoutwebcam = new FormLayout();
 			webcamPanel.setLayout(layoutwebcam);
 			webcamPanel.setBackground(colourBlack);
+			webcamPanel.setData("name", "webcamPanel");
 
 			imageManager = new ImageManager(myDisplay);
 			imageLabel = new Label(leftFrame, SWT.CENTER);
 			imageLabel.setBackground(colourBlack);
+			imageLabel.setData("name", "imageLabel");
 
 			leftFrame.addControlListener(new ControlAdapter() {
 				@Override
 				public void controlResized(ControlEvent e) {
 					imageManager.setPreferedSize(leftFrame.getSize());
 					imageManager.updateImageLabel(imageLabel);
+					shell.layout(true);
 
 				}
 			});
@@ -396,6 +400,7 @@ public class MainShell {
 			leftPaneBrowser.setText(leftHTML);
 			leftPaneBrowser.setBackground(colourBlack);
 			leftPaneBrowser.addStatusTextListener(new EventStatusTextListener(this));
+			leftPaneBrowser.setData("name", "leftPaneBrowswer");
 			shell.pack();
 
 			if (!multiMonitor) {
@@ -980,6 +985,7 @@ public class MainShell {
 	}
 
 	public void setLeftPaneVisibleElement(Control c) {
+		logger.trace("setLeftPaneVisible( " + c +" name = " + c.getData("name") + ")");
 		Control[] elements = new Control[] { mediaPanel, webcamPanel, leftPaneBrowser, imageLabel };
 		boolean found = false;
 		for (Control e : elements) {

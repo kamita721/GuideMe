@@ -516,6 +516,7 @@ public class MainLogic {
 				mainShell.clearImage();
 			}
 		}
+		imgName = new File(imgPath).getName();
 		if (blnImage) {
 			return imgName;
 		} else {
