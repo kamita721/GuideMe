@@ -58,8 +58,8 @@ public class MainShellMock extends MainShell {
 	}
 
 	@Override
-	public void setImageLabel(String imgPath, String strImage) {
-		logger.debug("MainShellMock setImageLabel Path:" + imgPath + " Image:" + strImage);
+	public void setImage(String imgPath) {
+		logger.debug("MainShellMock setImageLabel Path:" + imgPath);
 		File f = new File(imgPath);
 		if(!f.exists()){
 			logger.error("setImageLabel File " + imgPath + " does not exist");

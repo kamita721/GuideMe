@@ -526,8 +526,7 @@ public class MainLogic {
 		}
 		if (blnImage) {
 			try {
-				imgName = imgPath.substring(imgPath.lastIndexOf(fileSeparator) + 1);
-				mainShell.setImageLabel(imgPath, strImage);
+				mainShell.setImage(imgPath);
 			} catch (Exception e1) {
 				logger.error("displayPage Image Exception " + e1.getLocalizedMessage(), e1);
 				mainShell.clearImage();

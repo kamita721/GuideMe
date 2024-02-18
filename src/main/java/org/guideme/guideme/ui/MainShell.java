@@ -863,7 +863,7 @@ public class MainShell {
 	public void run(Display display) {
 		do {
 			logger.trace("create shell");
-			shell = mainShell.createShell(display);
+			shell = createShell(display);
 			logger.trace("open shell");
 			shell.open();
 			if (mainShell.getMultiMonitor()){
@@ -1910,7 +1910,7 @@ public class MainShell {
 										File flImage = new File(imgPath);
 										if (flImage.exists()) {
 											try {
-												setImageLabel(imgPath, strImage);
+												setImage(imgPath);
 											} catch (Exception e1) {
 												logger.error("Timer Image Exception " + e1.getLocalizedMessage(), e1);
 											}
@@ -2000,7 +2000,7 @@ public class MainShell {
 		this.lblRight.setText(lblRight);
 	}
 
-	public void setImageLabel(String imgPath, String strImage) {
+	public void setImage(String imgPath) {
 		// delete old image if it exists
 		if (oldImage != null && oldImage.exists()) {
 			oldImage.delete();
