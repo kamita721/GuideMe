@@ -1134,6 +1134,7 @@ public class MainShell {
 		webcamPanel.setVisible(false);
 		this.imageLabel.setVisible(true);
 		leftFrame.layout(true);
+		shell.pack();
 	}
 
 	public String getStyle() {
@@ -1803,7 +1804,7 @@ public class MainShell {
 	public void stopVideo(boolean shellClosing) {
 		if (videoOn) {
 			try {
-				if (mediaPlayer != null && mediaPlayer.media().info() != null) {
+				if (mediaPlayer != null) {
 					videoLoops = 0;
 					videoTarget = "";
 					videoPlay = false;
