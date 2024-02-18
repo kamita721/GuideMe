@@ -777,22 +777,6 @@ public class Guide {
 			}
 			});		
 	}
-	
-
-	/**
-	 * Replaces the body section within the html on the left (Image) pane
-	 * 
-	 * @param leftBody html fragment to over write the current body contents
-	 * @param overRideStyle CSS to style the html (will use the default if this is blank)
-	 */
-	public void setLeftBody(String leftBody, String overRideStyle) {
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				mainshell.setLeftText(leftBody, overRideStyle);
-			}
-			});		
-	}
 
 	/**
 	 * Clears the image in the left pane 

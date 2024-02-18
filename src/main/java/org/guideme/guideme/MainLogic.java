@@ -576,7 +576,7 @@ public class MainLogic {
 				logger.error("displayPage Over ride lefthtml Guide CSS Exception " + e.getLocalizedMessage(), e);
 			}
 
-			mainShell.setImageHtml(leftHtml);
+			mainShell.setleftPaneHtml(leftHtml);
 		} else {
 			// Left text
 			// Replace any string pref in the HTML with the user preference

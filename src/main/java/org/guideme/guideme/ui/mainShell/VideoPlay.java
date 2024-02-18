@@ -37,7 +37,7 @@ class VideoPlay implements Runnable {
 					this.mainShell.myDisplay.syncExec(() -> {
 						this.mainShell.mediaPanel.setVisible(true);
 						this.mainShell.webcamPanel.setVisible(false);
-						this.mainShell.imageLabel.setVisible(false);
+						this.mainShell.leftPaneBrowser.setVisible(false);
 						this.mainShell.leftFrame.layout(true);
 					});
 					mediaPlayer.media().play(video, vlcArgs.toArray(new String[vlcArgs.size()]));

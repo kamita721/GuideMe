@@ -17,14 +17,11 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.ProgressEvent;
-import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -58,6 +55,7 @@ import org.guideme.guideme.ui.CompositeVideoSurface;
 import org.guideme.guideme.ui.DebugShell;
 import org.guideme.guideme.ui.MetronomePlayer;
 import org.guideme.guideme.ui.SwtEmbeddedMediaPlayer;
+import org.guideme.guideme.util.ImageManager;
 import org.mozilla.javascript.ContextFactory;
 
 import com.github.sarxos.webcam.Webcam;
@@ -102,7 +100,9 @@ public class MainShell {
 	Label lblLeft;
 	private Label lblCentre;
 	Label lblRight;
-	Browser imageLabel;
+	Browser leftPaneBrowser;
+	Label imageLabel;
+	ImageManager imageManager;
 	private Browser brwsText;
 	SashForm sashform;
 	SashForm sashform2;
@@ -350,6 +350,19 @@ public class MainShell {
 			webcamPanel.setLayout(layoutwebcam);
 			webcamPanel.setBackground(colourBlack);
 
+			imageManager = new ImageManager(myDisplay);
+			imageLabel = new Label(leftFrame, SWT.CENTER);
+			imageLabel.setBackground(colourBlack);
+
+			leftFrame.addControlListener(new ControlAdapter() {
+				@Override
+				public void controlResized(ControlEvent e) {
+					imageManager.setPreferedSize(leftFrame.getSize());
+					imageManager.updateImageLabel(imageLabel);
+
+				}
+			});
+
 			// defaultStyle
 			try {
 				defaultStyle = comonFunctions.readFile("./defaultCSS.TXT", StandardCharsets.UTF_8);
@@ -378,11 +391,11 @@ public class MainShell {
 
 			String strHtml = rightHTML.replace("BodyContent", "");
 			strHtml = strHtml.replace("DefaultStyle", defaultStyle);
-			imageLabel = new Browser(leftFrame, SWT.WEBKIT);
-			imageLabel.setJavascriptEnabled(true);
-			imageLabel.setText(leftHTML);
-			imageLabel.setBackground(colourBlack);
-			imageLabel.addStatusTextListener(new EventStatusTextListener(this));
+			leftPaneBrowser = new Browser(leftFrame, SWT.WEBKIT);
+			leftPaneBrowser.setJavascriptEnabled(true);
+			leftPaneBrowser.setText(leftHTML);
+			leftPaneBrowser.setBackground(colourBlack);
+			leftPaneBrowser.addStatusTextListener(new EventStatusTextListener(this));
 			shell.pack();
 
 			if (!multiMonitor) {
@@ -528,26 +541,15 @@ public class MainShell {
 			btnCompFormData.bottom = new FormAttachment(sashform2, 0);
 			btnComp.setLayoutData(btnCompFormData);
 
-			FormData MediaPanelFormData = new FormData();
-			MediaPanelFormData.top = new FormAttachment(0, 0);
-			MediaPanelFormData.left = new FormAttachment(0, 0);
-			MediaPanelFormData.right = new FormAttachment(100, 0);
-			MediaPanelFormData.bottom = new FormAttachment(100, 0);
-			mediaPanel.setLayoutData(MediaPanelFormData);
-
-			FormData WebcamPanelFormData = new FormData();
-			WebcamPanelFormData.top = new FormAttachment(0, 0);
-			WebcamPanelFormData.left = new FormAttachment(0, 0);
-			WebcamPanelFormData.right = new FormAttachment(100, 0);
-			WebcamPanelFormData.bottom = new FormAttachment(100, 0);
-			webcamPanel.setLayoutData(WebcamPanelFormData);
-
-			FormData imageLabelFormData = new FormData();
-			imageLabelFormData.top = new FormAttachment(0, 0);
-			imageLabelFormData.left = new FormAttachment(0, 0);
-			imageLabelFormData.right = new FormAttachment(100, 0);
-			imageLabelFormData.bottom = new FormAttachment(100, 0);
-			imageLabel.setLayoutData(imageLabelFormData);
+			FormData leftPaneElementFormData = new FormData();
+			leftPaneElementFormData.top = new FormAttachment(0, 0);
+			leftPaneElementFormData.left = new FormAttachment(0, 0);
+			leftPaneElementFormData.right = new FormAttachment(100, 0);
+			leftPaneElementFormData.bottom = new FormAttachment(100, 0);
+			mediaPanel.setLayoutData(leftPaneElementFormData);
+			webcamPanel.setLayoutData(leftPaneElementFormData);
+			leftPaneBrowser.setLayoutData(leftPaneElementFormData);
+			imageLabel.setLayoutData(leftPaneElementFormData);
 
 			// Menu Bar
 			MenuBar = new Menu(shell, SWT.BAR);
@@ -971,27 +973,43 @@ public class MainShell {
 
 	public void setImage(String imgPath) {
 		imgOverRide = false;
-		imageLabel.setData("imgPath", imgPath);
-		System.err.println(imageLabel.execute("setImage(\"" + imgPath + "\"); 1"));
+		imageManager.setCurrentImagePath(imgPath);
+		imageManager.updateImageLabel(imageLabel);
 
-		mediaPanel.setVisible(false);
-		webcamPanel.setVisible(false);
-		imageLabel.setVisible(true);
+		setLeftPaneVisibleElement(imageLabel);
+	}
+
+	public void setLeftPaneVisibleElement(Control c) {
+		Control[] elements = new Control[] { mediaPanel, webcamPanel, leftPaneBrowser, imageLabel };
+		boolean found = false;
+		for (Control e : elements) {
+			if (e == c) {
+				e.setVisible(true);
+				found = true;
+			} else {
+				e.setVisible(false);
+			}
+		}
+		if (!found) {
+			logger.error("Invalid left pane element: " + c);
+		}
+		leftFrame.layout(true);
 	}
 
 	public String getStyle() {
 		return style;
 	}
 
-	public void setImageHtml(String leftHtml) {
-		logger.error("MainShell.setImageHtml() not implemented");
-		/*
-		 * try { logger.trace("setImageHtml: " + leftHtml); imgOverRide = true;
-		 * imageLabel.setText(leftHtml, true); mediaPanel.setVisible(false);
-		 * webcamPanel.setVisible(false); imageLabel.setVisible(true);
-		 * leftFrame.layout(true); } catch (Exception ex) {
-		 * logger.error("setImageHtml error " + ex.getLocalizedMessage(), ex); }
-		 */
+	public void setleftPaneHtml(String leftHtml) {
+		try {
+			logger.trace("setleftPaneHtml: " + leftHtml);
+			imgOverRide = true;
+			leftPaneBrowser.setText(leftHtml, true);
+			setLeftPaneVisibleElement(leftPaneBrowser);
+		} catch (Exception ex) {
+			logger.error("setleftPaneHtml error " + ex.getLocalizedMessage(), ex);
+		}
+
 	}
 
 	public boolean showWebcam() {
@@ -1002,9 +1020,7 @@ public class MainShell {
 
 				if (webcam != null) {
 					mainShell.setLeftText("", "");
-					this.imageLabel.setVisible(false);
-					this.mediaPanel.setVisible(false);
-					this.webcamPanel.setVisible(true);
+					setLeftPaneVisibleElement(webcamPanel);
 
 					Dimension[] dimensions = webcam.getViewSizes();
 					Dimension size = dimensions[dimensions.length - 1];
@@ -1040,9 +1056,7 @@ public class MainShell {
 		if (videoOn) {
 			try {
 				mainShell.setLeftText("", "");
-				this.imageLabel.setVisible(false);
-				this.webcamPanel.setVisible(false);
-				this.mediaPanel.setVisible(true);
+				setLeftPaneVisibleElement(mediaPanel);
 				leftFrame.layout(true);
 				videoLoops = loops;
 				videoTarget = target;
@@ -1071,10 +1085,8 @@ public class MainShell {
 	}
 
 	public void clearImage() {
-		logger.error("MainShell.clearImage not implemtneted");
-		// imageLabel.setImage(null);
-//		String strHTML = leftHTML.replace("DefaultStyle", defaultStyle + " body { overflow:hidden }");
-//		imageLabel.setText(strHTML, true);
+		imageManager.setCurrentImagePath(null);
+		imageManager.updateImageLabel(imageLabel);
 	}
 
 	public void playAudio(String audio, int startAt, int stopAt, int loops, String target, String jscript,
@@ -1183,10 +1195,7 @@ public class MainShell {
 	}
 
 	public void setLeftText(String brwsText, String overRideStyle) {
-		logger.error("MainShell.setLeftText() not implemented");
-		/*
-		// set HTML to be displayed in the browser control to the left of the
-		// screen
+		// set HTML to be displayed in the browser control to the left of the screen
 		if (overRideStyle.equals("")) {
 			overRideStyle = style;
 		}
@@ -1194,10 +1203,9 @@ public class MainShell {
 		try {
 			strHTML = leftHTML.replace("DefaultStyle", overRideStyle);
 			strHTML = strHTML.replace("BodyContent", brwsText);
-			this.imageLabel.setText(strHTML);
+			this.leftPaneBrowser.setText(strHTML);
 			if (appSettings.isToclipboard()) {
-				try {
-					// copy text to clip board for use in TTS
+				try { // copy text to clip board for use in TTS
 					String htmlString = brwsText.replaceAll("\\<.*?\\>", " ");
 					StringSelection stringSelection = new StringSelection(htmlString);
 					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -1210,33 +1218,24 @@ public class MainShell {
 			logger.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
 			strHTML = leftHTML.replace("DefaultStyle", overRideStyle);
 			strHTML = strHTML.replace("BodyContent", "");
-			this.imageLabel.setText(strHTML);
+			this.leftPaneBrowser.setText(strHTML);
 		}
-		mediaPanel.setVisible(false);
-		webcamPanel.setVisible(false);
-		this.imageLabel.setVisible(true);
-		leftFrame.layout(true);
-		*/
+		setLeftPaneVisibleElement(leftPaneBrowser);
 	}
 
 	public void setLeftHtml(String strHTML) {
-		logger.error("MainShell.setLeftHTML() not implemented");
-		/*
-		// set HTML to be displayed in the browser control to the left of the
-		// screen
+
+		// set HTML to be displayed in the browser control to the left of the screen
 		try {
-			this.imageLabel.setText(strHTML);
+			this.leftPaneBrowser.setText(strHTML);
 		} catch (Exception e1) {
 			logger.error("setLeftHtml Text Exception " + e1.getLocalizedMessage(), e1);
 			strHTML = leftHTML.replace("DefaultStyle", style);
 			strHTML = strHTML.replace("BodyContent", "");
-			this.imageLabel.setText(strHTML);
+			this.leftPaneBrowser.setText(strHTML);
 		}
-		mediaPanel.setVisible(false);
-		webcamPanel.setVisible(false);
-		this.imageLabel.setVisible(true);
-		leftFrame.layout(true);
-		*/
+		setLeftPaneVisibleElement(leftPaneBrowser);
+
 	}
 
 	public void removeButtons() {
@@ -1508,7 +1507,7 @@ public class MainShell {
 					logger.trace(name + "|" + value + "|" + type + "|" + checked);
 				}
 			}
-			String node2 = (String) imageLabel.evaluate(evaluateScript);
+			String node2 = (String) leftPaneBrowser.evaluate(evaluateScript);
 			fields = node2.split("\\|");
 			for (int i = 0; i < fields.length; i++) {
 				values = fields[i].split("¬");
@@ -1660,10 +1659,7 @@ public class MainShell {
 						videoStop.setMediaPlayer(mediaPlayer, shellClosing);
 						Thread videoStopThread = new Thread(videoStop, "videoStop");
 						videoStopThread.setName("videoStopThread");
-						mediaPanel.setVisible(false);
-						webcamPanel.setVisible(false);
-						imageLabel.setVisible(true);
-						leftFrame.layout(true);
+						setLeftPaneVisibleElement(leftPaneBrowser);
 						threadVideoPlayer = null;
 						videoStopThread.start();
 					}

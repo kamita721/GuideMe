@@ -31,7 +31,7 @@ class MediaListener extends MediaPlayerEventAdapter {
 					public void run() {
 						MediaListener.this.mainShell.mediaPanel.setVisible(false);
 						MediaListener.this.mainShell.webcamPanel.setVisible(false);
-						MediaListener.this.mainShell.imageLabel.setVisible(true);
+						MediaListener.this.mainShell.leftPaneBrowser.setVisible(true);
 						MediaListener.this.mainShell.leftFrame.layout(true);
 						MainShell.logger.debug("MediaListener Video Run: " + MediaListener.this.mainShell.videoJscript + " videoTarget: " + MediaListener.this.mainShell.videoTarget);
 						MediaListener.this.mainShell.mainShell.runJscript(MediaListener.this.mainShell.videoJscript, false);
