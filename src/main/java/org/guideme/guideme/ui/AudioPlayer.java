@@ -9,14 +9,13 @@ import org.eclipse.swt.widgets.Display;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
 
-import uk.co.caprica.vlcj.component.AudioMediaPlayerComponent;
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.binding.lib.LibVlc;
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
 public class AudioPlayer  implements Runnable {
 	//Class to play audio on a separate thread
 	private static Logger logger = LogManager.getLogger();
-	private AudioMediaPlayerComponent audioPlayerComponent = new AudioMediaPlayerComponent();
 	private MediaListener mediaListener = new MediaListener();
 	private MediaPlayer mediaPlayer;
 	private Boolean isPlaying = true;
@@ -63,8 +62,8 @@ public class AudioPlayer  implements Runnable {
 	public void audioStop() {
 		//stop the audio 
 		if (mediaPlayer != null) {
-			if (mediaPlayer.isPlaying()) {
-				mediaPlayer.stop();
+			if (mediaPlayer.status().isPlaying()) {
+				mediaPlayer.controls().stop();
 			}
 		}
 		synchronized(this){
@@ -75,15 +74,15 @@ public class AudioPlayer  implements Runnable {
 	}
 
 	public void audioPause() {
-		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-			mediaPlayer.pause();
+		if (mediaPlayer != null && mediaPlayer.status().isPlaying()) {
+			mediaPlayer.controls().pause();
 		}
 		logger.trace("AudioPlayer Pause");
 	}
 
 	public void audioResume() {
-		if (mediaPlayer != null && mediaPlayer.isPlayable()) {
-			mediaPlayer.play();
+		if (mediaPlayer != null && mediaPlayer.status().isPlayable()) {
+			mediaPlayer.controls().play();
 		}
 		logger.trace("AudioPlayer Resume");
 	}
@@ -92,16 +91,18 @@ public class AudioPlayer  implements Runnable {
 		try {
 			//Play the audio set up by AudioPlayer
 			//use a media list to play loops
-			mediaPlayer = audioPlayerComponent.getMediaPlayer();
+			//TODO should probably use the factory
+			mediaPlayer =  new MediaPlayer(LibVlc.libvlc_new(0, null));
 			if (this.outputDevice != null && !this.outputDevice.equals("")) {
-				mediaPlayer.setAudioOutputDevice(null, this.outputDevice);
+				//TODO this doesn't seem quite right
+				mediaPlayer.audio().setOutputDevice(null, this.outputDevice);
 			}
-			mediaPlayer.addMediaPlayerEventListener(mediaListener);
-			mediaPlayer.setVolume(volume);
+			mediaPlayer.events().addMediaPlayerEventListener(mediaListener);
+			mediaPlayer.audio().setVolume(volume);
 			if (this.vlcArgs.isEmpty()) {
-				mediaPlayer.playMedia(audioFile);
+				mediaPlayer.media().play(audioFile);
 			} else {
-				mediaPlayer.playMedia(audioFile, vlcArgs.toArray(new String[vlcArgs.size()]));
+				mediaPlayer.media().play(audioFile, vlcArgs.toArray(new String[vlcArgs.size()]));
 			}
 			synchronized(this) {
 				while (isPlaying) {
@@ -114,34 +115,30 @@ public class AudioPlayer  implements Runnable {
 			logger.error("AudioPlayer run ", e);
 		}
 		if (mediaPlayer != null) {
-			if (mediaPlayer.isPlaying()) {
-				mediaPlayer.stop();
+			if (mediaPlayer.status().isPlaying()) {
+				mediaPlayer.controls().stop();
 			}
-			mediaPlayer.removeMediaPlayerEventListener(mediaListener);
+			mediaPlayer.events().removeMediaPlayerEventListener(mediaListener);
 			mediaPlayer.release();
 			mediaPlayer = null;
-		}
-		if (audioPlayerComponent != null) {
-			audioPlayerComponent.release(true);
-			audioPlayerComponent = null;
 		}
 	}
 
 	public synchronized void setAudioDevice(String device)
 	{
-		mediaPlayer.setAudioOutputDevice(null, device);
+		mediaPlayer.audio().setOutputDevice(null, device);
 	}
 
 
 	class MediaListener extends MediaPlayerEventAdapter {
 
 		@Override
-		public void mediaStateChanged(MediaPlayer mediaPlayer, int newState) {
-			super.mediaStateChanged(mediaPlayer, newState);
-			logger.debug("New State " + newState);
+		public void stopped(MediaPlayer mediaPlayer) {
+			super.stopped(mediaPlayer);
+			logger.debug("Stopped ");
 			Display display = Display.getDefault();
 			//listener to handle displaying a new page when the audio ends
-			if ((newState==6) && isPlaying){
+			if (isPlaying){
 				if (!target.equals(""))  {
 					//run on the main UI thread
 					display.syncExec(

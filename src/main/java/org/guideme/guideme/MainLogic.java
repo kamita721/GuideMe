@@ -91,7 +91,9 @@ public class MainLogic {
 				logger.error("audio clip Exception ", e);
 			} catch (LineUnavailableException e) {
 				logger.error("audio clip Exception ", e);
-			}
+			}catch (NullPointerException e) {
+			logger.error("audio clip Exception ", e);
+		}
 		}
 		return mainLogic;
 	}
