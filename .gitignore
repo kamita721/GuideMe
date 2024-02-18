@@ -11,3 +11,7 @@ data/
 /doc/
 /logs/
 /bin/
+
+.classpath
+.project
+.settings/*
