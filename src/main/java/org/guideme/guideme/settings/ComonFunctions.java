@@ -49,10 +49,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.guideme.guideme.model.Guide;
 import org.guideme.guideme.model.Library;
+import org.guideme.guideme.util.ImageManager;
 import org.imgscalr.Scalr;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
@@ -1561,81 +1561,20 @@ public class ComonFunctions {
 		}
 	}
 
-	public void resizeGuideImages(String guide) {
+	public void resizeGuideImages(String guide, ImageManager imageManager) {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		int pos = guide.lastIndexOf(appSettings.getFileSeparator());
 		String mediaDir = guide.substring(0, pos + 1) + getMediaDirFromGuide(guide);
 		File mediaFolder = new File(mediaDir);
-		resizeFolderImages(mediaFolder);
+		resizeFolderImages(mediaFolder, imageManager);
 	}
 
-	private void resizeFolderImages(File folder) {
+	private void resizeFolderImages(File folder, ImageManager imageManager) {
 		for (File fileItem : folder.listFiles()) {
 			if (fileItem.isDirectory())
-				resizeFolderImages(fileItem);
+				resizeFolderImages(fileItem, imageManager);
 			if (fileItem.isFile())
-				resizeImage(fileItem);
-		}
-	}
-
-	private void resizeImage(File imageFile) {
-		int newWidth;
-		int newHeight;
-		String extension = "";
-
-		int i = imageFile.getName().lastIndexOf('.');
-		if (i > 0) {
-			extension = imageFile.getName().substring(i + 1);
-		}
-		if (extension.equals("jpg") || extension.equals("bmp")) {
-			Image memImage = new Image(display, imageFile.getAbsolutePath());
-			try {
-				ImageData imgData = memImage.getImageData();
-				Rectangle rectImage = display.getPrimaryMonitor().getBounds();
-				int maxheight = rectImage.height;
-				int maxwidth = rectImage.width;
-				if (rectImage.height < imgData.height || rectImage.width < imgData.width) {
-					double dblScreenRatio = (double) rectImage.height / (double) rectImage.width;
-					double dblImageRatio = (double) imgData.height / (double) imgData.width;
-					if (((rectImage.height > maxheight) && (rectImage.width > maxwidth))) {
-						if (dblScreenRatio > dblImageRatio) {
-							newHeight = (int) ((maxwidth) * dblImageRatio);
-							newWidth = maxwidth;
-							logger.trace("New GT Dimentions: H: " + newHeight + " W: " + newWidth);
-						} else {
-							newHeight = maxheight;
-							newWidth = (int) ((maxheight) / dblImageRatio);
-							logger.trace("New LT Dimentions: H: " + newHeight + " W: " + newWidth);
-						}
-					} else {
-						if (dblScreenRatio > dblImageRatio) {
-							newHeight = (int) (rectImage.width * dblImageRatio);
-							newWidth = rectImage.width;
-							logger.trace("New GT Dimentions: H: " + newHeight + " W: " + newWidth);
-						} else {
-							newHeight = rectImage.height;
-							newWidth = (int) (rectImage.height / dblImageRatio);
-							logger.trace("New LT Dimentions: H: " + newHeight + " W: " + newWidth);
-						}
-					}
-					BufferedImage img = null;
-					try {
-						ImageIO.setUseCache(false);
-						img = ImageIO.read(new File(imageFile.getAbsolutePath()));
-					} catch (IOException e) {
-						logger.error("Error reading image {}", imageFile, e);
-					}
-					if (img.getColorModel().hasAlpha()) {
-						img = comonFunctions.dropAlphaChannel(img);
-					}
-					BufferedImage imageNew = Scalr.resize(img, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_EXACT,
-							newWidth, newHeight, Scalr.OP_ANTIALIAS);
-					ImageIO.write(imageNew, extension, imageFile);
-				}
-				memImage = null;
-			} catch (Exception ex6) {
-				logger.error("Process Image error " + ex6.getLocalizedMessage(), ex6);
-			}
+				imageManager.scaleImageOnDisk(fileItem);
 		}
 	}
 

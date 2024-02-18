@@ -4,8 +4,13 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.concurrent.ExecutionException;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.graphics.Device;
@@ -13,6 +18,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Label;
+import org.imgscalr.Scalr;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -67,6 +73,43 @@ public class ImageManager {
 		fullsizeCache.get(path);
 	}
 
+	/*
+	 * TODO, why is this a thing?
+	 */
+	public void scaleImageOnDisk(File imageFile) {
+		String extension = FilenameUtils.getExtension(imageFile.getPath());
+		if (extension.equals("jpg") || extension.equals("bmp")) {
+			try {
+				ImageData imgData = new ImageData(imageFile.toString());
+				Point scaledDimensions = getImageScaledDimensions(imgData, largestImageDimension);
+				if(scaledDimensions == null) {
+					logger.error("Error downscaling image file {}", imageFile);
+					return;
+				}
+				if(scaledDimensions.x >= imgData.width || scaledDimensions.y >= imgData.height) {
+					return;
+				}
+				
+				BufferedImage img = null;
+				ImageIO.setUseCache(false);
+				img = ImageIO.read(new File(imageFile.getAbsolutePath()));
+
+				if (img.getColorModel().hasAlpha()) {
+					BufferedImage convertedImg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
+					convertedImg.getGraphics().drawImage(img, 0, 0, null);
+					img = convertedImg;
+				}
+				BufferedImage imageNew = Scalr.resize(img, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_EXACT, scaledDimensions.x,
+						scaledDimensions.y, Scalr.OP_ANTIALIAS);
+				ImageIO.write(imageNew, extension, imageFile);
+
+			} catch (Exception ex6) {
+				logger.error("Process Image error " + ex6.getLocalizedMessage(), ex6);
+			}
+		}
+
+	}
+
 	private ImageData loadImageDataFromFile(String filePath) {
 		// TODO handle errors
 		ImageData raw = new ImageData(filePath);
@@ -87,16 +130,24 @@ public class ImageManager {
 	}
 
 	private ImageData scaleImageData(ImageData raw, Point maxSize) {
-		if (raw == null) {
+		Point scaledDimensions = getImageScaledDimensions(raw, maxSize);
+		if(scaledDimensions == null) {
+			return null;
+		}
+		return raw.scaledTo(scaledDimensions.x, scaledDimensions.y);
+	}
+	
+	private Point getImageScaledDimensions(ImageData img, Point maxSize) {
+		if (img == null) {
 			return null;
 		}
 		if (maxSize.x <= 0 || maxSize.y <= 0) {
 			return null;
 		}
-		double xFactor = (double) maxSize.x / (double) raw.width;
-		double yFactor = (double) maxSize.y / (double) raw.height;
+		double xFactor = (double) maxSize.x / (double) img.width;
+		double yFactor = (double) maxSize.y / (double) img.height;
 		double factor = Math.min(xFactor, yFactor);
-		return raw.scaledTo((int) (raw.width * factor), (int) (raw.height * factor));
+		return new Point((int) (img.width * factor), (int) (img.height * factor));
 	}
 
 	private Point getLargestImageSize() {
@@ -112,4 +163,5 @@ public class ImageManager {
 		}
 		return new Point(virtualBounds.width, virtualBounds.height);
 	}
+
 }
