@@ -24,11 +24,11 @@ public class MetronomePlayer  implements Runnable {
 	//so if the rhythm is "1,5,12,14,20" it will sound at 0.25, 1.25, 3, 3.5 and 5 seconds
 	//a bpm of 90 and resolution of 3 gives 4.5 ticks per second so would be only slightly quicker
 	//0.22, 1.1, 2.6, 3.1 and 4.4 seconds
-	private volatile Boolean restart = false;
+	private volatile boolean restart = false;
 
 	private Sequencer sequencer;
 	private static Logger logger = LogManager.getLogger();
-	private Boolean isPlaying = true;
+	private boolean isPlaying = true;
 	private boolean isPaused = false;
 
 	public MetronomePlayer() {

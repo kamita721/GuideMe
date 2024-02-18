@@ -39,7 +39,7 @@ public class Guide {
 	/** @exclude */
 	private ArrayList<String> flags = new ArrayList<String>(); //current flags
 	/** @exclude */
-	private Boolean autoSetPage;
+	private boolean autoSetPage;
 	/** @exclude */
 	private String delaySet; //flags to set for currently running delay
 	/** @exclude */
@@ -63,7 +63,7 @@ public class Guide {
 	/** @exclude */
 	private String css; // css style sheet
 	/** @exclude */
-	private Boolean inPrefGuide;
+	private boolean inPrefGuide;
 	/** @exclude */
 	private HashMap<String, GlobalButton> globalButtons = new HashMap<>();
 	/** @exclude */
@@ -288,7 +288,7 @@ public class Guide {
 	}
 
 	/** @exclude */
-	public Boolean getAutoSetPage() {
+	public boolean getAutoSetPage() {
 		return autoSetPage;
 	}
 
@@ -410,7 +410,7 @@ public class Guide {
 	}
 
 	/** @exclude */
-	public Boolean getInPrefGuide() {
+	public boolean getInPrefGuide() {
 		return inPrefGuide;
 	}
 
@@ -473,7 +473,7 @@ public class Guide {
 	 * @param key the name of the preference
 	 * @return the value currently stored
 	 */
-	public Boolean isPref(String key) {
+	public boolean isPref(String key) {
 		return settings.isPref(key);
 	}
 	
@@ -483,7 +483,7 @@ public class Guide {
 	 * @param key the name of the preference
 	 * @return the new value to store
 	 */
-	public void setPref(String key, Boolean value) {
+	public void setPref(String key, boolean value) {
 		settings.setPref(key, value);
 	}
 	
@@ -494,7 +494,7 @@ public class Guide {
 	 * @param value the default value 
 	 * @param screenDesc the text displayed on the screen in guide preferences
 	 */
-	public void addPref(String key, Boolean value, String screenDesc, int sortOrder) {
+	public void addPref(String key, boolean value, String screenDesc, int sortOrder) {
 		settings.addPref(key, value, screenDesc, sortOrder);
 	}
 	
@@ -706,7 +706,7 @@ public class Guide {
 	 * @param fileName name of file to check for
 	 * @return true if the file exists
 	 */
-	public Boolean fileExists(String fileName) {
+	public boolean fileExists(String fileName) {
 		return comonFunctions.fileExists(fileName);
 	}
 	
@@ -716,7 +716,7 @@ public class Guide {
 	 * @param fileName folder to check for
 	 * @return true if the folder exists
 	 */
-	public Boolean directoryExists(String fileName) {
+	public boolean directoryExists(String fileName) {
 		return comonFunctions.directoryExists(fileName);
 	}
 

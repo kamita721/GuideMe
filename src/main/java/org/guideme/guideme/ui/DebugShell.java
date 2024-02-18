@@ -65,7 +65,7 @@ public class DebugShell {
 	private Table varTable;
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private static DebugShell debugShell;
-	private Boolean keepShellOpen;
+	private boolean keepShellOpen;
 	private Table btnTable;
 	
 	public static synchronized DebugShell getDebugShell() {
@@ -410,7 +410,7 @@ public class DebugShell {
 		}
 	}
 
-	public void setPage(String page, Boolean currPage) {
+	public void setPage(String page, boolean currPage) {
 		try {
 			Boolean refreshVars = false;
 			Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);

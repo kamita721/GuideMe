@@ -731,15 +731,15 @@ public class ComonFunctions{
 		return retrn;
 	}
 	
-	public Boolean fileExists(String fileName) {
+	public boolean fileExists(String fileName) {
 		return fileExists(fileName, false);
 	}
 
-	public Boolean directoryExists(String fileName) {
+	public boolean directoryExists(String fileName) {
 		return fileExists(fileName, true);
 	}
 
-	public Boolean fileExists(String fileName, boolean directory) {
+	public boolean fileExists(String fileName, boolean directory) {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		Guide guide = Guide.getGuide(); 
 		String fileSeparator = appSettings.getFileSeparator();
@@ -859,7 +859,7 @@ public class ComonFunctions{
 		return ListSubFolders(FolderName, true);
 	}
 	
-	public String ListSubFolders(String FolderName, Boolean blnArr) {
+	public String ListSubFolders(String FolderName, boolean blnArr) {
 		String folders = "";
 		AppSettings appSettings = AppSettings.getAppSettings();
 		Guide guide = Guide.getGuide(); 
@@ -1255,15 +1255,15 @@ public class ComonFunctions{
 		return os;
 	}
 	
-	public Boolean onWindows() {
+	public boolean onWindows() {
 		return os == osFamily.Windows;
 	}
 	
-	public Boolean onMac() {
+	public boolean onMac() {
 		return os == osFamily.Mac;
 	}
 	
-	public Boolean onUnix() {
+	public boolean onUnix() {
 		return os == osFamily.Unix;
 	}
 	
@@ -1875,7 +1875,7 @@ public class ComonFunctions{
         return convertedImg;
    }    
     
-    public Boolean CanCreateFile(String fileName)
+    public boolean CanCreateFile(String fileName)
     {
     	File file = new File(fileName);
     	if (!file.isDirectory())

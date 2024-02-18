@@ -268,7 +268,7 @@ public class Button  implements Comparable<Button>
 	}
 
 
-	public Boolean getDisabled() {
+	public boolean getDisabled() {
 		return disabled;
 	}
 

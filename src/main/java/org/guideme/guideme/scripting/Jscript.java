@@ -31,14 +31,14 @@ public class Jscript  implements Runnable
 	private static OverRide overRide;
 	private static Logger logger = LogManager.getLogger();
 	private static final Marker JSCRIPT_MARKER = MarkerManager.getMarker("JSCRIPT");
-	private static Boolean inPrefGuide;
+	private static boolean inPrefGuide;
 	private String javaScriptText;
 	private String javaFunction;
 	private boolean pageloading;
 	private boolean running;
 	private Main dbg;
 	
-	public Jscript(Guide Iguide, UserSettings IuserSettings, AppSettings IappSettings, Boolean IinPrefGuide, MainShell ImainShell, OverRide IoverRide, String ijavaScriptText, String ijavaFunction, boolean ipageloading) 
+	public Jscript(Guide Iguide, UserSettings IuserSettings, AppSettings IappSettings, boolean IinPrefGuide, MainShell ImainShell, OverRide IoverRide, String ijavaScriptText, String ijavaFunction, boolean ipageloading) 
 	{
 		super();
 		guide = Iguide;
@@ -96,7 +96,7 @@ public class Jscript  implements Runnable
 			return nodeToObj(node, true);
 		}
 
-		private Object nodeToObj(AstNode node, Boolean convertName) {
+		private Object nodeToObj(AstNode node, boolean convertName) {
 			//TODO: Ideally, there should be a better way to handle this than this obnoxious chain of if/else statements.
 			if (node instanceof StringLiteral)
 				return ((StringLiteral)node).getValue(); //Will not include enclosing quotes.

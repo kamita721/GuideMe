@@ -157,7 +157,7 @@ public class UserSettings implements Cloneable{
 		}
 	}
 
-	public Boolean isPref(String key) {
+	public boolean isPref(String key) {
 		Boolean value;
 		if (userBooleanPrefs.containsKey(key)) {
 			value = userBooleanPrefs.get(key);
@@ -167,7 +167,7 @@ public class UserSettings implements Cloneable{
 		return value;
 	}
 
-	public void setPref(String key, Boolean value) {
+	public void setPref(String key, boolean value) {
 		if (userBooleanPrefs.containsKey(key)) {
 			userBooleanPrefs.put(key, value);
 		}
@@ -198,7 +198,7 @@ public class UserSettings implements Cloneable{
 		userStringDesc.put(key, screenDesc);
 	}
 	
-	public void addPref(String key, Boolean value, String screenDesc) {
+	public void addPref(String key, boolean value, String screenDesc) {
 		userBooleanPrefs.put(key, value);
 		userBooleanDesc.put(key, screenDesc);
 	}
@@ -208,7 +208,7 @@ public class UserSettings implements Cloneable{
 		userNumericDesc.put(key, screenDesc);
 	}
 	
-	public Boolean keyExists(String key, String type) {
+	public boolean keyExists(String key, String type) {
 		Boolean exists = false;
 		if (type.equals("String")) {
 			exists = userStringDesc.containsKey(key);

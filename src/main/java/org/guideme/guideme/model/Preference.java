@@ -34,7 +34,7 @@ public class Preference implements Comparable<Preference> {
 		return sortOrder;
 	}
 
-	public Boolean getBlnValue() {
+	public boolean getBlnValue() {
 		return blnValue;
 	}
 

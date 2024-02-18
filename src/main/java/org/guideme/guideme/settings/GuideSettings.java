@@ -297,7 +297,7 @@ public class GuideSettings{
 		return value;
 	}
 
-	public Boolean isPref(String key) {
+	public boolean isPref(String key) {
 		Boolean value = false;
 		if (Prefs.containsKey(key)) {
 			Preference pref = Prefs.get(key);
@@ -317,7 +317,7 @@ public class GuideSettings{
 		}
 	}
 
-	public void setPref(String key, Boolean value) {
+	public void setPref(String key, boolean value) {
 		if (Prefs.containsKey(key)) {
 			Preference pref = Prefs.get(key);
 			if (pref.getType().equals("Boolean")) {
@@ -347,7 +347,7 @@ public class GuideSettings{
 		Prefs.put(key, pref);
 	}
 	
-	public void addPref(String key, Boolean value, String screenDesc, int sortOrder) {
+	public void addPref(String key, boolean value, String screenDesc, int sortOrder) {
 		Preference pref = new Preference(key, "Boolean", sortOrder, screenDesc, value, null, null);
 		Prefs.put(key, pref);
 	}
@@ -378,7 +378,7 @@ public class GuideSettings{
 		return prefs;
 	}
 	
-	public Boolean keyExists(String key, String type) {
+	public boolean keyExists(String key, String type) {
 		//comment
 		Boolean exists = false;
 		if (Prefs.containsKey(key)) {

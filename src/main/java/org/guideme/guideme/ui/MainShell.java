@@ -105,9 +105,9 @@ public class MainShell {
 	private String videoTarget = "";
 	private String videoJscript = "";
 	private String videoScriptVar = "";
-	private Boolean videoPlay = false;
-	private Boolean webcamVisible = false;
-	// private Boolean webcamRecording = false;
+	private boolean videoPlay = false;
+	private boolean webcamVisible = false;
+	// private boolean webcamRecording = false;
 	private Guide guide = Guide.getGuide();
 	private GuideSettings guideSettings = guide.getSettings();
 	private UserSettings userSettings = null;
@@ -152,18 +152,18 @@ public class MainShell {
 	private AudioPlayer audioPlayer2;
 	private Thread threadAudioPlayer2;
 	private Thread threadVideoPlayer;
-	private Boolean videoOn = true;
-	private Boolean webcamOn = true;
+	private boolean videoOn = true;
+	private boolean webcamOn = true;
 	private String style = "";
 	private String defaultStyle = "";
-	private Boolean imgOverRide = false;
-	private Boolean multiMonitor = true;
-	private Boolean overlayTimer = false;
+	private boolean imgOverRide = false;
+	private boolean multiMonitor = true;
+	private boolean overlayTimer = false;
 	private HashMap<String, com.snapps.swt.SquareButton> hotKeys = new HashMap<String, com.snapps.swt.SquareButton>();
 	private HashMap<String, com.snapps.swt.SquareButton> buttons = new HashMap<String, com.snapps.swt.SquareButton>();
 	private shellKeyEventListener keyListener;
 	// private shellMouseMoveListener mouseListen;
-	private Boolean showMenu = true;
+	private boolean showMenu = true;
 	private Menu MenuBar;
 	private HashMap<String, Timer> timer = new HashMap<String, Timer>();
 	// private ArrayList<Timer> timer = new ArrayList<Timer>();
@@ -3097,7 +3097,7 @@ public class MainShell {
 		return shell2;
 	}
 
-	public Boolean getMultiMonitor() {
+	public boolean getMultiMonitor() {
 		return multiMonitor;
 	}
 

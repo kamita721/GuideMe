@@ -17,7 +17,7 @@ public class AudioPlayer  implements Runnable {
 	private static Logger logger = LogManager.getLogger();
 	private MediaListener mediaListener = new MediaListener();
 	private MediaPlayer mediaPlayer;
-	private Boolean isPlaying = true;
+	private boolean isPlaying = true;
 	private String audioFile = "";
 	private String target;
 	private MainShell mainShell;

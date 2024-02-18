@@ -393,7 +393,7 @@ public class PreferenceShell {
 		}
 	}
 
-	private void AddTextField(Group group, String labelText, Control prevControl, Control prevControl2, String value, String key, Boolean addNewmeric) {
+	private void AddTextField(Group group, String labelText, Control prevControl, Control prevControl2, String value, String key, boolean addNewmeric) {
 		Label lblTmp;
 		Text txtTmp;
 		String lblSufix;
@@ -432,7 +432,7 @@ public class PreferenceShell {
 		appWidgets.put(key + ctrlSufix, txtTmp);
 	}
 
-	private void AddBooleanField(Group group, String labelText, Control prevControl, Control prevControl2, Boolean value, String key) {
+	private void AddBooleanField(Group group, String labelText, Control prevControl, Control prevControl2, boolean value, String key) {
 		Label lblTmp;
 		Button btnTmp;
 		FormData lblTmpFormData;

@@ -131,7 +131,7 @@ public class JscriptTest {
 	}
 
 
-	private static void AddTextField(Group group, String labelText, Control prevControl, Control prevControl2, String value, String key, Boolean addNewmeric) {
+	private static void AddTextField(Group group, String labelText, Control prevControl, Control prevControl2, String value, String key, boolean addNewmeric) {
 		Label lblTmp;
 		Text txtTmp;
 		String lblSufix;

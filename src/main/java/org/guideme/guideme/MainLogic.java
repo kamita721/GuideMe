@@ -103,13 +103,13 @@ public class MainLogic {
 	}
 
 	//display page without a chapter
-	public void displayPage(String pageId, Boolean reDisplay, Guide guide, MainShell mainShell, AppSettings appSettings, UserSettings userSettings, GuideSettings guideSettings, DebugShell debugShell) {
+	public void displayPage(String pageId, boolean reDisplay, Guide guide, MainShell mainShell, AppSettings appSettings, UserSettings userSettings, GuideSettings guideSettings, DebugShell debugShell) {
 		displayPage("default", pageId, reDisplay, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
 	}
 	
 	//main display page
 	//TODO currently chapters are ignored, need to implement
-	public void displayPage(String chapterName, String pageId, Boolean reDisplay, Guide guide, MainShell mainShell, AppSettings appSettings, UserSettings userSettings, GuideSettings guideSettings, DebugShell debugShell) {
+	public void displayPage(String chapterName, String pageId, boolean reDisplay, Guide guide, MainShell mainShell, AppSettings appSettings, UserSettings userSettings, GuideSettings guideSettings, DebugShell debugShell) {
 		// Main code that displays a page
 		String strPageId;
 		boolean blnMetronome;

@@ -12,9 +12,9 @@ public class Webcam
 	private LocalTime ifBefore; //Time of day must be before this time
 	private LocalTime ifAfter; //Time of day must be after this time
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
-	private Boolean webCamFound = false;
+	private boolean webCamFound = false;
 
-	public Boolean getWebCamFound() {
+	public boolean getWebCamFound() {
 		return webCamFound;
 	}
 

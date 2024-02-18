@@ -34,10 +34,10 @@ public class MainLogicTest {
 	private GuideSettings guideSettings;
 	private XmlGuideReader xmlGuideReader = XmlGuideReader.getXmlGuideReader();
 	private String dataDirectory = "Teases";
-	private Boolean singlePage = false;
-	private Boolean allGuides = false;
-	private Boolean oneGuide = true;
-	private Boolean scriptedTest = false;
+	private boolean singlePage = false;
+	private boolean allGuides = false;
+	private boolean oneGuide = true;
+	private boolean scriptedTest = false;
 
 	@Test
 	public void testDisplayPageStringBooleanGuideMainShellAppSettings() {
