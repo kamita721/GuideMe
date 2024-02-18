@@ -1,17 +1,11 @@
 package org.guideme.guideme.ui.mainShell;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-
-import javax.imageio.ImageIO;
 
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Rectangle;
-import org.imgscalr.Scalr;
 
 // listener for the control that holds the image,
 // will resize the image if the control is resized.
