@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Font;
@@ -384,11 +386,30 @@ public class MainShell {
 
 			String strHtml = rightHTML.replace("BodyContent", "");
 			strHtml = strHtml.replace("DefaultStyle", defaultStyle);
-			imageLabel = new Browser(leftFrame, 0);
+			imageLabel = new Browser(leftFrame, SWT.WEBKIT);
 			imageLabel.setJavascriptEnabled(true);
 			imageLabel.setText("");
 			imageLabel.setBackground(colourBlack);
 			imageLabel.addStatusTextListener(new EventStatusTextListener(this));
+			
+			imageLabel.addProgressListener(new ProgressListener() {
+				
+				//TODO
+				@Override
+				public void completed(ProgressEvent arg0) {
+					String imgPath = (String) imageLabel.getData("imgPath");
+					
+					System.err.println("Loaded");
+					System.err.println(imageLabel.execute("document.getElementById('imgContainer').src=\""+ imgPath + "\"; 1"));
+					
+				}
+				
+				@Override
+				public void changed(ProgressEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 			// imageLabel.setAlignment(SWT.CENTER);
 
 			if (!multiMonitor) {

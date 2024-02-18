@@ -27,9 +27,9 @@ class ImageControlAdapter extends ControlAdapter {
 	@Override
 	public void controlResized(ControlEvent e) {
 		//TODO why is this needed?
-//		if(true) {
-//			return;
-//		}
+		if(true) {
+			return;
+		}
 		MainShell.logger.trace("Enter addControlListener");
 		if (!this.mainShell.imgOverRide) {
 			Browser me = (Browser) e.widget;
