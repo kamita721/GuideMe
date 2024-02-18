@@ -4,32 +4,40 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
-import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Label;
 
+import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
 /*
  * TODO:
  * 
- * cache eviction
  * utilize pre-fetch support in caller code
  */
-public class ImageManager {	
+public class ImageManager {
+	private static final int CACHE_SIZE = 128;
+
+	static Logger logger = LogManager.getLogger();
+
 	Device device;
 	Point preferedSize;
 	String currentImagePath;
 	Image currentImage;
 	Point largestImageDimension;
 
-	private HashMap<String, ImageData> fullsizeCache;
+	private AsyncLoadingCache<String, ImageData> fullsizeCache;
 
 	public ImageManager(Device device) {
 		this.device = device;
-		this.fullsizeCache = new HashMap<>();
+		this.fullsizeCache = Caffeine.newBuilder().maximumSize(CACHE_SIZE).buildAsync(this::loadImageDataFromFile);
 
 		this.largestImageDimension = getLargestImageSize();
 	}
@@ -45,27 +53,31 @@ public class ImageManager {
 
 	public void updateImageLabel(Label imageLabel) {
 		Image oldImage = imageLabel.getImage();
-		imageLabel.setImage(getImage());
+		try {
+			imageLabel.setImage(getImage());
+		} catch (InterruptedException | ExecutionException e) {
+			logger.error("Error loading image: " + currentImagePath, e);
+		}
 		if (oldImage != null) {
 			oldImage.dispose();
 		}
 	}
-	
+
 	public void prefetch(String path) {
-		if(fullsizeCache.containsKey(path)) {
-			return;
-		}
-		ImageData data = new ImageData(path);
-		data = scaleImageData(data, largestImageDimension);
-		fullsizeCache.put(path, data);
+		fullsizeCache.get(path);
 	}
 
-	private Image getImage() {
+	private ImageData loadImageDataFromFile(String filePath) {
+		// TODO handle errors
+		ImageData raw = new ImageData(filePath);
+		return scaleImageData(raw, largestImageDimension);
+	}
+
+	private Image getImage() throws InterruptedException, ExecutionException {
 		if (currentImagePath == null) {
 			return null;
 		}
-		prefetch(currentImagePath);
-		ImageData data = fullsizeCache.get(currentImagePath);
+		ImageData data = fullsizeCache.get(currentImagePath).get();
 		data = scaleImageData(data, preferedSize);
 		if (currentImage != null) {
 			currentImage.dispose();
@@ -73,12 +85,12 @@ public class ImageManager {
 		currentImage = new Image(device, data);
 		return currentImage;
 	}
-	
+
 	private ImageData scaleImageData(ImageData raw, Point maxSize) {
-		if(raw == null) {
+		if (raw == null) {
 			return null;
 		}
-		if(maxSize.x <= 0 || maxSize.y <= 0) {
+		if (maxSize.x <= 0 || maxSize.y <= 0) {
 			return null;
 		}
 		double xFactor = (double) maxSize.x / (double) raw.width;
