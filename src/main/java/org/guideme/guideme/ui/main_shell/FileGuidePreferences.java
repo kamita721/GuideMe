@@ -1,4 +1,4 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;

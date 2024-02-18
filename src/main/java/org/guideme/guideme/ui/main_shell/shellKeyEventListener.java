@@ -1,4 +1,4 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
@@ -91,11 +91,11 @@ class shellKeyEventListener implements Listener {
 						String strTag;
 						strTag = (String) hotKeyButton.getData("Set");
 						if (!strTag.equals("")) {
-							this.mainShell.comonFunctions.SetFlags(strTag, this.mainShell.guide.getFlags());
+							this.mainShell.comonFunctions.setFlags(strTag, this.mainShell.guide.getFlags());
 						}
 						strTag = (String) hotKeyButton.getData("UnSet");
 						if (!strTag.equals("")) {
-							this.mainShell.comonFunctions.UnsetFlags(strTag, this.mainShell.guide.getFlags());
+							this.mainShell.comonFunctions.unsetFlags(strTag, this.mainShell.guide.getFlags());
 						}
 						strTag = (String) hotKeyButton.getData("Target");
 						String javascript = (String) hotKeyButton.getData("javascript");

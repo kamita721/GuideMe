@@ -1,11 +1,11 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.FileDialog;
 
-class ResizeGuideListener extends SelectionAdapter {
+class CompressGuideListener extends SelectionAdapter {
 	/**
 	 * 
 	 */
@@ -14,7 +14,7 @@ class ResizeGuideListener extends SelectionAdapter {
 	/**
 	 * @param mainShell
 	 */
-	ResizeGuideListener(MainShell mainShell) {
+	CompressGuideListener(MainShell mainShell) {
 		this.mainShell = mainShell;
 	}
 
@@ -42,7 +42,7 @@ class ResizeGuideListener extends SelectionAdapter {
 						this.mainShell.appSettings.setDataDirectory(this.mainShell.strGuidePath);
 						// load the file it will return the start page and
 						// populate the guide object
-						this.mainShell.comonFunctions.ResizeGuideImages(strFileToLoad);
+						this.mainShell.comonFunctions.compressGuide(strFileToLoad);
 					}
 				} catch (Exception ex5) {
 					MainShell.logger.error("Process Image error " + ex5.getLocalizedMessage(), ex5);

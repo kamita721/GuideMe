@@ -1,4 +1,4 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import java.util.HashMap;
 
@@ -39,7 +39,7 @@ class FileRestartListener extends SelectionAdapter {
 			this.mainShell.stopAll(false);
 			this.mainShell.guide.getFlags().clear();
 			this.mainShell.guide.getSettings().setPage("start");
-			this.mainShell.guide.getSettings().setFlags(this.mainShell.comonFunctions.GetFlags(this.mainShell.guide.getFlags()));
+			this.mainShell.guide.getSettings().setFlags(this.mainShell.comonFunctions.getFlags(this.mainShell.guide.getFlags()));
 			// guide.getSettings().setScope(null);
 			HashMap<String, Object> scriptVariables = new HashMap<String, Object>();
 			this.mainShell.guide.getSettings().setScriptVariables(scriptVariables);

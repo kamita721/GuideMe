@@ -7,14 +7,14 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
-import org.guideme.guideme.ui.mainShell.MainShell;
+import org.guideme.guideme.ui.main_shell.MainShell;
 
 import uk.co.caprica.vlcj.binding.lib.LibVlc;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
-public class AudioPlayer  implements Runnable {
-	//Class to play audio on a separate thread
+public class AudioPlayer implements Runnable {
+	// Class to play audio on a separate thread
 	private static Logger logger = LogManager.getLogger();
 	private MediaListener mediaListener = new MediaListener();
 	private MediaPlayer mediaPlayer;
@@ -28,8 +28,9 @@ public class AudioPlayer  implements Runnable {
 	private int volume;
 	private ArrayList<String> vlcArgs;
 
-	public AudioPlayer(String audioFile, int startAt, int stopAt, int loops, String target, MainShell mainShell, String jscript, String scriptVar, String outputDevice, int volume) {
-		//function to allow us to pass stuff to the new thread
+	public AudioPlayer(String audioFile, int startAt, int stopAt, int loops, String target, MainShell mainShell,
+			String jscript, String scriptVar, String outputDevice, int volume) {
+		// function to allow us to pass stuff to the new thread
 		int mediaVolume = AppSettings.getAppSettings().getMusicVolume();
 		volume = Math.min(Math.max(volume, 0), 100); // Bound between 0 and 100
 
@@ -39,7 +40,7 @@ public class AudioPlayer  implements Runnable {
 		this.jscript = jscript;
 		this.scriptVar = scriptVar;
 		this.outputDevice = outputDevice;
-		this.volume = (int) ((double) mediaVolume * ((double) volume / (double) 100));
+		this.volume = (int) (mediaVolume * ((double) volume / (double) 100));
 
 		this.vlcArgs = new ArrayList<>();
 		if (startAt > 0) {
@@ -54,15 +55,13 @@ public class AudioPlayer  implements Runnable {
 	}
 
 	public void audioStop() {
-		//stop the audio 
-		if (mediaPlayer != null) {
-			if (mediaPlayer.status().isPlaying()) {
+		// stop the audio
+		if (mediaPlayer != null &&  (mediaPlayer.status().isPlaying())) {
 				mediaPlayer.controls().stop();
-			}
+			
 		}
-		synchronized(this){
+		synchronized (this) {
 			isPlaying = false;
-			//Thread.currentThread().interrupt();
 			notifyAll();
 		}
 	}
@@ -83,12 +82,12 @@ public class AudioPlayer  implements Runnable {
 
 	public void run() {
 		try {
-			//Play the audio set up by AudioPlayer
-			//use a media list to play loops
-			//TODO should probably use the factory
-			mediaPlayer =  new MediaPlayer(LibVlc.libvlc_new(0, null));
+			// Play the audio set up by AudioPlayer
+			// use a media list to play loops
+			// TODO should probably use the factory
+			mediaPlayer = new MediaPlayer(LibVlc.libvlc_new(0, null));
 			if (this.outputDevice != null && !this.outputDevice.equals("")) {
-				//TODO this doesn't seem quite right
+				// TODO this doesn't seem quite right
 				mediaPlayer.audio().setOutputDevice(null, this.outputDevice);
 			}
 			mediaPlayer.events().addMediaPlayerEventListener(mediaListener);
@@ -98,13 +97,13 @@ public class AudioPlayer  implements Runnable {
 			} else {
 				mediaPlayer.media().play(audioFile, vlcArgs.toArray(new String[vlcArgs.size()]));
 			}
-			synchronized(this) {
+			synchronized (this) {
 				while (isPlaying) {
-					// while the audio is still running carry on looping
-					//Thread.sleep(5000);
 					wait();
 				}
 			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		} catch (Exception e) {
 			logger.error("AudioPlayer run ", e);
 		}
@@ -118,11 +117,9 @@ public class AudioPlayer  implements Runnable {
 		}
 	}
 
-	public synchronized void setAudioDevice(String device)
-	{
+	public synchronized void setAudioDevice(String device) {
 		mediaPlayer.audio().setOutputDevice(null, device);
 	}
-
 
 	class MediaListener extends MediaPlayerEventAdapter {
 
@@ -131,23 +128,19 @@ public class AudioPlayer  implements Runnable {
 			super.stopped(mediaPlayer);
 			logger.debug("Stopped ");
 			Display display = Display.getDefault();
-			//listener to handle displaying a new page when the audio ends
-			if (isPlaying){
-				if (!target.equals(""))  {
-					//run on the main UI thread
-					display.syncExec(
-							new Runnable() {
-								public void run(){
-									mainShell.runJscript(jscript, false);
-									mainShell.displayPage(target);
-								}
-							});											
+			// listener to handle displaying a new page when the audio ends
+			if (isPlaying) {
+				if (!target.equals("")) {
+					// run on the main UI thread
+					display.syncExec(() -> {
+						mainShell.runJscript(jscript, false);
+						mainShell.displayPage(target);
+					});
 				}
 				ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 				comonFunctions.processSrciptVars(scriptVar, mainShell.getGuideSettings());
 				isPlaying = false;
 			}
-			display = null;
 		}
 
 	}

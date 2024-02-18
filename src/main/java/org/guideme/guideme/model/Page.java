@@ -208,8 +208,8 @@ public class Page {
 	}
 
 	public void setUnSet(ArrayList<String> setList) {
-		comonFunctions.SetFlags(set, setList);
-		comonFunctions.UnsetFlags(unSet, setList);
+		comonFunctions.setFlags(set, setList);
+		comonFunctions.unsetFlags(unSet, setList);
 	}
 
 	@Override

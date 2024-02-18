@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2000, 2016 IBM Corporation and others.
  *
@@ -19,71 +20,26 @@
  *
  * @since 3.1
  */
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.*;
 import org.eclipse.swt.browser.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Test {
-	public static void main(String [] args) {
-		final String html = "<html><title>Snippet</title><body><p id='myid'>Best Friends</p><p id='myid2'>Cat and Dog</p></body></html>";
-		Display display = new Display();
-		final Shell shell = new Shell(display);
-		shell.setText("Snippet 161");
-		shell.setLayout(new FillLayout());
-		final Browser browser;
+
+	private static Logger logger = LogManager.getLogger();
+	
+	public static void main(String[] args) {
 		try {
-			browser = new Browser(shell, SWT.BORDER);
-		} catch (SWTError e) {
-			System.out.println("Could not instantiate Browser: " + e.getMessage());
-			display.dispose();
-			return;
+			fail();
+		}catch(Exception e) {
+			logger.error("fail {}", "foo", 1, "hello",  e);
 		}
-		Composite comp = new Composite(shell, SWT.NONE);
-		comp.setLayout(new FillLayout(SWT.VERTICAL));
-		final Text text = new Text(comp, SWT.MULTI);
-		text.setText("var newNode = document.createElement('P'); \r\n"+
-				"var text = document.createTextNode('At least when I am around');\r\n"+
-				"newNode.appendChild(text);\r\n"+
-				"document.getElementById('myid').appendChild(newNode);\r\n"+
-				"\r\n"+
-				"document.bgColor='yellow';");
-		final Button button = new Button(comp, SWT.PUSH);
-		button.setText("Execute Script");
-		button.addListener(SWT.Selection, event -> {
-			boolean result = browser.execute(text.getText());
-			if (!result) {
-				/* Script may fail or may not be supported on certain platforms. */
-				System.out.println("Script was not executed.");
-			}
-		});
-		browser.setText(html);
-		browser.addProgressListener(new ProgressListener() {
-			
-			@Override
-			public void completed(ProgressEvent arg0) {
-				// TODO Auto-generated method stub
-//				boolean result = browser.execute(text.getText());
-				boolean result = browser.execute("document; 1");
-				if (!result) {
-					/* Script may fail or may not be supported on certain platforms. */
-					System.out.println("Script was not executed.");
-				}
-				
-			}
-			
-			@Override
-			public void changed(ProgressEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		display.dispose();
+	}
+	
+	public static void fail() {
+		throw new RuntimeException("E");
 	}
 }

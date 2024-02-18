@@ -1,4 +1,4 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;

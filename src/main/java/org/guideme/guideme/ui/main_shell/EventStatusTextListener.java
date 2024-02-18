@@ -1,4 +1,4 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import org.eclipse.swt.browser.StatusTextEvent;
 import org.eclipse.swt.browser.StatusTextListener;
@@ -41,11 +41,11 @@ class EventStatusTextListener implements StatusTextListener {
 					String strTag;
 					strTag = eventArgs[1];// Set
 					if (!strTag.equals("")) {
-						this.mainShell.comonFunctions.SetFlags(strTag, this.mainShell.guide.getFlags());
+						this.mainShell.comonFunctions.setFlags(strTag, this.mainShell.guide.getFlags());
 					}
 					strTag = eventArgs[2];// UnSet
 					if (!strTag.equals("")) {
-						this.mainShell.comonFunctions.UnsetFlags(strTag, this.mainShell.guide.getFlags());
+						this.mainShell.comonFunctions.unsetFlags(strTag, this.mainShell.guide.getFlags());
 					}
 					String scriptVar = eventArgs[3];// scriptVar
 					this.mainShell.comonFunctions.processSrciptVars(scriptVar, this.mainShell.guideSettings);

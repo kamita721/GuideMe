@@ -41,7 +41,7 @@ import org.guideme.guideme.model.Page;
 import org.guideme.guideme.model.Video;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
-import org.guideme.guideme.ui.mainShell.MainShell;
+import org.guideme.guideme.ui.main_shell.MainShell;
 
 import com.snapps.swt.SquareButton;
 
@@ -317,7 +317,7 @@ public class DebugShell {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			try {
-				String flags = comonFuctions.GetFlags(guide.getFlags());
+				String flags = comonFuctions.getFlags(guide.getFlags());
 				HashMap<String, Object> scriptVars;
 				scriptVars = guide.getSettings().getScriptVariables();
 
@@ -325,9 +325,9 @@ public class DebugShell {
 
 				if (txtVarKey.getText().equals("Flags")) {
 					ArrayList<String> flagsarray = new ArrayList<String>();
-					comonFuctions.SetFlags(txtVarValue.getText(), flagsarray);
+					comonFuctions.setFlags(txtVarValue.getText(), flagsarray);
 					guide.setFlags(flagsarray);
-					flags = comonFuctions.GetFlags(guide.getFlags());
+					flags = comonFuctions.getFlags(guide.getFlags());
 				} else {
 					scriptVars.put(txtVarKey.getText(), txtVarValue.getText());
 					guide.getSettings().setScriptVariables(scriptVars);
@@ -752,7 +752,7 @@ public class DebugShell {
 			//HashMap<String, Object> scriptVars;
 			Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
 			Map<String, Object> treeMap = new TreeMap<String, Object>(guide.getSettings().getScriptVariables());
-			String flags = comonFuctions.GetFlags(guide.getFlags());
+			String flags = comonFuctions.getFlags(guide.getFlags());
 
 			varTable.removeAll();
 

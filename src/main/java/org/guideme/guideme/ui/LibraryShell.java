@@ -6,6 +6,7 @@ import java.awt.Desktop;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
@@ -39,7 +40,7 @@ import org.eclipse.swt.widgets.Text;
 import org.guideme.guideme.model.Library;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
-import org.guideme.guideme.ui.mainShell.MainShell;
+import org.guideme.guideme.ui.main_shell.MainShell;
 
 public class LibraryShell {
 	private Shell shell = null;
@@ -50,8 +51,8 @@ public class LibraryShell {
 	private int pageSize = 100;
 	private int originalPageSize = 100;
 	private int currentStart = 0;
-	private ArrayList<Library> originalGuides;
-	private ArrayList<Library> guides;
+	private List<Library> originalGuides;
+	private List<Library> guides;
 	private Composite composite;
 	private ScrolledComposite sc;
 	private ComonFunctions comonFunctions;
@@ -172,7 +173,7 @@ public class LibraryShell {
 			composite = new Composite(sc, SWT.NONE);
 			composite.setLayout(new FormLayout());
 
-			originalGuides = comonFunctions.ListGuides(); 
+			originalGuides = comonFunctions.listGuides(); 
 			guides = originalGuides;
 			setPageSize();
 			sortTitle();
@@ -554,7 +555,7 @@ public class LibraryShell {
 				{
 					appSettings.setDataDirectory(folder);
 					appSettings.saveSettings();
-					originalGuides = comonFunctions.ListGuides(); 
+					originalGuides = comonFunctions.listGuides(); 
 					guides = originalGuides;
 					setPageSize();
 					sortGuides();

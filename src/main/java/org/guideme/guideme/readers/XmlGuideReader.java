@@ -112,7 +112,7 @@ public class XmlGuideReader {
 				strPage = guideSettings.getPage();
 				strFlags = guideSettings.getFlags();
 				if (strFlags != "") {
-					comonFunctions.SetFlags(strFlags, guide.getFlags());
+					comonFunctions.setFlags(strFlags, guide.getFlags());
 				}
 			} catch (Exception e1) {
 				logger.error("loadXML " + PresName + " Continue Exception " + e1.getLocalizedMessage(), e1);

@@ -1,4 +1,4 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -27,7 +27,7 @@ class WebcamCaptureListener extends DynamicButtonListner {
 			com.snapps.swt.SquareButton btnClicked;
 			btnClicked = (com.snapps.swt.SquareButton) event.widget;
 			strFile = (String) btnClicked.getData("webcamFile");
-			if (!mainShell.comonFunctions.CanCreateFile(strFile)) {
+			if (!mainShell.comonFunctions.canCreateFile(strFile)) {
 				strFile = mainShell.comonFunctions.getMediaFullPath(strFile, mainShell.appSettings.getFileSeparator(), mainShell.appSettings,
 						mainShell.guide);
 			}

@@ -1,10 +1,12 @@
 package org.guideme.guideme;
 
-import java.io.File;
-import java.io.FileFilter;
-//import java.io.PrintStream;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.stream.Stream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -14,76 +16,70 @@ import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.widgets.Display;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
-import org.guideme.guideme.ui.mainShell.MainShell;
+import org.guideme.guideme.ui.main_shell.MainShell;
 
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
 
-public class App 
-{
+public class App {
 	/*
-	 This is where it all starts from
-	 main will create and display the first shell (window) 
+	 * This is where it all starts from main will create and display the first shell
+	 * (window)
 	 */
 	private static Logger logger = LogManager.getLogger();
 
-
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		try {
-			
+
 			System.setProperty("org.eclipse.swt.browser.IEVersion", "11000");
-			
+
 			logger.trace("Enter main");
 			logger.error("GuideMe Version - " + ComonFunctions.getVersion());
-			//Sleak will help diagnose SWT memory leaks
-			//if you set this to true you will get an additional window
-			//that allows you to track resources that are created and not destroyed correctly
+			// Sleak will help diagnose SWT memory leaks
+			// if you set this to true you will get an additional window
+			// that allows you to track resources that are created and not destroyed
+			// correctly
 			boolean loadSleak = false;
-			if (args.length > 0 && args[0].equals("sleak"))
-			{
+			if (args.length > 0 && args[0].equals("sleak")) {
 				loadSleak = true;
 			}
 
 			AppSettings appSettings = AppSettings.getAppSettings();
-			
-			File directory = new File(appSettings.getTempDir());
-			  
-			File[] toBeDeleted = directory.listFiles(new FileFilter() {
-				public boolean accept(File theFile) {
-				if (theFile.isFile()) {
-					return theFile.getName().startsWith("tmpImage");
-				}
-				return false;
-				}
-			});
-			  
-			for(File deletableFile:toBeDeleted){
-				if(!deletableFile.delete()) {
-					logger.error("Failed to delete file: "+ deletableFile);
-				}
+
+			Path directory = Paths.get(appSettings.getTempDir());
+
+			try (Stream<Path> st = Files.list(directory)) {
+				st.filter(filePath -> {
+					if (filePath.toFile().isFile()) {
+						return filePath.toFile().getName().startsWith("tmpImage");
+					} else {
+						return false;
+					}
+				}).forEach(toDelete -> {
+					try {
+						java.nio.file.Files.delete(toDelete);
+					} catch (IOException e) {
+						logger.error("Failed to delete file: " + toDelete, e);
+					}
+				});
 			}
-			
+
 			if (args.length > 1) {
 				appSettings.setDataDirectory(args[0]);
 				appSettings.setComandLineGuide(args[1]);
 			}
-			
+
 			Display display;
-			//user debug setting
+			// user debug setting
 			if (appSettings.getDebug()) {
-				//debug level logging for video lan (VLC)
-				//System.setProperty("vlcj.log", "DEBUG");
-				//PrintStream stdOutStrm = new PrintStream(new File("logs/vlc.log"));
-				//System.setOut(stdOutStrm);
 				Properties properties = java.lang.System.getProperties();
 				Iterator<Object> it = properties.keySet().iterator();
-				//display all the jvm properties in the log file
+				// display all the jvm properties in the log file
 				while (it.hasNext()) {
 					String key = String.valueOf(it.next());
 					String value = String.valueOf(properties.get(key));
-					//write out at error level even though it is a debug message
-					//so we can turn it on, on a users machine
-					logger.error(key + " - " + value);
+					// write out at error level even though it is a debug message
+					// so we can turn it on, on a users machine
+					logger.error("{} - {}", key, value);
 				}
 			}
 
@@ -96,13 +92,13 @@ public class App
 			} else {
 				display = new Display();
 			}
-			
+
 			DisplayKeyEventListener keylistener = new DisplayKeyEventListener();
 			display.addFilter(SWT.KeyDown, keylistener);
 
 			NativeDiscovery nativeDiscovery = new NativeDiscovery();
 			boolean vlcFound = nativeDiscovery.discover();
-			logger.trace("test for vlc: " + vlcFound);
+			logger.trace("test for vlc: {}", vlcFound);
 
 			appSettings.setMonitorChanging(false);
 			logger.trace("create main shell");
@@ -110,8 +106,7 @@ public class App
 			keylistener.setMainShell(mainShell);
 			mainShell.run(display);
 			display.dispose();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error("Main error " + ex.getLocalizedMessage(), ex);
 		}
 		logger.trace("Exit main");

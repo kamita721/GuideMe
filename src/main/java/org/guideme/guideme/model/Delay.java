@@ -71,8 +71,8 @@ public class Delay {
 	
 	public void setUnSet(ArrayList<String> setList) {
 		//pass in the current flags and either add or remove the ones for this delay
-		comonFunctions.SetFlags(set, setList);
-		comonFunctions.UnsetFlags(unSet, setList);
+		comonFunctions.setFlags(set, setList);
+		comonFunctions.unsetFlags(unSet, setList);
 	}
 
 	public String getSet() {

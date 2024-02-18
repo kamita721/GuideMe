@@ -1,8 +1,9 @@
 package org.guideme.guideme.model;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.guideme.guideme.settings.ComonFunctions;
 
 public class Button  implements Comparable<Button>
@@ -56,15 +57,15 @@ public class Button  implements Comparable<Button>
 		this.fontHeight = fontHeight;
 		this.sortOrder = sortOrder;
 		
-		if (bgColor1 == "") {
-			this.bgColor1 = comonFunctions.getColor("white");
+		if (bgColor1.equals("")) {
+			this.bgColor1 = comonFunctions.getSwtColor(SWT.COLOR_WHITE);
         } else if (bgColor1.startsWith("#")) {
         	this.bgColor1 = comonFunctions.decodeHexColor(bgColor1);
         } else {
 			this.bgColor1 = comonFunctions.getColor(bgColor1);
 		}
 		
-		if (bgColor2 == "") {
+		if (bgColor2.equals("")) {
 			this.bgColor2 = this.bgColor1;
         } else if (bgColor2.startsWith("#")) {
         	this.bgColor2 = comonFunctions.decodeHexColor(bgColor2);
@@ -72,7 +73,7 @@ public class Button  implements Comparable<Button>
 			this.bgColor2 = comonFunctions.getColor(bgColor2);
 		}
 		
-		if (fontColor == "") {
+		if (fontColor.equals("")) {
 			this.fontColor = comonFunctions.getColor("black");
         } else if (fontColor.startsWith("#")) {
         	this.fontColor = comonFunctions.decodeHexColor(fontColor);
@@ -98,10 +99,10 @@ public class Button  implements Comparable<Button>
 
 	
 	
-	public void setUnSet(ArrayList<String> setList)
+	public void setUnSet(List<String> setList)
 	{
-		comonFunctions.SetFlags(this.set, setList);
-		comonFunctions.UnsetFlags(this.unSet, setList);
+		comonFunctions.setFlags(this.set, setList);
+		comonFunctions.unsetFlags(this.unSet, setList);
 	}
 
 	public String getSet() {
@@ -112,7 +113,7 @@ public class Button  implements Comparable<Button>
 		return this.unSet;
 	}
 
-	public boolean canShow(ArrayList<String> setList)
+	public boolean canShow(List<String> setList)
 	{
 		boolean retVal = comonFunctions.canShowTime(ifBefore, ifAfter);
 		if (retVal) {
@@ -186,8 +187,8 @@ public class Button  implements Comparable<Button>
 
 	public void setbgColor1(String bgColor1) {
 		this.bgColor1.dispose();
-		if (bgColor1 == "") {
-			this.bgColor1 = comonFunctions.getColor("white");
+		if (bgColor1.equals("")) {
+			this.bgColor1 = comonFunctions.getSwtColor(SWT.COLOR_WHITE);
         } else if (bgColor1.startsWith("#")) {
         	this.bgColor1 = comonFunctions.decodeHexColor(bgColor1);
 		} else {
@@ -203,8 +204,8 @@ public class Button  implements Comparable<Button>
 
 	public void setbgColor2(String bgColor2) {
 		this.bgColor2.dispose();
-		if (bgColor2 == "") {
-			this.bgColor2 = comonFunctions.getColor("white");
+		if (bgColor2.equals("")) {
+			this.bgColor2 = comonFunctions.getSwtColor(SWT.COLOR_WHITE);
         } else if (bgColor2.startsWith("#")) {
         	this.bgColor2 = comonFunctions.decodeHexColor(bgColor2);
 		} else {
@@ -221,7 +222,7 @@ public class Button  implements Comparable<Button>
 	public void setfontColor(String fontColor) {
 		this.fontColor = comonFunctions.getColor(fontColor);
 		this.fontColor.dispose();
-		if (fontColor == "") {
+		if (fontColor.equals("")) {
 			this.fontColor = comonFunctions.getColor("black");
         } else if (fontColor.startsWith("#")) {
         	this.fontColor = comonFunctions.decodeHexColor(fontColor);
@@ -266,7 +267,6 @@ public class Button  implements Comparable<Button>
 		int compareOrder = compareButton.getSortOrder();
 		return compareOrder-this.sortOrder;
 	}
-
 
 	public boolean getDisabled() {
 		return disabled;

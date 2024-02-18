@@ -34,7 +34,7 @@ import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.DebugShell;
-import org.guideme.guideme.ui.mainShell.MainShell;
+import org.guideme.guideme.ui.main_shell.MainShell;
 import org.guideme.guideme.util.PageFilter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
@@ -122,7 +122,7 @@ public class MainLogic {
 		String imgName = "";
 
 		logger.debug("displayPage PagePassed " + pageId);
-		logger.debug("displayPage Flags " + comonFunctions.GetFlags(guide.getFlags()));
+		logger.debug("displayPage Flags " + comonFunctions.getFlags(guide.getFlags()));
 
 		try {
 			// Display display = Display.getDefault();
@@ -227,7 +227,7 @@ public class MainLogic {
 			// Save current page and flags
 			// set page
 			if (guide.getAutoSetPage()) {
-				comonFunctions.SetFlags(strPageId, guide.getFlags());
+				comonFunctions.setFlags(strPageId, guide.getFlags());
 			}
 
 			// do page set / unset
@@ -241,7 +241,7 @@ public class MainLogic {
 			mainShell.startDeferredMedia();
 
 			guide.getSettings().setPage(strPageId);
-			strFlags = comonFunctions.GetFlags(guide.getFlags());
+			strFlags = comonFunctions.getFlags(guide.getFlags());
 			logger.debug("displayPage End Flags " + strFlags);
 			guide.getSettings().setFlags(strFlags);
 			guide.getSettings().saveSettings();

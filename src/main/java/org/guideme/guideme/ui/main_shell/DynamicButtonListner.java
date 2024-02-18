@@ -1,4 +1,4 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -28,11 +28,11 @@ class DynamicButtonListner extends SelectionAdapter {
 			com.snapps.swt.SquareButton btnClicked = (com.snapps.swt.SquareButton) event.widget;
 			strTag = (String) btnClicked.getData("Set");
 			if (!strTag.equals("")) {
-				this.mainShell.comonFunctions.SetFlags(strTag, this.mainShell.guide.getFlags());
+				this.mainShell.comonFunctions.setFlags(strTag, this.mainShell.guide.getFlags());
 			}
 			strTag = (String) btnClicked.getData("UnSet");
 			if (!strTag.equals("")) {
-				this.mainShell.comonFunctions.UnsetFlags(strTag, this.mainShell.guide.getFlags());
+				this.mainShell.comonFunctions.unsetFlags(strTag, this.mainShell.guide.getFlags());
 			}
 			String scriptVar = (String) btnClicked.getData("scriptVar");
 			this.mainShell.comonFunctions.processSrciptVars(scriptVar, this.mainShell.guideSettings);

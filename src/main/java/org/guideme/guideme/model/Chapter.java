@@ -1,20 +1,21 @@
 package org.guideme.guideme.model;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Chapter {
 	private String id;
-	private HashMap<String, Page> pages = new HashMap<String, Page>();
+	private Map<String, Page> pages = new HashMap<>();
 
 	public Chapter(String id) {
 		this.id = id;
 	}
 	
-	public HashMap<String, Page> getPages() {
+	public Map<String, Page> getPages() {
 		return pages;
 	}
 
-	public void setPages(HashMap<String, Page> pages) {
+	public void setPages(Map<String, Page> pages) {
 		this.pages = pages;
 	}
 

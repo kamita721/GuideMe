@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
-import org.guideme.guideme.ui.mainShell.MainShell;
+import org.guideme.guideme.ui.main_shell.MainShell;
 
 public class Guide {
 	/** @exclude */
@@ -575,7 +575,7 @@ public class Guide {
 	 * @param flagNames comma separated list of flags to set
 	 */
 	public void setFlags(String flagNames) {
-		comonFunctions.SetFlags(flagNames, flags);
+		comonFunctions.setFlags(flagNames, flags);
 	}
 	
 	/**
@@ -584,7 +584,7 @@ public class Guide {
 	 * @param flagNames comma separated list of flags to clear
 	 */
 	public void unsetFlags(String flagNames) {
-		comonFunctions.UnsetFlags(flagNames, flags);
+		comonFunctions.unsetFlags(flagNames, flags);
 	}
 	
 	/**
@@ -676,7 +676,7 @@ public class Guide {
 	 * @return a list of the files
 	 */
 	public String listFiles(String FolderName) {
-		return comonFunctions.ListFiles(FolderName);
+		return comonFunctions.listFiles(FolderName);
 	}
 
 	/**
@@ -686,7 +686,7 @@ public class Guide {
 	 * @return a list of the folders
 	 */
 	public String listSubFolders(String FolderName) {
-		return comonFunctions.ListSubFolders(FolderName, false);
+		return comonFunctions.listSubFolders(FolderName, false);
 	}
 
 	/**
@@ -697,7 +697,7 @@ public class Guide {
 	 * @return the path and name of the file
 	 */
 	public String getRandomFile(String wildcard, String strSubDir) {
-		return comonFunctions.GetRandomFile(wildcard, strSubDir);
+		return comonFunctions.getRandomFile(wildcard, strSubDir);
 	}
 
 	/**

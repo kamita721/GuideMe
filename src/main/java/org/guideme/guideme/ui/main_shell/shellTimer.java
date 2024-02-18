@@ -1,4 +1,4 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -52,8 +52,8 @@ class shellTimer implements Runnable {
 						try {
 							this.mainShell.calCountDown = null;
 							this.mainShell.lblRight.setText("");
-							this.mainShell.comonFunctions.SetFlags(this.mainShell.guide.getDelaySet(), this.mainShell.guide.getFlags());
-							this.mainShell.comonFunctions.UnsetFlags(this.mainShell.guide.getDelayUnSet(), this.mainShell.guide.getFlags());
+							this.mainShell.comonFunctions.setFlags(this.mainShell.guide.getDelaySet(), this.mainShell.guide.getFlags());
+							this.mainShell.comonFunctions.unsetFlags(this.mainShell.guide.getDelayUnSet(), this.mainShell.guide.getFlags());
 							this.mainShell.comonFunctions.processSrciptVars(this.mainShell.guide.getDelayScriptVar(), this.mainShell.guideSettings);
 							javascript = this.mainShell.guide.getDelayjScript();
 							if (!javascript.equals("")) {
@@ -124,8 +124,8 @@ class shellTimer implements Runnable {
 								// trigger it again
 								calTemp.add(Calendar.YEAR, 1);
 								pair.getValue().setTimerEnd(calTemp);
-								this.mainShell.comonFunctions.SetFlags(objTimer.getSet(), this.mainShell.guide.getFlags());
-								this.mainShell.comonFunctions.UnsetFlags(objTimer.getUnSet(), this.mainShell.guide.getFlags());
+								this.mainShell.comonFunctions.setFlags(objTimer.getSet(), this.mainShell.guide.getFlags());
+								this.mainShell.comonFunctions.unsetFlags(objTimer.getUnSet(), this.mainShell.guide.getFlags());
 								String strImage = objTimer.getImageId();
 								if (!strImage.equals("")) {
 									String imgPath = this.mainShell.comonFunctions.getMediaFullPath(strImage,

@@ -17,7 +17,7 @@ import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
-import org.guideme.guideme.ui.mainShell.MainShell;
+import org.guideme.guideme.ui.main_shell.MainShell;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.ast.*;
 import org.mozilla.javascript.tools.debugger.Main;
@@ -317,7 +317,7 @@ public class Jscript  implements Runnable
 			    dbg.dispose();
 			}
 
-			guideSettings.setFlags(comonFunctions.GetFlags(guide.getFlags()));
+			guideSettings.setFlags(comonFunctions.getFlags(guide.getFlags()));
 			guideSettings.saveSettings();
 			MainLogic.saveGlobalScriptVariables();
 			if (inPrefGuide) {

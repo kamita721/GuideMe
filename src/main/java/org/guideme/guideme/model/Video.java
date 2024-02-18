@@ -75,8 +75,8 @@ public class Video
 	}
 
 	public void setUnSet(ArrayList<String> setList) {
-		comonFunctions.SetFlags(this.set, setList);
-		comonFunctions.UnsetFlags(this.unSet, setList);
+		comonFunctions.setFlags(this.set, setList);
+		comonFunctions.unsetFlags(this.unSet, setList);
 	}
 
 	public String getRepeat() {

@@ -1,4 +1,4 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -42,7 +42,7 @@ class UnCompressGuideListener extends SelectionAdapter {
 						this.mainShell.appSettings.setDataDirectory(this.mainShell.strGuidePath);
 						// load the file it will return the start page and
 						// populate the guide object
-						this.mainShell.comonFunctions.UnCompressGuide(strFileToLoad);
+						this.mainShell.comonFunctions.unCompressGuide(strFileToLoad);
 					}
 				} catch (Exception ex5) {
 					MainShell.logger.error("Process Image error " + ex5.getLocalizedMessage(), ex5);

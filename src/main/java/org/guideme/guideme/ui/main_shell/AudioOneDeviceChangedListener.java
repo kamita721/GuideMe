@@ -1,10 +1,10 @@
-package org.guideme.guideme.ui.mainShell;
+package org.guideme.guideme.ui.main_shell;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.MenuItem;
 
-class VideoDeviceChangedListener extends SelectionAdapter {
+class AudioOneDeviceChangedListener extends SelectionAdapter {
 	/**
 	 * 
 	 */
@@ -13,7 +13,7 @@ class VideoDeviceChangedListener extends SelectionAdapter {
 	/**
 	 * @param mainShell
 	 */
-	VideoDeviceChangedListener(MainShell mainShell) {
+	AudioOneDeviceChangedListener(MainShell mainShell) {
 		this.mainShell = mainShell;
 	}
 
@@ -21,10 +21,9 @@ class VideoDeviceChangedListener extends SelectionAdapter {
 	public void widgetSelected(SelectionEvent e) {
 		if (((MenuItem) e.widget).getSelection()) {
 			String newOutputDevice = e.widget.getData("device-id").toString();
-			this.mainShell.appSettings.setVideoDevice(newOutputDevice);
-			if (newOutputDevice != null) {
-				// TODO this doesn't seem quite right
-				this.mainShell.mediaPlayer.audio().setOutputDevice(null, newOutputDevice);
+			this.mainShell.appSettings.setAudioOneDevice(newOutputDevice);
+			if (this.mainShell.threadAudioPlayer != null && newOutputDevice != null) {
+				this.mainShell.audioPlayer.setAudioDevice(newOutputDevice);
 			}
 		}
 	}
