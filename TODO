@@ -1,0 +1,12 @@
+Look into all instances of @SuppressWarnings
+Refactor Preference to not have a variable of all possible types, with only 1 being non-null
+
+Clean up MainShell
+Look instal usages of instanceof
+Stop using Browser for the image label
+
+Deal with SWT dependecies:
+    Download relevent file from https://download.eclipse.org/eclipse/downloads/drops4/R-4.30-202312010110/
+    Then, something along the lines of:
+    export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64
+    mvn39 install:install-file -Dfile=swt.jar -DgroupId="org.eclipse.swt" -DartifactId="org.eclipse.swt.gtk.linux.x86_64" -Dversion="4.30.0" -Dpackaging="jar"
