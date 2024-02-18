@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
-import org.guideme.guideme.ui.MainShell;
+import org.guideme.guideme.ui.mainShell.MainShell;
 
 public class Guide {
 	/** @exclude */

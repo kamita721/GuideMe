@@ -1,18 +1,14 @@
-package org.guideme.guideme.ui;
+package org.guideme.guideme.ui.mainShell;
 
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import com.snapps.swt.SquareButton;
@@ -21,15 +17,12 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.StatusTextEvent;
-import org.eclipse.swt.browser.StatusTextListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -65,6 +58,11 @@ import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
+import org.guideme.guideme.ui.AudioPlayer;
+import org.guideme.guideme.ui.CompositeVideoSurface;
+import org.guideme.guideme.ui.DebugShell;
+import org.guideme.guideme.ui.MetronomePlayer;
+import org.guideme.guideme.ui.SwtEmbeddedMediaPlayer;
 import org.imgscalr.Scalr;
 import org.mozilla.javascript.ContextFactory;
 
@@ -75,10 +73,6 @@ import uk.co.caprica.vlcj.binding.internal.libvlc_instance_t;
 import uk.co.caprica.vlcj.binding.lib.LibVlc;
 import uk.co.caprica.vlcj.binding.support.runtime.RuntimeUtil;
 import uk.co.caprica.vlcj.player.base.AudioDevice;
-import uk.co.caprica.vlcj.player.base.MediaPlayer;
-import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
-import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.videosurface.VideoSurfaceAdapter;
 import uk.co.caprica.vlcj.player.embedded.videosurface.LinuxVideoSurfaceAdapter;
 import uk.co.caprica.vlcj.player.embedded.videosurface.OsxVideoSurfaceAdapter;
@@ -89,99 +83,99 @@ public class MainShell {
 	 * Main screen and UI thread. exposes methods that allow other components to
 	 * update the screen components and play video and music
 	 */
-	private static Logger logger = LogManager.getLogger();
+	static Logger logger = LogManager.getLogger();
 	private static org.eclipse.swt.graphics.Color colourBlack;
 	private static org.eclipse.swt.graphics.Color colourWhite;
-	private AppSettings appSettings;
+	AppSettings appSettings;
 	private int MintFontSize;
 	private int MintButtonFontSize;
 	private int MintHtmlFontSize;
 	private int MintTimerFontSize;
-	private String strGuidePath;
-	private String guideFile;
-	private int videoLoops = 0;
-	private int videoStartAt = 0;
-	private int videoStopAt = 0;
-	private String videoTarget = "";
-	private String videoJscript = "";
-	private String videoScriptVar = "";
+	String strGuidePath;
+	String guideFile;
+	int videoLoops = 0;
+	int videoStartAt = 0;
+	int videoStopAt = 0;
+	String videoTarget = "";
+	String videoJscript = "";
+	String videoScriptVar = "";
 	private boolean videoPlay = false;
 	private boolean webcamVisible = false;
 	// private boolean webcamRecording = false;
-	private Guide guide = Guide.getGuide();
-	private GuideSettings guideSettings = guide.getSettings();
-	private UserSettings userSettings = null;
-	private Label lblLeft;
+	Guide guide = Guide.getGuide();
+	GuideSettings guideSettings = guide.getSettings();
+	UserSettings userSettings = null;
+	Label lblLeft;
 	private Label lblCentre;
-	private Label lblRight;
-	private Browser imageLabel;
+	Label lblRight;
+	Browser imageLabel;
 	private Browser brwsText;
-	private SashForm sashform;
-	private SashForm sashform2;
+	SashForm sashform;
+	SashForm sashform2;
 	private Composite btnComp;
-	private Composite leftFrame;
-	private Calendar calCountDown = null;
+	Composite leftFrame;
+	Calendar calCountDown = null;
 	private Calendar pausedAt = null;
-	private Shell shell;
-	private Shell shell2;
+	Shell shell;
+	Shell shell2;
 	// private Shell shell3;
-	private DebugShell debugShell;
-	private Display myDisplay;
-	private Font controlFont;
-	private Font buttonFont;
-	private Font timerFont;
-	private Composite mediaPanel;
+	DebugShell debugShell;
+	Display myDisplay;
+	Font controlFont;
+	Font buttonFont;
+	Font timerFont;
+	Composite mediaPanel;
 	// private MediaPlayerFactory mediaPlayerFactory;
-	private SwtEmbeddedMediaPlayer mediaPlayer;
+	SwtEmbeddedMediaPlayer mediaPlayer;
 	// private Frame videoFrame;
 	// private Canvas videoSurfaceCanvas;
 	// private CanvasVideoSurface videoSurface;
-	private Composite webcamPanel;
-	private Webcam webcam;
+	Composite webcamPanel;
+	Webcam webcam;
 	private WebcamPanel panel;
 	private JRootPane webcamRoot;
-	private MainShell mainShell;
-	private MainLogic mainLogic = MainLogic.getMainLogic();
-	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
-	private XmlGuideReader xmlGuideReader = XmlGuideReader.getXmlGuideReader();
+	MainShell mainShell;
+	MainLogic mainLogic = MainLogic.getMainLogic();
+	ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
+	XmlGuideReader xmlGuideReader = XmlGuideReader.getXmlGuideReader();
 	private SquareButton delayButton = null;
-	private MetronomePlayer metronome;
+	MetronomePlayer metronome;
 	private Thread threadMetronome;
-	private AudioPlayer audioPlayer;
-	private Thread threadAudioPlayer;
-	private AudioPlayer audioPlayer2;
-	private Thread threadAudioPlayer2;
+	AudioPlayer audioPlayer;
+	Thread threadAudioPlayer;
+	AudioPlayer audioPlayer2;
+	Thread threadAudioPlayer2;
 	private Thread threadVideoPlayer;
-	private boolean videoOn = true;
+	boolean videoOn = true;
 	private boolean webcamOn = true;
-	private String style = "";
-	private String defaultStyle = "";
-	private boolean imgOverRide = false;
-	private boolean multiMonitor = true;
+	String style = "";
+	String defaultStyle = "";
+	boolean imgOverRide = false;
+	boolean multiMonitor = true;
 	private boolean overlayTimer = false;
-	private HashMap<String, com.snapps.swt.SquareButton> hotKeys = new HashMap<String, com.snapps.swt.SquareButton>();
+	HashMap<String, com.snapps.swt.SquareButton> hotKeys = new HashMap<String, com.snapps.swt.SquareButton>();
 	private HashMap<String, com.snapps.swt.SquareButton> buttons = new HashMap<String, com.snapps.swt.SquareButton>();
-	private shellKeyEventListener keyListener;
+	shellKeyEventListener keyListener;
 	// private shellMouseMoveListener mouseListen;
-	private boolean showMenu = true;
-	private Menu MenuBar;
-	private HashMap<String, Timer> timer = new HashMap<String, Timer>();
+	boolean showMenu = true;
+	Menu MenuBar;
+	HashMap<String, Timer> timer = new HashMap<String, Timer>();
 	// private ArrayList<Timer> timer = new ArrayList<Timer>();
 	private Rectangle clientArea;
 	private Rectangle clientArea2;
-	private boolean inPrefShell = false;
+	boolean inPrefShell = false;
 	private String rightHTML;
-	private String leftHTML;
+	String leftHTML;
 	private ContextFactory factory;
 	private File oldImage;
 	private File oldImage2;
 	private boolean videoPlayed = false;
 	private ResourceBundle displayText;
-	private String ProcStatusText = "";
+	String ProcStatusText = "";
 	private boolean hasVideoDeferred = false;
 	private boolean hasAudioDeferred = false;
 	private boolean hasAudio2Deferred = false;
-	private boolean pauseRequested = false;
+	boolean pauseRequested = false;
 	// private boolean exitTriggered = false;
 
 	public Shell createShell(final Display display) {
@@ -251,10 +245,10 @@ public class MainShell {
 				shell = new Shell(myDisplay);
 			}
 			logger.trace("shell add listener");
-			shell.addShellListener(new shellCloseListen());
+			shell.addShellListener(new shellCloseListen(this));
 			// Good
 			logger.trace("key filter");
-			keyListener = new shellKeyEventListener();
+			keyListener = new shellKeyEventListener(this);
 			myDisplay.addFilter(SWT.KeyDown, keyListener);
 			// mouseListen = new shellMouseMoveListener();
 			// myDisplay.addFilter(SWT.MouseMove, mouseListen);
@@ -357,7 +351,7 @@ public class MainShell {
 			FormLayout layout3 = new FormLayout();
 			mediaPanel.setLayout(layout3);
 			mediaPanel.setBackground(colourBlack);
-			mediaPanel.addControlListener(new mediaPanelListener());
+			mediaPanel.addControlListener(new mediaPanelListener(this));
 
 			webcamPanel = new Composite(leftFrame, SWT.EMBEDDED);
 			FormLayout layoutwebcam = new FormLayout();
@@ -395,7 +389,7 @@ public class MainShell {
 			imageLabel = new Browser(leftFrame, 0);
 			imageLabel.setText("");
 			imageLabel.setBackground(colourBlack);
-			imageLabel.addStatusTextListener(new EventStatusTextListener());
+			imageLabel.addStatusTextListener(new EventStatusTextListener(this));
 			// imageLabel.setAlignment(SWT.CENTER);
 
 			if (!multiMonitor) {
@@ -424,7 +418,7 @@ public class MainShell {
 			// brwsText = new Browser(sashform2, SWT.WEBKIT);
 			brwsText.setText(strHtml);
 			brwsText.setBackground(colourBlack);
-			brwsText.addStatusTextListener(new EventStatusTextListener());
+			brwsText.addStatusTextListener(new EventStatusTextListener(this));
 
 			btnComp = new Composite(sashform2, SWT.SHADOW_NONE);
 			btnComp.setBackground(colourBlack);
@@ -459,7 +453,7 @@ public class MainShell {
 
 					mediaPlayer = new SwtEmbeddedMediaPlayer(instance);
 					mediaPlayer.setVideoSurface(new CompositeVideoSurface(mediaPanel, getVideoSurfaceAdapter()));
-					mediaPlayer.events().addMediaPlayerEventListener(new MediaListener());
+					mediaPlayer.events().addMediaPlayerEventListener(new MediaListener(this));
 
 					String videoOutputDevice = appSettings.getVideoDevice();
 					if (videoOutputDevice != null && !videoOutputDevice.equals("")) {
@@ -580,39 +574,39 @@ public class MainShell {
 			// File Load menu item
 			MenuItem fileLoadItem = new MenuItem(fileSubMenu, SWT.PUSH);
 			fileLoadItem.setText(displayText.getString("MainLoad"));
-			fileLoadItem.addSelectionListener(new FileLoadListener());
+			fileLoadItem.addSelectionListener(new FileLoadListener(this));
 
 			// File Library menu item
 			MenuItem fileLibraryItem = new MenuItem(fileSubMenu, SWT.PUSH);
 			fileLibraryItem.setText(displayText.getString("MainLibrary"));
-			fileLibraryItem.addSelectionListener(new FileLibraryListener());
+			fileLibraryItem.addSelectionListener(new FileLibraryListener(this));
 
 			// File Restart menu item
 			MenuItem fileRestartItem = new MenuItem(fileSubMenu, SWT.PUSH);
 			fileRestartItem.setText(displayText.getString("MainRestart"));
-			fileRestartItem.addSelectionListener(new FileRestartListener());
+			fileRestartItem.addSelectionListener(new FileRestartListener(this));
 
 			// File Reload menu item
 			MenuItem fileReloadItem = new MenuItem(fileSubMenu, SWT.PUSH);
 			fileReloadItem.setText(displayText.getString("MainReload"));
-			fileReloadItem.addSelectionListener(new FileReloadListener());
+			fileReloadItem.addSelectionListener(new FileReloadListener(this));
 
 			// File Preferences menu item
 			MenuItem filePreferencesItem = new MenuItem(fileSubMenu, SWT.PUSH);
 			filePreferencesItem.setText(displayText.getString("MainAppPref"));
-			filePreferencesItem.addSelectionListener(new FilePreferences());
+			filePreferencesItem.addSelectionListener(new FilePreferences(this));
 
 			// good
 
 			// File Preferences Guide menu item
 			MenuItem filePreferencesGuideItem = new MenuItem(fileSubMenu, SWT.PUSH);
 			filePreferencesGuideItem.setText(displayText.getString("MainUserPref"));
-			filePreferencesGuideItem.addSelectionListener(new FilePreferencesGuide());
+			filePreferencesGuideItem.addSelectionListener(new FilePreferencesGuide(this));
 
 			// File Guide Preferences menu item
 			MenuItem fileGuidePreferencesItem = new MenuItem(fileSubMenu, SWT.PUSH);
 			fileGuidePreferencesItem.setText(displayText.getString("MainGuidePref"));
-			fileGuidePreferencesItem.addSelectionListener(new FileGuidePreferences());
+			fileGuidePreferencesItem.addSelectionListener(new FileGuidePreferences(this));
 
 			// File Exit menu item
 			MenuItem fileExitItem = new MenuItem(fileSubMenu, SWT.PUSH);
@@ -637,17 +631,17 @@ public class MainShell {
 			// Tools Compress menu item
 			MenuItem CompressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
 			CompressGuideItem.setText(displayText.getString("MainToolsCompress"));
-			CompressGuideItem.addSelectionListener(new CompressGuideListener());
+			CompressGuideItem.addSelectionListener(new CompressGuideListener(this));
 
 			// Tools UnCompress menu item
 			MenuItem UnCompressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
 			UnCompressGuideItem.setText(displayText.getString("MainToolsUnCompress"));
-			UnCompressGuideItem.addSelectionListener(new UnCompressGuideListener());
+			UnCompressGuideItem.addSelectionListener(new UnCompressGuideListener(this));
 
 			// Tools Resize menu item
 			MenuItem ResizeGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
 			ResizeGuideItem.setText(displayText.getString("MainToolsResizeImage"));
-			ResizeGuideItem.addSelectionListener(new ResizeGuideListener());
+			ResizeGuideItem.addSelectionListener(new ResizeGuideListener(this));
 
 			// good
 			// Audio Output Menus
@@ -692,19 +686,19 @@ public class MainShell {
 				videoDevice.setText(device.getLongName());
 				videoDevice.setData("device-id", device.getDeviceId());
 				videoDevice.setSelection(userDeviceVideo);
-				videoDevice.addSelectionListener(new VideoDeviceChangedListener());
+				videoDevice.addSelectionListener(new VideoDeviceChangedListener(this));
 
 				MenuItem audioOneDevice = new MenuItem(audioOneSubMenu, SWT.RADIO);
 				audioOneDevice.setText(device.getLongName());
 				audioOneDevice.setData("device-id", device.getDeviceId());
 				audioOneDevice.setSelection(userDeviceOne);
-				audioOneDevice.addSelectionListener(new AudioOneDeviceChangedListener());
+				audioOneDevice.addSelectionListener(new AudioOneDeviceChangedListener(this));
 
 				MenuItem audioTwoDevice = new MenuItem(audioTwoSubMenu, SWT.RADIO);
 				audioTwoDevice.setText(device.getLongName());
 				audioTwoDevice.setData("device-id", device.getDeviceId());
 				audioTwoDevice.setSelection(userDeviceTwo);
-				audioTwoDevice.addSelectionListener(new AudioTwoDeviceChangedListener());
+				audioTwoDevice.addSelectionListener(new AudioTwoDeviceChangedListener(this));
 
 				userDeviceVideoAvailable |= userDeviceVideo;
 				userDeviceOneAvailable |= userDeviceOne;
@@ -812,7 +806,7 @@ public class MainShell {
 			shell.setMenuBar(MenuBar);
 
 			// Resize the image if the control containing it changes size
-			imageLabel.addControlListener(new ImageControlAdapter());
+			imageLabel.addControlListener(new ImageControlAdapter(this));
 
 			// tell SWT to display the correct screen info
 			shell.pack();
@@ -836,7 +830,7 @@ public class MainShell {
 			}
 			// timer that updates the clock field and handles any timed events
 			// when loading wait 2 seconds before running it
-			myDisplay.timerExec(2000, new shellTimer());
+			myDisplay.timerExec(2000, new shellTimer(this));
 			metronome = new MetronomePlayer();
 			threadMetronome = new Thread(metronome, "metronome");
 			threadMetronome.setName("threadMetronome");
@@ -888,578 +882,6 @@ public class MainShell {
 		} while (appSettings.isMonitorChanging());
 	}
 	
-	class shellMouseMoveListener implements Listener {
-
-		@Override
-		public void handleEvent(Event e) {
-			Rectangle rect = shell.getBounds();
-			Rectangle rect2;
-			if (appSettings.isHideMenu() && !inPrefShell) {
-				if (e.widget instanceof Control) {
-					Point absolutePos = ((Control) e.widget).toDisplay(e.x, e.y);
-					// String coord;
-					if (absolutePos.y <= 40 && !showMenu) {
-						if (!shell.isDisposed()) {
-							shell.setMenuBar(MenuBar);
-							shell.pack();
-							// shell.setMaximized(true);
-							shell.setBounds(rect);
-						}
-						if (multiMonitor) {
-							if (!shell2.isDisposed()) {
-								rect2 = shell2.getBounds();
-								shell2.pack();
-								// shell2.setMaximized(true);
-								shell2.setBounds(rect2);
-							}
-						}
-						showMenu = true;
-					} else if (absolutePos.y > 100 && showMenu) {
-						if (!shell.isDisposed()) {
-							shell.setMenuBar(null);
-							shell.pack();
-							// shell.setMaximized(true);
-							shell.setBounds(rect);
-						}
-						if (multiMonitor) {
-							if (!shell2.isDisposed()) {
-								rect2 = shell2.getBounds();
-								shell2.pack();
-								// shell2.setMaximized(true);
-								shell2.setBounds(rect2);
-							}
-						}
-						showMenu = false;
-					}
-					// coord = "show " + showMenu.toString() + " " +
-					// absolutePos.x + " , " + absolutePos.y;
-					// mainShell.setLblRight(coord);
-				}
-			} else {
-				if (!showMenu) {
-					if (!shell.isDisposed()) {
-						shell.setMenuBar(MenuBar);
-						shell.pack();
-						// shell.setMaximized(true);
-						shell.setBounds(rect);
-					}
-					if (multiMonitor) {
-						if (!shell2.isDisposed()) {
-							rect2 = shell2.getBounds();
-							shell2.pack();
-							// shell2.setMaximized(true);
-							shell2.setBounds(rect2);
-						}
-					}
-					showMenu = true;
-				}
-			}
-		}
-
-	}
-
-	class shellCloseListen extends ShellAdapter {
-		// Clean up stuff when the application closes
-		@Override
-		public void shellClosed(ShellEvent e) {
-			try {
-				// exitTriggered = true;
-				myDisplay.removeFilter(SWT.KeyDown, keyListener);
-				keyListener = null;
-				if (shell2 != null) {
-					shell2.close();
-				}
-				debugShell.closeShell();
-				int[] intWeights;
-				if (!multiMonitor) {
-					intWeights = sashform.getWeights();
-					appSettings.setSash1Weights(intWeights);
-					int[] intWeights2;
-					intWeights2 = sashform2.getWeights();
-					appSettings.setSash2Weights(intWeights2);
-				}
-				// appSettings.setDataDirectory(strGuidePath);
-				appSettings.saveSettings();
-				controlFont.dispose();
-				timerFont.dispose();
-				buttonFont.dispose();
-				stopAll(true);
-				metronome.metronomeKill();
-			} catch (Exception ex) {
-				logger.error("shellCloseListen ", ex);
-			}
-			super.shellClosed(e);
-		}
-
-		public void handleEvent(Event event) {
-		}
-	}
-
-	// hotkey stuff here
-	class shellKeyEventListener implements Listener {
-		@Override
-		public void handleEvent(Event event) {
-			try {
-				if (event.display.getActiveShell().getText().equals(shell.getText())) {
-
-					logger.trace(
-							event.character + "|" + event.keyCode + "|" + event.keyLocation + "|" + event.stateMask);
-					if (event.keyCode == 13
-							&& (event.widget.getClass().toString().equals("class org.eclipse.swt.browser.Browser"))) {
-						event.doit = false;
-					}
-					;
-					if (((event.stateMask & SWT.ALT) == SWT.ALT)) {
-						switch (event.character) {
-						/*
-						 * case 'd' : shell3.setVisible(!shell3.getVisible());
-						 * if (shell3.isVisible()) { shell3.setActive(); }
-						 * break;
-						 */
-						case 'm':
-						case 'M':
-							Rectangle rect = shell.getBounds();
-							Rectangle rect2;
-							if (!showMenu) {
-								if (!shell.isDisposed()) {
-									shell.setMenuBar(MenuBar);
-									shell.pack();
-									// shell.setMaximized(true);
-									shell.setBounds(rect);
-								}
-								if (multiMonitor) {
-									if (!shell2.isDisposed()) {
-										rect2 = shell2.getBounds();
-										shell2.pack();
-										// shell2.setMaximized(true);
-										shell2.setBounds(rect2);
-									}
-								}
-								showMenu = true;
-							} else {
-								if (!shell.isDisposed()) {
-									shell.setMenuBar(null);
-									shell.pack();
-									// shell.setMaximized(true);
-									shell.setBounds(rect);
-								}
-								if (multiMonitor) {
-									if (!shell2.isDisposed()) {
-										rect2 = shell2.getBounds();
-										shell2.pack();
-										// shell2.setMaximized(true);
-										shell2.setBounds(rect2);
-									}
-								}
-								showMenu = false;
-							}
-							break;
-						}
-						/*
-						 * if (comonFunctions.onWindows() && event.character !=
-						 * "d".charAt(0)) { //ignore } else {
-						 * shell3.setVisible(!shell3.getVisible()); if
-						 * (shell3.isVisible()) { shell3.setActive(); } }
-						 */
-					} else {
-						com.snapps.swt.SquareButton hotKeyButton;
-						String key = String.valueOf(event.character);
-						hotKeyButton = hotKeys.get(key);
-						if (hotKeyButton != null) {
-							String strTag;
-							strTag = (String) hotKeyButton.getData("Set");
-							if (!strTag.equals("")) {
-								comonFunctions.SetFlags(strTag, guide.getFlags());
-							}
-							strTag = (String) hotKeyButton.getData("UnSet");
-							if (!strTag.equals("")) {
-								comonFunctions.UnsetFlags(strTag, guide.getFlags());
-							}
-							strTag = (String) hotKeyButton.getData("Target");
-							String javascript = (String) hotKeyButton.getData("javascript");
-							runJscript(javascript, false);
-							if (!strTag.equals("")) {
-								mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings,
-										guideSettings, debugShell);
-							}
-						}
-					}
-				}
-			} catch (Exception ex) {
-				logger.error(" hot key " + ex.getLocalizedMessage(), ex);
-			}
-		}
-	}
-
-	class VideoRelease implements Runnable {
-		// Do the release of the Video stuff (VLC) on a different thread to
-		// prevent it blocking the main UI thread
-		private MediaPlayerFactory mediaPlayerFactoryThread;
-		private EmbeddedMediaPlayer mediaPlayerThread;
-
-		@Override
-		public void run() {
-			try {
-				mediaPlayerThread.controls().stop();
-				mediaPlayerThread.release();
-				mediaPlayerFactoryThread.release();
-				logger.trace("VideoRelease Exit");
-			} catch (Exception ex) {
-				logger.error("Video release " + ex.getLocalizedMessage(), ex);
-			}
-		}
-
-		public void setVideoRelease(EmbeddedMediaPlayer mediaPlayer, MediaPlayerFactory mediaPlayerFactory) {
-			try {
-				mediaPlayerFactoryThread = mediaPlayerFactory;
-				mediaPlayerThread = mediaPlayer;
-			} catch (Exception ex) {
-				logger.error("Video release " + ex.getLocalizedMessage(), ex);
-			}
-		}
-
-	}
-
-	class mediaPanelListener extends ControlAdapter {
-		// resize the video if the container changes size
-		@Override
-		public void controlResized(ControlEvent e) {
-			super.controlResized(e);
-			if (videoOn) {
-				try {
-					// Rectangle rect = mediaPanel.getClientArea();
-					// videoFrame.setSize(rect.width, rect.height);
-				} catch (Exception ex) {
-					logger.error("Video resize " + ex.getLocalizedMessage(), ex);
-				}
-			}
-		}
-
-	}
-
-	class MediaListener extends MediaPlayerEventAdapter {
-		// Video event listener
-
-		// Video has finished
-		@Override
-		public void finished(MediaPlayer mediaPlayer) {
-			// TODO, this should be displaying what media finished
-			logger.debug("MediaListener finished " + mediaPlayer.media().info().mrl());
-			super.finished(mediaPlayer);
-			try {
-				if (!videoTarget.equals("")) {
-					// run on the main UI thread
-					myDisplay.asyncExec(new Runnable() {
-						public void run() {
-							mediaPanel.setVisible(false);
-							webcamPanel.setVisible(false);
-							imageLabel.setVisible(true);
-							leftFrame.layout(true);
-							logger.debug("MediaListener Video Run: " + videoJscript + " videoTarget: " + videoTarget);
-							mainShell.runJscript(videoJscript, false);
-							mainShell.displayPage(videoTarget);
-						}
-					});
-				}
-				comonFunctions.processSrciptVars(videoScriptVar, guideSettings);
-				/*
-				 * //run on the main UI thread myDisplay.syncExec( new
-				 * Runnable() { public void run(){ mediaPanel.setVisible(false);
-				 * imageLabel.setVisible(true); leftFrame.layout(true); } });
-				 */
-			} catch (Exception ex) {
-				logger.error(" MediaListener finished " + ex.getLocalizedMessage(), ex);
-			}
-		}
-
-		/*
-		 * //newState 5 indicates the video has finished //videoPlay can be set
-		 * to false outside the code to tell it to stop //if the video finishes
-		 * loop round again if a number of repeats has been set
-		 * 
-		 * @Override public void mediaStateChanged(MediaPlayer lmediaPlayer, int
-		 * newState) { super.mediaStateChanged(lmediaPlayer, newState);
-		 * logger.debug("MediaListener newState: " + newState + " videoPlay: " +
-		 * videoPlay + " VideoTarget: " + videoTarget + " file:" +
-		 * lmediaPlayer.mrl()); try { if ((newState==5 || newState==6) &&
-		 * videoPlay){ if (!videoTarget.equals("")) { //run on the main UI
-		 * thread myDisplay.asyncExec( new Runnable() { public void run(){
-		 * logger.debug("MediaListener Video Run: " + videoJscript +
-		 * " videoTarget: " + videoTarget); mainShell.runJscript(videoJscript,
-		 * false); mainShell.displayPage(videoTarget); } }); }
-		 * comonFunctions.processSrciptVars(videoScriptVar, guideSettings); } }
-		 * catch (Exception e) { logger.error("mediaStateChanged " +
-		 * e.getLocalizedMessage(), e); } }
-		 */
-
-		@Override
-		public void error(MediaPlayer mediaPlayer) {
-			logger.error("MediaPlayer error ");
-			super.error(mediaPlayer);
-		}
-	}
-
-	class FileLoadListener extends SelectionAdapter {
-		// File Load from the menu
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			try {
-				logger.trace("Enter Menu Load");
-				// display a dialog to ask for a guide file to play
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				// TODO Need to change this here to implement the new html
-				// format
-				String[] filterNames = new String[] { "XML Files" };
-				String[] filterExtensions = new String[] { "*.xml" };
-				dialog.setFilterNames(filterNames);
-				dialog.setFilterExtensions(filterExtensions);
-				dialog.setFilterPath(appSettings.getDataDirectory());
-				try {
-					guideFile = dialog.open();
-					try {
-						if (guideFile != null) {
-							// if a guide file has been chosen load it
-							// default the initial directory for future loads to
-							// the current one
-							strGuidePath = dialog.getFilterPath() + appSettings.getFileSeparator();
-							appSettings.setDataDirectory(strGuidePath);
-							// load the file it will return the start page and
-							// populate the guide object
-							// TODO Need to change this here to implement the
-							// new html format
-							loadGuide(guideFile);
-							debugShell.clearJConsole();
-						}
-					} catch (Exception ex5) {
-						logger.error("Load Guide " + ex5.getLocalizedMessage(), ex5);
-					}
-				} catch (Exception ex4) {
-					logger.error("Load Guide Dialogue error " + ex4.getLocalizedMessage(), ex4);
-				}
-			} catch (Exception ex3) {
-				logger.error("Load Guide error " + ex3.getLocalizedMessage(), ex3);
-			}
-			logger.trace("Exit Menu Load");
-			super.widgetSelected(e);
-		}
-
-	}
-
-	class CompressGuideListener extends SelectionAdapter {
-		// File CompressGuide from the menu
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			try {
-				logger.trace("Enter Menu CompressGuide");
-				// display a dialog to ask for a guide file to play
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				String[] filterNames = new String[] { "XML Files" };
-				String[] filterExtensions = new String[] { "*.xml" };
-				dialog.setFilterNames(filterNames);
-				dialog.setFilterExtensions(filterExtensions);
-				dialog.setFilterPath(appSettings.getDataDirectory());
-				String strFileToLoad;
-				try {
-					strFileToLoad = dialog.open();
-					try {
-						if (strFileToLoad != null) {
-							// if a guide file has been chosen load it
-							// default the initial directory for future loads to
-							// the current one
-							strGuidePath = dialog.getFilterPath() + appSettings.getFileSeparator();
-							appSettings.setDataDirectory(strGuidePath);
-							// load the file it will return the start page and
-							// populate the guide object
-							comonFunctions.CompressGuide(strFileToLoad);
-						}
-					} catch (Exception ex5) {
-						logger.error("Process Image error " + ex5.getLocalizedMessage(), ex5);
-					}
-				} catch (Exception ex4) {
-					logger.error("Load Image Dialogue error " + ex4.getLocalizedMessage(), ex4);
-				}
-			} catch (Exception ex3) {
-				logger.error("Load Image error " + ex3.getLocalizedMessage(), ex3);
-			}
-			logger.trace("Exit Menu CompressGuide");
-			super.widgetSelected(e);
-		}
-
-	}
-
-	class UnCompressGuideListener extends SelectionAdapter {
-		// File UnCompressGuide from the menu
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			try {
-				logger.trace("Enter Menu UnCompressGuide");
-				// display a dialog to ask for a guide file to play
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				String[] filterNames = new String[] { "ZIP Files" };
-				String[] filterExtensions = new String[] { "*.zip" };
-				dialog.setFilterNames(filterNames);
-				dialog.setFilterExtensions(filterExtensions);
-				dialog.setFilterPath(appSettings.getDataDirectory());
-				String strFileToLoad;
-				try {
-					strFileToLoad = dialog.open();
-					try {
-						if (strFileToLoad != null) {
-							// if a guide file has been chosen load it
-							// default the initial directory for future loads to
-							// the current one
-							strGuidePath = dialog.getFilterPath() + appSettings.getFileSeparator();
-							appSettings.setDataDirectory(strGuidePath);
-							// load the file it will return the start page and
-							// populate the guide object
-							comonFunctions.UnCompressGuide(strFileToLoad);
-						}
-					} catch (Exception ex5) {
-						logger.error("Process Image error " + ex5.getLocalizedMessage(), ex5);
-					}
-				} catch (Exception ex4) {
-					logger.error("Load Image Dialogue error " + ex4.getLocalizedMessage(), ex4);
-				}
-			} catch (Exception ex3) {
-				logger.error("Load Image error " + ex3.getLocalizedMessage(), ex3);
-			}
-			logger.trace("Exit Menu UnCompressGuide");
-			super.widgetSelected(e);
-		}
-
-	}
-
-	class ResizeGuideListener extends SelectionAdapter {
-		// File CompressGuide from the menu
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			try {
-				logger.trace("Enter Menu CompressGuide");
-				// display a dialog to ask for a guide file to play
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				String[] filterNames = new String[] { "XML Files" };
-				String[] filterExtensions = new String[] { "*.xml" };
-				dialog.setFilterNames(filterNames);
-				dialog.setFilterExtensions(filterExtensions);
-				dialog.setFilterPath(appSettings.getDataDirectory());
-				String strFileToLoad;
-				try {
-					strFileToLoad = dialog.open();
-					try {
-						if (strFileToLoad != null) {
-							// if a guide file has been chosen load it
-							// default the initial directory for future loads to
-							// the current one
-							strGuidePath = dialog.getFilterPath() + appSettings.getFileSeparator();
-							appSettings.setDataDirectory(strGuidePath);
-							// load the file it will return the start page and
-							// populate the guide object
-							comonFunctions.ResizeGuideImages(strFileToLoad);
-						}
-					} catch (Exception ex5) {
-						logger.error("Process Image error " + ex5.getLocalizedMessage(), ex5);
-					}
-				} catch (Exception ex4) {
-					logger.error("Load Image Dialogue error " + ex4.getLocalizedMessage(), ex4);
-				}
-			} catch (Exception ex3) {
-				logger.error("Load Image error " + ex3.getLocalizedMessage(), ex3);
-			}
-			logger.trace("Exit Menu CompressGuide");
-			super.widgetSelected(e);
-		}
-
-	}
-
-	class VideoDeviceChangedListener extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			if (((MenuItem) e.widget).getSelection()) {
-				String newOutputDevice = e.widget.getData("device-id").toString();
-				appSettings.setVideoDevice(newOutputDevice);
-				if (newOutputDevice != null) {
-					// TODO this doesn't seem quite right
-					mediaPlayer.audio().setOutputDevice(null, newOutputDevice);
-				}
-			}
-		}
-	}
-
-	class AudioOneDeviceChangedListener extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			if (((MenuItem) e.widget).getSelection()) {
-				String newOutputDevice = e.widget.getData("device-id").toString();
-				appSettings.setAudioOneDevice(newOutputDevice);
-				if (threadAudioPlayer != null && newOutputDevice != null) {
-					audioPlayer.setAudioDevice(newOutputDevice);
-				}
-			}
-		}
-	}
-
-	class AudioTwoDeviceChangedListener extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			if (((MenuItem) e.widget).getSelection()) {
-				String newOutputDevice = e.widget.getData("device-id").toString();
-				appSettings.setAudioTwoDevice(newOutputDevice);
-				if (threadAudioPlayer2 != null && newOutputDevice != null) {
-					audioPlayer2.setAudioDevice(newOutputDevice);
-				}
-			}
-		}
-	}
-
-	// Is triggered by Java script writing to the Status Text
-	// Checks the text for "commands" that GuideMe understands
-	// Original implementation is to move to HTML buttons where the onclick
-	// javascript needs to trigger Guideme
-	// Needs a pipe | separated string containing the command and parameters
-	// ButtonClick|Set|UnSet|scriptVar|target|javaScript|filler
-	// The filler item is not strictly required, but commands without a
-	// javaScript item will require something
-	// in there due to how the split function works. It's contents are ignored.
-	// If the exact same command string is used repeatedly, it will be ignored.
-	// To prevent this, use varying text in the filler, such as the time or a
-	// counter to the command string.
-	class EventStatusTextListener implements StatusTextListener {
-		@Override
-		public void changed(StatusTextEvent event) {
-			if (!ProcStatusText.equals(event.text)) {
-				String statusText = event.text;
-
-				String[] eventArgs = statusText.split("\\|");
-				if (eventArgs[0].equals("ButtonClick") && eventArgs.length > 5) {
-					ProcStatusText = event.text;
-					try {
-						logger.trace("Enter StatusTextListener");
-						String strTag;
-						strTag = eventArgs[1];// Set
-						if (!strTag.equals("")) {
-							comonFunctions.SetFlags(strTag, guide.getFlags());
-						}
-						strTag = eventArgs[2];// UnSet
-						if (!strTag.equals("")) {
-							comonFunctions.UnsetFlags(strTag, guide.getFlags());
-						}
-						String scriptVar = eventArgs[3];// scriptVar
-						comonFunctions.processSrciptVars(scriptVar, guideSettings);
-						strTag = eventArgs[4];// Target
-						String javascript = eventArgs[5];// javaScript
-						runJscript(javascript, false);
-						if (!strTag.equals(""))
-							mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings,
-									guideSettings, debugShell);
-					} catch (Exception ex) {
-						logger.error(" StatusTextListener " + ex.getLocalizedMessage(), ex);
-					}
-					logger.trace("Exit StatusTextListener");
-				}
-			}
-		}
-	}
-
 	// Load the tease
 	public void loadGuide(String fileToLoad) {
 		try {
@@ -1483,270 +905,6 @@ public class MainShell {
 		}
 	}
 
-	class FileReloadListener extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			if (appSettings.isFileActionConfirmations()) {
-				MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-				dialog.setMessage("Do you really want to reload the guide?\n(All current status will be lost)");
-				int returnCode = dialog.open();
-				if (returnCode == SWT.CANCEL)
-					return;
-			}
-			loadGuide(guideFile);
-		}
-	}
-
-	// Restart
-	class FileRestartListener extends SelectionAdapter {
-		// File Restart From the menu
-		// will restart the Guide from the start page
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			if (appSettings.isFileActionConfirmations()) {
-				MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-				dialog.setMessage("Do you really want to restart the guide?\n(All current status will be lost)");
-				int returnCode = dialog.open();
-				if (returnCode == SWT.CANCEL)
-					return;
-			}
-			try {
-				logger.trace("Enter Menu Restart");
-				// stop all activity for the current page to prevent timers
-				// jumping to a different page
-				stopAll(false);
-				guide.getFlags().clear();
-				guide.getSettings().setPage("start");
-				guide.getSettings().setFlags(comonFunctions.GetFlags(guide.getFlags()));
-				// guide.getSettings().setScope(null);
-				HashMap<String, Object> scriptVariables = new HashMap<String, Object>();
-				guide.getSettings().setScriptVariables(scriptVariables);
-				guide.getSettings().setScope(null);
-				guide.getSettings().saveSettings();
-				guideSettings = guide.getSettings();
-				debugShell.clearJConsole();
-				mainLogic.displayPage("start", false, guide, mainShell, appSettings, userSettings, guideSettings,
-						debugShell);
-			} catch (Exception ex) {
-				logger.error("Restart error " + ex.getLocalizedMessage(), ex);
-			}
-			logger.trace("Exit Menu Restart");
-			super.widgetSelected(e);
-		}
-
-	}
-
-	class FilePreferencesGuide extends SelectionAdapter {
-		// File Preferences from the menu
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			try {
-				logger.trace("Enter Preferences Guide Load");
-				// special guide for user preferences
-				// this loads automatically from the application directory with
-				// a hard coded name.
-				//
-				debugShell.clearPagesCombo();
-				String appDir = appSettings.getUserDir().replace("\\", "\\\\");
-				String fileName = "userSettingsUI_" + appSettings.getLanguage() + "_" + appSettings.getCountry()
-						+ ".xml";
-				File f = new File(appDir + appSettings.getFileSeparator() + fileName);
-				if (!f.exists()) {
-					fileName = "userSettingsUI_" + appSettings.getLanguage() + ".xml";
-					f = new File(appDir + appSettings.getFileSeparator() + fileName);
-					if (!f.exists()) {
-						fileName = "userSettingsUI.xml";
-					}
-				}
-				xmlGuideReader.loadXML(fileName, guide, appSettings, debugShell);
-				guide.setMediaDirectory("userSettings");
-				guideSettings = guide.getSettings();
-				if (guide.getCss().equals("")) {
-					style = defaultStyle;
-				} else {
-					style = guide.getCss();
-				}
-				// flag to allow updating of user preferences which is normally
-				// disabled in guides
-				guide.setInPrefGuide(true);
-				// display the first page
-				mainLogic.displayPage("start", false, guide, mainShell, appSettings, userSettings, guideSettings,
-						debugShell);
-			} catch (Exception ex3) {
-				logger.error("Load Image error " + ex3.getLocalizedMessage(), ex3);
-			}
-			logger.trace("Exit Preferences Guide Load");
-			super.widgetSelected(e);
-		}
-
-	}
-
-	class FilePreferences extends SelectionAdapter {
-		// File Preferences from the menu
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			try {
-				logger.trace("Enter FilePreferences");
-				// display a modal shell to change the preferences
-				inPrefShell = true;
-				Shell prefShell = new PreferenceShell().createShell(myDisplay, userSettings, appSettings);
-				prefShell.open();
-				while (!prefShell.isDisposed()) {
-					if (!myDisplay.readAndDispatch())
-						myDisplay.sleep();
-				}
-				inPrefShell = false;
-			} catch (Exception ex) {
-				logger.error(" FilePreferences " + ex.getLocalizedMessage());
-				inPrefShell = false;
-			}
-			super.widgetSelected(e);
-		}
-
-	}
-
-	class FileGuidePreferences extends SelectionAdapter {
-		// File Guide Preferences from menu
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			try {
-				logger.trace("Enter FileGuidePreferences");
-				// Display a modal shell for the guide specific preferences
-				guideSettings = guide.getSettings();
-				inPrefShell = true;
-				Shell prefShell = new GuidePreferenceShell().createShell(myDisplay, guideSettings, appSettings);
-				prefShell.open();
-				while (!prefShell.isDisposed()) {
-					if (!myDisplay.readAndDispatch())
-						myDisplay.sleep();
-				}
-				inPrefShell = false;
-			} catch (Exception ex) {
-				logger.error(" FileGuidePreferences " + ex.getLocalizedMessage());
-				inPrefShell = false;
-			}
-			super.widgetSelected(e);
-		}
-
-	}
-
-	class FileLibraryListener extends SelectionAdapter {
-		// File Library from menu
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			try {
-				logger.trace("Enter FileLibraryListener");
-				// Display a modal shell for the guide specific preferences
-				Shell libShell = new LibraryShell().createShell(myDisplay, appSettings, mainShell);
-				libShell.open();
-				while (!libShell.isDisposed()) {
-					if (!myDisplay.readAndDispatch())
-						myDisplay.sleep();
-				}
-			} catch (Exception ex) {
-				logger.error(" FileLibraryListener " + ex.getLocalizedMessage());
-				inPrefShell = false;
-			}
-			super.widgetSelected(e);
-		}
-
-	}
-
-	// listener for the control that holds the image,
-	// will resize the image if the control is resized.
-	class ImageControlAdapter extends ControlAdapter {
-		public void controlResized(ControlEvent e) {
-			logger.trace("Enter addControlListener");
-			if (!imgOverRide) {
-				HashMap<String, Integer> imageDimentions;
-
-				// Label me = (Label)e.widget;
-				Browser me = (Browser) e.widget;
-				// Image myImage = (Image) me.getData("image");
-				try {
-					if (me.getData("imgPath") != null) {
-						String strHtml;
-						String tmpImagePath;
-						String imgPath = (String) me.getData("imgPath");
-						double imageRatio = ((Double) me.getData("imageRatio")).doubleValue();
-						Rectangle RectImage = me.getBounds();
-						double dblScreenRatio = (double) RectImage.height / (double) RectImage.width;
-						logger.trace("imgPath: " + imgPath);
-						logger.trace("dblScreenRatio: " + dblScreenRatio);
-						logger.trace("dblImageRatio: " + imageRatio);
-						logger.trace("Lable Height: " + RectImage.height);
-						logger.trace("Lable Width: " + RectImage.width);
-
-						int maxImageScale = (int) imageLabel.getData("maxImageScale");
-						logger.trace("maxImageScale: " + maxImageScale);
-						int maxheight = (int) imageLabel.getData("maxheight");
-						logger.trace("maxheight: " + maxheight);
-						int maxwidth = (int) imageLabel.getData("maxwidth");
-						logger.trace("maxwidth: " + maxwidth);
-
-						imageDimentions = GetNewDimentions(imageRatio, RectImage.height, RectImage.width,
-								appSettings.getImgOffset(), maxImageScale != 0, maxheight, maxwidth);
-
-						// String strHtml = "<!DOCTYPE html PUBLIC \"-//W3C//DTD
-						// XHTML 1.0 Strict//EN\"
-						// \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"><html
-						// xmlns=\"http://www.w3.org/1999/xhtml\"
-						// xml:lang=\"en\"><head><meta
-						// http-equiv=\"Content-type\"
-						// content=\"text/html;charset=UTF-8\"
-						// /><title></title><style type=\"text/css\">" +
-						// defaultStyle + "</style></head><body><table
-						// id=\"wrapper\"><tr><td><img src=\"" + tmpImagePath +
-						// "\" height=\"" + newHeight + "\" width=\"" + newWidth
-						// + "\" /></td></tr></table></body></html>";
-						if (imgPath.endsWith(".gif")) {
-							tmpImagePath = imgPath;
-							strHtml = leftHTML.replace("DefaultStyle", defaultStyle + " body { overflow:hidden }");
-							strHtml = strHtml.replace("BodyContent",
-									"<table id=\"wrapper\"><tr><td><img src=\"" + tmpImagePath + "\" height=\""
-											+ imageDimentions.get("newHeight") + "\" width=\""
-											+ imageDimentions.get("newWidth") + "\" /></td></tr></table>");
-						} else {
-							BufferedImage img = null;
-							try {
-								ImageIO.setUseCache(false);
-								img = ImageIO.read(new File(imgPath));
-							} catch (IOException e1) {
-							}
-							if (img.getColorModel().hasAlpha()) {
-								img = comonFunctions.dropAlphaChannel(img);
-							}
-							BufferedImage imagenew = Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC,
-									imageDimentions.get("newWidth"), imageDimentions.get("newHeight"),
-									Scalr.OP_ANTIALIAS);
-							String imgType = imgPath.substring(imgPath.length() - 3);
-							String tmpPath = appSettings.getTempDir();
-							File newImage = File.createTempFile("tmpImage", imgType, new File(tmpPath));
-							newImage.deleteOnExit();
-							tmpImagePath = newImage.getAbsolutePath();
-							ImageIO.write(imagenew, imgType, newImage);
-							strHtml = leftHTML.replace("DefaultStyle", defaultStyle + " body { overflow:hidden }");
-							strHtml = strHtml.replace("BodyContent",
-									"<table id=\"wrapper\"><tr><td><img src=\"" + tmpImagePath + "\" height=\""
-											+ imageDimentions.get("newHeight") + "\" width=\""
-											+ imageDimentions.get("newWidth") + "\" /></td></tr></table>");
-						}
-						me.setText(strHtml, true);
-						// Image tmpImage = me.getImage();
-						// me.setImage(resize(myImage, newWidth, newHeight));
-						// tmpImage.dispose();
-					}
-				} catch (Exception ex7) {
-					logger.error("Shell Resize error " + ex7.getLocalizedMessage(), ex7);
-				}
-			}
-			if (testI == 2) {
-				logger.trace("About to crash");
-			}
-			logger.trace("Exit addControlListener: " + testI++);
-		}
-	}
-
 	static int testI = 0;
 	/*
 	 * // Returns the image passed in resized to the width and height passed in
@@ -1763,7 +921,7 @@ public class MainShell {
 	 * }
 	 */
 
-	private static HashMap<String, Integer> GetNewDimentions(double imageRatio, int labelHeight, int labelWidth,
+	static HashMap<String, Integer> GetNewDimentions(double imageRatio, int labelHeight, int labelWidth,
 			double imgOffSet, boolean maxScale, int maxHeight, int maxWidth) {
 		HashMap<String, Integer> returnValue = new HashMap<String, Integer>();
 		double dblScreenRatio = (double) labelHeight / (double) labelWidth;
@@ -1797,179 +955,6 @@ public class MainShell {
 		returnValue.put("newHeight", newHeight);
 		returnValue.put("newWidth", newWidth);
 		return returnValue;
-	}
-
-	class shellTimer implements Runnable {
-		// Timer to update:
-		// the clock
-		// count down timer
-		// handle going to new page when timer counts down to 0
-		@Override
-		public void run() {
-			try {
-				// logger.trace("Enter shellTimer");
-				if (pauseRequested) {
-					logger.debug("pausing timers");
-					pauseAll();
-					return;
-				}
-				if (!lblRight.isDisposed()) {
-					DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-					Calendar cal = Calendar.getInstance();
-					String javascript;
-					long diff;
-					int intSeconds;
-					int intMinutes;
-					String strSeconds;
-					String strMinutes;
-					String strTimeLeft;
-					if (calCountDown != null) {
-						if (cal.after(calCountDown)) {
-							// Delay has reached zero
-							try {
-								calCountDown = null;
-								lblRight.setText("");
-								comonFunctions.SetFlags(guide.getDelaySet(), guide.getFlags());
-								comonFunctions.UnsetFlags(guide.getDelayUnSet(), guide.getFlags());
-								comonFunctions.processSrciptVars(guide.getDelayScriptVar(), guideSettings);
-								javascript = guide.getDelayjScript();
-								if (!javascript.equals("")) {
-									mainShell.runJscript(javascript, false);
-								}
-								mainLogic.displayPage(guide.getDelTarget(), false, guide, mainShell, appSettings,
-										userSettings, guideSettings, debugShell);
-							} catch (Exception ex) {
-								logger.error(" shellTimer Delay Zero " + ex.getLocalizedMessage(), ex);
-							}
-						} else {
-							try {
-								if (guide.getDelStyle().equals("hidden")) {
-									// a hidden one
-									lblRight.setText("");
-								} else if (guide.getDelStyle().equals("secret")) {
-									// secret timer so display ?? to show there
-									// is one but not how long
-									lblRight.setText("??:??");
-								} else {
-									// Normal delay so display seconds left
-									// (plus any offset if you are being sneaky)
-									diff = calCountDown.getTimeInMillis() - cal.getTimeInMillis();
-									diff = diff + (guide.getDelStartAtOffSet() * 1000);
-									intSeconds = (int) ((diff / 1000) + 1);
-									intMinutes = intSeconds / 60;
-									intSeconds = intSeconds - (intMinutes * 60);
-									strSeconds = String.valueOf(intSeconds);
-									strSeconds = "0" + strSeconds;
-									strSeconds = strSeconds.substring(strSeconds.length() - 2);
-									strMinutes = String.valueOf(intMinutes);
-									strMinutes = "0" + strMinutes;
-									strMinutes = strMinutes.substring(strMinutes.length() - 2);
-									strTimeLeft = strMinutes + ":" + strSeconds;
-									lblRight.setText(strTimeLeft);
-								}
-							} catch (Exception ex) {
-								logger.error(" shellTimer Update Count Down " + ex.getLocalizedMessage(), ex);
-							}
-
-						}
-					}
-					try {
-						if (appSettings.isClock()) {
-							lblLeft.setText(dateFormat.format(cal.getTime()));
-						} else {
-							lblLeft.setText("");
-						}
-					} catch (Exception ex) {
-						logger.error(" shellTimer Update Clock " + ex.getLocalizedMessage(), ex);
-					}
-
-					try {
-						// check timers
-						if (getTimerCount() > 0) {
-							Iterator<Entry<String, Timer>> it = timer.entrySet().iterator();
-							while (it.hasNext()) {
-								Map.Entry<String, Timer> pair = it.next();
-								Timer objTimer = pair.getValue();
-								Calendar calTemp = objTimer.getTimerEnd();
-								// logger.debug("Timer: " + objTimer.getId() + "
-								// End: " + calTemp.getTime());
-								// logger.debug("Timer: " + objTimer.getId() + "
-								// Now: " + cal.getTime());
-								if (cal.after(calTemp)) {
-									logger.debug("Timer: " + objTimer.getId() + " Triggered");
-									// add a year to the timer so we don't
-									// trigger it again
-									calTemp.add(Calendar.YEAR, 1);
-									pair.getValue().setTimerEnd(calTemp);
-									comonFunctions.SetFlags(objTimer.getSet(), guide.getFlags());
-									comonFunctions.UnsetFlags(objTimer.getUnSet(), guide.getFlags());
-									String strImage = objTimer.getImageId();
-									if (!strImage.equals("")) {
-										String imgPath = comonFunctions.getMediaFullPath(strImage,
-												appSettings.getFileSeparator(), appSettings, guide);
-										File flImage = new File(imgPath);
-										if (flImage.exists()) {
-											try {
-												setImage(imgPath);
-											} catch (Exception e1) {
-												logger.error("Timer Image Exception " + e1.getLocalizedMessage(), e1);
-											}
-										}
-									}
-									String displayText = objTimer.getText();
-									if (!displayText.equals("")) {
-										try {
-											// Media Directory
-											try {
-												String mediaPath;
-												mediaPath = comonFunctions.getMediaFullPath("",
-														appSettings.getFileSeparator(), appSettings, guide);
-												displayText = displayText.replace("\\MediaDir\\", mediaPath);
-											} catch (Exception e) {
-												logger.error("displayPage BrwsText Media Directory Exception "
-														+ e.getLocalizedMessage(), e);
-											}
-
-											displayText = comonFunctions.substituteTextVars(displayText, guideSettings,
-													userSettings);
-
-											setBrwsText(displayText, "");
-										} catch (Exception e) {
-											logger.error("Timer BrwsText Exception " + e.getLocalizedMessage(), e);
-										}
-									}
-									javascript = objTimer.getjScript();
-									if (!javascript.equals("")) {
-										mainShell.runJscript(javascript, false);
-									}
-									String target = objTimer.getTarget();
-									if (!target.equals("")) {
-										lblRight.setText("");
-										mainLogic.displayPage(target, false, guide, mainShell, appSettings,
-												userSettings, guideSettings, debugShell);
-									}
-								}
-								// it.remove(); // avoids a
-								// ConcurrentModificationException
-							}
-						}
-					} catch (Exception ex) {
-						logger.error(" shellTimer Timers " + ex.getLocalizedMessage(), ex);
-					}
-					dateFormat = null;
-					cal = null;
-					javascript = null;
-					strSeconds = null;
-					strMinutes = null;
-					strTimeLeft = null;
-					// re run in 0.1 seconds
-					myDisplay.timerExec(100, new shellTimer());
-				}
-			} catch (Exception ex) {
-				logger.error(" shellTimer " + ex.getLocalizedMessage(), ex);
-			}
-			// logger.trace("Exit shellTimer");
-		}
 	}
 
 	public Calendar getCalCountDown() {
@@ -2229,7 +1214,7 @@ public class MainShell {
 				String mrlVideo = "file:///" + video;
 				logger.debug("MainShell playVideo: " + mrlVideo + " videoLoops: " + videoLoops + " videoTarget: "
 						+ videoTarget + " videoPlay: " + videoPlay);
-				VideoPlay videoPlay = new VideoPlay();
+				VideoPlay videoPlay = new VideoPlay(this);
 				videoPlay.setVideoPlay(mediaPlayer, mrlVideo, volume);
 				threadVideoPlayer = new Thread(videoPlay, "videoPlay");
 				threadVideoPlayer.setName("videoPlayThread");
@@ -2243,61 +1228,6 @@ public class MainShell {
 				logger.error("playVideo " + e.getLocalizedMessage(), e);
 			}
 		}
-	}
-
-	class VideoPlay implements Runnable {
-		// code to start the video on a separate thread
-		private SwtEmbeddedMediaPlayer mediaPlayer;
-		private String video;
-		private int volume;
-		private ArrayList<String> vlcArgs;
-
-		@Override
-		public void run() {
-			try {
-				logger.debug("MainShell VideoPlay new Thread " + video);
-
-				mediaPlayer.audio().setVolume(volume);
-				// TODO this setting seems to have disappeared
-//				mediaPlayer.setPlaySubItems(true);
-				if (this.vlcArgs.isEmpty()) {
-					mediaPlayer.media().play(video);
-				} else {
-					myDisplay.syncExec(() -> {
-						mediaPanel.setVisible(true);
-						webcamPanel.setVisible(false);
-						imageLabel.setVisible(false);
-						leftFrame.layout(true);
-					});
-					mediaPlayer.media().play(video, vlcArgs.toArray(new String[vlcArgs.size()]));
-					// run on the main UI thread
-				}
-			} catch (Exception e) {
-				logger.error("VideoPlay run " + e.getLocalizedMessage(), e);
-			}
-		}
-
-		public void setVideoPlay(SwtEmbeddedMediaPlayer mediaPlayer, String video, int volume) {
-			int mediaVolume = appSettings.getVideoVolume();
-			volume = Math.min(Math.max(volume, 0), 100); // Bound between 0 and
-															// 100
-
-			this.mediaPlayer = mediaPlayer;
-			this.video = video;
-			this.volume = (int) ((double) mediaVolume * ((double) volume / (double) 100));
-
-			this.vlcArgs = new ArrayList<>();
-			if (videoStartAt > 0) {
-				this.vlcArgs.add("start-time=" + videoStartAt);
-			}
-			if (videoStopAt > 0) {
-				this.vlcArgs.add("stop-time=" + videoStopAt);
-			}
-			if (videoLoops > 0) {
-				this.vlcArgs.add("input-repeat=" + videoLoops);
-			}
-		}
-
 	}
 
 	public void clearImage() {
@@ -2500,7 +1430,7 @@ public class MainShell {
 			delayButton.setData("Target", guide.getDelTarget());
 			delayButton.setData("scriptVar", guide.getDelayScriptVar());
 			delayButton.setData("javascript", guide.getDelayjScript());
-			delayButton.addSelectionListener(new DynamicButtonListner());
+			delayButton.addSelectionListener(new DynamicButtonListner(this));
 
 			delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
 		} catch (Exception e) {
@@ -2615,100 +1545,17 @@ public class MainShell {
 				btnDynamic.setData("webcamFile", webcamButton.get_destination());
 				switch (webcamButton.get_type()) {
 				case "Capture":
-					btnDynamic.addSelectionListener(new WebcamCaptureListener());
+					btnDynamic.addSelectionListener(new WebcamCaptureListener(mainShell));
 					break;
 				}
 			} else {
-				btnDynamic.addSelectionListener(new DynamicButtonListner());
+				btnDynamic.addSelectionListener(new DynamicButtonListner(this));
 			}
 			btnDynamic.setEnabled(!button.getDisabled());
 		} catch (Exception e) {
 			logger.error("addButton " + e.getLocalizedMessage(), e);
 		}
 
-	}
-
-	// Click event code for the dynamic buttons
-	class DynamicButtonListner extends SelectionAdapter {
-		public void widgetSelected(SelectionEvent event) {
-			if (pauseRequested) {
-				return;
-			}
-			try {
-
-				logger.trace("Enter DynamicButtonListner");
-				String strTag;
-				com.snapps.swt.SquareButton btnClicked = (com.snapps.swt.SquareButton) event.widget;
-				strTag = (String) btnClicked.getData("Set");
-				if (!strTag.equals("")) {
-					comonFunctions.SetFlags(strTag, guide.getFlags());
-				}
-				strTag = (String) btnClicked.getData("UnSet");
-				if (!strTag.equals("")) {
-					comonFunctions.UnsetFlags(strTag, guide.getFlags());
-				}
-				String scriptVar = (String) btnClicked.getData("scriptVar");
-				comonFunctions.processSrciptVars(scriptVar, guideSettings);
-				strTag = (String) btnClicked.getData("Target");
-				String javascript = (String) btnClicked.getData("javascript");
-				runJscript(javascript, false);
-				if (!strTag.equals("")) {
-					mainLogic.displayPage(strTag, false, guide, mainShell, appSettings, userSettings, guideSettings,
-							debugShell);
-				}
-			} catch (Exception ex) {
-				logger.error(" DynamicButtonListner " + ex.getLocalizedMessage(), ex);
-			}
-			logger.trace("Exit DynamicButtonListner");
-		}
-	}
-
-	/*
-	 * private static BufferedImage convertToType(BufferedImage sourceImage, int
-	 * targetType) { BufferedImage image;
-	 * 
-	 * // if the source image is already the target type, return the source
-	 * image
-	 * 
-	 * if (sourceImage.getType() == targetType) image = sourceImage;
-	 * 
-	 * // otherwise create a new image of the target type and draw the new //
-	 * image
-	 * 
-	 * else { image = new BufferedImage(sourceImage.getWidth(),
-	 * sourceImage.getHeight(), targetType);
-	 * image.getGraphics().drawImage(sourceImage, 0, 0, null); }
-	 * 
-	 * return image; }
-	 */
-
-	class WebcamCaptureListener extends DynamicButtonListner {
-		public void widgetSelected(SelectionEvent event) {
-			try {
-
-				logger.trace("Enter WebcamCaptureListener");
-				String strFile;
-				com.snapps.swt.SquareButton btnClicked;
-				btnClicked = (com.snapps.swt.SquareButton) event.widget;
-				strFile = (String) btnClicked.getData("webcamFile");
-				if (!comonFunctions.CanCreateFile(strFile)) {
-					strFile = comonFunctions.getMediaFullPath(strFile, appSettings.getFileSeparator(), appSettings,
-							guide);
-				}
-
-				try {
-					BufferedImage image = webcam.getImage();
-					ImageIO.write(image, "JPG", new File(strFile));
-				} catch (Exception ex) {
-					logger.error(" WebcamCaptureListener take and save image " + ex.getLocalizedMessage(), ex);
-				}
-
-				super.widgetSelected(event);
-			} catch (Exception ex) {
-				logger.error(" WebcamCaptureListener " + ex.getLocalizedMessage(), ex);
-			}
-			logger.trace("Exit WebcamCaptureListener");
-		}
 	}
 
 	public void runJscript(String function, boolean pageLoading) {
@@ -2982,32 +1829,6 @@ public class MainShell {
 		}
 	}
 
-	class VideoStop implements Runnable {
-		private SwtEmbeddedMediaPlayer mediaPlayer;
-		private boolean shellClosing;
-
-		public void setMediaPlayer(SwtEmbeddedMediaPlayer mediaPlayer, boolean shellClosing) {
-			this.mediaPlayer = mediaPlayer;
-			this.shellClosing = shellClosing;
-		}
-
-		@Override
-		public void run() {
-			try {
-				if (mediaPlayer != null && mediaPlayer.status().isPlaying()) {
-					logger.debug("MainShell VideoStop run: Stopping media player " + mediaPlayer.media().info().mrl());
-					mediaPlayer.controls().pause();
-					if (shellClosing) {
-						mediaPlayer.release();
-					}
-				}
-			} catch (Exception e) {
-				logger.error(" MainShell VideoStop run: " + e.getLocalizedMessage(), e);
-			}
-		}
-
-	}
-
 	public void stopDelay() {
 		try {
 			calCountDown = null;
@@ -3067,7 +1888,7 @@ public class MainShell {
 		}
 
 		// Start shell timer
-		myDisplay.timerExec(100, new shellTimer());
+		myDisplay.timerExec(100, new shellTimer(this));
 	}
 
 	public void stopAll(boolean shellClosing) {

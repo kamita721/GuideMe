@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
+import org.guideme.guideme.ui.mainShell.MainShell;
 
 import uk.co.caprica.vlcj.binding.lib.LibVlc;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;

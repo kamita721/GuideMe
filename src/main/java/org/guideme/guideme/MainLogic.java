@@ -35,7 +35,7 @@ import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.DebugShell;
-import org.guideme.guideme.ui.MainShell;
+import org.guideme.guideme.ui.mainShell.MainShell;
 import org.guideme.guideme.util.PageFilter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;

@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.guideme.guideme.ui.MainShell;
+import org.guideme.guideme.ui.mainShell.MainShell;
 
 public class DisplayKeyEventListener implements Listener {
 	private Logger logger = LogManager.getLogger();

@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Text;
 import org.guideme.guideme.model.Library;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
+import org.guideme.guideme.ui.mainShell.MainShell;
 
 public class LibraryShell {
 	private Shell shell = null;

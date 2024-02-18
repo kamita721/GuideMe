@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.guideme.guideme.model.Button;
 import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.ui.MainShell;
+import org.guideme.guideme.ui.mainShell.MainShell;
 
 public class MainShellMock extends MainShell {
 	private Shell shell;

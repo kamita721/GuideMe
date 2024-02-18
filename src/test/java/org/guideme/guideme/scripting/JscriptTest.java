@@ -25,7 +25,7 @@ import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
-import org.guideme.guideme.ui.MainShell;
+import org.guideme.guideme.ui.mainShell.MainShell;
 
 public class JscriptTest {
 	private static Logger logger = LogManager.getLogger();
