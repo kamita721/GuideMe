@@ -1,3 +1,5 @@
+Tested with java-21, maven 3.9
+
 Look into all instances of @SuppressWarnings
 Refactor Preference to not have a variable of all possible types, with only 1 being non-null
 

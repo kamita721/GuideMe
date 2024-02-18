@@ -69,7 +69,7 @@
 		<dependency>
 			<groupId>org.eclipse.swt</groupId>
 			<artifactId>${swt.artifactId}</artifactId>
-			<version>4.30.0</version>
+			<version>4.30</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>

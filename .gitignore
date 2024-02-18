@@ -1,3 +1,4 @@
+dependencies/
 .DS_Store
 target/
 data/
@@ -16,3 +17,5 @@ data/
 .project
 .settings/*
 /bin/
+
+.*.swp
