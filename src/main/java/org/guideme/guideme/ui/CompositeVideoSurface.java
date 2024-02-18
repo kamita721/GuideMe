@@ -55,7 +55,7 @@ public class CompositeVideoSurface extends VideoSurface {
                 }
             }
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Access exception retrieving handle to SWT object");
+            throw new RuntimeException("Access exception retrieving handle to SWT object",e);
         }
 
         throw new RuntimeException("Could not determine handle to SWT object");

@@ -60,6 +60,7 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeDate;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.serialize.ScriptableInputStream;
 import org.mozilla.javascript.serialize.ScriptableOutputStream;
 import org.springframework.extensions.webscripts.ScriptValueConverter;
@@ -73,6 +74,11 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
+/*
+ * THIS FILE IS PART OF THE JAVASCRIPT API
+ * 
+ * Deleting any method is a breaking change!
+ */
 public class ComonFunctions {
 	/**
 	 * 
@@ -81,7 +87,7 @@ public class ComonFunctions {
 	private static Logger logger = LogManager.getLogger();
 	private XPathFactory factory = XPathFactory.newInstance();
 	private XPath xpath = factory.newXPath();
-	private static final String version = "0.4.5";
+	private static final String VERSION = "0.4.5";
 	private OSFamily osFamily;
 
 	public enum OSFamily {
@@ -113,7 +119,7 @@ public class ComonFunctions {
 			osval = OSFamily.Windows;
 		} else if (os.indexOf("mac") >= 0) {
 			osval = OSFamily.Mac;
-		} else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") > 0) {
+		} else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") >= 0) {
 			osval = OSFamily.Unix;
 		}
 		return osval;
@@ -468,7 +474,7 @@ public class ComonFunctions {
 	}
 
 	public String jsReadFile(String path) {
-		return jsReadFile(path, "UTF-8");
+		return jsReadFile(path, StandardCharsets.UTF_8.name());
 	}
 
 	public String jsReadFile(String fileName, String encoding) {
@@ -487,7 +493,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = fixSeparator(fileName, fileSeparator);
-		logger.debug("CommonFunctions fileExists getMediaFullPath " + media);
+		logger.debug("CommonFunctions fileExists getMediaFullPath {} ", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -512,6 +518,9 @@ public class ComonFunctions {
 		case "US_ASCII":
 			encodeSet = StandardCharsets.US_ASCII;
 			break;
+		case "UTF_8":
+			encodeSet = StandardCharsets.UTF_8;
+			break;
 		case "UTF_16":
 			encodeSet = StandardCharsets.UTF_16;
 			break;
@@ -522,6 +531,7 @@ public class ComonFunctions {
 			encodeSet = StandardCharsets.UTF_16LE;
 			break;
 		default:
+			logger.warn("Unrecognized character encoding '{}', falling back to UTF-8", encoding);
 			encodeSet = StandardCharsets.UTF_8;
 			break;
 
@@ -554,7 +564,6 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = fixSeparator(fileName, fileSeparator);
-		logger.debug("CommonFunctions fileExists getMediaFullPath " + media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -628,7 +637,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = fixSeparator(fileName, fileSeparator);
-		logger.debug("CommonFunctions fileExists getMediaFullPath " + media);
+		logger.debug("CommonFunctions fileExists getMediaFullPath {}", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -645,10 +654,9 @@ public class ComonFunctions {
 			fileName = dataDirectory + fileSeparator + strSubDir + fileSeparator + media;
 		}
 
-		try {
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), encoding));
+		try (BufferedWriter out = new BufferedWriter(
+				new OutputStreamWriter(new FileOutputStream(fileName), encoding))) {
 			out.write(contents);
-			out.close();
 		} catch (Exception ex) {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
@@ -675,7 +683,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = fixSeparator(fileName, fileSeparator);
-		logger.debug("CommonFunctions fileExists getMediaFullPath " + media);
+		logger.debug("CommonFunctions fileExists getMediaFullPath {}", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -692,12 +700,11 @@ public class ComonFunctions {
 			fileName = dataDirectory + fileSeparator + strSubDir + fileSeparator + media;
 		}
 
-		try {
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), encoding));
+		try (BufferedWriter out = new BufferedWriter(
+				new OutputStreamWriter(new FileOutputStream(fileName), encoding))) {
 			for (String line : contents) {
 				out.write(line + "\r\n");
 			}
-			out.close();
 		} catch (Exception ex) {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
@@ -740,7 +747,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = fixSeparator(fileName, fileSeparator);
-		logger.debug("CommonFunctions fileExists getMediaFullPath " + media);
+		logger.debug("CommonFunctions fileExists getMediaFullPath {}", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -766,12 +773,12 @@ public class ComonFunctions {
 				fileexists = true;
 			}
 		}
-		logger.debug("ComonFunctions FileExists check " + fileName + " " + fileexists);
+		logger.debug("ComonFunctions FileExists check {} {}", fileName, fileexists);
 		return fileexists;
 	}
 
 	public static String getVersion() {
-		return version;
+		return VERSION;
 	}
 
 	public String getVarAsString(Object objPassed) {
@@ -800,10 +807,10 @@ public class ComonFunctions {
 				}
 			} else if (objPassed instanceof NativeObject) {
 				returnVal.append('{');
-				Object[] propIds = NativeObject.getPropertyIds((Scriptable) objPassed);
+				Object[] propIds = ScriptableObject.getPropertyIds((Scriptable) objPassed);
 				for (Object propId : propIds) {
 					String key = propId.toString();
-					String value = NativeObject.getProperty((Scriptable) objPassed, key).toString();
+					String value = ScriptableObject.getProperty((Scriptable) objPassed, key).toString();
 					returnVal.append(key);
 					returnVal.append(": ");
 					returnVal.append(value);
@@ -846,7 +853,7 @@ public class ComonFunctions {
 
 		String media = fixSeparator(folderName, fileSeparator);
 		folderName = dataDirectory + fileSeparator + media;
-		logger.debug("CommonFunctions ListSubFolders full Path " + folderName);
+		logger.debug("CommonFunctions ListSubFolders full Path {}", folderName);
 		File file = new File(folderName);
 		String[] directories = file.list((current, name) -> new File(current, name).isDirectory());
 
@@ -874,7 +881,7 @@ public class ComonFunctions {
 		}
 
 		folders = builder.toString();
-		logger.debug("CommonFunctions ListSubFolders returned " + folders);
+		logger.debug("CommonFunctions ListSubFolders returned {}", folders);
 		return folders;
 
 	}
@@ -897,7 +904,7 @@ public class ComonFunctions {
 
 		String media = fixSeparator(folderName, fileSeparator);
 		folderName = dataDirectory + fileSeparator + media;
-		logger.debug("CommonFunctions ListFiles full Path " + folderName);
+		logger.debug("CommonFunctions ListFiles full Path {}", folderName);
 		File file = new File(folderName);
 		String[] filesList = file.list(new FilenameFilter() {
 			@Override
@@ -916,7 +923,7 @@ public class ComonFunctions {
 		}
 
 		files = builder.toString();
-		logger.debug("CommonFunctions ListFiles returned " + files);
+		logger.debug("CommonFunctions ListFiles returned {}", files);
 		return files;
 
 	}
@@ -944,7 +951,7 @@ public class ComonFunctions {
 			}
 		}
 
-		logger.debug("CommonFunctions ListGuides " + dataDirectory);
+		logger.debug("CommonFunctions ListGuides {}", dataDirectory);
 		File file = new File(dataDirectory);
 		String[] filesList = file.list((current, name) -> new File(current, name).isFile() && name.endsWith(".xml"));
 
@@ -969,6 +976,7 @@ public class ComonFunctions {
 			if (!Files.exists(thumbf) || !Files.exists(titlef)) {
 				try {
 					XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+					inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
 					InputStream in = new FileInputStream(fileName);
 					XMLStreamReader streamReader = inputFactory.createXMLStreamReader(in);
 					while (streamReader.hasNext()) {
@@ -1018,8 +1026,8 @@ public class ComonFunctions {
 						int thumb = appSettings.getThumbnailSize();
 						int oldHeight;
 						int oldWidth;
-						int newWidth = thumb;
-						int newHeight = thumb;
+						int newWidth;
+						int newHeight;
 						double factor;
 						image = dataDirectory + fileSeparator + media + fileSeparator + image;
 						ImageIO.setUseCache(false);
@@ -1069,17 +1077,14 @@ public class ComonFunctions {
 			}
 		}
 
-		logger.debug("CommonFunctions ListGuides returned {}", getVarAsString(filesList));
+		logger.debug(() -> "CommonFunctions ListGuides returned " + getVarAsString(filesList));
 		return guides;
 
 	}
 
 	private void writeFile(String fileName, String contents) {
-		BufferedWriter out;
-		try {
-			out = new BufferedWriter(new FileWriter(fileName));
+		try (BufferedWriter out = new BufferedWriter(new FileWriter(fileName))) {
 			out.write(contents); // Replace with the string
-			out.close();
 		} catch (IOException ex) {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
@@ -1121,7 +1126,7 @@ public class ComonFunctions {
 			File[] children = f.listFiles(wildCardfilter);
 			// return a random image
 			int intFile = comonFunctions.getRandom(0, (children.length - 1));
-			logger.debug("displayPage Random Media Index " + intFile);
+			logger.debug("displayPage Random Media Index {}", intFile);
 			if (strSubDir.equals("")) {
 				if (fullPath) {
 					mediaFound = dataDirectory + fileSeparator + children[intFile].getName();
@@ -1136,7 +1141,7 @@ public class ComonFunctions {
 					mediaFound = strSubDir + fileSeparator + children[intFile].getName();
 				}
 			}
-			logger.debug("GetRandomFile Random Media Chosen " + mediaFound);
+			logger.debug("GetRandomFile Random Media Chosen {}", mediaFound);
 		}
 		return mediaFound;
 
@@ -1156,7 +1161,7 @@ public class ComonFunctions {
 			try {
 				// ignore hidden files and directories
 				if (f.isHidden() || f.isDirectory() || f.getName().equalsIgnoreCase("thumbs.db")) {
-					logger.debug("WildCardFileFilter No Match {}", f.getName().toLowerCase());
+					logger.debug("WildCardFileFilter No Match {}", f.getName());
 					return false;
 				}
 				// convert the regular patern to regex
@@ -1167,11 +1172,11 @@ public class ComonFunctions {
 				strPattern = strPattern.replace("*", ".*");
 				// test for a match
 				if (!text.matches(strPattern)) {
-					logger.debug("WildCardFileFilter No Match " + strFile);
+					logger.debug("WildCardFileFilter No Match {}", strFile);
 					return false;
 				}
 
-				logger.debug("WildCardFileFilter Match " + strFile);
+				logger.debug("WildCardFileFilter Match {}", strFile);
 				return true;
 			} catch (Exception e) {
 				logger.error("WildCardFileFilter.accept Exception ", e);
@@ -1219,7 +1224,7 @@ public class ComonFunctions {
 
 	// TODO, weird function. Why not just use the enums?
 	public org.eclipse.swt.graphics.Color getColor(String color) {
-		org.eclipse.swt.graphics.Color swtColor = display.getSystemColor(SWT.COLOR_WHITE);
+		org.eclipse.swt.graphics.Color swtColor;
 		switch (color) {
 		case "white":
 			swtColor = display.getSystemColor(SWT.COLOR_WHITE);
@@ -1269,6 +1274,9 @@ public class ComonFunctions {
 		case "cyan":
 			swtColor = display.getSystemColor(SWT.COLOR_CYAN);
 			break;
+		default:
+			swtColor = display.getSystemColor(SWT.COLOR_WHITE);
+			break;
 		}
 		return swtColor;
 	}
@@ -1312,7 +1320,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = comonFunctions.fixSeparator(mediaFile, fileSeparator);
-		logger.debug("displayPage getMediaFullPath " + media);
+		logger.debug("displayPage getMediaFullPath {}", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -1332,7 +1340,7 @@ public class ComonFunctions {
 			} else {
 				mediaFound = dataDirectory + fileSeparator + strSubDir + fileSeparator + media;
 			}
-			logger.debug("displayPage Non Random Media " + mediaFound);
+			logger.debug("displayPage Non Random Media {}", mediaFound);
 		}
 
 		return mediaFound;
@@ -1582,6 +1590,7 @@ public class ComonFunctions {
 		String media = "";
 		try {
 			XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+			inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
 			InputStream in = new FileInputStream(fileName);
 			XMLStreamReader streamReader = inputFactory.createXMLStreamReader(in);
 			boolean foundmedia = false;

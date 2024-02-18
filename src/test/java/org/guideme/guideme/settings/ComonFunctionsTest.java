@@ -95,7 +95,7 @@ public class ComonFunctionsTest {
 		flags2.add("george");
 
 		comonFunctions.setFlags("fred, george", flags);
-		assertTrue(flags.equals(flags2));
+		assertEquals(flags, flags2);
 	}
 
 	@Test
@@ -104,8 +104,8 @@ public class ComonFunctionsTest {
 		flags.add("start");
 		flags.add("page1");
 		flags.add("page2");
-		String Returned = comonFunctions.getFlags(flags);
-		assertTrue(Returned.equals("start,page1,page2"));
+		String returned = comonFunctions.getFlags(flags);
+		assertEquals("start,page1,page2", returned);
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class ComonFunctionsTest {
 		flags2.add("george");
 
 		comonFunctions.unsetFlags("fred, george", flags2);
-		assertTrue(flags.equals(flags2));
+		assertEquals(flags, flags2);
 	}
 
 	@Test

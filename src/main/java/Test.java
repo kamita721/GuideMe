@@ -31,7 +31,7 @@ public class Test {
 		try {
 			fail();
 		}catch(Exception e) {
-			logger.error("fail {}", "foo", 1, "hello",  e);
+			logger.error("fail {}", "Foo".toLowerCase(), e);
 		}
 	}
 	

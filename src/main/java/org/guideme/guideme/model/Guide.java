@@ -820,16 +820,6 @@ public class Guide {
 			}
 			});		
 	}
-	
-	/**
-	 * Reads the contents of a file into a string
-	 * 
-	 * @param path the path to the file
-	 * @return a string containing the contents of the file
-	 */
-	public String jsReadFile(String path) {
-		return comonFunctions.jsReadFile(path);
-	}
 
 	/**
 	 * Writes a string to a file
@@ -841,11 +831,6 @@ public class Guide {
 		comonFunctions.jsWriteFile(path, contents);
 	}
 	
-	
-	/** @exclude */
-	public String jsReadFile(String fileName, String encoding) {
-		return comonFunctions.jsReadFile(fileName, encoding);
-	}
 	
 	/**
 	 * Reads the contents of a file into an array of strings

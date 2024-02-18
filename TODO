@@ -17,3 +17,5 @@ Consider prefetch and caching for videos
 look into generic catch statements
 String Parsing stuff
 organize CommonFunctions
+
+Test ondisk rescaling (ImageManager.scaleImageOnDisk())
