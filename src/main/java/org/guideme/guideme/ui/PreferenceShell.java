@@ -259,6 +259,7 @@ public class PreferenceShell {
 	
 	// Click event code for the dynamic buttons
 	class SaveButtonListener extends SelectionAdapter {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
 				logger.trace("Enter SaveButtonListner");
@@ -381,6 +382,7 @@ public class PreferenceShell {
 
 	// Click event code for the dynamic buttons
 	class CancelButtonListener extends SelectionAdapter {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
 				logger.trace("Enter CancelButtonListener");
@@ -475,8 +477,6 @@ public class PreferenceShell {
 			super.shellClosed(e);
 		}
 
-		public void handleEvent(Event event) {
-		}
 	}
 
 

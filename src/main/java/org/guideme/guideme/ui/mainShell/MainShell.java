@@ -860,28 +860,26 @@ public class MainShell {
 			shell = createShell(display);
 			logger.trace("open shell");
 			shell.open();
-			if (mainShell.getMultiMonitor()){
+			if (mainShell.getMultiMonitor()) {
 				mainShell.getShell2().open();
 			}
-			
-			//loop round until the window is closed
+
+			// loop round until the window is closed
 			while (!shell.isDisposed()) {
 				if (appSettings.isMonitorChanging()) {
 					try {
 						shell.close();
-					}
-					catch (Exception ex) {
+					} catch (Exception ex) {
 						logger.error("Main shell close " + ex.getLocalizedMessage(), ex);
-					}					
+					}
 				}
-				if (!display.readAndDispatch())
-				{
+				if (!display.readAndDispatch()) {
 					display.sleep();
 				}
 			}
 		} while (appSettings.isMonitorChanging());
 	}
-	
+
 	// Load the tease
 	public void loadGuide(String fileToLoad) {
 		try {
@@ -1067,8 +1065,8 @@ public class MainShell {
 			logger.trace("Image Width: " + imgData.width);
 
 			int maxImageScale = appSettings.getMaxImageScale();
-			int maxheight = (int) (imgData.height * ((double) (maxImageScale / 100)));
-			int maxwidth = (int) (imgData.width * ((double) (maxImageScale / 100)));
+			int maxheight = (imgData.height * maxImageScale) / 100;
+			int maxwidth = (imgData.width * maxImageScale) / 100;
 
 			imageLabel.setData("maxImageScale", maxImageScale);
 			imageLabel.setData("maxheight", maxheight);
@@ -1092,6 +1090,8 @@ public class MainShell {
 					ImageIO.setUseCache(false);
 					img = ImageIO.read(new File(imgPath));
 				} catch (IOException e) {
+					logger.error("Failed to read image file: " + imgPath, e);
+					return;
 				}
 				if (img.getColorModel().hasAlpha()) {
 					img = comonFunctions.dropAlphaChannel(img);
@@ -1443,7 +1443,7 @@ public class MainShell {
 		String strBtnTarget;
 		String strBtnText;
 		String strBtnImage;
-		Boolean isWebCamButton = button instanceof WebcamButton;
+		boolean isWebCamButton = button instanceof WebcamButton;
 		try {
 			strBtnTarget = button.getTarget();
 			strBtnText = button.getText();
@@ -1543,10 +1543,8 @@ public class MainShell {
 			if (isWebCamButton) {
 				WebcamButton webcamButton = (WebcamButton) button;
 				btnDynamic.setData("webcamFile", webcamButton.get_destination());
-				switch (webcamButton.get_type()) {
-				case "Capture":
+				if (webcamButton.get_type().equals("Capture")) {
 					btnDynamic.addSelectionListener(new WebcamCaptureListener(mainShell));
-					break;
 				}
 			} else {
 				btnDynamic.addSelectionListener(new DynamicButtonListner(this));

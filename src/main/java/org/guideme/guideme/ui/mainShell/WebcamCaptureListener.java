@@ -18,6 +18,7 @@ class WebcamCaptureListener extends DynamicButtonListner {
 		this.mainShell = mainShell;
 	}
 
+	@Override
 	public void widgetSelected(SelectionEvent event) {
 		try {
 
