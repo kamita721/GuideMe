@@ -860,6 +860,34 @@ public class MainShell {
 		return shell;
 	}
 
+	public void run(Display display) {
+		do {
+			logger.trace("create shell");
+			shell = mainShell.createShell(display);
+			logger.trace("open shell");
+			shell.open();
+			if (mainShell.getMultiMonitor()){
+				mainShell.getShell2().open();
+			}
+			
+			//loop round until the window is closed
+			while (!shell.isDisposed()) {
+				if (appSettings.isMonitorChanging()) {
+					try {
+						shell.close();
+					}
+					catch (Exception ex) {
+						logger.error("Main shell close " + ex.getLocalizedMessage(), ex);
+					}					
+				}
+				if (!display.readAndDispatch())
+				{
+					display.sleep();
+				}
+			}
+		} while (appSettings.isMonitorChanging());
+	}
+	
 	class shellMouseMoveListener implements Listener {
 
 		@Override

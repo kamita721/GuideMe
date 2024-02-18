@@ -97,45 +97,19 @@ public class App
 			} else {
 				display = new Display();
 			}
+			
+			DisplayKeyEventListener keylistener = new DisplayKeyEventListener();
+			display.addFilter(SWT.KeyDown, keylistener);
 
 			NativeDiscovery nativeDiscovery = new NativeDiscovery();
 			boolean vlcFound = nativeDiscovery.discover();
 			logger.trace("test for vlc: " + vlcFound);
 
-			MainShell mainShell;
-			Shell shell;
-			DisplayKeyEventListener keylistener = new DisplayKeyEventListener();
-			display.addFilter(SWT.KeyDown, keylistener);
-
-			do {
-				appSettings.setMonitorChanging(false);
-				logger.trace("create main shell");
-				mainShell = new MainShell();
-				logger.trace("create shell");
-				shell = mainShell.createShell(display);
-				logger.trace("open shell");
-				shell.open();
-				if (mainShell.getMultiMonitor()){
-					mainShell.getShell2().open();
-				}
-				keylistener.setMainShell(mainShell);
-				
-				//loop round until the window is closed
-				while (!shell.isDisposed()) {
-					if (appSettings.isMonitorChanging()) {
-						try {
-							shell.close();
-						}
-						catch (Exception ex) {
-							logger.error("Main shell close " + ex.getLocalizedMessage(), ex);
-						}					
-					}
-					if (!display.readAndDispatch())
-					{
-						display.sleep();
-					}
-				}
-			} while (appSettings.isMonitorChanging());
+			appSettings.setMonitorChanging(false);
+			logger.trace("create main shell");
+			MainShell mainShell = new MainShell();
+			keylistener.setMainShell(mainShell);
+			mainShell.run(display);
 			display.dispose();
 		}
 		catch (Exception ex) {
