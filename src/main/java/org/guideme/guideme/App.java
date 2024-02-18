@@ -17,7 +17,7 @@ import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.ComonFunctions;
 import org.guideme.guideme.ui.MainShell;
 
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
+import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
 
 public class App 
 {
