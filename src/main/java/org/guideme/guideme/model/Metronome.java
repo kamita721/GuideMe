@@ -3,17 +3,22 @@ package org.guideme.guideme.model;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import javax.xml.stream.XMLStreamReader;
+
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Metronome {
-	private String ifSet;
-	private String ifNotSet;
+	private final String ifSet;
+	private final String ifNotSet;
 	private LocalTime ifBefore; //Time of day must be before this time
 	private LocalTime ifAfter; //Time of day must be after this time
-	private String bpm; //beats per minute
-	private int resolution = 4; //ticks per beat
-	private int loops = -1;//number of loops, -1 infinite, 0 play once, 1 repeat once
-	private String rhythm = ""; //beat rhythm 
+	private final String bpm; //beats per minute
+	private final int resolution; //ticks per beat
+	private final int loops;//number of loops, -1 infinite, 0 play once, 1 repeat once
+	private final String rhythm; //beat rhythm 
 	/*
 	 Rhythm is a list of ticks so at 60 bpm, resolution of 4 we get 4 ticks per second
 	 a straight 1 beat per second would be 0,4,8,12,16,20,24 (giving 7 one second beats)
@@ -22,6 +27,17 @@ public class Metronome {
 	 */
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
+	public Metronome(XMLStreamReader reader) {
+		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.ifBefore = getAttributeLocalTime(reader, "if-before");
+		this.ifAfter = getAttributeLocalTime(reader, "if-after");
+		this.bpm = getAttributeOrDefaultNoNS(reader, "bpm", "");
+		this.resolution = getAttributeOrDefaultNoNS(reader, "beats", 4);
+		this.loops = getAttributeOrDefaultNoNS(reader, "loops", -1);
+		this.rhythm = getAttributeOrDefaultNoNS(reader, "rhythm", "");
+	}
+	
 	public Metronome(String bpm, String ifSet, String ifNotSet) {
 		this(bpm, ifSet, ifNotSet, 4, -1, "", "", "");
 	}
@@ -57,6 +73,10 @@ public class Metronome {
 		//will either return bpm as an integer 
 		//or if it is in the format (1..20) it will return a random number between 1 and 20
 		return comonFunctions.getRandom(bpm);
+	}
+	
+	public boolean isValid() {
+		return !bpm.isBlank();
 	}
 
 	public int getResolution() {

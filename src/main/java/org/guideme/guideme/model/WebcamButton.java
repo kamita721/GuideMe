@@ -1,9 +1,21 @@
 package org.guideme.guideme.model;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+
 public class WebcamButton extends Button {
 	
 	private String _type;
 	private String _destination;
+	
+	public WebcamButton(XMLStreamReader reader) throws XMLStreamException {
+		super(reader);
+		String destination = getAttributeOrDefaultNoNS(reader, "file", "");
+		String type = getAttributeOrDefaultNoNS(reader, "type", "Capture");
+		SetValues(type, destination);
+	}
+	
 	public WebcamButton(String type, String destination, String target, String text, String ifSet, String ifNotSet, String set, String unSet, String jScript, String image, String hotKey) {
 		super(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey);
 		SetValues(type, destination);

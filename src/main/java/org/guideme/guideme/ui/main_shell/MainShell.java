@@ -43,7 +43,7 @@ import org.guideme.guideme.model.Guide;
 import org.guideme.guideme.model.Page;
 import org.guideme.guideme.model.Timer;
 import org.guideme.guideme.model.WebcamButton;
-import org.guideme.guideme.readers.XmlGuideReader;
+import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 import org.guideme.guideme.scripting.Jscript;
 import org.guideme.guideme.scripting.OverRide;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
@@ -131,7 +131,6 @@ public class MainShell {
 	MainShell mainShell;
 	MainLogic mainLogic = MainLogic.getMainLogic();
 	ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
-	XmlGuideReader xmlGuideReader = XmlGuideReader.getXmlGuideReader();
 	private SquareButton delayButton = null;
 	MetronomePlayer metronome;
 	private Thread threadMetronome;
@@ -882,7 +881,7 @@ public class MainShell {
 			logger.error("Clear debug pages " + ex.getLocalizedMessage(), ex);
 		}
 		try {
-			String strPage = xmlGuideReader.loadXML(fileToLoad, guide, appSettings, debugShell);
+			String strPage = XmlGuideReader.loadXML(fileToLoad, guide, appSettings, debugShell);
 			guideSettings = guide.getSettings();
 			if (guide.getCss().equals("")) {
 				style = defaultStyle;

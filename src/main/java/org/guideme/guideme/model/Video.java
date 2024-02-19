@@ -1,28 +1,50 @@
 package org.guideme.guideme.model;
 
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
+
+import javax.xml.stream.XMLStreamReader;
 
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Video
 {
-	private String id;
-	private String startAt;
-	private String stopAt;
-	private String target;
-	private String ifSet;
-	private String ifNotSet;
-	private String set;
-	private String unSet;
-	private String repeat;
-	private String jscript;
+	private final String id;
+	private final String startAt;
+	private final String stopAt;
+	private final String target;
+	private final String ifSet;
+	private final String ifNotSet;
+	private final String set;
+	private final String unSet;
+	private final String repeat;
+	private final String jscript;
 	private LocalTime ifBefore; //Time of day must be before this time
 	private LocalTime ifAfter; //Time of day must be after this time
-	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
-	private String scriptVar;
-	private int volume;  //integer between 0 and 100 
+	private final ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
+	private final String scriptVar;
+	private final int volume;  //integer between 0 and 100 
 
+	public Video(XMLStreamReader reader) {
+		this.target = getAttributeOrDefaultNoNS(reader, "target", "");
+		this.startAt = getAttributeOrDefaultNoNS(reader, "start-at", "");
+		this.stopAt = getAttributeOrDefaultNoNS(reader, "stop-at", "");
+		this.id = getAttributeOrDefaultNoNS(reader, "id", "");
+		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.repeat = getAttributeOrDefaultNoNS(reader, "loops", "0"); //TODO rename
+		this.jscript = getAttributeOrDefaultNoNS(reader, "onTriggered", "");//TODO rename
+		this.ifBefore = getAttributeLocalTime(reader, "if-before");
+		this.ifAfter = getAttributeLocalTime(reader, "if-after");
+		this.scriptVar = getAttributeOrDefaultNoNS(reader, "scriptvar", "");
+		this.volume = getAttributeOrDefaultNoNS(reader, "volume", 100);
+		this.unSet = ""; //TODO why is this always blank?
+		this.set = ""; //TODO why is this always blank?
+	}
+	
 	public Video(String id, String startAt, String stopAt, String target, String ifSet, String ifNotSet, String set, String unSet, String repeat, String jscript, String ifAfter, String ifBefore, String scriptVar, int volume)
 	{
 		this.id = id;

@@ -27,7 +27,7 @@ import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.model.*;
-import org.guideme.guideme.readers.XmlGuideReader;
+import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 import org.guideme.guideme.scripting.OverRide;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
@@ -959,8 +959,7 @@ public class MainLogic {
 				logger.error("Clear debug pages " + ex.getLocalizedMessage(), ex);
 			}
 			try {
-				XmlGuideReader xmlGuideReader = XmlGuideReader.getXmlGuideReader();
-				xmlGuideReader.loadXML((appSettings.getDataDirectory() + objLoadGuide.getGuidePath()), guide,
+				XmlGuideReader.loadXML((appSettings.getDataDirectory() + objLoadGuide.getGuidePath()), guide,
 						appSettings, debugShell);
 				GuideSettings guideSettings = guide.getSettings();
 

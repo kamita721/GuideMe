@@ -2,22 +2,38 @@ package org.guideme.guideme.model;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+
+import javax.xml.stream.XMLStreamReader;
 
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class LoadGuide {
 
-	private String guidePath; //path to guide to load
-	private String target; //page to load in new guide
-	private String returnTarget; //page to return to when this guide is loaded next
-	private String prejScript;
-	private String postjScript;
-	private String ifSet;
-	private String ifNotSet;
+	private final String guidePath; //path to guide to load
+	private final String target; //page to load in new guide
+	private final String returnTarget; //page to return to when this guide is loaded next
+	private final String prejScript;
+	private final String postjScript;
+	private final String ifSet;
+	private final String ifNotSet;
 	private LocalTime ifBefore; //Time of day must be before this time
 	private LocalTime ifAfter; //Time of day must be after this time
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
+	public LoadGuide(XMLStreamReader reader) {
+		this.guidePath = getAttributeOrDefaultNoNS(reader, "guidePath", "");
+		this.target = getAttributeOrDefaultNoNS(reader, "target", "");
+		this.returnTarget = getAttributeOrDefaultNoNS(reader, "return-target", "");
+		this.prejScript = getAttributeOrDefaultNoNS(reader, "preScript", "");
+		this.postjScript = getAttributeOrDefaultNoNS(reader, "postScript", "");
+		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.ifBefore = getAttributeLocalTime(reader, "if-before");
+		this.ifAfter = getAttributeLocalTime(reader, "if-after");
+	}
+	
 	public LoadGuide(String guidePath, String target, String returnTarget, String ifSet, String ifNotSet, String ifAfter, String ifBefore, String prejScript, String postjScript) {
 		this.guidePath = guidePath;
 		this.target = target;

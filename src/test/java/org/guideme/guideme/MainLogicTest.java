@@ -9,10 +9,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Set;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.guideme.guideme.model.Chapter;
 import org.guideme.guideme.model.Guide;
 import org.guideme.guideme.model.Page;
-import org.guideme.guideme.readers.XmlGuideReader;
+import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.GuideSettings;
@@ -32,7 +34,6 @@ public class MainLogicTest {
 	private UserSettings userSettings = UserSettings.getUserSettings();
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private GuideSettings guideSettings;
-	private XmlGuideReader xmlGuideReader = XmlGuideReader.getXmlGuideReader();
 	private String dataDirectory = "Teases";
 	private boolean singlePage = false;
 	private boolean allGuides = false;
@@ -40,13 +41,13 @@ public class MainLogicTest {
 	private boolean scriptedTest = false;
 
 	@Test
-	public void testDisplayPageStringBooleanGuideMainShellAppSettings() {
+	public void testDisplayPageStringBooleanGuideMainShellAppSettings() throws XMLStreamException, IOException {
 		if (singlePage) {
 			String guideFileName = "\\A tribute to Jurgita Valts.xml";
 			String pageId = "page21";
 			debugShell = DebugShell.getDebugShell(); 
 			appSettings.setDataDirectory(dataDirectory);
-			xmlGuideReader.loadXML(dataDirectory + guideFileName, guide, appSettings, debugShell);
+			XmlGuideReader.loadXML(dataDirectory + guideFileName, guide, appSettings, debugShell);
 			guideSettings = guide.getSettings();
 			mainLogic.displayPage(pageId, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
 		}
@@ -54,7 +55,7 @@ public class MainLogicTest {
 	}
 
 	@Test
-	public void testDisplayPageOneGuide() {
+	public void testDisplayPageOneGuide() throws XMLStreamException, IOException {
 		if (oneGuide) {
 			appSettings.setDataDirectory(dataDirectory);
 			appSettings.setPageSound(false); // Don't try to play sound, this can break testing on headless machines
@@ -62,7 +63,7 @@ public class MainLogicTest {
 			String guideFileName = "\\" + guideId + ".xml";
 			guide.reset(guideId);
 			debugShell = DebugShell.getDebugShell(); 
-			xmlGuideReader.loadXML(dataDirectory + guideFileName, guide, appSettings, debugShell);
+			XmlGuideReader.loadXML(dataDirectory + guideFileName, guide, appSettings, debugShell);
 			guideSettings = guide.getSettings();
 			Set<String> chapters = guide.getChapters().keySet();
 			for (String chapterId : chapters) {
@@ -78,7 +79,7 @@ public class MainLogicTest {
 	}
 
 		@Test
-	public void testDisplayPageStringStringBooleanGuideMainShellAppSettings() {
+	public void testDisplayPageStringStringBooleanGuideMainShellAppSettings() throws XMLStreamException, IOException {
 		if (allGuides) {
 			appSettings.setDataDirectory(dataDirectory);
 			debugShell = DebugShell.getDebugShell(); 
@@ -91,7 +92,7 @@ public class MainLogicTest {
 				File[] children = f.listFiles(WildCardfilter);
 				for (File file : children) {
 					guide.reset(file.getName().substring(0, file.getName().length() - 4));
-					xmlGuideReader.loadXML(file.getAbsolutePath(), guide, appSettings, debugShell);
+					XmlGuideReader.loadXML(file.getAbsolutePath(), guide, appSettings, debugShell);
 					guideSettings = guide.getSettings();
 					Set<String> chapters = guide.getChapters().keySet();
 					for (String chapterId : chapters) {
@@ -109,7 +110,7 @@ public class MainLogicTest {
 	}
 	
 	@Test
-	public void scriptedTest() {
+	public void scriptedTest() throws XMLStreamException {
 		if (scriptedTest) {
 			debugShell = DebugShell.getDebugShell(); 
 			String script = "data\\pageScript.txt";
@@ -119,7 +120,7 @@ public class MainLogicTest {
 				String guideFile = instructions.readLine();
 				if (!guideFile.equals(null)) {
 					guide.reset(guideFile);
-					xmlGuideReader.loadXML(dataDirectory + "\\" + guideFile + ".xml", guide, appSettings, debugShell);
+					XmlGuideReader.loadXML(dataDirectory + "\\" + guideFile + ".xml", guide, appSettings, debugShell);
 					guideSettings = guide.getSettings();
 				}
 				String instruction = instructions.readLine();

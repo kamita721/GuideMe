@@ -1,25 +1,44 @@
 package org.guideme.guideme.model;
 
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
+
+import javax.xml.stream.XMLStreamReader;
 
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Delay {
-	private String ifSet;
-	private String ifNotSet;
-	private String set;
-	private String unSet;
-	private String delay;
-	private String target;
-	private String startWith;
-	private String style;
-	private String jScript;
+	private final String ifSet;
+	private final String ifNotSet;
+	private final String set;
+	private final String unSet;
+	private final String delay;
+	private final String target;
+	private final String startWith;
+	private final String style;
+	private final String jScript;
 	private LocalTime ifBefore; //Time of day must be before this time
 	private LocalTime ifAfter; //Time of day must be after this time
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
-	private String scriptVar;
+	private final String scriptVar;
 	
+	public Delay(XMLStreamReader reader) {
+		this.target = getAttributeOrDefaultNoNS(reader, "target", "");
+		this.startWith = getAttributeOrDefaultNoNS(reader, "start-with", "");
+		this.style = getAttributeOrDefaultNoNS(reader, "style", "");
+		this.delay = getAttributeOrDefaultNoNS(reader, "seconds", "");
+		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.ifBefore = getAttributeLocalTime(reader, "if-before");
+		this.ifAfter = getAttributeLocalTime(reader, "if-after");
+		this.set = getAttributeOrDefaultNoNS(reader, "set", "");
+		this.unSet = getAttributeOrDefaultNoNS(reader, "unset", "");
+		this.scriptVar = getAttributeOrDefaultNoNS(reader, "scriptvar", "");
+		this.jScript = getAttributeOrDefaultNoNS(reader, "onTriggered", "");
+	}
 	
 	public Delay(String target, String delay, String ifSet, String ifNotSet, String startWith, String style, String set, String unSet, String jScript, String ifAfter, String ifBefore, String scriptVar) {
 		this.target = target;

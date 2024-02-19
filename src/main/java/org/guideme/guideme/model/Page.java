@@ -1,26 +1,33 @@
 package org.guideme.guideme.model;
 
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import javax.xml.stream.XMLStreamReader;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Page {
-	private String id; //Page Name
-	private ArrayList<Text> text = new ArrayList<Text>(); //HTML to display
-	private ArrayList<Text> leftText = new ArrayList<Text>(); //HTML to display in the left pane instead of an image
-	private ArrayList<Button> button = new ArrayList<Button>();
-	private ArrayList<GlobalButton> globalButton = new ArrayList<GlobalButton>();
-	private ArrayList<WebcamButton> webcamButton = new ArrayList<WebcamButton>();
-	private ArrayList<Delay> delay = new ArrayList<Delay>();
-	private ArrayList<Timer> timer = new ArrayList<Timer>(); 
-	private ArrayList<Video> video = new ArrayList<Video>();
-	private ArrayList<Webcam> webcam = new ArrayList<Webcam>();
-	private ArrayList<Image> image = new ArrayList<Image>();
-	private ArrayList<LoadGuide> loadGuide = new ArrayList<LoadGuide>();
-	private ArrayList<Audio> audio = new ArrayList<Audio>();
-	private ArrayList<Audio> audio2 = new ArrayList<Audio>();
-	private ArrayList<Metronome> metronome = new ArrayList<Metronome>();
+	private final String id; //Page Name
+	private final ArrayList<Text> text = new ArrayList<Text>(); //HTML to display
+	private final ArrayList<Text> leftText = new ArrayList<Text>(); //HTML to display in the left pane instead of an image
+	private final ArrayList<Button> button = new ArrayList<Button>();
+	private final ArrayList<GlobalButton> globalButton = new ArrayList<GlobalButton>();
+	private final ArrayList<WebcamButton> webcamButton = new ArrayList<WebcamButton>();
+	private final ArrayList<Delay> delay = new ArrayList<Delay>();
+	private final ArrayList<Timer> timer = new ArrayList<Timer>(); 
+	private final ArrayList<Video> video = new ArrayList<Video>();
+	private final ArrayList<Webcam> webcam = new ArrayList<Webcam>();
+	private final ArrayList<Image> image = new ArrayList<Image>();
+	private final ArrayList<LoadGuide> loadGuide = new ArrayList<LoadGuide>();
+	private final ArrayList<Audio> audio = new ArrayList<Audio>();
+	private final ArrayList<Audio> audio2 = new ArrayList<Audio>();
+	private final ArrayList<Metronome> metronome = new ArrayList<Metronome>();
 	private String ifSet;
 	private String ifNotSet;
 	private LocalTime ifBefore; //Time of day must be before this time
@@ -29,6 +36,7 @@ public class Page {
 	private String unSet;
 	private String jScript = "";
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
+	private static Logger logger = LogManager.getLogger();
 	
 	
 	public Text getLeftText(int txtIndex) {
@@ -43,6 +51,16 @@ public class Page {
 		return this.leftText.size();
 	}
 
+	public Page(XMLStreamReader reader) {
+		this.id=getAttributeOrDefaultNoNS(reader, "id", "");
+		this.ifSet=getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.ifNotSet=getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.set=getAttributeOrDefaultNoNS(reader, "set", "");
+		this.unSet=getAttributeOrDefaultNoNS(reader, "unset", "");
+		this.ifBefore = getAttributeLocalTime(reader, "if-before");
+		this.ifAfter = getAttributeLocalTime(reader, "if-after");
+	}
+	
 	public Page(String id) {
 		this.id = id;
 	}
@@ -127,6 +145,10 @@ public class Page {
 	}
 	
 	public void addImage(Image image) {
+		if (image.getId().isBlank()) {
+			logger.warn("Image without id. Ignoring.");
+			return;
+		}
 		this.image.add(image);
 	}
 
@@ -135,6 +157,10 @@ public class Page {
 	}
 	
 	public void addLoadGuide(LoadGuide loadGuide) {
+		if (loadGuide.getGuidePath().isBlank()) {
+			logger.warn("Image without guidePath. Ignoring.");
+			return;
+		}
 		this.loadGuide.add(loadGuide);
 	}
 
@@ -151,6 +177,10 @@ public class Page {
 	}
 	
 	public void addMetronome(Metronome metronome) {
+		if (!metronome.isValid()) {
+			logger.warn("Invalid metronome. Ignoring.");
+			return;
+		}
 		this.metronome.add(metronome);
 	}
 

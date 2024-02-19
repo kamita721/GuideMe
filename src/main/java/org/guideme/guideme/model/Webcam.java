@@ -1,19 +1,31 @@
 package org.guideme.guideme.model;
 
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
+
+import javax.xml.stream.XMLStreamReader;
 
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Webcam
 {
-	private String ifSet;
-	private String ifNotSet;
+	private final String ifSet;
+	private final String ifNotSet;
 	private LocalTime ifBefore; //Time of day must be before this time
 	private LocalTime ifAfter; //Time of day must be after this time
-	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
+	private final ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private boolean webCamFound = false;
 
+	public Webcam(XMLStreamReader reader) {
+		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.ifBefore = getAttributeLocalTime(reader, "if-before");
+		this.ifAfter = getAttributeLocalTime(reader, "if-after");
+	}
+	
 	public boolean getWebCamFound() {
 		return webCamFound;
 	}

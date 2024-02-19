@@ -1,8 +1,15 @@
 package org.guideme.guideme.model;
 
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Text
@@ -14,6 +21,14 @@ public class Text
 	private final String text;
 	private final ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
+	public Text(XMLStreamReader reader) throws XMLStreamException {
+		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.ifBefore = getAttributeLocalTime(reader, "if-before");
+		this.ifAfter = getAttributeLocalTime(reader, "if-after");
+		this.text = XmlGuideReader.processText(reader);
+	}
+	
 	public Text(String text)
 	{
 		this(text, "", "", "", "");

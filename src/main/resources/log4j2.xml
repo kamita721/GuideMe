@@ -35,7 +35,7 @@
     <logger name="uk.co.caprica.vlcj" level="debug" additivity="false">
       <appender-ref ref="Vlcj" />
     </logger>
-    <root level="trace">
+    <root level="debug">
       <appender-ref ref="File" />
       <appender-ref ref="Jscript" />
       <appender-ref ref="Console"/>

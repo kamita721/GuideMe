@@ -4,23 +4,45 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
+
+import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Timer {
-	private String delay;
-	private String jScript;
+	private final String delay;
+	private final String jScript;
 	private Calendar timerEnd;
-	private String imageId; //file name of image
-	private String text; //text to display on right
-	private String ifSet;
-	private String ifNotSet;
-	private String set;
-	private String unSet;
+	private final String imageId; //file name of image
+	private final String text; //text to display on right
+	private final String ifSet;
+	private final String ifNotSet;
+	private final String set;
+	private final String unSet;
 	private LocalTime ifBefore; //Time of day must be before this time
 	private LocalTime ifAfter; //Time of day must be after this time
-	private String id;
-	private String target;
+	private final String id;
+	private final String target;
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
+	
+	public Timer(XMLStreamReader reader) throws XMLStreamException {
+		this.target = getAttributeOrDefaultNoNS(reader, "target", "");
+		this.delay = getAttributeOrDefaultNoNS(reader, "seconds", "");
+		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.ifBefore = getAttributeLocalTime(reader, "if-before");
+		this.ifAfter = getAttributeLocalTime(reader, "if-after");
+		this.set = getAttributeOrDefaultNoNS(reader, "set", "");
+		this.unSet = getAttributeOrDefaultNoNS(reader, "unset", "");
+		this.imageId = getAttributeOrDefaultNoNS(reader, "imageId", "");
+		this.id = getAttributeOrDefaultNoNS(reader, "id", "");
+		this.jScript = getAttributeOrDefaultNoNS(reader, "onTriggered", "");
+		this.text = XmlGuideReader.processText(reader);
+	}
 	
 	public Timer(String delay, String jScript) {
 		this(delay, jScript, "", "", "", "", "", "", "", "", "", "");

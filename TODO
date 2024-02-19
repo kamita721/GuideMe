@@ -19,3 +19,6 @@ String Parsing stuff
 organize CommonFunctions
 
 Test ondisk rescaling (ImageManager.scaleImageOnDisk())
+many model elements have a lot of the same fields (including in XML). Possible room for deduplication
+
+User-visible reporting of XML parse errors

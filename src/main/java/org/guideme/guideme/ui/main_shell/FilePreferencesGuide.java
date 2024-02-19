@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 
 class FilePreferencesGuide extends SelectionAdapter {
 	/**
@@ -39,7 +40,7 @@ class FilePreferencesGuide extends SelectionAdapter {
 					fileName = "userSettingsUI.xml";
 				}
 			}
-			this.mainShell.xmlGuideReader.loadXML(fileName, this.mainShell.guide, this.mainShell.appSettings, this.mainShell.debugShell);
+			XmlGuideReader.loadXML(fileName, this.mainShell.guide, this.mainShell.appSettings, this.mainShell.debugShell);
 			this.mainShell.guide.setMediaDirectory("userSettings");
 			this.mainShell.guideSettings = this.mainShell.guide.getSettings();
 			if (this.mainShell.guide.getCss().equals("")) {

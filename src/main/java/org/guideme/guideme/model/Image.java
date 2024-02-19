@@ -3,16 +3,29 @@ package org.guideme.guideme.model;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
+import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
+
+import javax.xml.stream.XMLStreamReader;
+
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Image {
-	private String id; //file name of image
-	private String ifSet;
-	private String ifNotSet;
+	private final String id; //file name of image
+	private final String ifSet;
+	private final String ifNotSet;
 	private LocalTime ifBefore; //Time of day must be before this time
 	private LocalTime ifAfter; //Time of day must be after this time
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
+	public Image(XMLStreamReader reader) {
+		this.id=getAttributeOrDefaultNoNS(reader, "id", "");
+		this.ifSet=getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.ifNotSet=getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.ifBefore = getAttributeLocalTime(reader, "if-before");
+		this.ifAfter = getAttributeLocalTime(reader, "if-after");
+	}
+	
 	public Image(String id, String ifSet, String ifNotSet, String ifAfter, String ifBefore) {
 		this.id = id;
 		this.ifSet = ifSet;

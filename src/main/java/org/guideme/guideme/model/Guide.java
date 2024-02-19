@@ -428,6 +428,7 @@ public class Guide {
 		return globaljScript;
 	}
 
+	//TODO, for the most part, we really want append, not set
 	/** @exclude */
 	public void setGlobaljScript(String globaljScript) {
 		this.globaljScript = globaljScript;
