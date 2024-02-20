@@ -1,7 +1,7 @@
 package org.guideme.guideme.model;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamReader;
 
@@ -61,7 +61,7 @@ public class Metronome {
 		}
 	}
 
-	public boolean canShow(ArrayList<String> setList) {
+	public boolean canShow(List<String> setList) {
 		boolean retVal = comonFunctions.canShowTime(ifBefore, ifAfter);
 		if (retVal) {
 			retVal =  comonFunctions.canShow(setList, ifSet, ifNotSet);

@@ -28,32 +28,32 @@ class FilePreferencesGuide extends SelectionAdapter {
 			// this loads automatically from the application directory with
 			// a hard coded name.
 			//
-			this.mainShell.debugShell.clearPagesCombo();
-			String appDir = this.mainShell.appSettings.getUserDir().replace("\\", "\\\\");
-			String fileName = "userSettingsUI_" + this.mainShell.appSettings.getLanguage() + "_" + this.mainShell.appSettings.getCountry()
+			mainShell.debugShell.clearPagesCombo();
+			String appDir = mainShell.appSettings.getUserDir().replace("\\", "\\\\");
+			String fileName = "userSettingsUI_" + mainShell.appSettings.getLanguage() + "_" + mainShell.appSettings.getCountry()
 					+ ".xml";
-			File f = new File(appDir + this.mainShell.appSettings.getFileSeparator() + fileName);
+			File f = new File(appDir + mainShell.appSettings.getFileSeparator() + fileName);
 			if (!f.exists()) {
-				fileName = "userSettingsUI_" + this.mainShell.appSettings.getLanguage() + ".xml";
-				f = new File(appDir + this.mainShell.appSettings.getFileSeparator() + fileName);
+				fileName = "userSettingsUI_" + mainShell.appSettings.getLanguage() + ".xml";
+				f = new File(appDir + mainShell.appSettings.getFileSeparator() + fileName);
 				if (!f.exists()) {
 					fileName = "userSettingsUI.xml";
 				}
 			}
-			XmlGuideReader.loadXML(fileName, this.mainShell.guide, this.mainShell.appSettings, this.mainShell.debugShell);
-			this.mainShell.guide.setMediaDirectory("userSettings");
-			this.mainShell.guideSettings = this.mainShell.guide.getSettings();
-			if (this.mainShell.guide.getCss().equals("")) {
-				this.mainShell.style = this.mainShell.defaultStyle;
+			XmlGuideReader.loadXML(fileName, mainShell.guide, mainShell.appSettings, mainShell.debugShell);
+			mainShell.guide.setMediaDirectory("userSettings");
+			mainShell.guideSettings = mainShell.guide.getSettings();
+			if (mainShell.guide.getCss().equals("")) {
+				mainShell.style = mainShell.defaultStyle;
 			} else {
-				this.mainShell.style = this.mainShell.guide.getCss();
+				mainShell.style = mainShell.guide.getCss();
 			}
 			// flag to allow updating of user preferences which is normally
 			// disabled in guides
-			this.mainShell.guide.setInPrefGuide(true);
+			mainShell.guide.setInPrefGuide(true);
 			// display the first page
-			this.mainShell.mainLogic.displayPage("start", false, this.mainShell.guide, this.mainShell.mainShell, this.mainShell.appSettings, this.mainShell.userSettings, this.mainShell.guideSettings,
-					this.mainShell.debugShell);
+			mainShell.mainLogic.displayPage("start", false, mainShell.guide, mainShell, mainShell.appSettings, mainShell.userSettings, mainShell.guideSettings,
+					mainShell.debugShell);
 		} catch (Exception ex3) {
 			MainShell.logger.error("Load Image error " + ex3.getLocalizedMessage(), ex3);
 		}

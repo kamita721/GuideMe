@@ -8,7 +8,6 @@ import org.guideme.guideme.model.Page;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PageFilter {
@@ -48,7 +47,7 @@ public class PageFilter {
         }
 
         // Return list of page IDs
-        List<String> results = pageStream.map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> results = pageStream.map(Map.Entry::getKey).toList();
         logger.debug("filtered to {} possibilities", results.size());
         return results;
     }

@@ -3,7 +3,9 @@ package org.guideme.guideme.ui;
 import com.snapps.swt.SquareButton;
 
 import java.awt.Desktop;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -60,30 +62,28 @@ public class LibraryShell {
 	private Composite toolBar;
 	private Text searchText;
 	private Combo searchFilter;
-	private Combo sortFilter; 
+	private Combo sortFilter;
 	private AppSettings appSettings;
 	private int buttonCharacters;
 	private String authorUrl = "https://milovana.com/webteases/?author=";
-	private ResourceBundle displayText;
-	private String SortByTitle;
-	private String SortByAuthor;
-	private String SortByDate;
-	private String SearchByContent;
-	private String SearchByTitle;
-	private shellKeyEventListener keyListener;
+	private String sortByTitle;
+	private String sortByAuthor;
+	private String sortByDate;
+	private String searchByContent;
+	private String searchByTitle;
 	private static String searchBoxName = "SearchText";
-	private ArrayList<Image> thumbs = new ArrayList<Image>();
-	
+	private ArrayList<Image> thumbs = new ArrayList<>();
+
 	public Shell createShell(Display display, AppSettings pappSettings, MainShell mainShell) {
 		logger.trace("Enter createShell");
 		try {
-			displayText = pappSettings.getDisplayText();
-			SortByTitle = displayText.getString("FileLibrarySortTitle");
-			SortByAuthor = displayText.getString("FileLibrarySortAuthor");
-			SortByDate = displayText.getString("FileLibrarySortDate");
-			SearchByContent = displayText.getString("FileLibrarySearchByContent");
-			SearchByTitle = displayText.getString("FileLibrarySearchByTitle");
-			
+			ResourceBundle displayText = pappSettings.getDisplayText();
+			sortByTitle = displayText.getString("FileLibrarySortTitle");
+			sortByAuthor = displayText.getString("FileLibrarySortAuthor");
+			sortByDate = displayText.getString("FileLibrarySortDate");
+			searchByContent = displayText.getString("FileLibrarySearchByContent");
+			searchByTitle = displayText.getString("FileLibrarySearchByTitle");
+
 			comonFunctions = ComonFunctions.getComonFunctions();
 			appSettings = pappSettings;
 
@@ -99,7 +99,7 @@ public class LibraryShell {
 			FontData[] fD = sysFont.getFontData();
 			fD[0].setHeight(appSettings.getFontSize());
 			controlFont = new Font(display, fD);
-			
+
 			toolBar = new Composite(shell, SWT.NONE);
 			FormData tbFormData = new FormData();
 			tbFormData.top = new FormAttachment(0, 5);
@@ -117,17 +117,17 @@ public class LibraryShell {
 			btnGuide.setText(displayText.getString("FileLibraryButtonNext"));
 			btnGuide.setFont(controlFont);
 			btnGuide.addSelectionListener(new NextButtonListener());
-			
+
 			paging = new Label(toolBar, SWT.NULL);
 			paging.setFont(controlFont);
 
 			sortFilter = new Combo(toolBar, SWT.READ_ONLY);
 			sortFilter.setFont(controlFont);
-			String[] sortTtems = { SortByTitle, SortByAuthor, SortByDate };
+			String[] sortTtems = { sortByTitle, sortByAuthor, sortByDate };
 			sortFilter.setItems(sortTtems);
 			sortFilter.select(0);
-			sortFilter.addSelectionListener(new sortListener());
-			
+			sortFilter.addSelectionListener(new SortListener());
+
 			searchText = new Text(toolBar, SWT.SINGLE);
 			GC gc = new GC(shell);
 			gc.setFont(controlFont);
@@ -148,8 +148,8 @@ public class LibraryShell {
 
 			searchFilter = new Combo(toolBar, SWT.READ_ONLY);
 			searchFilter.setFont(controlFont);
-			String[] SearchItems = { SearchByContent, SearchByTitle };
-			searchFilter.setItems(SearchItems);
+			String[] searchItems = { searchByContent, searchByTitle };
+			searchFilter.setItems(searchItems);
 			searchFilter.select(0);
 
 			btnGuide = new SquareButton(toolBar, SWT.PUSH);
@@ -173,14 +173,14 @@ public class LibraryShell {
 			composite = new Composite(sc, SWT.NONE);
 			composite.setLayout(new FormLayout());
 
-			originalGuides = comonFunctions.listGuides(); 
+			originalGuides = comonFunctions.listGuides();
 			guides = originalGuides;
 			setPageSize();
 			sortTitle();
 			shell.setMaximized(true);
-			keyListener = new shellKeyEventListener();
+			ShellKeyEventListener keyListener = new ShellKeyEventListener();
 			myDisplay.addFilter(SWT.KeyDown, keyListener);
-			shell.addShellListener(new shellCloseListen());
+			shell.addShellListener(new ShellCloseListener());
 			showGuides();
 		} catch (Exception ex) {
 			logger.error(ex.getLocalizedMessage());
@@ -190,48 +190,46 @@ public class LibraryShell {
 	}
 
 	// hotkey stuff here
-	class shellKeyEventListener implements Listener {
+	class ShellKeyEventListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
 			try {
-				if (event.display.getActiveShell().getText().equals(shell.getText()))
-				{
-					logger.trace(event.character + "|" + event.keyCode + "|" + event.keyLocation + "|" + event.stateMask);
+				if (event.display.getActiveShell().getText().equals(shell.getText())) {
+					logger.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation, event.stateMask);
 					if (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR) {
 						search();
 					}
-					if ((event.stateMask & SWT.ALT) == SWT.ALT) 
-					{
+					if ((event.stateMask & SWT.ALT) == SWT.ALT) {
 						switch (event.character) {
-							case 'n':
-							case 'N':
-								NextPage();
-								break;
-							case 'p':
-							case 'P':
-								PreviousPage();
-								break;
-							case 't':
-							case 'T':
-								sortFilter.select(0);
-								sortTitle();
-								break;
-							case 'a':
-							case 'A':
-								sortFilter.select(1);
-								sortAuthor();
-								break;
-							case 'd':
-							case 'D':
-								sortFilter.select(2);
-								sortDate();
-								break;
-							case 'r':
-							case 'R':
-								RandomGuide();
-								break;
-							default:
-								break;
+						case 'n':
+						case 'N':
+							nextPage();
+							break;
+						case 'p':
+						case 'P':
+							previousPage();
+							break;
+						case 't':
+						case 'T':
+							sortFilter.select(0);
+							sortTitle();
+							break;
+						case 'a':
+						case 'A':
+							sortFilter.select(1);
+							sortAuthor();
+							break;
+						case 'd':
+						case 'D':
+							sortFilter.select(2);
+							sortDate();
+							break;
+						case 'r':
+						case 'R':
+							randomGuide();
+							break;
+						default:
+							break;
 						}
 					}
 				}
@@ -240,9 +238,8 @@ public class LibraryShell {
 				logger.error(" hot key " + ex.getLocalizedMessage(), ex);
 			}
 		}
-	}	
-	
-	
+	}
+
 	private void sortAuthor() {
 		Comparator<Library> comparator = Comparator.comparing(guide -> guide.author.toLowerCase());
 		comparator = comparator.thenComparing(Comparator.comparing(guide -> guide.title.toLowerCase()));
@@ -263,19 +260,17 @@ public class LibraryShell {
 		showGuides();
 	}
 
-	private void disposeThumbs()
-	{
-		for(Image thumb: thumbs)
-		{
+	private void disposeThumbs() {
+		for (Image thumb : thumbs) {
 			thumb.dispose();
 		}
 		thumbs.clear();
 	}
-	
+
 	private void showGuides() {
 		disposeThumbs();
-		Control[] arrayOfControl;
-		int j = (arrayOfControl = composite.getChildren()).length;
+		Control[] arrayOfControl = composite.getChildren();
+		int j = arrayOfControl.length;
 		for (int i = 0; i < j; i++) {
 			Control control = arrayOfControl[i];
 			control.dispose();
@@ -284,8 +279,7 @@ public class LibraryShell {
 		Control lastRightButton = composite;
 		int pageEnd = currentStart + pageSize;
 		int end = pageEnd;
-		if (pageEnd > guides.size())
-		{
+		if (pageEnd > guides.size()) {
 			end = pageEnd - guides.size();
 		}
 		paging.setText("" + (currentStart + 1) + " to " + (end) + " of " + guides.size());
@@ -293,11 +287,10 @@ public class LibraryShell {
 		for (int i = currentStart; i < pageEnd; i++) {
 			try {
 				int guidePosition = i;
-				if ((guidePosition) >= guides.size())
-				{
+				if ((guidePosition) >= guides.size()) {
 					guidePosition = guidePosition - guides.size() - 1;
 				}
-				Library guide = (Library) guides.get(guidePosition);
+				Library guide = guides.get(guidePosition);
 				SquareButton btnGuide = new SquareButton(composite, SWT.PUSH);
 				String title = comonFunctions.splitButtonText(guide.title, buttonCharacters);
 				if (guide.author.length() > 0) {
@@ -306,26 +299,20 @@ public class LibraryShell {
 					btnGuide.setText(title);
 				}
 				btnGuide.setFont(controlFont);
-				try
-				{
-					Image thumb = new Image(myDisplay, guide.image);
-					thumbs.add(thumb);
-					Image croppedThumb = comonFunctions.cropImageWidth(thumb,200);
-					thumbs.add(croppedThumb);
-					btnGuide.setImage(croppedThumb);
-				} catch (Exception ex) {
-					logger.error(" showGuides setImage " + ex.getLocalizedMessage());
-				}
+
+				Image thumb = new Image(myDisplay, guide.image);
+				thumbs.add(thumb);
+				Image croppedThumb = comonFunctions.cropImageWidth(thumb, 200);
+				thumbs.add(croppedThumb);
+				btnGuide.setImage(croppedThumb);
 				FormData btnGuideFormData = new FormData();
-				if (i % 2 == 0)
-				{
+
+				if (i % 2 == 0) {
 					btnGuideFormData.top = new FormAttachment(lastLeftButton, 5);
 					btnGuideFormData.left = new FormAttachment(0, 5);
 					btnGuideFormData.right = new FormAttachment(50, -5);
 					lastLeftButton = btnGuide;
-				}
-				else
-				{
+				} else {
 					btnGuideFormData.top = new FormAttachment(lastRightButton, 5);
 					btnGuideFormData.left = new FormAttachment(50, 5);
 					btnGuideFormData.right = new FormAttachment(100, -5);
@@ -348,126 +335,90 @@ public class LibraryShell {
 	}
 
 	private void setPageSize() {
-		if (pageSize != originalPageSize)
-		{
+		if (pageSize != originalPageSize) {
 			pageSize = originalPageSize;
 		}
-		if (pageSize > guides.size())
-		{
+		if (pageSize > guides.size()) {
 			pageSize = guides.size();
 		}
-		if (currentStart > guides.size())
-		{
+		if (currentStart > guides.size()) {
 			currentStart = 0;
 		}
 	}
 
-	private void sortGuides()
-	{
+	private void sortGuides() {
 		String selected = sortFilter.getText();
-		if (selected.equals(SortByTitle)) {
+		if (selected.equals(sortByTitle)) {
 			sortTitle();
 		}
-		if (selected.equals(SortByAuthor)) {
+		if (selected.equals(sortByAuthor)) {
 			sortAuthor();
 		}
-		if (selected.equals(SortByDate)) {
+		if (selected.equals(sortByDate)) {
 			sortDate();
-		}		
-	}
-	
-	class CancelButtonListener extends SelectionAdapter {
-		CancelButtonListener() {
 		}
+	}
 
+	class CancelButtonListener extends SelectionAdapter {
+
+		@Override
 		public void widgetSelected(SelectionEvent event) {
-			try {
-				logger.trace("Enter CancelButtonListener");
-				shell.close();
-			} catch (Exception ex) {
-				logger.error(" CancelButtonListener " + ex.getLocalizedMessage());
-			}
-			logger.trace("Exit CancelButtonListener");
+			shell.close();
 		}
 	}
 
 	class PrevButtonListener extends SelectionAdapter {
-		PrevButtonListener() {
-		}
 
+		@Override
 		public void widgetSelected(SelectionEvent event) {
-			try {
-				logger.trace("Enter PrevButtonListener");
-				PreviousPage();
-			} catch (Exception ex) {
-				logger.error(" PrevButtonListener " + ex.getLocalizedMessage());
-			}
-			logger.trace("Exit PrevButtonListener");
+			previousPage();
 		}
 	}
 
-	public void PreviousPage()
-	{
+	public void previousPage() {
 		currentStart -= pageSize;
 		if (currentStart < 0) {
 			currentStart = guides.size() + currentStart;
 		}
 		showGuides();
 	}
-	
-	
-	class NextButtonListener extends SelectionAdapter {
-		NextButtonListener() {
-		}
 
+	class NextButtonListener extends SelectionAdapter {
+
+		@Override
 		public void widgetSelected(SelectionEvent event) {
-			try {
-				logger.trace("Enter NextButtonListener");
-				NextPage();
-			} catch (Exception ex) {
-				logger.error(" NextButtonListener " + ex.getLocalizedMessage());
-			}
-			logger.trace("Exit NextButtonListener");
+			nextPage();
 		}
 	}
-	
-	public void NextPage()
-	{
+
+	public void nextPage() {
 		currentStart += pageSize;
 		if (currentStart >= guides.size()) {
 			currentStart = (currentStart - guides.size());
 		}
 		showGuides();
 	}
-	
 
 	class GuideButtonListener extends SelectionAdapter {
-		GuideButtonListener() {
-		}
 
+		@Override
 		public void widgetSelected(SelectionEvent event) {
-			try {
-				logger.trace("Enter GuideButtonListener");
-				if ((int) event.data == 1)
-				{
-					String guideFile = (String) event.widget.getData("Guide");
-					logger.trace("Guide File:" + guideFile);
-					myMainShell.loadGuide(guideFile);
-					shell.close();
-				}
-				else
-				{
-					String author = (String) event.widget.getData("Author");
-					author = authorUrl + author;
-					if(Desktop.isDesktopSupported())
-					{
-					  Desktop.getDesktop().browse(new URI(author));
+			if ((int) event.data == 1) {
+				String guideFile = (String) event.widget.getData("Guide");
+				logger.trace("Guide File: {}", guideFile);
+				myMainShell.loadGuide(guideFile);
+				shell.close();
+			} else {
+				String author = (String) event.widget.getData("Author");
+				author = authorUrl + author;
+				if (Desktop.isDesktopSupported()) {
+					try {
+						Desktop.getDesktop().browse(new URI(author));
+					} catch (IOException | URISyntaxException e) {
+						logger.error("Error loading author URI '{}'", author, e);
 					}
 				}
-			} catch (Exception ex) {
-				logger.error(" GuideButtonListener " + ex.getLocalizedMessage());
 			}
-			logger.trace("Exit GuideButtonListener");
 		}
 	}
 
@@ -475,62 +426,50 @@ public class LibraryShell {
 		RandomButtonListener() {
 		}
 
+		@Override
 		public void widgetSelected(SelectionEvent event) {
-			try {
-				logger.trace("Enter RandomButtonListener");
-				RandomGuide();
-			} catch (Exception ex) {
-				logger.error(" RandomButtonListener " + ex.getLocalizedMessage());
-			}
-			logger.trace("Exit RandomButtonListener");
+			randomGuide();
 		}
 	}
-	
-	public void RandomGuide()
-	{
+
+	public void randomGuide() {
 		int randNo = comonFunctions.getRandom(0, guides.size() - 1);
-		String guideFile = ((Library) guides.get(randNo)).file;
-		logger.trace("Guide File:" + guideFile);
+		String guideFile = (guides.get(randNo)).file;
 		myMainShell.loadGuide(guideFile);
 		shell.close();
 	}
 
-	class sortListener extends SelectionAdapter {
-		sortListener() {
-		}
+	class SortListener extends SelectionAdapter {
 
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			sortGuides();
 		}
 	}
 
 	class SearchButtonListener extends SelectionAdapter {
-		SearchButtonListener() {
-		}
-
+		@Override
 		public void widgetSelected(SelectionEvent event) {
-			logger.trace("Enter SearchButtonListener");
 			search();
-			logger.trace("Exit SearchButtonListener");
 		}
 
 	}
-	
+
 	private void search() {
 		try {
 			String selected = searchFilter.getText();
 
-			guides = new ArrayList<Library>();
+			guides = new ArrayList<>();
 			for (Library guide : originalGuides) {
-				if (selected.equals(SearchByTitle)) {
-					if (comonFunctions.searchText(searchText.getText(), guide.author + guide.title)) {
-						guides.add(guide);
-					}
+				if (selected.equals(searchByTitle)
+						&& (comonFunctions.searchText(searchText.getText(), guide.author + guide.title))) {
+					guides.add(guide);
+
 				}
-				if (selected.equals(SearchByContent)) {
-					if (comonFunctions.searchGuide(searchText.getText(), guide.file)) {
-						guides.add(guide);
-					}
+				if (selected.equals(searchByContent)
+						&& (comonFunctions.searchGuide(searchText.getText(), guide.file))) {
+					guides.add(guide);
+
 				}
 			}
 			setPageSize();
@@ -541,9 +480,8 @@ public class LibraryShell {
 	}
 
 	class FolderButtonListener extends SelectionAdapter {
-		FolderButtonListener() {
-		}
 
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
 				String folder = appSettings.getDataDirectory();
@@ -551,15 +489,14 @@ public class LibraryShell {
 				dirDialog.setFilterPath(folder);
 				dirDialog.setMessage("Select a Folder to scan");
 				folder = dirDialog.open();
-				if (folder != null)
-				{
+				if (folder != null) {
 					appSettings.setDataDirectory(folder);
 					appSettings.saveSettings();
-					originalGuides = comonFunctions.listGuides(); 
+					originalGuides = comonFunctions.listGuides();
 					guides = originalGuides;
 					setPageSize();
 					sortGuides();
-					showGuides();				
+					showGuides();
 				}
 			} catch (Exception ex) {
 				logger.error(" FolderButtonListener " + ex.getLocalizedMessage());
@@ -569,23 +506,18 @@ public class LibraryShell {
 
 	}
 
-	class shellCloseListen  extends ShellAdapter {
+	class ShellCloseListener extends ShellAdapter {
 		// Clean up stuff when the application closes
 		@Override
 		public void shellClosed(ShellEvent e) {
 			try {
 				disposeThumbs();
 				controlFont.dispose();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				logger.error("shellCloseListen ", ex);
 			}
 			super.shellClosed(e);
 		}
-
-		public void handleEvent(Event event) {
-		}
 	}
-	
 
 }

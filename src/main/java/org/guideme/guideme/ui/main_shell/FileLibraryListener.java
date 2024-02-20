@@ -24,15 +24,15 @@ class FileLibraryListener extends SelectionAdapter {
 		try {
 			MainShell.logger.trace("Enter FileLibraryListener");
 			// Display a modal shell for the guide specific preferences
-			Shell libShell = new LibraryShell().createShell(this.mainShell.myDisplay, this.mainShell.appSettings, this.mainShell.mainShell);
+			Shell libShell = new LibraryShell().createShell(mainShell.myDisplay, mainShell.appSettings, mainShell);
 			libShell.open();
 			while (!libShell.isDisposed()) {
-				if (!this.mainShell.myDisplay.readAndDispatch())
-					this.mainShell.myDisplay.sleep();
+				if (!mainShell.myDisplay.readAndDispatch())
+					mainShell.myDisplay.sleep();
 			}
 		} catch (Exception ex) {
 			MainShell.logger.error(" FileLibraryListener " + ex.getLocalizedMessage());
-			this.mainShell.inPrefShell = false;
+			mainShell.inPrefShell = false;
 		}
 		super.widgetSelected(e);
 	}

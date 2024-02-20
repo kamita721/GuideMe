@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -55,7 +55,7 @@ public class XmlGuideReader {
 		int intPos2 = xmlFileName.lastIndexOf(".xml");
 		String presName = xmlFileName.substring(intPos + 1, intPos2);
 		guide.reset(presName);
-		HashMap<String, Chapter> chapters = guide.getChapters();
+		Map<String, Chapter> chapters = guide.getChapters();
 		Chapter chapter = new Chapter("default");
 		chapters.put("default", chapter);
 		guideSettings = guide.getSettings();
@@ -218,7 +218,7 @@ public class XmlGuideReader {
 			page.setjScript(XMLReaderUtils.getStringContentUntilElementEnd(reader));
 			break;
 		case GlobalJavascript:
-			guide.setGlobaljScript(XMLReaderUtils.getStringContentUntilElementEnd(reader));
+			guide.appendGlobaljScript(XMLReaderUtils.getStringContentUntilElementEnd(reader));
 			break;
 		case CSS:
 			guide.setCss(XMLReaderUtils.getStringContentUntilElementEnd(reader));
@@ -353,7 +353,7 @@ public class XmlGuideReader {
 		String javascript = comonFunctions.readFile(filePath, StandardCharsets.UTF_8);
 		String globalScript = guide.getGlobaljScript();
 		javascript = globalScript.concat("\r\n").concat(javascript);
-		guide.setGlobaljScript(javascript);
+		guide.appendGlobaljScript(javascript);
 	}
 
 }

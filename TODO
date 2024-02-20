@@ -22,3 +22,10 @@ Test ondisk rescaling (ImageManager.scaleImageOnDisk())
 many model elements have a lot of the same fields (including in XML). Possible room for deduplication
 
 User-visible reporting of XML parse errors
+Proper validation or structure aware parsing of guide XML
+Make Jscript not use so much static
+    I think the reason for all the static was to assist in binding functions, as trying to bind a non-static method is tricky
+    I think the trick here is to bind the wrapping object, then use javascript to lift the relevent method into the global scope
+Improve Javascript debugability
+    How to bring up debug window?
+    When an error occurs on something like a button press, provide better context

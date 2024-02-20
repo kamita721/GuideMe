@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<settings>
+<Tease>
   <Title>Tease Me User Settings</Title>
   <Pages>
     <Page id="start">
@@ -807,4 +807,4 @@
       </Text>
     </Page>
   </Pages>
-</settings>
+</Tease>

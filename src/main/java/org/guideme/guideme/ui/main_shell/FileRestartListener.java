@@ -25,8 +25,8 @@ class FileRestartListener extends SelectionAdapter {
 	// will restart the Guide from the start page
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		if (this.mainShell.appSettings.isFileActionConfirmations()) {
-			MessageBox dialog = new MessageBox(this.mainShell.shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+		if (mainShell.appSettings.isFileActionConfirmations()) {
+			MessageBox dialog = new MessageBox(mainShell.shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
 			dialog.setMessage("Do you really want to restart the guide?\n(All current status will be lost)");
 			int returnCode = dialog.open();
 			if (returnCode == SWT.CANCEL)
@@ -36,19 +36,18 @@ class FileRestartListener extends SelectionAdapter {
 			MainShell.logger.trace("Enter Menu Restart");
 			// stop all activity for the current page to prevent timers
 			// jumping to a different page
-			this.mainShell.stopAll(false);
-			this.mainShell.guide.getFlags().clear();
-			this.mainShell.guide.getSettings().setPage("start");
-			this.mainShell.guide.getSettings().setFlags(this.mainShell.comonFunctions.getFlags(this.mainShell.guide.getFlags()));
-			// guide.getSettings().setScope(null);
-			HashMap<String, Object> scriptVariables = new HashMap<String, Object>();
-			this.mainShell.guide.getSettings().setScriptVariables(scriptVariables);
-			this.mainShell.guide.getSettings().setScope(null);
-			this.mainShell.guide.getSettings().saveSettings();
-			this.mainShell.guideSettings = this.mainShell.guide.getSettings();
-			this.mainShell.debugShell.clearJConsole();
-			this.mainShell.mainLogic.displayPage("start", false, this.mainShell.guide, this.mainShell.mainShell, this.mainShell.appSettings, this.mainShell.userSettings, this.mainShell.guideSettings,
-					this.mainShell.debugShell);
+			mainShell.stopAll(false);
+			mainShell.guide.getFlags().clear();
+			mainShell.guide.getSettings().setPage("start");
+			mainShell.guide.getSettings().setFlags(mainShell.comonFunctions.getFlags(mainShell.guide.getFlags()));
+			HashMap<String, Object> scriptVariables = new HashMap<>();
+			mainShell.guide.getSettings().setScriptVariables(scriptVariables);
+			mainShell.guide.getSettings().setScope(null);
+			mainShell.guide.getSettings().saveSettings();
+			mainShell.guideSettings = mainShell.guide.getSettings();
+			mainShell.debugShell.clearJConsole();
+			mainShell.mainLogic.displayPage("start", false, mainShell.guide, mainShell, mainShell.appSettings, mainShell.userSettings, mainShell.guideSettings,
+					mainShell.debugShell);
 		} catch (Exception ex) {
 			MainShell.logger.error("Restart error " + ex.getLocalizedMessage(), ex);
 		}

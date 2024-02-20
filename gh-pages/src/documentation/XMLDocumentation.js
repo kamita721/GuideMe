@@ -77,7 +77,7 @@ function RequirementsTable(props) {
 }
 
 function SidebarNavLinks() {
-  return XmlData.sort((a, b) => a.name.localeCompare(b.name)).map(node => (
+  return XmlData.toSorted((a, b) => a.name.localeCompare(b.name)).map(node => (
     <li key={node.name} className="nav-item">
 
       <a className="nav-link" href={"#" + node.name}>
@@ -100,7 +100,6 @@ export default class XMLDocumentation extends Component {
 
   render() {
     return (
-      <>
         <Container fluid>
           <Row>
             <nav className="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar text-dark">
@@ -142,7 +141,7 @@ export default class XMLDocumentation extends Component {
                   </p>
                 </Col>
               </Jumbotron>
-              {XmlData.sort((a, b) => a.name.localeCompare(b.name)).map(node => {
+              {XmlData.toSorted((a, b) => a.name.localeCompare(b.name)).map(node => {
                 return (
                   <div key={node.name}>
                     <div className="border-bottom d-block mt-5">
@@ -168,6 +167,6 @@ export default class XMLDocumentation extends Component {
             </main>
           </Row>
         </Container>
-      </>);
+      );
   };
 }

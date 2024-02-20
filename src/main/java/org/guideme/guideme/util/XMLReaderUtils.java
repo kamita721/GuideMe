@@ -3,22 +3,55 @@ package org.guideme.guideme.util;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.graphics.Color;
 import org.guideme.guideme.readers.xml_guide_reader.UserErrorManager;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
+import org.w3c.dom.Element;
 
 public class XMLReaderUtils {
 	private XMLReaderUtils() {
-	};
+	}
 
 	private static Logger logger = LogManager.getLogger();
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
+
+	public static DocumentBuilderFactory getDocumentBuilderFactory() {
+		DocumentBuilderFactory ans = DocumentBuilderFactory.newInstance();
+
+		try {
+			ans.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+		ans.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		ans.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+
+		return ans;
+	}
+
+	public static TransformerFactory getTransformFactory() {
+		TransformerFactory ans = TransformerFactory.newInstance();
+		try {
+			ans.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		} catch (TransformerConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+		ans.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		ans.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+		return ans;
+	}
 
 	public static String getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName, String defaultValue) {
 		String ans = reader.getAttributeValue(null, localName);
@@ -30,7 +63,7 @@ public class XMLReaderUtils {
 
 	public static int getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName, int defaultValue) {
 		String sAns = reader.getAttributeValue(null, localName);
-		if(sAns == null) {
+		if (sAns == null) {
 			return defaultValue;
 		}
 		try {
@@ -60,7 +93,7 @@ public class XMLReaderUtils {
 
 	public static LocalTime getAttributeLocalTime(XMLStreamReader reader, String localName) {
 		String sAns = reader.getAttributeValue(null, localName);
-		if(sAns == null) {
+		if (sAns == null) {
 			return null;
 		}
 		try {
@@ -82,6 +115,18 @@ public class XMLReaderUtils {
 		}
 	}
 
+	public static int getAttributeOrDefault(Element e, String attributeName, int defaultValue) {
+		String sAns = e.getAttribute(attributeName);
+		if(sAns == null) {
+			return defaultValue;
+		}
+		try {
+			return Integer.parseInt(sAns);
+		} catch (NumberFormatException ex) {
+			return defaultValue;
+		}
+	}
+	
 	public static boolean isAtElementEnd(XMLStreamReader reader, String localName) {
 		return reader.getEventType() == XMLStreamConstants.END_ELEMENT
 				&& (reader.getName().getLocalPart().equals(localName));
@@ -100,7 +145,7 @@ public class XMLReaderUtils {
 		UserErrorManager.log("Cannot read text content of xml. \n{}", reader.getLocation());
 		return "";
 	}
-
+	
 	public static String getStringContentUntilElementEnd(XMLStreamReader reader) throws XMLStreamException {
 		int depth = 0;
 		StringBuilder ans = new StringBuilder();

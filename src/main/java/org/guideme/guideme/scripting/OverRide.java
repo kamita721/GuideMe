@@ -204,7 +204,7 @@ public class OverRide {
 		
 		public void run()
 		{
-			Button button = new Button(target, text, "", "", set, unSet, jScript, image, hotKey, "", "", "", "", "", order, "", "", disabled, id, "", defaultBtn);
+			Button button = new Button(target, text, "", "", set, unSet, jScript, image, hotKey, "", 0, "", "", "", order, "", "", disabled, id, "", defaultBtn);
 			overRide.button.add(button);
 		}
 	}
@@ -546,7 +546,7 @@ public class OverRide {
 		
 		public void run()
 		{
-			WebcamButton button = new WebcamButton(type, file, target, text, "", "", set, unSet, jScript, image, hotKey, "", "", "", "", "", order, "", "", disabled, id, "", defaultBtn);
+			WebcamButton button = new WebcamButton(type, file, target, text, "", "", set, unSet, jScript, image, hotKey, "", 0, "", "", "", order, "", "", disabled, id, "", defaultBtn);
 			overRide.webcamButton.add(button);
 		}
 	}
@@ -626,7 +626,7 @@ public class OverRide {
 	 * @param unSet the flags to clear if delay counts down to 0
 	 * @param jScript the Java Script function to run if delay counts down to 0
 	 */
-	public void setDelay(String target, String delay, String startWith, String style, String set, String unSet, String jScript) {
+	public void setDelay(String target, String delay, int startWith, String style, String set, String unSet, String jScript) {
 		this.delay = new Delay(target, delay, "", "", startWith, style, set, unSet, jScript, "", "", "");
 	}
 
@@ -646,7 +646,7 @@ public class OverRide {
 	 * @param id the file name for the video
 	 */
 	public void setVideo(String id) {
-		this.video = new Video(id, "", "", "", "", "", "", "", "", "", "", "", "", 100);
+		this.video = new Video(id, "", "", "", "", "", "", "", 0, "", "", "", "", 100);
 	}
 
 	/**
@@ -669,7 +669,7 @@ public class OverRide {
 	 * @param repeat the number of times to repeat the video
 	 * @param jscript the Java Script function to run when the video stops
 	 */
-	public void setVideo(String id, String startAt, String stopAt, String target, String set, String unSet, String repeat, String jscript) {
+	public void setVideo(String id, String startAt, String stopAt, String target, String set, String unSet, int repeat, String jscript) {
 		this.video = new Video(id, startAt, stopAt, target, "", "", set, unSet, repeat, jscript, "", "", "", 100);
 	}
 
@@ -694,7 +694,7 @@ public class OverRide {
 	 * @param jscript the Java Script function to run when the video stops
 	 * @param volume number between 0 and 100 to set the volume of the audio
 	 */
-	public void setVideo(String id, String startAt, String stopAt, String target, String set, String unSet, String repeat, String jscript, int volume) {
+	public void setVideo(String id, String startAt, String stopAt, String target, String set, String unSet, int repeat, String jscript, int volume) {
 		this.video = new Video(id, startAt, stopAt, target, "", "", set, unSet, repeat, jscript, "", "", "", volume);
 	}
 

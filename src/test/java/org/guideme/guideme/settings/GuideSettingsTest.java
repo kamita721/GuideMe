@@ -3,6 +3,7 @@ package org.guideme.guideme.settings;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.guideme.guideme.model.Guide;
 import org.junit.AfterClass;
@@ -23,7 +24,7 @@ public class GuideSettingsTest {
 		appSettings.saveSettings();
 		guideSettings = new GuideSettings("GuideTest");
 		guide = Guide.getGuide();
-		HashMap<String, Object> scriptVar = new HashMap<String, Object>();
+		Map<String, Object> scriptVar = new HashMap<String, Object>();
 		scriptVar = guideSettings.getScriptVariables();
 		scriptVar.put("pl1Count","3");
 		scriptVar.put("pl2Count","4");
@@ -73,7 +74,7 @@ public class GuideSettingsTest {
 
 	@Test
 	public void testGetScriptVariables() {
-		HashMap<String, Object> scriptVar = new HashMap<String, Object>();
+		Map<String, Object> scriptVar = new HashMap<String, Object>();
 		scriptVar = guideSettings.getScriptVariables();
 		int count = scriptVar.size();
 		assertEquals("Variable count", 3, count);
@@ -87,13 +88,13 @@ public class GuideSettingsTest {
 
 	@Test
 	public void testSetScriptVariables() {
-		HashMap<String, Object> scriptVar = new HashMap<String, Object>();
+		Map<String, Object> scriptVar = new HashMap<String, Object>();
 		scriptVar = guideSettings.getScriptVariables();
 		scriptVar.put("testKey", "TestValue");
 		scriptVar.put("pl1Count","4");
 		scriptVar.put("failCount","7");
 		guideSettings.setScriptVariables(scriptVar);
-		HashMap<String, Object> scriptVar2 = new HashMap<String, Object>();
+		Map<String, Object> scriptVar2 = new HashMap<String, Object>();
 		scriptVar2 = guideSettings.getScriptVariables();
 		int count = scriptVar2.size();
 		assertEquals("Variable count", 4, count);

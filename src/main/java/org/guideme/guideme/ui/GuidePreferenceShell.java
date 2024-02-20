@@ -1,7 +1,7 @@
 package org.guideme.guideme.ui;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +22,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -36,19 +35,18 @@ import com.snapps.swt.SquareButton;
 
 public class GuidePreferenceShell {
 	private Shell shell = null;
-	private Display myDisplay;
-	//private AppSettings myAppSettings;
 	private GuideSettings myGuideSettings;
 	private static Logger logger = LogManager.getLogger();
 	private Font controlFont;
-	private HashMap<String, FormData> appFormdata = new HashMap<String, FormData>();
-	private HashMap<String, Control> appWidgets = new HashMap<String, Control>();
+	private HashMap<String, FormData> appFormdata = new HashMap<>();
+	private HashMap<String, Control> appWidgets = new HashMap<>();
 
 	public GuidePreferenceShell() {
 		super();
 	}
 
 	public Shell createShell(final Display display, GuideSettings guideSettings, AppSettings appSettings) {
+  Display myDisplay;
 		logger.trace("Enter createShell");
 		try {
 			Control tmpWidget;
@@ -60,7 +58,6 @@ public class GuidePreferenceShell {
 			//Create the main UI elements
 			myDisplay = display;
 			myGuideSettings = guideSettings;
-			//myAppSettings = appSettings;
 			shell = new Shell(myDisplay, SWT.APPLICATION_MODAL + SWT.DIALOG_TRIM + SWT.RESIZE);
 
 			shell.setText(myGuideSettings.getName() + " " + displayText.getString("FileGuidePrefPrefernces"));
@@ -94,23 +91,23 @@ public class GuidePreferenceShell {
 
 			tmpWidget = grpNames;
 			tmpWidget2 = grpNames;
-			ArrayList<Preference> prefs = myGuideSettings.getPrefArray();
+			List<Preference> prefs = myGuideSettings.getPrefArray();
 
 			Preference pref;
 			for (int i1 = 0; i1 < prefs.size(); i1++) {
 				pref = prefs.get(i1);
 				if (pref.getType().equals("String")) {
-					AddTextField(grpNames, pref.getScreenDesc(), tmpWidget, tmpWidget2, pref.getstrValue(), pref.getKey(), false);
+					addTextField(grpNames, pref.getScreenDesc(), tmpWidget, tmpWidget2, pref.getstrValue(), pref.getKey(), false);
 					tmpWidget = appWidgets.get(pref.getKey() + "Lbl");
 					tmpWidget2 = appWidgets.get(pref.getKey() + "Ctrl");
 				}
 				if (pref.getType().equals("Boolean")) {
-					AddBooleanField(grpNames, pref.getScreenDesc(), tmpWidget, tmpWidget2, pref.getBlnValue(), pref.getKey());
+					addBooleanField(grpNames, pref.getScreenDesc(), tmpWidget, tmpWidget2, pref.getBlnValue(), pref.getKey());
 					tmpWidget = appWidgets.get(pref.getKey() + "BlnLbl");
 					tmpWidget2 = appWidgets.get(pref.getKey() + "BlnCtrl");				
 				}
 				if (pref.getType().equals("Number")) {
-					AddTextField(grpNames, pref.getScreenDesc(), tmpWidget, tmpWidget2, String.valueOf(pref.getDblValue()), pref.getKey(), true);
+					addTextField(grpNames, pref.getScreenDesc(), tmpWidget, tmpWidget2, String.valueOf(pref.getDblValue()), pref.getKey(), true);
 					tmpWidget = appWidgets.get(pref.getKey() + "NumLbl");
 					tmpWidget2 = appWidgets.get(pref.getKey() + "NumCtrl");				}
 			}
@@ -121,7 +118,6 @@ public class GuidePreferenceShell {
 			btnCancel.setFont(controlFont);
 			FormData btnCancelFormData = new FormData();
 			btnCancelFormData.top = new FormAttachment(grpNames,5);
-			//btnCancelFormData.bottom = new FormAttachment(100,-5);
 			btnCancelFormData.right = new FormAttachment(100,-5);
 			btnCancel.setLayoutData(btnCancelFormData);
 			btnCancel.addSelectionListener(new CancelButtonListener());
@@ -131,7 +127,6 @@ public class GuidePreferenceShell {
 			btnSave.setFont(controlFont);
 			FormData btnSaveFormData = new FormData();
 			btnSaveFormData.top = new FormAttachment(grpNames,5);
-			//btnSaveFormData.bottom = new FormAttachment(100,-5);
 			btnSaveFormData.right = new FormAttachment(btnCancel,-5);
 			btnSave.setLayoutData(btnSaveFormData);
 			btnSave.addSelectionListener(new SaveButtonListener());
@@ -141,7 +136,7 @@ public class GuidePreferenceShell {
 			sc.setExpandVertical(true);
 			sc.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));			
 
-			shell.addShellListener(new shellCloseListen());
+			shell.addShellListener(new ShellCloseListen());
 			
 			shell.layout();
 			
@@ -181,13 +176,14 @@ public class GuidePreferenceShell {
 	
 	// Click event code for the dynamic buttons
 	class SaveButtonListener extends SelectionAdapter {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
 				logger.trace("Enter SaveButtonListner");
 				Text txtTmp;
 				Button btnTmp;
 
-				ArrayList<Preference> prefs = myGuideSettings.getPrefArray();
+				List<Preference> prefs = myGuideSettings.getPrefArray();
 
 				Preference pref;
 				for (int i1 = 0; i1 < prefs.size(); i1++) {
@@ -218,6 +214,7 @@ public class GuidePreferenceShell {
 
 	// Click event code for the dynamic buttons
 	class CancelButtonListener extends SelectionAdapter {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
 				logger.trace("Enter CancelButtonListener");
@@ -230,7 +227,7 @@ public class GuidePreferenceShell {
 		}
 	}
 
-	private void AddTextField(Group group, String labelText, Control prevControl, Control prevControl2, String value, String key, boolean addNewmeric) {
+	private void addTextField(Group group, String labelText, Control prevControl, Control prevControl2, String value, String key, boolean addNewmeric) {
 		Label lblTmp;
 		Text txtTmp;
 		String lblSufix;
@@ -244,14 +241,12 @@ public class GuidePreferenceShell {
 		lblTmpFormData = new FormData();
 		lblTmpFormData.top = new FormAttachment(prevControl,5);
 		lblTmpFormData.left = new FormAttachment(0,5);
-		//lblTmpFormData.right = new FormAttachment(25,0);
 		lblTmp.setLayoutData(lblTmpFormData);
 		txtTmp = new Text(group, SWT.SINGLE);
 		txtTmp.setFont(controlFont);
 		txtTmp.setText(value);
 		txtTmpFormData = new FormData();
 		txtTmpFormData.top = new FormAttachment(prevControl2,5);
-		//txtTmpFormData.left = new FormAttachment(lblTmp,10);
 		txtTmpFormData.left = new FormAttachment(60,10);
 		txtTmpFormData.right = new FormAttachment(100,-5);
 		txtTmp.setLayoutData(txtTmpFormData);
@@ -269,7 +264,7 @@ public class GuidePreferenceShell {
 		appWidgets.put(key + ctrlSufix, txtTmp);
 	}
 
-	private void AddBooleanField(Group group, String labelText, Control prevControl, Control prevControl2, boolean value, String key) {
+	private void addBooleanField(Group group, String labelText, Control prevControl, Control prevControl2, boolean value, String key) {
 		Label lblTmp;
 		Button btnTmp;
 		FormData lblTmpFormData;
@@ -281,7 +276,6 @@ public class GuidePreferenceShell {
 		lblTmpFormData = new FormData();
 		lblTmpFormData.top = new FormAttachment(prevControl,5);
 		lblTmpFormData.left = new FormAttachment(0,5);
-		//lblTmpFormData.right = new FormAttachment(25,0);
 		lblTmp.setLayoutData(lblTmpFormData);
 		btnTmp = new Button(group, SWT.CHECK);
 		btnTmp.setFont(controlFont);
@@ -289,7 +283,6 @@ public class GuidePreferenceShell {
 		btnTmp.setSelection(value);
 		txtTmpFormData = new FormData();
 		txtTmpFormData.top = new FormAttachment(prevControl2,5);
-		//txtTmpFormData.left = new FormAttachment(lblTmp,10);
 		txtTmpFormData.left = new FormAttachment(60,10);
 		txtTmpFormData.right = new FormAttachment(100,-5);
 		btnTmp.setLayoutData(txtTmpFormData);
@@ -299,7 +292,7 @@ public class GuidePreferenceShell {
 		appWidgets.put(key + "BlnCtrl", btnTmp);
 	}
 
-	class shellCloseListen  extends ShellAdapter {
+	class ShellCloseListen  extends ShellAdapter {
 		// Clean up stuff when the application closes
 		@Override
 		public void shellClosed(ShellEvent e) {
@@ -312,8 +305,6 @@ public class GuidePreferenceShell {
 			super.shellClosed(e);
 		}
 
-		public void handleEvent(Event event) {
-		}
 	}
 
 

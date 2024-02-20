@@ -30,34 +30,32 @@ class EventStatusTextListener implements StatusTextListener {
 
 	@Override
 	public void changed(StatusTextEvent event) {
-		if (!this.mainShell.ProcStatusText.equals(event.text)) {
+		if (!mainShell.procStatusText.equals(event.text)) {
 			String statusText = event.text;
 
 			String[] eventArgs = statusText.split("\\|");
 			if (eventArgs[0].equals("ButtonClick") && eventArgs.length > 5) {
-				this.mainShell.ProcStatusText = event.text;
-				try {
-					MainShell.logger.trace("Enter StatusTextListener");
-					String strTag;
-					strTag = eventArgs[1];// Set
-					if (!strTag.equals("")) {
-						this.mainShell.comonFunctions.setFlags(strTag, this.mainShell.guide.getFlags());
-					}
-					strTag = eventArgs[2];// UnSet
-					if (!strTag.equals("")) {
-						this.mainShell.comonFunctions.unsetFlags(strTag, this.mainShell.guide.getFlags());
-					}
-					String scriptVar = eventArgs[3];// scriptVar
-					this.mainShell.comonFunctions.processSrciptVars(scriptVar, this.mainShell.guideSettings);
-					strTag = eventArgs[4];// Target
-					String javascript = eventArgs[5];// javaScript
-					this.mainShell.runJscript(javascript, false);
-					if (!strTag.equals(""))
-						this.mainShell.mainLogic.displayPage(strTag, false, this.mainShell.guide, this.mainShell.mainShell, this.mainShell.appSettings, this.mainShell.userSettings,
-								this.mainShell.guideSettings, this.mainShell.debugShell);
-				} catch (Exception ex) {
-					MainShell.logger.error(" StatusTextListener " + ex.getLocalizedMessage(), ex);
+				mainShell.procStatusText = event.text;
+
+				MainShell.logger.trace("Enter StatusTextListener");
+				String strTag;
+				strTag = eventArgs[1];// Set
+				if (!strTag.equals("")) {
+					mainShell.comonFunctions.setFlags(strTag, mainShell.guide.getFlags());
 				}
+				strTag = eventArgs[2];// UnSet
+				if (!strTag.equals("")) {
+					mainShell.comonFunctions.unsetFlags(strTag, mainShell.guide.getFlags());
+				}
+				String scriptVar = eventArgs[3];// scriptVar
+				mainShell.comonFunctions.processSrciptVars(scriptVar, mainShell.guideSettings);
+				strTag = eventArgs[4];// Target
+				String javascript = eventArgs[5];// javaScript
+				mainShell.runJscript(javascript, false);
+				if (!strTag.equals(""))
+					mainShell.mainLogic.displayPage(strTag, false, mainShell.guide, mainShell, mainShell.appSettings,
+							mainShell.userSettings, mainShell.guideSettings, mainShell.debugShell);
+
 				MainShell.logger.trace("Exit StatusTextListener");
 			}
 		}

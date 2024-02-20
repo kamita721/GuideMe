@@ -75,7 +75,8 @@ import org.eclipse.swt.widgets.TypedListener;
 
 public class SquareButton extends Canvas {
 	protected Listener keyListener;
-	protected Image image, backgroundImage;
+	protected Image image;
+	protected Image backgroundImage;
 	protected String text;
 	protected Font font;
 	protected Color fontColor, hoverFontColor, clickedFontColor, inactiveFontColor, selectedFontColor;

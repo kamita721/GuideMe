@@ -1,7 +1,7 @@
 package org.guideme.guideme.ui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Map.Entry;
@@ -22,8 +22,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -51,7 +49,6 @@ public class DebugShell {
 	private Display myDisplay;
 	private static Logger logger = LogManager.getLogger();
 	private Combo pagesCombo;
-	private Page dispPage;
 	private Guide guide;
 	private Text txtText;
 	private Text txtScript;
@@ -62,21 +59,21 @@ public class DebugShell {
 	private Composite tableComp;
 	private Composite varComp;
 	private ScrolledComposite varScrlComp;
-	private TabFolder  tabFolder;
+	private TabFolder tabFolder;
 	private Table varTable;
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private static DebugShell debugShell;
 	private boolean keepShellOpen;
 	private Table btnTable;
-	
+
 	public static synchronized DebugShell getDebugShell() {
 		if (debugShell == null) {
 			debugShell = new DebugShell();
 		}
 		return debugShell;
 	}
-	
-	protected  DebugShell() {
+
+	protected DebugShell() {
 		super();
 	}
 
@@ -87,42 +84,37 @@ public class DebugShell {
 			comonFuctions = ComonFunctions.getComonFunctions();
 			AppSettings appSettings = AppSettings.getAppSettings();
 			ResourceBundle displayText = appSettings.getDisplayText();
-			
-			//Create the main UI elements
+
+			// Create the main UI elements
 			myDisplay = display;
-			//myUserSettings = userSettings;
-			//shell = new Shell(myDisplay, SWT.MODELESS + SWT.RESIZE + SWT.TITLE);
-			//shell = new Shell(myDisplay, SWT.RESIZE + SWT.TITLE);
-			
+
 			guide = Guide.getGuide();
 			mainShell = mainshell;
 			shell = new Shell(myDisplay);
 			shell.setText("GuideMe Debug Shell");
 			shell.setSize(appSettings.getJsDebugWidth(), appSettings.getJsDebugHeight());
-		    shell.addListener(SWT.Close, new Listener() {
-		        public void handleEvent(Event event) {
-		        	shell.setVisible(false);
-		        	event.doit = !keepShellOpen;
-		        }
-		      });			
+			shell.addListener(SWT.Close, event -> {
+				shell.setVisible(false);
+				event.doit = !keepShellOpen;
+			});
 
 			FormLayout layout = new FormLayout();
 			shell.setLayout(layout);
 
 			pagesCombo = new Combo(shell, SWT.DROP_DOWN);
-			pagesCombo.addSelectionListener(new debugSelectListener());
+			pagesCombo.addSelectionListener(new DebugSelectListener());
 
-			//Set the layout and how it responds to screen resize
+			// Set the layout and how it responds to screen resize
 			FormData pagesComboFormData = new FormData();
-			pagesComboFormData.top = new FormAttachment(0,0);
-			pagesComboFormData.left = new FormAttachment(0,2);
+			pagesComboFormData.top = new FormAttachment(0, 0);
+			pagesComboFormData.left = new FormAttachment(0, 2);
 			pagesComboFormData.right = new FormAttachment(80, -2);
 			pagesCombo.setLayoutData(pagesComboFormData);
 
 			SquareButton btnGo = new SquareButton(shell, SWT.PUSH);
 			btnGo.setText(displayText.getString("DebugShellButtonGo"));
 			FormData btnGoFormData = new FormData();
-			btnGoFormData.top = new FormAttachment(0,0);
+			btnGoFormData.top = new FormAttachment(0, 0);
 			btnGoFormData.right = new FormAttachment(90, -2);
 			btnGoFormData.left = new FormAttachment(80, 0);
 			btnGo.setLayoutData(btnGoFormData);
@@ -131,23 +123,23 @@ public class DebugShell {
 			SquareButton btnCurrent = new SquareButton(shell, SWT.PUSH);
 			btnCurrent.setText(displayText.getString("DebugShellButtonReset"));
 			FormData btnCurrentFormData = new FormData();
-			btnCurrentFormData.top = new FormAttachment(0,0);
+			btnCurrentFormData.top = new FormAttachment(0, 0);
 			btnCurrentFormData.right = new FormAttachment(100, -2);
 			btnCurrentFormData.left = new FormAttachment(90, 0);
 			btnCurrent.setLayoutData(btnCurrentFormData);
 			btnCurrent.addSelectionListener(new CurrentButtonListener());
 
-			tabFolder = new TabFolder (shell, SWT.NONE);
+			tabFolder = new TabFolder(shell, SWT.NONE);
 			FormLayout mainlayout = new FormLayout();
 			tabFolder.setLayout(mainlayout);
 			FormData mainCompFormData = new FormData();
-			mainCompFormData.top = new FormAttachment(pagesCombo,0);
-			mainCompFormData.left = new FormAttachment(0,0);
+			mainCompFormData.top = new FormAttachment(pagesCombo, 0);
+			mainCompFormData.left = new FormAttachment(0, 0);
 			mainCompFormData.right = new FormAttachment(100, 0);
 			mainCompFormData.bottom = new FormAttachment(100, 0);
 			tabFolder.setLayoutData(mainCompFormData);
 
-			//Main Tab
+			// Main Tab
 			TabItem tabMain = new TabItem(tabFolder, SWT.NONE);
 			tabMain.setText(displayText.getString("DebugShellTabMain"));
 
@@ -155,116 +147,119 @@ public class DebugShell {
 			FormLayout tbllayout = new FormLayout();
 			tableComp.setLayout(tbllayout);
 			FormData tableCompFormData = new FormData();
-			tableCompFormData.top = new FormAttachment(0,0);
-			tableCompFormData.left = new FormAttachment(0,0);
+			tableCompFormData.top = new FormAttachment(0, 0);
+			tableCompFormData.left = new FormAttachment(0, 0);
 			tableCompFormData.right = new FormAttachment(100, 0);
-			tableCompFormData.bottom = new FormAttachment(100,0);
+			tableCompFormData.bottom = new FormAttachment(100, 0);
 			tableComp.setLayoutData(tableCompFormData);
 
 			tabMain.setControl(tableComp);
 
-			//Text Tab
+			// Text Tab
 			TabItem tabText = new TabItem(tabFolder, SWT.NONE);
 			tabText.setText(displayText.getString("DebugShellTabText"));
 
-			txtText = new Text(tabFolder, SWT.LEFT + SWT.MULTI + SWT.WRAP + SWT.READ_ONLY + SWT.V_SCROLL);
+			txtText = new Text(tabFolder,
+					SWT.LEFT + SWT.MULTI + SWT.WRAP + SWT.READ_ONLY + SWT.V_SCROLL);
 			FormData lblTexctFormData = new FormData();
-			lblTexctFormData.top = new FormAttachment(0,0);
-			lblTexctFormData.left = new FormAttachment(0,0);
-			lblTexctFormData.right = new FormAttachment(100,0);
-			lblTexctFormData.bottom = new FormAttachment(100,0);
+			lblTexctFormData.top = new FormAttachment(0, 0);
+			lblTexctFormData.left = new FormAttachment(0, 0);
+			lblTexctFormData.right = new FormAttachment(100, 0);
+			lblTexctFormData.bottom = new FormAttachment(100, 0);
 			txtText.setLayoutData(lblTexctFormData);
 
 			tabText.setControl(txtText);
 
-			//Script Tab
+			// Script Tab
 			TabItem tabScript = new TabItem(tabFolder, SWT.NONE);
 			tabScript.setText("JavaScript");
 
-			txtScript = new Text(tabFolder, SWT.LEFT + SWT.MULTI + SWT.WRAP + SWT.READ_ONLY + SWT.V_SCROLL);
+			txtScript = new Text(tabFolder,
+					SWT.LEFT + SWT.MULTI + SWT.WRAP + SWT.READ_ONLY + SWT.V_SCROLL);
 			FormData txtScriptFormData = new FormData();
-			txtScriptFormData.top = new FormAttachment(0,0);
-			txtScriptFormData.left = new FormAttachment(0,0);
-			txtScriptFormData.right = new FormAttachment(100,0);
-			txtScriptFormData.bottom = new FormAttachment(100,0);
+			txtScriptFormData.top = new FormAttachment(0, 0);
+			txtScriptFormData.left = new FormAttachment(0, 0);
+			txtScriptFormData.right = new FormAttachment(100, 0);
+			txtScriptFormData.bottom = new FormAttachment(100, 0);
 			txtScript.setLayoutData(txtScriptFormData);
 
 			tabScript.setControl(txtScript);
 
-			//Variables Tab
+			// Variables Tab
 			TabItem tabVariables = new TabItem(tabFolder, SWT.NONE);
 			tabVariables.setText(displayText.getString("DebugShellTabVariables"));
-			
+
 			varScrlComp = new ScrolledComposite(tabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
-		    
+
 			varComp = new Composite(varScrlComp, SWT.NONE);
 			FormLayout varlayout = new FormLayout();
 			varComp.setLayout(varlayout);
 			FormData varCompFormData = new FormData();
-			varCompFormData.top = new FormAttachment(0,0);
-			varCompFormData.left = new FormAttachment(0,0);
+			varCompFormData.top = new FormAttachment(0, 0);
+			varCompFormData.left = new FormAttachment(0, 0);
 			varCompFormData.right = new FormAttachment(100, 0);
-			varCompFormData.bottom = new FormAttachment(100,0);
+			varCompFormData.bottom = new FormAttachment(100, 0);
 			varComp.setLayoutData(varCompFormData);
-			
-			
+
 			varTable = new Table(varComp, SWT.NONE);
-			varTable.setLinesVisible (true);
-			varTable.setHeaderVisible (true);
+			varTable.setLinesVisible(true);
+			varTable.setHeaderVisible(true);
 			GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
 			data.heightHint = 200;
 			varTable.setLayoutData(data);
-			String[]titles = {displayText.getString("DebugShellTableName"), displayText.getString("DebugShellTableValue")};
-			for (int i=0; i<titles.length; i++) {
-				TableColumn column = new TableColumn (varTable, SWT.NONE);
-				column.setText (titles [i]);
-			}	
+			String[] titles = { displayText.getString("DebugShellTableName"),
+					displayText.getString("DebugShellTableValue") };
+			for (int i = 0; i < titles.length; i++) {
+				TableColumn column = new TableColumn(varTable, SWT.NONE);
+				column.setText(titles[i]);
+			}
 			FormData varTableFormData = new FormData();
-			varTableFormData.top = new FormAttachment(0,0);
-			varTableFormData.left = new FormAttachment(0,0);
-			varTableFormData.right = new FormAttachment(100,0);
+			varTableFormData.top = new FormAttachment(0, 0);
+			varTableFormData.left = new FormAttachment(0, 0);
+			varTableFormData.right = new FormAttachment(100, 0);
 			varTable.setLayoutData(varTableFormData);
-			varTable.addSelectionListener(new varTableListener());
+			varTable.addSelectionListener(new VarTableListener());
 
 			txtVarKey = new Text(varComp, SWT.LEFT + SWT.SINGLE + SWT.BORDER);
 			FormData txtVarKeyFormData = new FormData();
-			txtVarKeyFormData.top = new FormAttachment(varTable,0);
-			txtVarKeyFormData.left = new FormAttachment(0,0);
-			txtVarKeyFormData.right = new FormAttachment(30,-2);
+			txtVarKeyFormData.top = new FormAttachment(varTable, 0);
+			txtVarKeyFormData.left = new FormAttachment(0, 0);
+			txtVarKeyFormData.right = new FormAttachment(30, -2);
 			txtVarKey.setLayoutData(txtVarKeyFormData);
 
 			txtVarValue = new Text(varComp, SWT.LEFT + SWT.SINGLE + SWT.BORDER);
 			FormData txtVarValueFormData = new FormData();
-			txtVarValueFormData.top = new FormAttachment(varTable,0);
-			txtVarValueFormData.left = new FormAttachment(30,0);
-			txtVarValueFormData.right = new FormAttachment(90,-2);
+			txtVarValueFormData.top = new FormAttachment(varTable, 0);
+			txtVarValueFormData.left = new FormAttachment(30, 0);
+			txtVarValueFormData.right = new FormAttachment(90, -2);
 			txtVarValue.setLayoutData(txtVarValueFormData);
 
 			SquareButton btnSet = new SquareButton(varComp, SWT.PUSH);
 			btnSet.setText(displayText.getString("DebugShellButtonSetValue"));
 			FormData btnSetFormData = new FormData();
-			btnSetFormData.top = new FormAttachment(varTable,0);
+			btnSetFormData.top = new FormAttachment(varTable, 0);
 			btnSetFormData.right = new FormAttachment(100, -2);
 			btnSetFormData.left = new FormAttachment(90, 0);
 			btnSet.setLayoutData(btnSetFormData);
 			btnSet.addSelectionListener(new SetButtonListener());
-			
+
 			varScrlComp.setContent(varComp);
 			varScrlComp.setAlwaysShowScrollBars(true);
 			varScrlComp.setExpandHorizontal(true);
 			varScrlComp.setExpandVertical(true);
 			tabVariables.setControl(varScrlComp);
-			
-			//Jscript console Tab
+
+			// Jscript console Tab
 			TabItem tabConsole = new TabItem(tabFolder, SWT.NONE);
 			tabConsole.setText("JavaScript Console");
 
-			txtScriptConsole = new Text(tabFolder, SWT.LEFT + SWT.MULTI + SWT.WRAP + SWT.READ_ONLY + SWT.V_SCROLL);
+			txtScriptConsole = new Text(tabFolder,
+					SWT.LEFT + SWT.MULTI + SWT.WRAP + SWT.READ_ONLY + SWT.V_SCROLL);
 			FormData txtScriptConsoleFormData = new FormData();
-			txtScriptConsoleFormData.top = new FormAttachment(0,0);
-			txtScriptConsoleFormData.left = new FormAttachment(0,0);
-			txtScriptConsoleFormData.right = new FormAttachment(100,0);
-			txtScriptConsoleFormData.bottom = new FormAttachment(100,0);
+			txtScriptConsoleFormData.top = new FormAttachment(0, 0);
+			txtScriptConsoleFormData.left = new FormAttachment(0, 0);
+			txtScriptConsoleFormData.right = new FormAttachment(100, 0);
+			txtScriptConsoleFormData.bottom = new FormAttachment(100, 0);
 			txtScriptConsole.setLayoutData(txtScriptConsoleFormData);
 
 			tabConsole.setControl(txtScriptConsole);
@@ -275,15 +270,13 @@ public class DebugShell {
 			shell.layout();
 			shell.open();
 			shell.setVisible(false);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
 		logger.trace("Exit createShell");
-		//return shell;
 	}
 
-	class varTableListener extends SelectionAdapter {
+	class VarTableListener extends SelectionAdapter {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
@@ -293,9 +286,9 @@ public class DebugShell {
 			txtVarValue.setText(tmpItem.getText(1));
 			super.widgetSelected(e);
 		}
-		
+
 	}
-	
+
 	class GoButtonListener extends SelectionAdapter {
 
 		@Override
@@ -304,8 +297,7 @@ public class DebugShell {
 				String strPage;
 				strPage = pagesCombo.getItem(pagesCombo.getSelectionIndex());
 				mainShell.displayPage(strPage);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				logger.error(ex.getLocalizedMessage(), ex);
 			}
 		}
@@ -318,13 +310,12 @@ public class DebugShell {
 		public void widgetSelected(SelectionEvent e) {
 			try {
 				String flags = comonFuctions.getFlags(guide.getFlags());
-				HashMap<String, Object> scriptVars;
-				scriptVars = guide.getSettings().getScriptVariables();
+				Map<String, Object> scriptVars = guide.getSettings().getScriptVariables();
 
 				Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
 
 				if (txtVarKey.getText().equals("Flags")) {
-					ArrayList<String> flagsarray = new ArrayList<String>();
+					List<String> flagsarray = new ArrayList<>();
 					comonFuctions.setFlags(txtVarValue.getText(), flagsarray);
 					guide.setFlags(flagsarray);
 					flags = comonFuctions.getFlags(guide.getFlags());
@@ -335,26 +326,25 @@ public class DebugShell {
 				}
 				varTable.removeAll();
 
-				TableItem item = new TableItem (varTable, SWT.NONE);
+				TableItem item = new TableItem(varTable, SWT.NONE);
 				item.setBackground(color);
-				item.setText (0, "Flags");
-				item.setText (1, flags);
+				item.setText(0, "Flags");
+				item.setText(1, flags);
 
 				for (Entry<String, Object> entry : scriptVars.entrySet()) {
 					String key = entry.getKey();
 					String value = entry.getValue().toString();
-					item = new TableItem (varTable, SWT.NONE);
+					item = new TableItem(varTable, SWT.NONE);
 					item.setBackground(color);
-					item.setText (0, key);
-					item.setText (1, value);
+					item.setText(0, key);
+					item.setText(1, value);
 				}
 
-				for (int i=0; i<2; i++) {
-					varTable.getColumn (i).pack ();
+				for (int i = 0; i < 2; i++) {
+					varTable.getColumn(i).pack();
 				}
 
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				logger.error(ex.getLocalizedMessage(), ex);
 			}
 		}
@@ -365,28 +355,26 @@ public class DebugShell {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			try{
+			try {
 				String strPage;
 				strPage = guide.getSettings().getCurrPage();
 				setPage(strPage, true);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				logger.error(ex.getLocalizedMessage(), ex);
 			}
 		}
 
 	}
 
-	class debugSelectListener extends SelectionAdapter {
+	class DebugSelectListener extends SelectionAdapter {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			try{
+			try {
 				String strPage;
 				strPage = pagesCombo.getItem(pagesCombo.getSelectionIndex());
 				setPage(strPage, false);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				logger.error(ex.getLocalizedMessage(), ex);
 			}
 		}
@@ -396,8 +384,7 @@ public class DebugShell {
 	public void clearPagesCombo() {
 		try {
 			this.pagesCombo.removeAll();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
 	}
@@ -405,332 +392,296 @@ public class DebugShell {
 	public void addPagesCombo(String page) {
 		try {
 			this.pagesCombo.add(page);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
 	}
 
 	public void setPage(String page, boolean currPage) {
-		try {
-			Boolean refreshVars = false;
-			Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
-			if (currPage) {
-				int currPageIndex = this.pagesCombo.indexOf(page);
-				this.pagesCombo.select(currPageIndex);
-				refreshVars = true;
+		Page dispPage;
+		Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
+		if (currPage) {
+			int currPageIndex = this.pagesCombo.indexOf(page);
+			this.pagesCombo.select(currPageIndex);
+		}
+		dispPage = guide.getChapters().get("default").getPages().get(page);
+		StringBuilder txtBuilder = new StringBuilder();
+		for (int i = 0; i < dispPage.getTextCount(); i++) {
+			if (dispPage.getText(i).canShow(guide.getFlags())) {
+				txtBuilder.append(dispPage.getText(i).getText());
 			}
-			this.dispPage = guide.getChapters().get("default").getPages().get(page);
-			StringBuilder txtBuilder = new StringBuilder();
-			for (int i = 0; i < dispPage.getTextCount(); i++) {
-				if (dispPage.getText(i).canShow(guide.getFlags())) {
-					txtBuilder.append(dispPage.getText(i).getText());
-				}
-			}
-			txtText.setText(txtBuilder.toString());
-			removePageTables();
-			Control prevWidget;
-			prevWidget = tableComp;
+		}
+		txtText.setText(txtBuilder.toString());
+		removePageTables();
+		Control prevWidget;
+		prevWidget = tableComp;
 
-			Table pgeTable = new Table(tableComp, SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
-			pgeTable.setLinesVisible (true);
-			pgeTable.setHeaderVisible (true);
-			GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		Table pgeTable = new Table(tableComp, SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
+		pgeTable.setLinesVisible(true);
+		pgeTable.setHeaderVisible(true);
+		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.heightHint = 200;
+		pgeTable.setLayoutData(data);
+		String[] titles = { "Page", "set", "unset", "If Set", "If not set" };
+		for (int i = 0; i < titles.length; i++) {
+			TableColumn column = new TableColumn(pgeTable, SWT.NONE);
+			column.setText(titles[i]);
+		}
+		TableItem item = new TableItem(pgeTable, SWT.NONE);
+		item.setBackground(color);
+		item.setText(0, dispPage.getId());
+		item.setText(1, dispPage.getSet());
+		item.setText(2, dispPage.getUnSet());
+		item.setText(3, dispPage.getIfSet());
+		item.setText(4, dispPage.getIfNotSet());
+		for (int i = 0; i < titles.length; i++) {
+			pgeTable.getColumn(i).pack();
+		}
+		FormData pgeTableFormData = new FormData();
+		pgeTableFormData.top = new FormAttachment(prevWidget, 0);
+		pgeTableFormData.left = new FormAttachment(0, 0);
+		pgeTableFormData.right = new FormAttachment(100, 0);
+		pgeTable.setLayoutData(pgeTableFormData);
+		prevWidget = pgeTable;
+
+		// Buttons
+		btnTable = new Table(tableComp, SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
+		btnTable.setLinesVisible(true);
+		btnTable.setHeaderVisible(true);
+		data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.heightHint = 200;
+		btnTable.setLayoutData(data);
+		titles = new String[] { "Button", "target", "jScript", "set", "unset", "If Set",
+				"If not set", "image", "hotkey" };
+		for (int i = 0; i < titles.length; i++) {
+			TableColumn column = new TableColumn(btnTable, SWT.NONE);
+			column.setText(titles[i]);
+		}
+		if (dispPage.getButtonCount() > 0) {
+			for (int i = 0; i < dispPage.getButtonCount(); i++) {
+				Button button = dispPage.getButton(i);
+				item = new TableItem(btnTable, SWT.NONE);
+				item.setBackground(color);
+				item.setText(0, button.getText());
+				item.setText(1, button.getTarget());
+				item.setText(2, button.getjScript());
+				item.setText(3, button.getSet());
+				item.setText(4, button.getUnSet());
+				item.setText(5, button.getIfSet());
+				item.setText(6, button.getIfNotSet());
+				item.setText(7, button.getImage());
+				item.setText(8, button.getHotKey());
+			}
+		}
+		for (int i = 0; i < titles.length; i++) {
+			btnTable.getColumn(i).pack();
+		}
+		FormData btnTableFormData = new FormData();
+		btnTableFormData.top = new FormAttachment(prevWidget, 0);
+		btnTableFormData.left = new FormAttachment(0, 0);
+		btnTableFormData.right = new FormAttachment(100, 0);
+		btnTable.setLayoutData(btnTableFormData);
+		prevWidget = btnTable;
+		// Delays
+		if (dispPage.getDelayCount() > 0) {
+			Table dlyTable = new Table(tableComp,
+					SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
+			dlyTable.setLinesVisible(true);
+			dlyTable.setHeaderVisible(true);
+			data = new GridData(SWT.FILL, SWT.FILL, true, true);
 			data.heightHint = 200;
-			pgeTable.setLayoutData(data);
-			String[] titles = {"Page", "set", "unset", "If Set", "If not set"};
-			for (int i=0; i<titles.length; i++) {
-				TableColumn column = new TableColumn (pgeTable, SWT.NONE);
-				column.setText (titles [i]);
-			}	
-			TableItem item = new TableItem (pgeTable, SWT.NONE);
-			item.setBackground(color);
-			item.setText (0, dispPage.getId());
-			item.setText (1, dispPage.getSet());
-			item.setText (2, dispPage.getUnSet());
-			item.setText (3, dispPage.getIfSet());
-			item.setText (4, dispPage.getIfNotSet());
-			for (int i=0; i<titles.length; i++) {
-				pgeTable.getColumn (i).pack ();
+			dlyTable.setLayoutData(data);
+			titles = new String[] { "Delay", "style", "target", "jScript", "startWith", "set",
+					"unset", "If Set", "If not set" };
+			for (int i = 0; i < titles.length; i++) {
+				TableColumn column = new TableColumn(dlyTable, SWT.NONE);
+				column.setText(titles[i]);
 			}
-			FormData pgeTableFormData = new FormData();
-			pgeTableFormData.top = new FormAttachment(prevWidget,0);
-			pgeTableFormData.left = new FormAttachment(0,0);
-			pgeTableFormData.right = new FormAttachment(100,0);
-			pgeTable.setLayoutData(pgeTableFormData);
-			prevWidget = pgeTable;
+			for (int i = 0; i < dispPage.getDelayCount(); i++) {
+				Delay delay = dispPage.getDelay(i);
+				item = new TableItem(dlyTable, SWT.NONE);
+				item.setBackground(color);
+				item.setText(0, String.valueOf(delay.getDelaySec()));
+				item.setText(1, delay.getstyle());
+				item.setText(2, delay.getTarget());
+				item.setText(3, delay.getjScript());
+				item.setText(4, Integer.toString(delay.getStartWith()));
+				item.setText(5, delay.getSet());
+				item.setText(6, delay.getUnSet());
+				item.setText(7, delay.getIfSet());
+				item.setText(8, delay.getIfNotSet());
+			}
+			for (int i = 0; i < titles.length; i++) {
+				dlyTable.getColumn(i).pack();
+			}
+			FormData dlyTableFormData = new FormData();
+			dlyTableFormData.top = new FormAttachment(prevWidget, 0);
+			dlyTableFormData.left = new FormAttachment(0, 0);
+			dlyTableFormData.right = new FormAttachment(100, 0);
+			dlyTable.setLayoutData(dlyTableFormData);
+			prevWidget = dlyTable;
 
-			//Buttons
-			try {
-					btnTable = new Table(tableComp, SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
-					btnTable.setLinesVisible (true);
-					btnTable.setHeaderVisible (true);
-					data = new GridData(SWT.FILL, SWT.FILL, true, true);
-					data.heightHint = 200;
-					btnTable.setLayoutData(data);
-					titles = new String[] {"Button", "target", "jScript", "set", "unset", "If Set", "If not set", "image", "hotkey"};
-					for (int i=0; i<titles.length; i++) {
-						TableColumn column = new TableColumn (btnTable, SWT.NONE);
-						column.setText (titles [i]);
-					}	
-					if (dispPage.getButtonCount() > 0) {
-						for (int i=0; i<dispPage.getButtonCount(); i++) {
-							Button button = dispPage.getButton(i);
-							item = new TableItem (btnTable, SWT.NONE);
-							item.setBackground(color);
-							item.setText (0, button.getText());
-							item.setText (1, button.getTarget());
-							item.setText (2, button.getjScript());
-							item.setText (3, button.getSet());
-							item.setText (4, button.getUnSet());
-							item.setText (5, button.getIfSet());
-							item.setText (6, button.getIfNotSet());
-							item.setText (7, button.getImage());
-							item.setText (8, button.getHotKey());
-						}
-					}
-					for (int i=0; i<titles.length; i++) {
-						btnTable.getColumn (i).pack ();
-					}
-					FormData btnTableFormData = new FormData();
-					btnTableFormData.top = new FormAttachment(prevWidget,0);
-					btnTableFormData.left = new FormAttachment(0,0);
-					btnTableFormData.right = new FormAttachment(100,0);
-					btnTable.setLayoutData(btnTableFormData);
-					prevWidget = btnTable;
-			}
-			catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
-			}
-			//Delays
-			if (dispPage.getDelayCount() > 0) {
-				try {
-					Table dlyTable = new Table(tableComp, SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
-					dlyTable.setLinesVisible (true);
-					dlyTable.setHeaderVisible (true);
-					data = new GridData(SWT.FILL, SWT.FILL, true, true);
-					data.heightHint = 200;
-					dlyTable.setLayoutData(data);
-					titles = new String[] {"Delay", "style", "target", "jScript", "startWith", "set", "unset", "If Set", "If not set"};
-					for (int i=0; i<titles.length; i++) {
-						TableColumn column = new TableColumn (dlyTable, SWT.NONE);
-						column.setText (titles [i]);
-					}	
-					for (int i=0; i<dispPage.getDelayCount(); i++) {
-						Delay delay = dispPage.getDelay(i);
-						item = new TableItem (dlyTable, SWT.NONE);
-						item.setBackground(color);
-						item.setText (0, String.valueOf(delay.getDelaySec()));
-						item.setText (1, delay.getstyle());
-						item.setText (2, delay.getTarget());
-						item.setText (3, delay.getjScript());
-						item.setText (4, delay.getStartWith());
-						item.setText (5, delay.getSet());
-						item.setText (6, delay.getUnSet());
-						item.setText (7, delay.getIfSet());
-						item.setText (8, delay.getIfNotSet());
-					}
-					for (int i=0; i<titles.length; i++) {
-						dlyTable.getColumn (i).pack ();
-					}
-					FormData dlyTableFormData = new FormData();
-					dlyTableFormData.top = new FormAttachment(prevWidget,0);
-					dlyTableFormData.left = new FormAttachment(0,0);
-					dlyTableFormData.right = new FormAttachment(100,0);
-					dlyTable.setLayoutData(dlyTableFormData);
-					prevWidget = dlyTable;
-				}
-				catch (Exception ex) {
-					logger.error(ex.getLocalizedMessage(), ex);
-				}
-
-			}
-			//images
-			if (dispPage.getImageCount() > 0) {
-				try {
-					Table imgTable = new Table(tableComp, SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
-					imgTable.setLinesVisible (true);
-					imgTable.setHeaderVisible (true);
-					data = new GridData(SWT.FILL, SWT.FILL, true, true);
-					data.heightHint = 200;
-					imgTable.setLayoutData(data);
-					titles = new String[] {"Image", "If Set", "If not set"};
-					for (int i=0; i<titles.length; i++) {
-						TableColumn column = new TableColumn (imgTable, SWT.NONE);
-						column.setText (titles [i]);
-					}	
-					for (int i=0; i<dispPage.getImageCount(); i++) {
-						Image image = dispPage.getImage(i);
-						item = new TableItem (imgTable, SWT.NONE);
-						item.setBackground(color);
-						item.setText (0, image.getId());
-						item.setText (1, image.getIfSet());
-						item.setText (2, image.getIfNotSet());
-					}
-					for (int i=0; i<titles.length; i++) {
-						imgTable.getColumn (i).pack ();
-					}
-					FormData imgTableFormData = new FormData();
-					imgTableFormData.top = new FormAttachment(prevWidget,0);
-					imgTableFormData.left = new FormAttachment(0,0);
-					imgTableFormData.right = new FormAttachment(100,0);
-					imgTable.setLayoutData(imgTableFormData);
-					prevWidget = imgTable;
-				}
-				catch (Exception ex) {
-					logger.error(ex.getLocalizedMessage(), ex);
-				}
-
-			}
-			//Audio
-			if (dispPage.getAudioCount() > 0) {
-				try {
-					Table sndTable = new Table(tableComp, SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
-					sndTable.setLinesVisible (true);
-					sndTable.setHeaderVisible (true);
-					data = new GridData(SWT.FILL, SWT.FILL, true, true);
-					data.heightHint = 200;
-					sndTable.setLayoutData(data);
-					titles = new String[] {"audio", "target", "jScript", "startAt", "stopAt", "repeat", "If Set", "If not set"};
-					for (int i=0; i<titles.length; i++) {
-						TableColumn column = new TableColumn (sndTable, SWT.NONE);
-						column.setText (titles [i]);
-					}	
-					for (int i=0; i<dispPage.getAudioCount(); i++) {
-						Audio audio = dispPage.getAudio(i);
-						item = new TableItem (sndTable, SWT.NONE);
-						item.setBackground(color);
-						item.setText (0, audio.getId());
-						item.setText (1, audio.getTarget());
-						item.setText (2, audio.getJscript());
-						item.setText (3, audio.getStartAt());
-						item.setText (4, audio.getStopAt());
-						item.setText (5, audio.getRepeat());
-						item.setText (6, audio.getIfSet());
-						item.setText (7, audio.getIfNotSet());
-					}
-					for (int i=0; i<titles.length; i++) {
-						sndTable.getColumn (i).pack ();
-					}
-					FormData sndTableFormData = new FormData();
-					sndTableFormData.top = new FormAttachment(prevWidget,0);
-					sndTableFormData.left = new FormAttachment(0,0);
-					sndTableFormData.right = new FormAttachment(100,0);
-					sndTable.setLayoutData(sndTableFormData);
-					prevWidget = sndTable;
-				}
-				catch (Exception ex) {
-					logger.error(ex.getLocalizedMessage(), ex);
-				}
-
-			}
-			//video
-			if (dispPage.getVideoCount() > 0) {
-				try {
-					Table vidTable = new Table(tableComp, SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
-					vidTable.setLinesVisible (true);
-					vidTable.setHeaderVisible (true);
-					data = new GridData(SWT.FILL, SWT.FILL, true, true);
-					data.heightHint = 200;
-					vidTable.setLayoutData(data);
-					titles = new String[] {"video", "target", "jScript", "startAt", "stopAt", "repeat", "If Set", "If not set"};
-					for (int i=0; i<titles.length; i++) {
-						TableColumn column = new TableColumn (vidTable, SWT.NONE);
-						column.setText (titles [i]);
-					}	
-					for (int i=0; i<dispPage.getVideoCount(); i++) {
-						Video video = dispPage.getVideo(i);
-						item = new TableItem (vidTable, SWT.NONE);
-						item.setBackground(color);
-						item.setText (0, video.getId());
-						item.setText (1, video.getTarget());
-						item.setText (2, video.getJscript());
-						item.setText (3, video.getStartAt());
-						item.setText (4, video.getStopAt());
-						item.setText (5, video.getRepeat());
-						item.setText (6, video.getIfSet());
-						item.setText (7, video.getIfNotSet());
-					}
-					for (int i=0; i<titles.length; i++) {
-						vidTable.getColumn (i).pack ();
-					}
-					FormData vidTableFormData = new FormData();
-					vidTableFormData.top = new FormAttachment(prevWidget,0);
-					vidTableFormData.left = new FormAttachment(0,0);
-					vidTableFormData.right = new FormAttachment(100,0);
-					vidTable.setLayoutData(vidTableFormData);
-					prevWidget = vidTable;
-				}
-				catch (Exception ex) {
-					logger.error(ex.getLocalizedMessage(), ex);
-				}
-
-			}
-			//metronome
-			if (dispPage.getMetronomeCount() > 0) {
-				try {
-					Table bpmTable = new Table(tableComp, SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
-					bpmTable.setLinesVisible (true);
-					bpmTable.setHeaderVisible (true);
-					data = new GridData(SWT.FILL, SWT.FILL, true, true);
-					data.heightHint = 200;
-					bpmTable.setLayoutData(data);
-					titles = new String[] {"metronome", "If Set", "If Unset", "Resolution", "Loops", "Rhythm"};
-					for (int i=0; i<titles.length; i++) {
-						TableColumn column = new TableColumn (bpmTable, SWT.NONE);
-						column.setText (titles [i]);
-					}	
-					for (int i=0; i<dispPage.getMetronomeCount(); i++) {
-						Metronome metronome = dispPage.getMetronome(i);
-						item = new TableItem (bpmTable, SWT.NONE);
-						item.setBackground(color);
-						item.setText (0, String.valueOf(metronome.getbpm()));
-						item.setText (1, metronome.getIfSet());
-						item.setText (2, metronome.getIfNotSet());
-						item.setText (3, String.valueOf(metronome.getResolution()));
-						item.setText (4, String.valueOf(metronome.getLoops()));
-						item.setText (5, metronome.getRhythm());
-					}
-					for (int i=0; i<titles.length; i++) {
-						bpmTable.getColumn (i).pack ();
-					}
-					FormData bpmTableFormData = new FormData();
-					bpmTableFormData.top = new FormAttachment(prevWidget,0);
-					bpmTableFormData.left = new FormAttachment(0,0);
-					bpmTableFormData.right = new FormAttachment(100,0);
-					bpmTable.setLayoutData(bpmTableFormData);
-					prevWidget = bpmTable;
-				}
-				catch (Exception ex) {
-					logger.error(ex.getLocalizedMessage(), ex);
-				}
-
-			}
-			tableComp.layout();
-
-			//Java Script
-			txtScript.setText(dispPage.getjScript());
-
-			//variables
-			if (refreshVars) {
-				prevWidget = varTable;
-			}
 		}
-		catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+		// images
+		if (dispPage.getImageCount() > 0) {
+			Table imgTable = new Table(tableComp,
+					SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
+			imgTable.setLinesVisible(true);
+			imgTable.setHeaderVisible(true);
+			data = new GridData(SWT.FILL, SWT.FILL, true, true);
+			data.heightHint = 200;
+			imgTable.setLayoutData(data);
+			titles = new String[] { "Image", "If Set", "If not set" };
+			for (int i = 0; i < titles.length; i++) {
+				TableColumn column = new TableColumn(imgTable, SWT.NONE);
+				column.setText(titles[i]);
+			}
+			for (int i = 0; i < dispPage.getImageCount(); i++) {
+				Image image = dispPage.getImage(i);
+				item = new TableItem(imgTable, SWT.NONE);
+				item.setBackground(color);
+				item.setText(0, image.getId());
+				item.setText(1, image.getIfSet());
+				item.setText(2, image.getIfNotSet());
+			}
+			for (int i = 0; i < titles.length; i++) {
+				imgTable.getColumn(i).pack();
+			}
+			FormData imgTableFormData = new FormData();
+			imgTableFormData.top = new FormAttachment(prevWidget, 0);
+			imgTableFormData.left = new FormAttachment(0, 0);
+			imgTableFormData.right = new FormAttachment(100, 0);
+			imgTable.setLayoutData(imgTableFormData);
+			prevWidget = imgTable;
+
 		}
-		try {
-			tabFolder.layout();
-			tabFolder.pack();
-			tabFolder.update();
-			shell.layout();
-			varScrlComp.setMinSize(varComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		// Audio
+		if (dispPage.getAudioCount() > 0) {
+			Table sndTable = new Table(tableComp,
+					SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
+			sndTable.setLinesVisible(true);
+			sndTable.setHeaderVisible(true);
+			data = new GridData(SWT.FILL, SWT.FILL, true, true);
+			data.heightHint = 200;
+			sndTable.setLayoutData(data);
+			titles = new String[] { "audio", "target", "jScript", "startAt", "stopAt", "repeat",
+					"If Set", "If not set" };
+			for (int i = 0; i < titles.length; i++) {
+				TableColumn column = new TableColumn(sndTable, SWT.NONE);
+				column.setText(titles[i]);
+			}
+			for (int i = 0; i < dispPage.getAudioCount(); i++) {
+				Audio audio = dispPage.getAudio(i);
+				item = new TableItem(sndTable, SWT.NONE);
+				item.setBackground(color);
+				item.setText(0, audio.getId());
+				item.setText(1, audio.getTarget());
+				item.setText(2, audio.getJscript());
+				item.setText(3, audio.getStartAt());
+				item.setText(4, audio.getStopAt());
+				item.setText(5, audio.getRepeat());
+				item.setText(6, audio.getIfSet());
+				item.setText(7, audio.getIfNotSet());
+			}
+			for (int i = 0; i < titles.length; i++) {
+				sndTable.getColumn(i).pack();
+			}
+			FormData sndTableFormData = new FormData();
+			sndTableFormData.top = new FormAttachment(prevWidget, 0);
+			sndTableFormData.left = new FormAttachment(0, 0);
+			sndTableFormData.right = new FormAttachment(100, 0);
+			sndTable.setLayoutData(sndTableFormData);
+			prevWidget = sndTable;
+
 		}
-		catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+		// video
+		if (dispPage.getVideoCount() > 0) {
+			Table vidTable = new Table(tableComp,
+					SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
+			vidTable.setLinesVisible(true);
+			vidTable.setHeaderVisible(true);
+			data = new GridData(SWT.FILL, SWT.FILL, true, true);
+			data.heightHint = 200;
+			vidTable.setLayoutData(data);
+			titles = new String[] { "video", "target", "jScript", "startAt", "stopAt", "repeat",
+					"If Set", "If not set" };
+			for (int i = 0; i < titles.length; i++) {
+				TableColumn column = new TableColumn(vidTable, SWT.NONE);
+				column.setText(titles[i]);
+			}
+			for (int i = 0; i < dispPage.getVideoCount(); i++) {
+				Video video = dispPage.getVideo(i);
+				item = new TableItem(vidTable, SWT.NONE);
+				item.setBackground(color);
+				item.setText(0, video.getId());
+				item.setText(1, video.getTarget());
+				item.setText(2, video.getJscript());
+				item.setText(3, video.getStartAt());
+				item.setText(4, video.getStopAt());
+				item.setText(5, Integer.toString(video.getRepeat()));
+				item.setText(6, video.getIfSet());
+				item.setText(7, video.getIfNotSet());
+			}
+			for (int i = 0; i < titles.length; i++) {
+				vidTable.getColumn(i).pack();
+			}
+			FormData vidTableFormData = new FormData();
+			vidTableFormData.top = new FormAttachment(prevWidget, 0);
+			vidTableFormData.left = new FormAttachment(0, 0);
+			vidTableFormData.right = new FormAttachment(100, 0);
+			vidTable.setLayoutData(vidTableFormData);
+			prevWidget = vidTable;
+
 		}
+		// metronome
+		if (dispPage.getMetronomeCount() > 0) {
+			Table bpmTable = new Table(tableComp,
+					SWT.HIDE_SELECTION + SWT.NO_SCROLL + SWT.V_SCROLL);
+			bpmTable.setLinesVisible(true);
+			bpmTable.setHeaderVisible(true);
+			data = new GridData(SWT.FILL, SWT.FILL, true, true);
+			data.heightHint = 200;
+			bpmTable.setLayoutData(data);
+			titles = new String[] { "metronome", "If Set", "If Unset", "Resolution", "Loops",
+					"Rhythm" };
+			for (int i = 0; i < titles.length; i++) {
+				TableColumn column = new TableColumn(bpmTable, SWT.NONE);
+				column.setText(titles[i]);
+			}
+			for (int i = 0; i < dispPage.getMetronomeCount(); i++) {
+				Metronome metronome = dispPage.getMetronome(i);
+				item = new TableItem(bpmTable, SWT.NONE);
+				item.setBackground(color);
+				item.setText(0, String.valueOf(metronome.getbpm()));
+				item.setText(1, metronome.getIfSet());
+				item.setText(2, metronome.getIfNotSet());
+				item.setText(3, String.valueOf(metronome.getResolution()));
+				item.setText(4, String.valueOf(metronome.getLoops()));
+				item.setText(5, metronome.getRhythm());
+			}
+			for (int i = 0; i < titles.length; i++) {
+				bpmTable.getColumn(i).pack();
+			}
+			FormData bpmTableFormData = new FormData();
+			bpmTableFormData.top = new FormAttachment(prevWidget, 0);
+			bpmTableFormData.left = new FormAttachment(0, 0);
+			bpmTableFormData.right = new FormAttachment(100, 0);
+			bpmTable.setLayoutData(bpmTableFormData);
+
+		}
+		tableComp.layout();
+
+		// Java Script
+		txtScript.setText(dispPage.getjScript());
+
+		tabFolder.layout();
+		tabFolder.pack();
+		tabFolder.update();
+		shell.layout();
+		varScrlComp.setMinSize(varComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+
 	}
-	
+
 	public void updateJConsole(String logText) {
 		String conText = txtScriptConsole.getText();
 		String conDelim = txtScriptConsole.getLineDelimiter();
@@ -739,70 +690,64 @@ public class DebugShell {
 			lastLine = conText.lastIndexOf(conDelim, lastLine - 1);
 			conText = conText.substring(0, lastLine);
 		}
-		conText = logText  + conDelim + conText;
+		conText = logText + conDelim + conText;
 		txtScriptConsole.setText(conText);
 	}
-	
+
 	public void clearJConsole() {
 		txtScriptConsole.setText("");
 	}
-	
+
 	public void refreshVars() {
 		try {
-			//HashMap<String, Object> scriptVars;
 			Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
-			Map<String, Object> treeMap = new TreeMap<String, Object>(guide.getSettings().getScriptVariables());
+			Map<String, Object> treeMap = new TreeMap<>(
+					guide.getSettings().getScriptVariables());
 			String flags = comonFuctions.getFlags(guide.getFlags());
 
 			varTable.removeAll();
 
-			TableItem item = new TableItem (varTable, SWT.NONE);
+			TableItem item = new TableItem(varTable, SWT.NONE);
 			item.setBackground(color);
-			item.setText (0, "Flags");
-			item.setText (1, flags);
+			item.setText(0, "Flags");
+			item.setText(1, flags);
 
 			for (Entry<String, Object> entry : treeMap.entrySet()) {
-				try {
-					String key = entry.getKey();
-					String value;
-					Object objVal = entry.getValue();
-					if (objVal != null) {
-						value = comonFunctions.getVarAsString(objVal);
-					} else {
-						value = "null";
-					}
-					item = new TableItem (varTable, SWT.NONE);
-					item.setBackground(color);
-					item.setText (0, key);
-					item.setText (1, value);
+				String key = entry.getKey();
+				String value;
+				Object objVal = entry.getValue();
+				if (objVal != null) {
+					value = comonFunctions.getVarAsString(objVal);
+				} else {
+					value = "null";
 				}
-				catch (Exception ex) {
-					logger.error(ex.getLocalizedMessage(), ex);
-				}
+				item = new TableItem(varTable, SWT.NONE);
+				item.setBackground(color);
+				item.setText(0, key);
+				item.setText(1, value);
 			}
 
-			for (int i=0; i<2; i++) {
-				varTable.getColumn (i).pack ();
+			for (int i = 0; i < 2; i++) {
+				varTable.getColumn(i).pack();
 			}
 			tabFolder.layout();
 			tabFolder.pack();
 			tabFolder.update();
 			shell.layout();
 			varScrlComp.setMinSize(varComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
 	}
 
 	public void removePageTables() {
-		//remove all the tables displayed for the previous page
+		// remove all the tables displayed for the previous page
 		try {
 			for (Control kid : tableComp.getChildren()) {
 				kid.dispose();
 			}
 		} catch (Exception e) {
-			logger.error("removePageTables " + e.getLocalizedMessage(), e);		
+			logger.error("removePageTables " + e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -810,13 +755,12 @@ public class DebugShell {
 		try {
 			keepShellOpen = false;
 			shell.close();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error("close shell " + ex.getLocalizedMessage(), ex);
 		}
 	}
-	
-	public void showDebug(){
+
+	public void showDebug() {
 		try {
 			if (shell == null) {
 				createShell(myDisplay, mainShell);
@@ -826,8 +770,7 @@ public class DebugShell {
 					shell.setActive();
 				}
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error("showDebug " + ex.getLocalizedMessage(), ex);
 		}
 	}
@@ -835,29 +778,27 @@ public class DebugShell {
 	public void setKeepShellOpen(Boolean keepShellOpen) {
 		this.keepShellOpen = keepShellOpen;
 	}
-	
-	public void addOverrideButton(Button button)
-	{
+
+	public void addOverrideButton(Button button) {
 		Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
-		TableItem item = new TableItem (btnTable, SWT.NONE);
+		TableItem item = new TableItem(btnTable, SWT.NONE);
 		item.setBackground(color);
-		item.setText (0, button.getText());
-		item.setText (1, button.getTarget());
-		item.setText (2, button.getjScript());
-		item.setText (3, button.getSet());
-		item.setText (4, button.getUnSet());
-		item.setText (5, button.getIfSet());
-		item.setText (6, button.getIfNotSet());
-		item.setText (7, button.getImage());
-		item.setText (8, button.getHotKey());
+		item.setText(0, button.getText());
+		item.setText(1, button.getTarget());
+		item.setText(2, button.getjScript());
+		item.setText(3, button.getSet());
+		item.setText(4, button.getUnSet());
+		item.setText(5, button.getIfSet());
+		item.setText(6, button.getIfNotSet());
+		item.setText(7, button.getImage());
+		item.setText(8, button.getHotKey());
 		try {
 			tabFolder.layout();
 			tabFolder.pack();
 			tabFolder.update();
 			shell.layout();
 			varScrlComp.setMinSize(varComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
 

@@ -17,8 +17,9 @@ class DynamicButtonListner extends SelectionAdapter {
 		this.mainShell = mainShell;
 	}
 
+	@Override
 	public void widgetSelected(SelectionEvent event) {
-		if (this.mainShell.pauseRequested) {
+		if (mainShell.pauseRequested) {
 			return;
 		}
 		try {
@@ -28,20 +29,20 @@ class DynamicButtonListner extends SelectionAdapter {
 			com.snapps.swt.SquareButton btnClicked = (com.snapps.swt.SquareButton) event.widget;
 			strTag = (String) btnClicked.getData("Set");
 			if (!strTag.equals("")) {
-				this.mainShell.comonFunctions.setFlags(strTag, this.mainShell.guide.getFlags());
+				mainShell.comonFunctions.setFlags(strTag, mainShell.guide.getFlags());
 			}
 			strTag = (String) btnClicked.getData("UnSet");
 			if (!strTag.equals("")) {
-				this.mainShell.comonFunctions.unsetFlags(strTag, this.mainShell.guide.getFlags());
+				mainShell.comonFunctions.unsetFlags(strTag, mainShell.guide.getFlags());
 			}
 			String scriptVar = (String) btnClicked.getData("scriptVar");
-			this.mainShell.comonFunctions.processSrciptVars(scriptVar, this.mainShell.guideSettings);
+			mainShell.comonFunctions.processSrciptVars(scriptVar, mainShell.guideSettings);
 			strTag = (String) btnClicked.getData("Target");
 			String javascript = (String) btnClicked.getData("javascript");
-			this.mainShell.runJscript(javascript, false);
+			mainShell.runJscript(javascript, false);
 			if (!strTag.equals("")) {
-				this.mainShell.mainLogic.displayPage(strTag, false, this.mainShell.guide, this.mainShell.mainShell, this.mainShell.appSettings, this.mainShell.userSettings, this.mainShell.guideSettings,
-						this.mainShell.debugShell);
+				mainShell.mainLogic.displayPage(strTag, false, mainShell.guide, mainShell, mainShell.appSettings, mainShell.userSettings, mainShell.guideSettings,
+						mainShell.debugShell);
 			}
 		} catch (Exception ex) {
 			MainShell.logger.error(" DynamicButtonListner " + ex.getLocalizedMessage(), ex);

@@ -19,6 +19,7 @@ import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -76,13 +77,12 @@ public class MainShell {
 	 * update the screen components and play video and music
 	 */
 	static Logger logger = LogManager.getLogger();
-	private static org.eclipse.swt.graphics.Color colourBlack;
-	private static org.eclipse.swt.graphics.Color colourWhite;
+
 	AppSettings appSettings;
-	private int MintFontSize;
-	private int MintButtonFontSize;
-	private int MintHtmlFontSize;
-	private int MintTimerFontSize;
+	private int mintFontSize;
+	private int mintButtonFontSize;
+	private int mintHtmlFontSize;
+	private int mintTimerFontSize;
 	String strGuidePath;
 	String guideFile;
 	int videoLoops = 0;
@@ -93,7 +93,6 @@ public class MainShell {
 	String videoScriptVar = "";
 	private boolean videoPlay = false;
 	private boolean webcamVisible = false;
-	// private boolean webcamRecording = false;
 	Guide guide = Guide.getGuide();
 	GuideSettings guideSettings = guide.getSettings();
 	UserSettings userSettings = null;
@@ -112,28 +111,21 @@ public class MainShell {
 	private Calendar pausedAt = null;
 	Shell shell;
 	Shell shell2;
-	// private Shell shell3;
 	DebugShell debugShell;
 	Display myDisplay;
 	Font controlFont;
 	Font buttonFont;
 	Font timerFont;
 	Composite mediaPanel;
-	// private MediaPlayerFactory mediaPlayerFactory;
 	SwtEmbeddedMediaPlayer mediaPlayer;
-	// private Frame videoFrame;
-	// private Canvas videoSurfaceCanvas;
-	// private CanvasVideoSurface videoSurface;
 	Composite webcamPanel;
 	Webcam webcam;
 	private WebcamPanel panel;
 	private JRootPane webcamRoot;
-	MainShell mainShell;
 	MainLogic mainLogic = MainLogic.getMainLogic();
 	ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private SquareButton delayButton = null;
 	MetronomePlayer metronome;
-	private Thread threadMetronome;
 	AudioPlayer audioPlayer;
 	Thread threadAudioPlayer;
 	AudioPlayer audioPlayer2;
@@ -146,30 +138,30 @@ public class MainShell {
 	boolean imgOverRide = false;
 	boolean multiMonitor = true;
 	private boolean overlayTimer = false;
-	HashMap<String, com.snapps.swt.SquareButton> hotKeys = new HashMap<String, com.snapps.swt.SquareButton>();
-	private HashMap<String, com.snapps.swt.SquareButton> buttons = new HashMap<String, com.snapps.swt.SquareButton>();
-	shellKeyEventListener keyListener;
-	// private shellMouseMoveListener mouseListen;
+	HashMap<String, com.snapps.swt.SquareButton> hotKeys = new HashMap<>();
+	private HashMap<String, com.snapps.swt.SquareButton> buttons = new HashMap<>();
+	ShellKeyEventListener keyListener;
 	boolean showMenu = true;
-	Menu MenuBar;
-	HashMap<String, Timer> timer = new HashMap<String, Timer>();
-	// private ArrayList<Timer> timer = new ArrayList<Timer>();
-	private Rectangle clientArea;
-	private Rectangle clientArea2;
+	Menu menuBar;
+	HashMap<String, Timer> timer = new HashMap<>();
 	boolean inPrefShell = false;
 	private String rightHTML;
 	String leftHTML;
 	private ContextFactory factory;
 	private boolean videoPlayed = false;
 	private ResourceBundle displayText;
-	String ProcStatusText = "";
+	String procStatusText = "";
 	private boolean hasVideoDeferred = false;
 	private boolean hasAudioDeferred = false;
 	private boolean hasAudio2Deferred = false;
 	boolean pauseRequested = false;
-	// private boolean exitTriggered = false;
 
 	public Shell createShell(final Display display) {
+		Rectangle clientArea;
+		Rectangle clientArea2;
+		Thread threadMetronome;
+		org.eclipse.swt.graphics.Color colourWhite;
+		org.eclipse.swt.graphics.Color colourBlack;
 		logger.trace("Enter createShell");
 		comonFunctions.setDisplay(display);
 		// Initialise variable
@@ -194,16 +186,16 @@ public class MainShell {
 			webcamOn = appSettings.getWebcamOn();
 
 			// font size
-			MintFontSize = appSettings.getFontSize();
+			mintFontSize = appSettings.getFontSize();
 
 			// font size
-			MintHtmlFontSize = appSettings.getHtmlFontSize();
+			mintHtmlFontSize = appSettings.getHtmlFontSize();
 
 			// font size
-			MintTimerFontSize = appSettings.getTimerFontSize();
+			mintTimerFontSize = appSettings.getTimerFontSize();
 
 			// font size
-			MintButtonFontSize = appSettings.getButtonFontSize();
+			mintButtonFontSize = appSettings.getButtonFontSize();
 
 			// path to the xml files
 			strGuidePath = appSettings.getDataDirectory();
@@ -239,15 +231,13 @@ public class MainShell {
 			shell.addShellListener(new shellCloseListen(this));
 			// Good
 			logger.trace("key filter");
-			keyListener = new shellKeyEventListener(this);
+			keyListener = new ShellKeyEventListener(this);
 			myDisplay.addFilter(SWT.KeyDown, keyListener);
-			// mouseListen = new shellMouseMoveListener();
-			// myDisplay.addFilter(SWT.MouseMove, mouseListen);
 			int mainMonitor = appSettings.getMainMonitor();
 
 			clientArea2 = null;
 			multiMonitor = appSettings.isMultiMonitor();
-			Monitor monitors[] = display.getMonitors();
+			Monitor[] monitors = display.getMonitors();
 			if (multiMonitor) {
 				// multi monitor
 				if (monitors.length > 1) {
@@ -277,7 +267,6 @@ public class MainShell {
 			debugShell.createShell(myDisplay, this);
 
 			// get primary monitor and its size
-			clientArea = monitors[0].getClientArea();
 			if (mainMonitor == 1) {
 				if (appSettings.isFullScreen()) {
 					clientArea = monitors[0].getBounds();
@@ -305,11 +294,11 @@ public class MainShell {
 
 			Font sysFont = display.getSystemFont();
 			FontData[] fD = sysFont.getFontData();
-			fD[0].setHeight(MintFontSize);
+			fD[0].setHeight(mintFontSize);
 			controlFont = new Font(display, fD);
-			fD[0].setHeight(MintTimerFontSize);
+			fD[0].setHeight(mintTimerFontSize);
 			timerFont = new Font(display, fD);
-			fD[0].setHeight(MintButtonFontSize);
+			fD[0].setHeight(mintButtonFontSize);
 			buttonFont = new Font(display, fD);
 
 			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -367,30 +356,18 @@ public class MainShell {
 			});
 
 			// defaultStyle
-			try {
-				defaultStyle = comonFunctions.readFile("./defaultCSS.TXT", StandardCharsets.UTF_8);
-				defaultStyle = defaultStyle.replace("MintHtmlFontSize", String.valueOf(MintHtmlFontSize));
-			} catch (Exception ex2) {
-				defaultStyle = "";
-				logger.error("Load defaultCSS.txt error:" + ex2.getLocalizedMessage(), ex2);
-			}
+
+			defaultStyle = comonFunctions.readFile("./defaultCSS.TXT", StandardCharsets.UTF_8);
+			defaultStyle = defaultStyle.replace("MintHtmlFontSize",
+					String.valueOf(mintHtmlFontSize));
 
 			style = defaultStyle;
 
 			// default HTML
-			try {
-				rightHTML = comonFunctions.readFile("DefaultRightHtml.txt", StandardCharsets.UTF_8);
-			} catch (Exception ex2) {
-				rightHTML = "";
-				logger.error("Load DefaultRightHtml.txt error:" + ex2.getLocalizedMessage(), ex2);
-			}
 
-			try {
-				leftHTML = comonFunctions.readFile("DefaultLeftHtml.txt", StandardCharsets.UTF_8);
-			} catch (Exception ex2) {
-				leftHTML = "";
-				logger.error("Load DefaultLeftHtml.txt error:" + ex2.getLocalizedMessage(), ex2);
-			}
+			rightHTML = comonFunctions.readFile("DefaultRightHtml.txt", StandardCharsets.UTF_8);
+
+			leftHTML = comonFunctions.readFile("DefaultLeftHtml.txt", StandardCharsets.UTF_8);
 
 			String strHtml = rightHTML.replace("BodyContent", "");
 			strHtml = strHtml.replace("DefaultStyle", defaultStyle);
@@ -423,9 +400,7 @@ public class MainShell {
 			lblRight.setFont(timerFont);
 			lblRight.setAlignment(SWT.CENTER);
 
-			// brwsText = new Browser(sashform2, SWT.MOZILLA);
 			brwsText = new Browser(sashform2, SWT.NONE);
-			// brwsText = new Browser(sashform2, SWT.WEBKIT);
 			brwsText.setText(strHtml);
 			brwsText.setBackground(colourBlack);
 			brwsText.addStatusTextListener(new EventStatusTextListener(this));
@@ -438,52 +413,26 @@ public class MainShell {
 			// Good
 			if (videoOn) {
 				logger.trace("Video Enter");
-				try {
-					/*
-					 * videoFrame = SWT_AWT.new_Frame(mediaPanel); videoSurfaceCanvas = new
-					 * Canvas();
-					 * 
-					 * videoSurfaceCanvas.setBackground(java.awt.Color.black);
-					 * videoFrame.add(videoSurfaceCanvas);
-					 * 
-					 * mediaPlayerFactory = new MediaPlayerFactory("--no-video-title-show");
-					 * mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer();
-					 * 
-					 * videoSurface = mediaPlayerFactory.newVideoSurface(videoSurfaceCanvas);
-					 * 
-					 * mediaPlayer.setVideoSurface(videoSurface);
-					 * 
-					 * mediaPlayer.addMediaPlayerEventListener(new MediaListener());
-					 */
+				libvlc_instance_t instance = LibVlc.libvlc_new(0, null);
 
-					libvlc_instance_t instance = LibVlc.libvlc_new(0, null);
+				mediaPlayer = new SwtEmbeddedMediaPlayer(instance);
+				mediaPlayer.setVideoSurface(
+						new CompositeVideoSurface(mediaPanel, getVideoSurfaceAdapter()));
+				mediaPlayer.events().addMediaPlayerEventListener(new MediaListener(this));
 
-					mediaPlayer = new SwtEmbeddedMediaPlayer(instance);
-					mediaPlayer.setVideoSurface(new CompositeVideoSurface(mediaPanel, getVideoSurfaceAdapter()));
-					mediaPlayer.events().addMediaPlayerEventListener(new MediaListener(this));
-
-					String videoOutputDevice = appSettings.getVideoDevice();
-					if (videoOutputDevice != null && !videoOutputDevice.equals("")) {
-						// TODO this doesn't seem quite right
-						mediaPlayer.audio().setOutputDevice(null, appSettings.getVideoDevice());
-					}
-				} catch (Exception vlcex) {
-					logger.error("VLC intialisation error " + vlcex.getLocalizedMessage(), vlcex);
+				String videoOutputDevice = appSettings.getVideoDevice();
+				if (videoOutputDevice != null && !videoOutputDevice.equals("")) {
+					// TODO this doesn't seem quite right
+					mediaPlayer.audio().setOutputDevice(null, appSettings.getVideoDevice());
 				}
 				logger.trace("Video Exit");
 			}
 
 			if (webcamOn) {
-				try {
-					Frame frame = SWT_AWT.new_Frame(webcamPanel);
+				Frame frame = SWT_AWT.new_Frame(webcamPanel);
 
-					webcamRoot = new JRootPane();
-					frame.add(webcamRoot);
-
-				} catch (Exception webcamex) {
-					logger.error("Webcam intialisation error " + webcamex.getLocalizedMessage(), webcamex);
-				}
-
+				webcamRoot = new JRootPane();
+				frame.add(webcamRoot);
 			}
 
 			// Set the layout and how it responds to screen resize
@@ -508,19 +457,19 @@ public class MainShell {
 			}
 
 			if (!multiMonitor) {
-				FormData SashFormData = new FormData();
-				SashFormData.top = new FormAttachment(lblLeft, 0);
-				SashFormData.left = new FormAttachment(0, 0);
-				SashFormData.right = new FormAttachment(100, 0);
-				SashFormData.bottom = new FormAttachment(100, 0);
-				sashform.setLayoutData(SashFormData);
+				FormData sashFormData = new FormData();
+				sashFormData.top = new FormAttachment(lblLeft, 0);
+				sashFormData.left = new FormAttachment(0, 0);
+				sashFormData.right = new FormAttachment(100, 0);
+				sashFormData.bottom = new FormAttachment(100, 0);
+				sashform.setLayoutData(sashFormData);
 
-				FormData SashFormData2 = new FormData();
-				SashFormData2.top = new FormAttachment(sashform, 0);
-				SashFormData2.left = new FormAttachment(sashform, 0);
-				SashFormData2.right = new FormAttachment(sashform, 0);
-				SashFormData2.bottom = new FormAttachment(sashform, 0);
-				sashform2.setLayoutData(SashFormData2);
+				FormData sashFormData2 = new FormData();
+				sashFormData2.top = new FormAttachment(sashform, 0);
+				sashFormData2.left = new FormAttachment(sashform, 0);
+				sashFormData2.right = new FormAttachment(sashform, 0);
+				sashFormData2.bottom = new FormAttachment(sashform, 0);
+				sashform2.setLayoutData(sashFormData2);
 			} else {
 
 				FormData leftFrameFormData = new FormData();
@@ -530,12 +479,12 @@ public class MainShell {
 				leftFrameFormData.bottom = new FormAttachment(100, 0);
 				leftFrame.setLayoutData(leftFrameFormData);
 
-				FormData SashFormData2 = new FormData();
-				SashFormData2.top = new FormAttachment(0, 0);
-				SashFormData2.left = new FormAttachment(0, 0);
-				SashFormData2.right = new FormAttachment(100, 0);
-				SashFormData2.bottom = new FormAttachment(100, 0);
-				sashform2.setLayoutData(SashFormData2);
+				FormData sashFormData2 = new FormData();
+				sashFormData2.top = new FormAttachment(0, 0);
+				sashFormData2.left = new FormAttachment(0, 0);
+				sashFormData2.right = new FormAttachment(100, 0);
+				sashFormData2.bottom = new FormAttachment(100, 0);
+				sashform2.setLayoutData(sashFormData2);
 			}
 
 			FormData btnCompFormData = new FormData();
@@ -556,10 +505,10 @@ public class MainShell {
 			imageLabel.setLayoutData(leftPaneElementFormData);
 
 			// Menu Bar
-			MenuBar = new Menu(shell, SWT.BAR);
+			menuBar = new Menu(shell, SWT.BAR);
 
 			// Top Level File drop down
-			MenuItem fileItem = new MenuItem(MenuBar, SWT.CASCADE);
+			MenuItem fileItem = new MenuItem(menuBar, SWT.CASCADE);
 			fileItem.setText(displayText.getString("MainFile"));
 
 			// Sub Menu for File
@@ -607,16 +556,10 @@ public class MainShell {
 			// File Exit menu item
 			MenuItem fileExitItem = new MenuItem(fileSubMenu, SWT.PUSH);
 			fileExitItem.setText(displayText.getString("MainExit"));
-			fileExitItem.addListener(SWT.Selection, new Listener() {
-				public void handleEvent(Event e) {
-					logger.trace("Enter Menu Exit");
-					shell.close();
-					logger.trace("Exit Menu Exit");
-				}
-			});
+			fileExitItem.addListener(SWT.Selection, e -> shell.close());
 
 			// Top Level Tools drop down
-			MenuItem toolsItem = new MenuItem(MenuBar, SWT.CASCADE);
+			MenuItem toolsItem = new MenuItem(menuBar, SWT.CASCADE);
 			toolsItem.setText(displayText.getString("MainTools"));
 
 			// Sub Menu for Tools
@@ -625,23 +568,23 @@ public class MainShell {
 			toolsItem.setMenu(toolsSubMenu);
 
 			// Tools Compress menu item
-			MenuItem CompressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
-			CompressGuideItem.setText(displayText.getString("MainToolsCompress"));
-			CompressGuideItem.addSelectionListener(new CompressGuideListener(this));
+			MenuItem compressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
+			compressGuideItem.setText(displayText.getString("MainToolsCompress"));
+			compressGuideItem.addSelectionListener(new CompressGuideListener(this));
 
 			// Tools UnCompress menu item
-			MenuItem UnCompressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
-			UnCompressGuideItem.setText(displayText.getString("MainToolsUnCompress"));
-			UnCompressGuideItem.addSelectionListener(new UnCompressGuideListener(this));
+			MenuItem unCompressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
+			unCompressGuideItem.setText(displayText.getString("MainToolsUnCompress"));
+			unCompressGuideItem.addSelectionListener(new UnCompressGuideListener(this));
 
 			// Tools Resize menu item
-			MenuItem ResizeGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
-			ResizeGuideItem.setText(displayText.getString("MainToolsResizeImage"));
-			ResizeGuideItem.addSelectionListener(new ResizeGuideListener(this));
+			MenuItem resizeGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
+			resizeGuideItem.setText(displayText.getString("MainToolsResizeImage"));
+			resizeGuideItem.addSelectionListener(new ResizeGuideListener(this));
 
 			// good
 			// Audio Output Menus
-			MenuItem audioItem = new MenuItem(MenuBar, SWT.CASCADE);
+			MenuItem audioItem = new MenuItem(menuBar, SWT.CASCADE);
 			audioItem.setText(displayText.getString("MainAudio"));
 
 			Menu audioSubMenu = new Menu(shell, SWT.DROP_DOWN);
@@ -675,8 +618,10 @@ public class MainShell {
 			// bad
 			for (AudioDevice device : outputs) {
 				boolean userDeviceVideo = device.getDeviceId().equals(appSettings.getVideoDevice());
-				boolean userDeviceOne = device.getDeviceId().equals(appSettings.getAudioOneDevice());
-				boolean userDeviceTwo = device.getDeviceId().equals(appSettings.getAudioTwoDevice());
+				boolean userDeviceOne = device.getDeviceId()
+						.equals(appSettings.getAudioOneDevice());
+				boolean userDeviceTwo = device.getDeviceId()
+						.equals(appSettings.getAudioTwoDevice());
 
 				MenuItem videoDevice = new MenuItem(videoSubMenu, SWT.RADIO);
 				videoDevice.setText(device.getLongName());
@@ -722,7 +667,7 @@ public class MainShell {
 
 			if (appSettings.getDebug()) {
 				// Top Level Debug drop down
-				MenuItem debugItem = new MenuItem(MenuBar, SWT.CASCADE);
+				MenuItem debugItem = new MenuItem(menuBar, SWT.CASCADE);
 				debugItem.setText(displayText.getString("MainDebug"));
 
 				// Sub Menu for Debug
@@ -737,7 +682,8 @@ public class MainShell {
 				debugCheck.addListener(SWT.Selection, event -> {
 					appSettings.setDebug(debugCheck.getSelection());
 					if (delayButton != null && !delayButton.isDisposed()) {
-						delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
+						delayButton.setVisible(
+								appSettings.getDebug() && appSettings.getShowDelayBtn());
 					}
 				});
 
@@ -745,38 +691,28 @@ public class MainShell {
 				final MenuItem jsdebugCheck = new MenuItem(debugSubMenu, SWT.CHECK);
 				jsdebugCheck.setText(displayText.getString("MainDebugJava"));
 				jsdebugCheck.setSelection(appSettings.getJsDebug());
-				jsdebugCheck.addListener(SWT.Selection, new Listener() {
-					public void handleEvent(Event event) {
-						appSettings.setJsDebug(jsdebugCheck.getSelection());
-					}
-				});
+				jsdebugCheck.addListener(SWT.Selection,
+						event -> appSettings.setJsDebug(jsdebugCheck.getSelection()));
 				// Debug Javascript Debug Menu Error Item
 				final MenuItem jsdebugErrorCheck = new MenuItem(debugSubMenu, SWT.CHECK);
 				jsdebugErrorCheck.setText(displayText.getString("MainDebugException"));
 				jsdebugErrorCheck.setSelection(appSettings.getJsDebugError());
-				jsdebugErrorCheck.addListener(SWT.Selection, new Listener() {
-					public void handleEvent(Event event) {
-						appSettings.setJsDebugError(jsdebugErrorCheck.getSelection());
-					}
-				});
+				jsdebugErrorCheck.addListener(SWT.Selection,
+						event -> appSettings.setJsDebugError(jsdebugErrorCheck.getSelection()));
 				// Debug Javascript Debug Menu Enter Item
 				final MenuItem jsdebugEnterCheck = new MenuItem(debugSubMenu, SWT.CHECK);
 				jsdebugEnterCheck.setText(displayText.getString("MainDebugEnter"));
 				jsdebugEnterCheck.setSelection(appSettings.getJsDebugEnter());
-				jsdebugEnterCheck.addListener(SWT.Selection, new Listener() {
-					public void handleEvent(Event event) {
-						appSettings.setJsDebugEnter(jsdebugEnterCheck.getSelection());
-					}
-				});
+				jsdebugEnterCheck.addListener(SWT.Selection,
+						event -> appSettings.setJsDebugEnter(jsdebugEnterCheck.getSelection()));
+
 				// Debug Javascript Debug Menu Exit Item
 				final MenuItem jsdebugExitCheck = new MenuItem(debugSubMenu, SWT.CHECK);
 				jsdebugExitCheck.setText(displayText.getString("MainDebugExit"));
 				jsdebugExitCheck.setSelection(appSettings.getJsDebugExit());
-				jsdebugExitCheck.addListener(SWT.Selection, new Listener() {
-					public void handleEvent(Event event) {
-						appSettings.setJsDebugExit(jsdebugExitCheck.getSelection());
-					}
-				});
+				jsdebugExitCheck.addListener(SWT.Selection,
+						event -> appSettings.setJsDebugExit(jsdebugExitCheck.getSelection()));
+
 				// Debug Pause Item
 				final MenuItem debugPause = new MenuItem(debugSubMenu, SWT.CHECK);
 				debugPause.setText(displayText.getString("MainDebugPause"));
@@ -794,36 +730,29 @@ public class MainShell {
 				showDelay.addListener(SWT.Selection, event -> {
 					appSettings.setShowDelayBtn(showDelay.getSelection());
 					if (delayButton != null && !delayButton.isDisposed()) {
-						delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
+						delayButton.setVisible(
+								appSettings.getDebug() && appSettings.getShowDelayBtn());
 					}
 				});
 			}
 			// Add the menu bar to the shell
-			shell.setMenuBar(MenuBar);
+			shell.setMenuBar(menuBar);
 
 			// tell SWT to display the correct screen info
 			shell.pack();
 			shell.setMaximized(true);
 			shell.setBounds(clientArea);
 			if (!multiMonitor) {
-				try {
-					sashform.setWeights(intWeights1);
-				} catch (Exception ex2) {
-					logger.error(ex2.getLocalizedMessage(), ex2);
-				}
+				sashform.setWeights(intWeights1);
 			} else {
 				shell2.pack();
 				shell2.setMaximized(true);
 				shell2.setBounds(clientArea2);
 			}
-			try {
-				sashform2.setWeights(intWeights2);
-			} catch (Exception ex2) {
-				logger.error(ex2.getLocalizedMessage(), ex2);
-			}
+			sashform2.setWeights(intWeights2);
 			// timer that updates the clock field and handles any timed events
 			// when loading wait 2 seconds before running it
-			myDisplay.timerExec(2000, new shellTimer(this));
+			myDisplay.timerExec(2000, new ShellTimer(this));
 			metronome = new MetronomePlayer();
 			threadMetronome = new Thread(metronome, "metronome");
 			threadMetronome.setName("threadMetronome");
@@ -832,11 +761,10 @@ public class MainShell {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
 		logger.trace("Exit createShell");
-		mainShell = this;
 		if (!appSettings.getComandLineGuide().equals("")) {
 			loadGuide(appSettings.getDataDirectory() + appSettings.getComandLineGuide());
 		}
-		mainShell.displayPage(guideSettings.getCurrPage());
+		displayPage(guideSettings.getCurrPage());
 		Chapter chapter = guide.getChapters().get("default");
 		if (chapter != null) {
 			for (Page page : chapter.getPages().values()) {
@@ -853,8 +781,8 @@ public class MainShell {
 			shell = createShell(display);
 			logger.trace("open shell");
 			shell.open();
-			if (mainShell.getMultiMonitor()) {
-				mainShell.getShell2().open();
+			if (getMultiMonitor()) {
+				getShell2().open();
 			}
 
 			// loop round until the window is closed
@@ -875,6 +803,7 @@ public class MainShell {
 
 	// Load the tease
 	public void loadGuide(String fileToLoad) {
+		logger.trace("Loading Guide {}", fileToLoad);
 		try {
 			debugShell.clearPagesCombo();
 		} catch (Exception ex) {
@@ -889,57 +818,42 @@ public class MainShell {
 				style = guide.getCss();
 			}
 			// display the first page
-			mainLogic.displayPage(strPage, false, guide, mainShell, appSettings, userSettings, guideSettings,
-					debugShell);
+			mainLogic.displayPage(strPage, false, guide, this, appSettings, userSettings,
+					guideSettings, debugShell);
 		} catch (Exception ex) {
 			logger.error("Load Guide " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
-	static int testI = 0;
-	/*
-	 * // Returns the image passed in resized to the width and height passed in
-	 * private static Image resize(Image image, int width, int height) { try {
-	 * logger.trace("Enter resize"); Image scaled = new Image(Display.getDefault(),
-	 * width, height); GC gc = new GC(scaled); gc.setAntialias(SWT.ON);
-	 * gc.setInterpolation(SWT.HIGH); gc.drawImage(image, 0, 0,
-	 * image.getBounds().width, image.getBounds().height, 0, 0, width, height);
-	 * gc.dispose(); logger.trace("Exit resize"); return scaled; } catch (Exception
-	 * ex) { logger.error(" resize " + ex.getLocalizedMessage(), ex);
-	 * logger.trace("Exit resize"); return null; }
-	 * 
-	 * }
-	 */
-
-	static HashMap<String, Integer> GetNewDimentions(double imageRatio, int labelHeight, int labelWidth,
-			double imgOffSet, boolean maxScale, int maxHeight, int maxWidth) {
-		HashMap<String, Integer> returnValue = new HashMap<String, Integer>();
+	static HashMap<String, Integer> getNewDimentions(double imageRatio, int labelHeight,
+			int labelWidth, double imgOffSet, boolean maxScale, int maxHeight, int maxWidth) {
+		HashMap<String, Integer> returnValue = new HashMap<>();
 		double dblScreenRatio = (double) labelHeight / (double) labelWidth;
 		int newHeight;
 		int newWidth;
 		if (((labelHeight > maxHeight) && (labelWidth > maxWidth)) && maxScale) {
 			if (dblScreenRatio > imageRatio) {
 				logger.trace("Scale Choice: 1.1");
-				newHeight = (int) (((double) (maxWidth) * imageRatio) * imgOffSet);
-				newWidth = (int) ((double) (maxWidth) * imgOffSet);
-				logger.trace("New GT Dimentions: H: " + newHeight + " W: " + newWidth);
+				newHeight = (int) (((maxWidth) * imageRatio) * imgOffSet);
+				newWidth = (int) ((maxWidth) * imgOffSet);
+				logger.trace("New GT Dimentions: H: {} W: {}", newHeight, newWidth);
 			} else {
 				logger.trace("Scale Choice: 1.2");
-				newHeight = (int) ((double) (maxHeight) * imgOffSet);
-				newWidth = (int) (((double) (maxHeight) / imageRatio) * imgOffSet);
-				logger.trace("New LT Dimentions: H: " + newHeight + " W: " + newWidth);
+				newHeight = (int) ((maxHeight) * imgOffSet);
+				newWidth = (int) (((maxHeight) / imageRatio) * imgOffSet);
+				logger.trace("New LT Dimentions: H: {} W: {}", newHeight, newWidth);
 			}
 		} else {
 			if (dblScreenRatio > imageRatio) {
 				logger.trace("Scale Choice: 2.1");
-				newHeight = (int) (((double) labelWidth * imageRatio) * imgOffSet);
-				newWidth = (int) ((double) labelWidth * imgOffSet);
-				logger.trace("New GT Dimentions: H: " + newHeight + " W: " + newWidth);
+				newHeight = (int) ((labelWidth * imageRatio) * imgOffSet);
+				newWidth = (int) (labelWidth * imgOffSet);
+				logger.trace("New GT Dimentions: H: {} W: {}", newHeight, newWidth);
 			} else {
 				logger.trace("Scale Choice: 2.2");
-				newHeight = (int) ((double) labelHeight * imgOffSet);
-				newWidth = (int) (((double) labelHeight / imageRatio) * imgOffSet);
-				logger.trace("New LT Dimentions: H: " + newHeight + " W: " + newWidth);
+				newHeight = (int) (labelHeight * imgOffSet);
+				newWidth = (int) ((labelHeight / imageRatio) * imgOffSet);
+				logger.trace("New LT Dimentions: H: {} W: {}", newHeight, newWidth);
 			}
 		}
 		returnValue.put("newHeight", newHeight);
@@ -984,7 +898,7 @@ public class MainShell {
 	}
 
 	public void setLeftPaneVisibleElement(Control c) {
-		logger.trace("setLeftPaneVisible( " + c +" name = " + c.getData("name") + ")");
+		logger.trace(() -> "setLeftPaneVisible( " + c + " name = " + c.getData("name") + ")");
 		Control[] elements = new Control[] { mediaPanel, webcamPanel, leftPaneBrowser, imageLabel };
 		boolean found = false;
 		for (Control e : elements) {
@@ -996,7 +910,7 @@ public class MainShell {
 			}
 		}
 		if (!found) {
-			logger.error("Invalid left pane element: " + c);
+			logger.error("Invalid left pane element: {}", c);
 		}
 		leftFrame.layout(true);
 	}
@@ -1007,7 +921,7 @@ public class MainShell {
 
 	public void setleftPaneHtml(String leftHtml) {
 		try {
-			logger.trace("setleftPaneHtml: " + leftHtml);
+			logger.trace("setleftPaneHtml: {}", leftHtml);
 			imgOverRide = true;
 			leftPaneBrowser.setText(leftHtml, true);
 			setLeftPaneVisibleElement(leftPaneBrowser);
@@ -1024,7 +938,7 @@ public class MainShell {
 				webcam = Webcam.getDefault();
 
 				if (webcam != null) {
-					mainShell.setLeftText("", "");
+					setLeftText("", "");
 					setLeftPaneVisibleElement(webcamPanel);
 
 					Dimension[] dimensions = webcam.getViewSizes();
@@ -1040,7 +954,7 @@ public class MainShell {
 					logger.debug("MainShell playVideo: ShowWebcam");
 
 				} else {
-					mainShell.setLeftText("No Webcam detected", "");
+					setLeftText("No Webcam detected", "");
 					Webcam.getDiscoveryService().stop();
 				}
 
@@ -1051,8 +965,8 @@ public class MainShell {
 		return webcam != null;
 	}
 
-	public void playVideo(String video, int startAt, int stopAt, int loops, String target, String jscript,
-			String scriptVar, int volume, boolean deferStart) {
+	public void playVideo(String video, int startAt, int stopAt, int loops, String target,
+			String jscript, String scriptVar, int volume, boolean deferStart) {
 		// plays a video in the area to the left of the screen
 		// sets the number of loops, start / stop time and any page to display
 		// if the video finishes
@@ -1060,7 +974,7 @@ public class MainShell {
 		// application
 		if (videoOn) {
 			try {
-				mainShell.setLeftText("", "");
+				setLeftText("", "");
 				setLeftPaneVisibleElement(mediaPanel);
 				leftFrame.layout(true);
 				videoLoops = loops;
@@ -1071,11 +985,11 @@ public class MainShell {
 				videoScriptVar = scriptVar;
 				videoPlay = true;
 				String mrlVideo = "file:///" + video;
-				logger.debug("MainShell playVideo: " + mrlVideo + " videoLoops: " + videoLoops + " videoTarget: "
-						+ videoTarget + " videoPlay: " + videoPlay);
-				VideoPlay videoPlay = new VideoPlay(this);
-				videoPlay.setVideoPlay(mediaPlayer, mrlVideo, volume);
-				threadVideoPlayer = new Thread(videoPlay, "videoPlay");
+				logger.debug("MainShell playVideo: " + mrlVideo + " videoLoops: " + videoLoops
+						+ " videoTarget: " + videoTarget + " videoPlay: " + videoPlay);
+				VideoPlay videoPlayer = new VideoPlay(this);
+				videoPlayer.setVideoPlay(mediaPlayer, mrlVideo, volume);
+				threadVideoPlayer = new Thread(videoPlayer, "videoPlay");
 				threadVideoPlayer.setName("videoPlayThread");
 				if (deferStart) {
 					hasVideoDeferred = true;
@@ -1094,8 +1008,8 @@ public class MainShell {
 		imageManager.updateImageLabel(imageLabel);
 	}
 
-	public void playAudio(String audio, int startAt, int stopAt, int loops, String target, String jscript,
-			String scriptVar, int volume, boolean deferStart) {
+	public void playAudio(String audio, int startAt, int stopAt, int loops, String target,
+			String jscript, String scriptVar, int volume, boolean deferStart) {
 		// run audio on another thread
 		try {
 			if (audioPlayer != null) {
@@ -1103,8 +1017,8 @@ public class MainShell {
 				logger.trace("playAudio audioStop");
 			}
 			String outputDevice = appSettings.getAudioOneDevice();
-			audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar,
-					outputDevice, volume);
+			audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, this, jscript,
+					scriptVar, outputDevice, volume);
 			threadAudioPlayer = new Thread(audioPlayer, "audioPlayer");
 			threadAudioPlayer.setName("threadAudioPlayer");
 			if (deferStart) {
@@ -1117,8 +1031,8 @@ public class MainShell {
 		}
 	}
 
-	public void playAudio2(String audio, int startAt, int stopAt, int loops, String target, String jscript,
-			String scriptVar, int volume, boolean deferStart) {
+	public void playAudio2(String audio, int startAt, int stopAt, int loops, String target,
+			String jscript, String scriptVar, int volume, boolean deferStart) {
 		// run audio on another thread
 		try {
 			if (audioPlayer2 != null) {
@@ -1126,8 +1040,8 @@ public class MainShell {
 				logger.trace("playAudio2 audioStop");
 			}
 			String outputDevice = appSettings.getAudioTwoDevice();
-			audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, mainShell, jscript, scriptVar,
-					outputDevice, volume);
+			audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, this, jscript,
+					scriptVar, outputDevice, volume);
 			threadAudioPlayer2 = new Thread(audioPlayer2, "audioPlayer");
 			threadAudioPlayer2.setName("threadAudioPlayer2");
 			if (deferStart) {
@@ -1168,15 +1082,12 @@ public class MainShell {
 			strHTML = strHTML.replace("BodyContent", brwsText);
 			this.brwsText.setText(strHTML);
 			if (appSettings.isToclipboard()) {
-				try {
-					// copy text to clip board for use in TTS
-					String htmlString = brwsText.replaceAll("\\<.*?\\>", " ");
-					StringSelection stringSelection = new StringSelection(htmlString);
-					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-					clipboard.setContents(stringSelection, stringSelection);
-				} catch (Exception e2) {
-					logger.error("copy to clip board " + e2.getLocalizedMessage(), e2);
-				}
+				// copy text to clip board for use in TTS
+				String htmlString = brwsText.replaceAll("\\<[^>]*\\>", " ");
+				StringSelection stringSelection = new StringSelection(htmlString);
+				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				clipboard.setContents(stringSelection, stringSelection);
+
 			}
 		} catch (Exception e1) {
 			logger.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
@@ -1210,14 +1121,12 @@ public class MainShell {
 			strHTML = strHTML.replace("BodyContent", brwsText);
 			this.leftPaneBrowser.setText(strHTML);
 			if (appSettings.isToclipboard()) {
-				try { // copy text to clip board for use in TTS
-					String htmlString = brwsText.replaceAll("\\<.*?\\>", " ");
-					StringSelection stringSelection = new StringSelection(htmlString);
-					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-					clipboard.setContents(stringSelection, stringSelection);
-				} catch (Exception e2) {
-					logger.error("copy to clip board " + e2.getLocalizedMessage(), e2);
-				}
+				// copy text to clip board for use in TTS
+				String htmlString = brwsText.replaceAll("\\<[^>]*\\>", " ");
+				StringSelection stringSelection = new StringSelection(htmlString);
+				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				clipboard.setContents(stringSelection, stringSelection);
+
 			}
 		} catch (Exception e1) {
 			logger.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
@@ -1300,8 +1209,8 @@ public class MainShell {
 			strBtnText = button.getText();
 			strBtnImage = button.getImage();
 			if (!strBtnImage.equals("")) {
-				String imgPath = comonFunctions.getMediaFullPath(strBtnImage, appSettings.getFileSeparator(),
-						appSettings, guide);
+				String imgPath = comonFunctions.getMediaFullPath(strBtnImage,
+						appSettings.getFileSeparator(), appSettings, guide);
 				File flImage = new File(imgPath);
 				if (flImage.exists()) {
 					strBtnImage = imgPath;
@@ -1309,51 +1218,32 @@ public class MainShell {
 					strBtnImage = "";
 				}
 			}
-			com.snapps.swt.SquareButton btnDynamic = new com.snapps.swt.SquareButton(btnComp, SWT.PUSH);
+			SquareButton btnDynamic = new SquareButton(btnComp, SWT.PUSH);
 
-			int fntHeight = 0;
-			try {
-				fntHeight = Integer.parseInt(button.getFontHeight());
-			} catch (Exception e) {
-				fntHeight = 0;
-			}
-			try {
-				if (button.getFontName() == "" && fntHeight == 0) {
-					btnDynamic.setFont(buttonFont);
-				} else {
-					FontData[] fontData = buttonFont.getFontData();
-					if (fntHeight > 0) {
-						fontData[0].setHeight(fntHeight);
-					}
-					if (button.getFontName() != "") {
-						fontData[0].setName(button.getFontName());
-					}
+			int fntHeight = button.getFontHeight();
 
-					final Font newFont = new Font(myDisplay, fontData);
-					btnDynamic.setFont(newFont);
-
-					// Since you created the font, you must dispose it
-					btnDynamic.addDisposeListener(new DisposeListener() {
-						@Override
-						public void widgetDisposed(DisposeEvent e) {
-							newFont.dispose();
-						}
-					});
+			if (button.getFontName().isBlank() && fntHeight == 0) {
+				btnDynamic.setFont(buttonFont);
+			} else {
+				FontData[] fontData = buttonFont.getFontData();
+				if (fntHeight > 0) {
+					fontData[0].setHeight(fntHeight);
 				}
-			} catch (Exception e) {
-				logger.error("addButton set font" + e.getLocalizedMessage(), e);
+				if (!button.getFontName().isBlank()) {
+					fontData[0].setName(button.getFontName());
+				}
+
+				final Font newFont = new Font(myDisplay, fontData);
+				btnDynamic.setFont(newFont);
+
+				// Since you created the font, you must dispose it
+				btnDynamic.addDisposeListener(event -> newFont.dispose());
 			}
+			Color bgColor1 = button.getbgColor1();
+			Color bgColor2 = button.getbgColor2();
+			Color fontColor = button.getfontColor();
 
-			try {
-				org.eclipse.swt.graphics.Color bgColor1 = button.getbgColor1();
-				org.eclipse.swt.graphics.Color bgColor2 = button.getbgColor2();
-				org.eclipse.swt.graphics.Color fontColor = button.getfontColor();
-
-				btnDynamic.setDefaultColors(bgColor1, bgColor2, btnDynamic.getBackground(), fontColor);
-			} catch (Exception e) {
-				logger.error("addButton set colors" + e.getLocalizedMessage(), e);
-			}
-
+			btnDynamic.setDefaultColors(bgColor1, bgColor2, btnDynamic.getBackground(), fontColor);
 			btnDynamic.setText(strBtnText);
 			if (!strBtnImage.equals("")) {
 				btnDynamic.setBackgroundImage(new Image(myDisplay, strBtnImage));
@@ -1377,8 +1267,8 @@ public class MainShell {
 			}
 			btnDynamic.setData("scriptVar", button.getScriptVar());
 			btnDynamic.setData("javascript", javascript);
-			logger.debug("displayPage Button Text " + strBtnText + " Target " + strBtnTarget + " Set " + strButtonSet
-					+ " UnSet " + strButtonUnSet);
+			logger.debug("displayPage Button Text {} Target {} Set {} UnSet {} ", strBtnText,
+					strBtnTarget, strButtonSet, strButtonUnSet);
 
 			String hotKey = button.getHotKey();
 			if (!hotKey.equals("")) {
@@ -1395,7 +1285,7 @@ public class MainShell {
 				WebcamButton webcamButton = (WebcamButton) button;
 				btnDynamic.setData("webcamFile", webcamButton.get_destination());
 				if (webcamButton.get_type().equals("Capture")) {
-					btnDynamic.addSelectionListener(new WebcamCaptureListener(mainShell));
+					btnDynamic.addSelectionListener(new WebcamCaptureListener(this));
 				}
 			} else {
 				btnDynamic.addSelectionListener(new DynamicButtonListner(this));
@@ -1413,24 +1303,20 @@ public class MainShell {
 
 	// run the javascript function passed
 	public void runJscript(String function, OverRide overRide, boolean pageLoading) {
-		try {
-			getFormFields();
-			refreshVars();
-			if (function == null)
-				function = "";
-			if (!function.equals("")) {
-				Page objCurrPage = guide.getChapters().get(guideSettings.getChapter()).getPages()
-						.get(guideSettings.getCurrPage());
-				String pageJavascript = objCurrPage.getjScript();
-				Jscript jscript = new Jscript(guide, userSettings, appSettings, guide.getInPrefGuide(), mainShell,
-						overRide, pageJavascript, function, pageLoading);
-				SwingUtilities.invokeLater(jscript);
-				while (jscript.isRunning()) {
-					Display.getCurrent().readAndDispatch();
-				}
+		getFormFields();
+		refreshVars();
+		if (function == null)
+			function = "";
+		if (!function.equals("")) {
+			Page objCurrPage = guide.getChapters().get(guideSettings.getChapter()).getPages()
+					.get(guideSettings.getCurrPage());
+			String pageJavascript = objCurrPage.getjScript();
+			Jscript jscript = new Jscript(guide, userSettings, appSettings, guide.getInPrefGuide(),
+					this, overRide, pageJavascript, function, pageLoading);
+			SwingUtilities.invokeLater(jscript);
+			while (jscript.isRunning()) {
+				Display.getCurrent().readAndDispatch();
 			}
-		} catch (Exception ex) {
-			logger.error(" run java script " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -1442,8 +1328,8 @@ public class MainShell {
 			if (function == null)
 				function = "";
 			if (!function.equals("")) {
-				Jscript jscript = new Jscript(guide, userSettings, appSettings, guide.getInPrefGuide(), mainShell, null,
-						pageJavascript, function, false);
+				Jscript jscript = new Jscript(guide, userSettings, appSettings,
+						guide.getInPrefGuide(), this, null, pageJavascript, function, false);
 				SwingUtilities.invokeLater(jscript);
 				while (jscript.isRunning()) {
 					Display.getCurrent().readAndDispatch();
@@ -1458,22 +1344,34 @@ public class MainShell {
 	// use in the next java script call.
 	private void getFormFields() {
 		try {
-			String evaluateScript = "" + "var vforms = document.forms;" + "var vreturn = '';"
-					+ "for (var formidx = 0; formidx < vforms.length; formidx++) {" + "var vform = vforms[formidx];"
-					+ "for (var controlIdx = 0; controlIdx < vform.length; controlIdx++) {"
-					+ "var control = vform.elements[controlIdx];" + "if (control.type === \"select-one\") {"
-					+ "var item = control.selectedIndex;" + "var value = \"\";" + "if (item > -1)" + "{"
-					+ "	value = control.item(item).value;" + "}"
-					+ "vreturn = vreturn + control.name + '¬' + value + '¬' + control.type + '¬' + control.checked + '|';"
-					+ "} else {"
-					+ "vreturn = vreturn + control.name + '¬' + control.value + '¬' + control.type + '¬' + control.checked + '|';"
-					+ "}" + "}" + "}" + "return vreturn;";
+			//@formatter:off
+			String evaluateScript = "" 
+					+ "var vforms = document.forms;" 
+					+ "var vreturn = '';"
+					+ "for (var formidx = 0; formidx < vforms.length; formidx++) {" 
+						+ "var vform = vforms[formidx];"
+						+ "for (var controlIdx = 0; controlIdx < vform.length; controlIdx++) {"
+							+ "var control = vform.elements[controlIdx];" 
+							+ "if (control.type === \"select-one\") {"
+								+ "var item = control.selectedIndex;" 
+								+ "var value = \"\";" 
+								+ "if (item > -1)" + "{"
+									+ "value = control.item(item).value;" 
+								+ "}"
+								+ "vreturn = vreturn + control.name + '¬' + value + '¬' + control.type + '¬' + control.checked + '|';"
+							+ "} else {"
+								+ "vreturn = vreturn + control.name + '¬' + control.value + '¬' + control.type + '¬' + control.checked + '|';"
+							+ "}" 
+						+ "}" 
+					+ "}" 
+					+ "return vreturn;";
+			//@formatter:on
 			String node = (String) brwsText.evaluate(evaluateScript);
 			if (node == null) {
 				return;
 			}
-			String fields[] = node.split("\\|");
-			String values[];
+			String[] fields = node.split("\\|");
+			String[] values;
 			String name;
 			String value;
 			String type;
@@ -1489,11 +1387,10 @@ public class MainShell {
 						guideSettings.setFormField(name, checked);
 						guideSettings.setScriptVar(name, checked);
 					}
-					if (type.equals("radio")) {
-						if (checked.equals("true")) {
-							guideSettings.setFormField(name, value);
-							guideSettings.setScriptVar(name, value);
-						}
+					if (type.equals("radio") && (checked.equals("true"))) {
+						guideSettings.setFormField(name, value);
+						guideSettings.setScriptVar(name, value);
+
 					}
 					if (type.equals("text") || type.equals("textarea")) {
 						guideSettings.setFormField(name, value);
@@ -1509,7 +1406,7 @@ public class MainShell {
 						guideSettings.setScriptVar(name, value);
 					}
 
-					logger.trace(name + "|" + value + "|" + type + "|" + checked);
+					logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
 				}
 			}
 			String node2 = (String) leftPaneBrowser.evaluate(evaluateScript);
@@ -1525,11 +1422,10 @@ public class MainShell {
 						guideSettings.setFormField(name, checked);
 						guideSettings.setScriptVar(name, checked);
 					}
-					if (type.equals("radio")) {
-						if (checked.equals("true")) {
-							guideSettings.setFormField(name, value);
-							guideSettings.setScriptVar(name, value);
-						}
+					if (type.equals("radio") && (checked.equals("true"))) {
+						guideSettings.setFormField(name, value);
+						guideSettings.setScriptVar(name, value);
+
 					}
 					if (type.equals("text") || type.equals("textarea")) {
 						guideSettings.setFormField(name, value);
@@ -1546,7 +1442,7 @@ public class MainShell {
 						guideSettings.setScriptVar(name, value);
 					}
 
-					logger.trace(name + "|" + value + "|" + type + "|" + checked);
+					logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
 				}
 			}
 		} catch (Exception ex) {
@@ -1557,15 +1453,10 @@ public class MainShell {
 	// force a redisplay of the button are
 	// set focus to the last button
 	public void layoutButtons() {
-		try {
-			btnComp.layout();
-			Control[] controls = this.btnComp.getChildren();
-			if (controls.length > 0) {
-				controls[0].setFocus();
-			}
-			controls = null;
-		} catch (Exception ex) {
-			logger.error(" layoutButtons " + ex.getLocalizedMessage(), ex);
+		btnComp.layout();
+		Control[] controls = this.btnComp.getChildren();
+		if (controls.length > 0) {
+			controls[0].setFocus();
 		}
 	}
 
@@ -1607,22 +1498,20 @@ public class MainShell {
 		}
 	}
 
-	public void setMetronomeBPM(int metronomeBPM, int loops, int resolution, String Rhythm) {
+	public void setMetronomeBPM(int metronomeBPM, int loops, int resolution, String rhythm) {
 		// run metronome on another thread
-		try {
-			logger.trace("setMetronomeBPM");
-			if (appSettings.isMetronome()) {
-				metronome.metronomeStart(metronomeBPM, appSettings.getMidiInstrument(), loops, resolution, Rhythm,
-						appSettings.getMidiVolume());
-			}
-		} catch (Exception e) {
-			logger.error(" setMetronomeBPM " + e.getLocalizedMessage(), e);
+
+		logger.trace("setMetronomeBPM");
+		if (appSettings.isMetronome()) {
+			metronome.metronomeStart(metronomeBPM, appSettings.getMidiInstrument(), loops,
+					resolution, rhythm, appSettings.getMidiVolume());
 		}
 	}
 
 	public void displayPage(String target) {
 		getFormFields();
-		mainLogic.displayPage(target, false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);
+		mainLogic.displayPage(target, false, guide, this, appSettings, userSettings, guideSettings,
+				debugShell);
 	}
 
 	public void stopMetronome() {
@@ -1643,7 +1532,7 @@ public class MainShell {
 		threadAudioPlayer2 = null;
 	}
 
-	public void stopWebcam(boolean shellClosing) {
+	public void stopWebcam() {
 		if (webcamOn && webcamVisible) {
 			panel.stop();
 			webcamRoot.getContentPane().removeAll();
@@ -1654,20 +1543,19 @@ public class MainShell {
 	public void stopVideo(boolean shellClosing) {
 		if (videoOn && mediaPlayer.media().info() != null) {
 			try {
-				if (mediaPlayer != null) {
-					videoLoops = 0;
-					videoTarget = "";
-					videoPlay = false;
-					logger.debug("MainShell stopVideo " + mediaPlayer.media().info().mrl());
-					if (mediaPlayer.media().info().mrl() != null && videoPlayed) {
-						VideoStop videoStop = new VideoStop();
-						videoStop.setMediaPlayer(mediaPlayer, shellClosing);
-						Thread videoStopThread = new Thread(videoStop, "videoStop");
-						videoStopThread.setName("videoStopThread");
-						setLeftPaneVisibleElement(leftPaneBrowser);
-						threadVideoPlayer = null;
-						videoStopThread.start();
-					}
+				videoLoops = 0;
+				videoTarget = "";
+				videoPlay = false;
+				logger.debug(() -> "MainShell stopVideo " + mediaPlayer.media().info().mrl());
+				if (mediaPlayer.media().info().mrl() != null && videoPlayed) {
+					VideoStop videoStop = new VideoStop();
+					videoStop.setMediaPlayer(mediaPlayer, shellClosing);
+					Thread videoStopThread = new Thread(videoStop, "videoStop");
+					videoStopThread.setName("videoStopThread");
+					setLeftPaneVisibleElement(leftPaneBrowser);
+					threadVideoPlayer = null;
+					videoStopThread.start();
+
 				}
 			} catch (Exception e) {
 				logger.error(" stopVideo " + e.getLocalizedMessage(), e);
@@ -1705,7 +1593,8 @@ public class MainShell {
 
 	public void resumeAll() {
 		Calendar resumedAt = Calendar.getInstance();
-		int pausedForSeconds = (int) (resumedAt.getTimeInMillis() - pausedAt.getTimeInMillis()) / 1000;
+		int pausedForSeconds = (int) (resumedAt.getTimeInMillis() - pausedAt.getTimeInMillis())
+				/ 1000;
 
 		// Add to countdown timer
 		if (calCountDown != null) {
@@ -1734,17 +1623,17 @@ public class MainShell {
 		}
 
 		// Start shell timer
-		myDisplay.timerExec(100, new shellTimer(this));
+		myDisplay.timerExec(100, new ShellTimer(this));
 	}
 
 	public void stopAll(boolean shellClosing) {
 		try {
-			hotKeys = new HashMap<String, com.snapps.swt.SquareButton>();
+			hotKeys = new HashMap<>();
 		} catch (Exception ex) {
 			logger.error(" stophotKeys " + ex.getLocalizedMessage(), ex);
 		}
 		try {
-			buttons = new HashMap<String, com.snapps.swt.SquareButton>();
+			buttons = new HashMap<>();
 		} catch (Exception ex) {
 			logger.error(" stopbuttons " + ex.getLocalizedMessage(), ex);
 		}
@@ -1769,7 +1658,7 @@ public class MainShell {
 			logger.error(" stopVideo " + ex.getLocalizedMessage(), ex);
 		}
 		try {
-			stopWebcam(shellClosing);
+			stopWebcam();
 		} catch (Exception ex) {
 			logger.error(" stopWebcam " + ex.getLocalizedMessage(), ex);
 		}
@@ -1813,7 +1702,7 @@ public class MainShell {
 	}
 
 	private void timerReset() {
-		timer = new HashMap<String, Timer>();
+		timer = new HashMap<>();
 	}
 
 	public void resetTimer(String id, int delay) {

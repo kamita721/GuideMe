@@ -4,7 +4,7 @@ import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
 import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamReader;
 
@@ -20,7 +20,7 @@ public class Video
 	private final String ifNotSet;
 	private final String set;
 	private final String unSet;
-	private final String repeat;
+	private final int repeat;
 	private final String jscript;
 	private LocalTime ifBefore; //Time of day must be before this time
 	private LocalTime ifAfter; //Time of day must be after this time
@@ -35,7 +35,7 @@ public class Video
 		this.id = getAttributeOrDefaultNoNS(reader, "id", "");
 		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
 		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
-		this.repeat = getAttributeOrDefaultNoNS(reader, "loops", "0"); //TODO rename
+		this.repeat = getAttributeOrDefaultNoNS(reader, "loops", 0); //TODO rename
 		this.jscript = getAttributeOrDefaultNoNS(reader, "onTriggered", "");//TODO rename
 		this.ifBefore = getAttributeLocalTime(reader, "if-before");
 		this.ifAfter = getAttributeLocalTime(reader, "if-after");
@@ -45,7 +45,7 @@ public class Video
 		this.set = ""; //TODO why is this always blank?
 	}
 	
-	public Video(String id, String startAt, String stopAt, String target, String ifSet, String ifNotSet, String set, String unSet, String repeat, String jscript, String ifAfter, String ifBefore, String scriptVar, int volume)
+	public Video(String id, String startAt, String stopAt, String target, String ifSet, String ifNotSet, String set, String unSet, int repeat, String jscript, String ifAfter, String ifBefore, String scriptVar, int volume)
 	{
 		this.id = id;
 		this.startAt = startAt;
@@ -88,7 +88,7 @@ public class Video
 		return this.target;
 	}
 
-	public boolean canShow(ArrayList<String> setList) {
+	public boolean canShow(List<String> setList) {
 		boolean retVal = comonFunctions.canShowTime(ifBefore, ifAfter);
 		if (retVal) {
 			retVal =  comonFunctions.canShow(setList, ifSet, ifNotSet);
@@ -96,12 +96,12 @@ public class Video
 		return retVal;
 	}
 
-	public void setUnSet(ArrayList<String> setList) {
+	public void setUnSet(List<String> setList) {
 		comonFunctions.setFlags(this.set, setList);
 		comonFunctions.unsetFlags(this.unSet, setList);
 	}
 
-	public String getRepeat() {
+	public int getRepeat() {
 		return this.repeat;
 	}
 

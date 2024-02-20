@@ -12,6 +12,8 @@ import org.guideme.guideme.settings.GuideSettings;
 import com.fasterxml.jackson.core.Version;
 
 public class TeaseHandler {
+	private TeaseHandler() {
+	}
 
 	public static void handle(XMLStreamReader reader, Chapter chapter, GuideSettings guideSettings) {
 		String minVersionString = reader.getAttributeValue(null, "minimumVersion");
@@ -36,10 +38,11 @@ public class TeaseHandler {
 		if (currentVersion.compareTo(minVersion) < 0) {
 
 			Page pageVersionNotMet = new Page("GuideMeVersionNotMet");
-			String nextPage = guideSettings.getPage().equals(pageVersionNotMet.getId()) ? "start" : guideSettings.getPage();
+			String nextPage = guideSettings.getPage().equals(pageVersionNotMet.getId()) ? "start"
+					: guideSettings.getPage();
 			pageVersionNotMet.addButton(new Button(nextPage, "Continue"));
 			chapter.getPages().put(pageVersionNotMet.getId(), pageVersionNotMet);
-			
+
 			chapter.getPages().get(pageVersionNotMet.getId())
 					.addLeftText(new Text("<p><h1>App Version Not Supported</h1>"
 							+ "<p>This tease specifies a minimum GuideMe version of " + minVersionString

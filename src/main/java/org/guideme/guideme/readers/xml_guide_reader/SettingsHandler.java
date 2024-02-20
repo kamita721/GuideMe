@@ -7,17 +7,18 @@ import javax.xml.stream.XMLStreamReader;
 import static org.guideme.guideme.util.XMLReaderUtils.getStringContentOrDefault;
 import static org.guideme.guideme.util.XMLReaderUtils.isAtElementEnd;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.model.Guide;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.util.XMLReaderUtils;
 
 public class SettingsHandler {
+	private SettingsHandler() {
+	}
+
 	public static void handle(XMLStreamReader reader, Guide guide, GuideSettings guideSettings)
 			throws XMLStreamException {
-		int depth=1;
-		while (depth>0) {
+		int depth = 1;
+		while (depth > 0) {
 			int eventType2 = reader.next();
 			if (eventType2 == XMLStreamConstants.START_ELEMENT) {
 				depth++;
@@ -46,7 +47,7 @@ public class SettingsHandler {
 					return;
 				}
 			}
-			if(eventType2 == XMLStreamConstants.END_ELEMENT) {
+			if (eventType2 == XMLStreamConstants.END_ELEMENT) {
 				depth--;
 			}
 		}

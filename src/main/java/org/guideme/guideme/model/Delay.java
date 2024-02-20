@@ -5,6 +5,7 @@ import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamReader;
 
@@ -17,7 +18,7 @@ public class Delay {
 	private final String unSet;
 	private final String delay;
 	private final String target;
-	private final String startWith;
+	private final int startWith;
 	private final String style;
 	private final String jScript;
 	private LocalTime ifBefore; //Time of day must be before this time
@@ -27,7 +28,7 @@ public class Delay {
 	
 	public Delay(XMLStreamReader reader) {
 		this.target = getAttributeOrDefaultNoNS(reader, "target", "");
-		this.startWith = getAttributeOrDefaultNoNS(reader, "start-with", "");
+		this.startWith = getAttributeOrDefaultNoNS(reader, "start-with", 0);
 		this.style = getAttributeOrDefaultNoNS(reader, "style", "");
 		this.delay = getAttributeOrDefaultNoNS(reader, "seconds", "");
 		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
@@ -40,7 +41,7 @@ public class Delay {
 		this.jScript = getAttributeOrDefaultNoNS(reader, "onTriggered", "");
 	}
 	
-	public Delay(String target, String delay, String ifSet, String ifNotSet, String startWith, String style, String set, String unSet, String jScript, String ifAfter, String ifBefore, String scriptVar) {
+	public Delay(String target, String delay, String ifSet, String ifNotSet, int startWith, String style, String set, String unSet, String jScript, String ifAfter, String ifBefore, String scriptVar) {
 		this.target = target;
 		this.delay = delay;
 		this.ifNotSet = ifNotSet;
@@ -64,7 +65,7 @@ public class Delay {
 
 	}
 
-	public boolean canShow(ArrayList<String> setList) {
+	public boolean canShow(List<String> setList) {
 		boolean retVal = comonFunctions.canShowTime(ifBefore, ifAfter);
 		if (retVal) {
 			retVal =  comonFunctions.canShow(setList, ifSet, ifNotSet);
@@ -80,7 +81,7 @@ public class Delay {
 		return target;
 	}
 
-	public String getStartWith() {
+	public int getStartWith() {
 		return startWith;
 	}
 

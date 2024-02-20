@@ -23,7 +23,7 @@ public class Button implements Comparable<Button> {
 	private final String image;
 	private final String hotKey;
 	private String fontName;
-	private String fontHeight;
+	private int fontHeight;
 	private final int sortOrder;
 	private LocalTime ifBefore; // Time of day must be before this time
 	private LocalTime ifAfter; // Time of day must be after this time
@@ -49,7 +49,7 @@ public class Button implements Comparable<Button> {
 		this.hotKey = getAttributeOrDefaultNoNS(reader, "hotkey", "");
 		this.scriptVar = getAttributeOrDefaultNoNS(reader, "scriptvar", "");
 		this.fontName = getAttributeOrDefaultNoNS(reader, "fontName", "");
-		this.fontHeight = getAttributeOrDefaultNoNS(reader, "fontHeight", "");
+		this.fontHeight = getAttributeOrDefaultNoNS(reader, "fontHeight", 0);
 		this.bgColor1 = getAttributeOrDefaultNoNS(reader, "bgColor1", comonFunctions.getSwtColor(SWT.COLOR_WHITE));
 		this.bgColor2 = getAttributeOrDefaultNoNS(reader, "bgColor2", this.bgColor1);
 		this.fontColor = getAttributeOrDefaultNoNS(reader, "fontColor", comonFunctions.getSwtColor(SWT.COLOR_BLACK));
@@ -68,12 +68,12 @@ public class Button implements Comparable<Button> {
 
 	public Button(String target, String text, String ifSet, String ifNotSet, String set, String unSet, String jScript,
 			String image, String hotKey) {
-		this(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, "", "", "", "", "", 1, "", "", false,
+		this(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, "", 0, "", "", "", 1, "", "", false,
 				"", "", false);
 	}
 
 	public Button(String target, String text, String ifSet, String ifNotSet, String set, String unSet, String jScript,
-			String image, String hotKey, String fontName, String fontHeight, String fontColor, String bgColor1,
+			String image, String hotKey, String fontName, int fontHeight, String fontColor, String bgColor1,
 			String bgColor2, int sortOrder, String ifAfter, String ifBefore, boolean disabled, String id,
 			String scriptVar, boolean defaultBtn) {
 		this.target = target;
@@ -195,11 +195,11 @@ public class Button implements Comparable<Button> {
 		this.fontName = fontName;
 	}
 
-	public String getFontHeight() {
+	public int getFontHeight() {
 		return fontHeight;
 	}
 
-	public void setFontHeight(String fontHeight) {
+	public void setFontHeight(int fontHeight) {
 		this.fontHeight = fontHeight;
 	}
 

@@ -5,6 +5,9 @@ import javax.xml.stream.XMLStreamReader;
 import org.guideme.guideme.settings.GuideSettings;
 
 public class PrefHandler {
+	private PrefHandler() {
+	}
+
 	public static void handle(XMLStreamReader reader, GuideSettings guideSettings) {
 		String key;
 		String screen = "";
@@ -17,11 +20,10 @@ public class PrefHandler {
 		order = reader.getAttributeValue(null, "sortOrder");
 		try {
 			sortOrder = Integer.parseInt(order);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			sortOrder = 0;
 		}
-		if (! guideSettings.keyExists(key, type)) {
+		if (!guideSettings.keyExists(key, type)) {
 			screen = reader.getAttributeValue(null, "screen");
 			value = reader.getAttributeValue(null, "value");
 			if (type.equals("String")) {

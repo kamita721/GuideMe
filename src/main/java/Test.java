@@ -1,34 +1,41 @@
-
-/*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
- *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-/*
- * Browser example snippet: modify DOM (executing javascript)
- *
- * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
- *
- * @since 3.1
- */
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.guideme.guideme.scripting.Jscript;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.FunctionObject;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 public class Test {
 
-	private static Logger logger = LogManager.getLogger();
-
-	public static void main(String[] args) {
-
+	public static void main(String[] args) throws NoSuchMethodException, SecurityException {
+		//test
+		Context ctx = Context.enter();
+		Scriptable globalScope = ctx.initSafeStandardObjects();
+		
+		@SuppressWarnings("rawtypes")
+		Class[] cArg = new Class[1];
+		cArg[0] = String.class;
+		java.lang.reflect.Method tjlog = Inner.class.getMethod("log", cArg);
+		
+		Inner inner = new Inner();
+		
+		Scriptable logScope = ctx.newObject(globalScope);
+		logScope.setPrototype(globalScope);
+		logScope.setParentScope(null);
+		logScope.put("this", logScope, inner);
+		globalScope.put("this", globalScope, inner);
+		FunctionObject jlog = new FunctionObject("log", tjlog, logScope);
+		ScriptableObject.putProperty(globalScope, "log", jlog);
+		
+		
+		Object ans = ctx.evaluateString(globalScope, "log(this)", null, 0, null);
+		System.err.println(ans);
 	}
+	
+}
 
+class Inner{
+	public static  void log(String s) {
+		System.out.println(s);
+	}
+	
 }

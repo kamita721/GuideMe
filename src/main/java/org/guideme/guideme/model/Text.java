@@ -4,7 +4,7 @@ import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
 import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -18,7 +18,7 @@ public class Text
 	private final String ifNotSet;
 	private final LocalTime ifBefore; //Time of day must be before this time
 	private final LocalTime ifAfter; //Time of day must be after this time
-	private final String text;
+	private final String body;
 	private final ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
 	public Text(XMLStreamReader reader) throws XMLStreamException {
@@ -26,7 +26,7 @@ public class Text
 		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
 		this.ifBefore = getAttributeLocalTime(reader, "if-before");
 		this.ifAfter = getAttributeLocalTime(reader, "if-after");
-		this.text = XmlGuideReader.processText(reader);
+		this.body = XmlGuideReader.processText(reader);
 	}
 	
 	public Text(String text)
@@ -41,20 +41,20 @@ public class Text
 
 	public Text(String text, String ifSet, String ifNotSet, String ifBefore, String ifAfter)
 	{
-		this.text = text;
+		this.body = text;
 		this.ifNotSet = ifNotSet;
 		this.ifSet = ifSet;
 		this.ifBefore = ifBefore == null || ifBefore.isEmpty() ? null : LocalTime.parse(ifBefore);
 		this.ifAfter = ifAfter == null || ifAfter.isEmpty() ? null : LocalTime.parse(ifAfter);
 	}
 
-	public boolean canShow(ArrayList<String> setList)
+	public boolean canShow(List<String> setList)
 	{
 		return comonFunctions.canShow(setList, ifSet, ifNotSet) && comonFunctions.canShowTime(ifBefore, ifAfter);
 	}
 
 	public String getText() {
-		return this.text;
+		return this.body;
 	}
 
 	public String getIfSet() {

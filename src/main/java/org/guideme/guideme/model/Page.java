@@ -5,6 +5,7 @@ import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamReader;
 
@@ -224,7 +225,7 @@ public class Page {
 		return metronome.size();
 	}
 
-	public boolean canShow(ArrayList<String> setList) {
+	public boolean canShow(List<String> setList) {
 		boolean retVal = comonFunctions.canShowTime(ifBefore, ifAfter);
 		if (retVal) {
 			String ifNotSetPage = id;
@@ -237,7 +238,7 @@ public class Page {
 		return retVal;
 	}
 
-	public void setUnSet(ArrayList<String> setList) {
+	public void setUnSet(List<String> setList) {
 		comonFunctions.setFlags(set, setList);
 		comonFunctions.unsetFlags(unSet, setList);
 	}

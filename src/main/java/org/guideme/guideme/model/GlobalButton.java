@@ -18,18 +18,18 @@ public class GlobalButton extends Button {
 	}
 
 	public GlobalButton(String id, String target, String text) {
-		super(target, text, "", "", "", "", "", "", "", "", "", "", "", "", 1, "", "", false, id, "", false);
+		super(target, text, "", "", "", "", "", "", "", "", 0, "", "", "", 1, "", "", false, id, "", false);
 	}
 
 	public GlobalButton(String id, String target, String text, Placement placement, Action action) {
-		super(target, text, "", "", "", "", "", "", "", "", "", "", "", "", 1, "", "", false, id, "", false);
+		super(target, text, "", "", "", "", "", "", "", "", 0, "", "", "", 1, "", "", false, id, "", false);
 		this.placement = placement;
 		this.action = action;
 	}
 
 	public GlobalButton(String id, String target, String text, String ifSet, String ifNotSet, String set, String unSet,
 			String jScript, String image, String hotKey, Placement placement, Action action) {
-		super(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, "", "", "", "", "", 1, "", "", false,
+		super(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, "", 0, "", "", "", 1, "", "", false,
 				id, "", false);
 		this.placement = placement;
 		this.action = action;
@@ -37,14 +37,14 @@ public class GlobalButton extends Button {
 
 	public GlobalButton(String id, String target, String text, String ifSet, String ifNotSet, String set, String unSet,
 			String jScript, String image, String hotKey, int sortOrder, Placement placement, Action action) {
-		super(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, "", "", "", "", "", sortOrder, "", "",
+		super(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, "", 0, "", "", "", sortOrder, "", "",
 				false, id, "", false);
 		this.placement = placement;
 		this.action = action;
 	}
 
 	public GlobalButton(String id, String target, String text, String ifSet, String ifNotSet, String set, String unSet,
-			String jScript, String image, String hotKey, String fontName, String fontHeight, String fontColor,
+			String jScript, String image, String hotKey, String fontName, int fontHeight, String fontColor,
 			String bgColor1, String bgColor2, int sortOrder, String ifAfter, String ifBefore, boolean disabled,
 			String scriptVar, boolean defaultBtn, Placement placement, Action action) {
 		super(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, fontName, fontHeight, fontColor,

@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +37,7 @@ import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.DebugShell;
 import org.guideme.guideme.ui.main_shell.MainShell;
 import org.guideme.guideme.util.PageFilter;
+import org.guideme.guideme.util.XMLReaderUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.ScriptableObject;
@@ -52,16 +54,15 @@ public class MainLogic {
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private OverRide overRide = new OverRide();
 	private static Clip song; // Sound player
-	private static URL songPath;
-	private static HashMap<String, Object> globalScriptVariables = new HashMap<String, Object>(); // variables
-																									// used
-																									// by
-																									// javascript
+	private static HashMap<String, Object> globalScriptVariables = new HashMap<>(); // variables
+																					// used
+																					// by
+																					// javascript
 	private static final String MEDIA_PATH_PLACEHOLDER = "\\MediaDir\\";
 	private static String filename; // name of file to store persistent state
 	private final PageFilter pageFilter = new PageFilter();
 
-	public static HashMap<String, Object> getGlobalScriptVariables() {
+	public static Map<String, Object> getGlobalScriptVariables() {
 		return globalScriptVariables;
 	}
 
@@ -71,10 +72,11 @@ public class MainLogic {
 	}
 
 	public static synchronized MainLogic getMainLogic() {
+		URL songPath;
 		if (mainLogic == null) {
 			mainLogic = new MainLogic();
 			songPath = MainLogic.class.getResource("/tick.wav");
-			logger.info("MainLogic getMainLogic songPath " + songPath);
+			logger.info("MainLogic getMainLogic songPath {}", songPath);
 			AudioInputStream audioIn;
 			try {
 				audioIn = AudioSystem.getAudioInputStream(songPath);
@@ -83,12 +85,9 @@ public class MainLogic {
 				DataLine.Info info = new DataLine.Info(Clip.class, format);
 				song = (Clip) AudioSystem.getLine(info);
 				song.open(audioIn);
-				GetGlobalScriptVariables();
-				// FloatControl gainControl = (FloatControl)
-				// song.getControl(FloatControl.Type.MASTER_GAIN);
-				// gainControl.setValue(-35.0f);
-			} catch (IllegalArgumentException | UnsupportedAudioFileException | IOException | LineUnavailableException
-					| NullPointerException e) {
+				loadGlobalScriptVariables();
+			} catch (IllegalArgumentException | UnsupportedAudioFileException | IOException
+					| LineUnavailableException | NullPointerException e) {
 				logger.error("audio clip Exception ", e);
 			}
 		}
@@ -100,16 +99,18 @@ public class MainLogic {
 	}
 
 	// display page without a chapter
-	public void displayPage(String pageId, boolean reDisplay, Guide guide, MainShell mainShell, AppSettings appSettings,
-			UserSettings userSettings, GuideSettings guideSettings, DebugShell debugShell) {
-		displayPage("default", pageId, reDisplay, guide, mainShell, appSettings, userSettings, guideSettings,
-				debugShell);
+	public void displayPage(String pageId, boolean reDisplay, Guide guide, MainShell mainShell,
+			AppSettings appSettings, UserSettings userSettings, GuideSettings guideSettings,
+			DebugShell debugShell) {
+		displayPage("default", pageId, reDisplay, guide, mainShell, appSettings, userSettings,
+				guideSettings, debugShell);
 	}
 
 	// main display page
 	// TODO currently chapters are ignored, need to implement
-	public void displayPage(String chapterName, String pageId, boolean reDisplay, Guide guide, MainShell mainShell,
-			AppSettings appSettings, UserSettings userSettings, GuideSettings guideSettings, DebugShell debugShell) {
+	public void displayPage(String chapterName, String pageId, boolean reDisplay, Guide guide,
+			MainShell mainShell, AppSettings appSettings, UserSettings userSettings,
+			GuideSettings guideSettings, DebugShell debugShell) {
 		// Main code that displays a page
 		String strPageId;
 		boolean blnMetronome;
@@ -121,11 +122,10 @@ public class MainLogic {
 		String fileSeparator = appSettings.getFileSeparator();
 		String imgName = "";
 
-		logger.debug("displayPage PagePassed " + pageId);
-		logger.debug("displayPage Flags " + comonFunctions.getFlags(guide.getFlags()));
+		logger.debug("displayPage PagePassed {}", pageId);
+		logger.debug(() -> "displayPage Flags " + comonFunctions.getFlags(guide.getFlags()));
 
 		try {
-			// Display display = Display.getDefault();
 			mainShell.stopAll(false);
 			overRide.clear();
 			guideSettings.setChapter(chapterName);
@@ -134,28 +134,24 @@ public class MainLogic {
 			// get the page to display
 			objCurrPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
 			if (objCurrPage == null) {
-				objCurrPage = Generate404Page(guide, chapterName, strPageId);
+				objCurrPage = generate404Page(guide, chapterName, strPageId);
 				strPageId = objCurrPage.getId();
 			}
 			guideSettings.setPrevPage(guideSettings.getCurrPage());
 			guideSettings.setCurrPage(strPageId);
 
 			// load new guide?
-			objCurrPage = ProcessLoadGuide(objCurrPage, guide, debugShell, appSettings, mainShell);
+			objCurrPage = processLoadGuide(objCurrPage, guide, debugShell, appSettings, mainShell);
 			strPageId = objCurrPage.getId();
 
 			debugShell.setPage(strPageId, true);
 
 			// run the pageLoad script
-			try {
-				String pageJavascript = objCurrPage.getjScript();
-				if (!pageJavascript.equals("")) {
-					if (pageJavascript.contains("pageLoad")) {
-						mainShell.runJscript("pageLoad", overRide, true);
-					}
-				}
-			} catch (Exception e) {
-				logger.error("displayPage javascript Exception " + e.getLocalizedMessage(), e);
+			String pageJavascript = objCurrPage.getjScript();
+			// TODO, this can't be the right way to detect if a pageLoad function is
+			// present.
+			if (pageJavascript.contains("pageLoad")) {
+				mainShell.runJscript("pageLoad", overRide, true);
 			}
 
 			// PageChangeClick
@@ -165,62 +161,63 @@ public class MainLogic {
 			}
 
 			// delay
-			objDelay = ProcessDelay(mainShell, guide, objCurrPage);
+			objDelay = processDelay(mainShell, guide, objCurrPage);
 
 			// If we are going straight to another page we can skip this section
 			if ((objDelay == null || objDelay.getDelaySec() > 0) && overRide.getPage().equals("")) {
 				// add timers
-				AddTimers(mainShell, objCurrPage, guide);
+				addTimers(mainShell, objCurrPage, guide);
 
 				// If we haven't over ridden the left pane then populate it
 				if (overRide.getLeftHtml().equals("") && overRide.getLeftBody().equals("")) {
 					// Video
-					objVideo = ProcessVideo(objCurrPage, guide, fileSeparator, appSettings, mainShell);
+					objVideo = processVideo(objCurrPage, guide, fileSeparator, appSettings,
+							mainShell);
 					if (objVideo == null) {
-						objWebcam = ProcessWebcam(objCurrPage, guide, fileSeparator, appSettings, mainShell);
+						objWebcam = processWebcam(objCurrPage, guide, fileSeparator, appSettings,
+								mainShell);
 					} else {
 						objWebcam = null;
 					}
-					try {
-						if (objVideo == null && objWebcam == null) {
-							// image
-							imgName = ProcessImage(objCurrPage, fileSeparator, appSettings, guide, mainShell);
-							if (imgName.equals("")) {
-								// Left text
-								ProcessLeftText(objCurrPage, fileSeparator, appSettings, guide, mainShell,
-										userSettings);
-							}
-						} else {
-							if (objWebcam == null || objWebcam.getWebCamFound()) {
-								mainShell.clearImage();
-								// No image
-							}
+					if (objVideo == null && objWebcam == null) {
+						// image
+						imgName = ProcessImage(objCurrPage, fileSeparator, appSettings, guide,
+								mainShell);
+						if (imgName.equals("")) {
+							// Left text
+							processLeftText(objCurrPage, fileSeparator, appSettings, guide,
+									mainShell, userSettings);
 						}
-					} catch (Exception e) {
-						logger.error("displayPage Image Exception " + e.getLocalizedMessage(), e);
-						mainShell.clearImage();
+					} else {
+						if (objWebcam == null || objWebcam.getWebCamFound()) {
+							mainShell.clearImage();
+							// No image
+						}
 					}
+
 				} else {
-					ProcessLeftTextOverRide(fileSeparator, appSettings, guide, mainShell, userSettings);
+					processLeftTextOverRide(fileSeparator, appSettings, guide, mainShell,
+							userSettings);
 				}
 
 				// Browser text
-				ProcessRightPanel(objCurrPage, fileSeparator, appSettings, guide, mainShell, userSettings);
+				processRightPanel(objCurrPage, fileSeparator, appSettings, guide, mainShell,
+						userSettings);
 
 				// Buttons
-				ProcessButtons(objCurrPage, fileSeparator, appSettings, guide, mainShell, userSettings, objDelay,
+				processButtons(objCurrPage, appSettings, guide, mainShell, userSettings, objDelay,
 						imgName, debugShell);
 
 			}
 
 			if (!reDisplay) {
 				// Audio / Metronome
-				blnMetronome = ProcessMetronome(objCurrPage, guide, mainShell);
+				blnMetronome = processMetronome(objCurrPage, guide, mainShell);
 				if (!blnMetronome) {
 					// Audio
-					ProcessAudio(objCurrPage, guide, mainShell, fileSeparator, appSettings);
+					processAudio(objCurrPage, guide, mainShell, fileSeparator, appSettings);
 					// Audio2
-					ProcessAudio2(objCurrPage, guide, mainShell, fileSeparator, appSettings);
+					processAudio2(objCurrPage, guide, mainShell, fileSeparator, appSettings);
 				}
 			}
 
@@ -231,18 +228,14 @@ public class MainLogic {
 			}
 
 			// do page set / unset
-			try {
-				objCurrPage.setUnSet(guide.getFlags());
-			} catch (Exception e1) {
-				logger.error("displayPage PageFlags Exception " + e1.getLocalizedMessage(), e1);
-			}
+			objCurrPage.setUnSet(guide.getFlags());
 
 			// Start all media at the same time
 			mainShell.startDeferredMedia();
 
 			guide.getSettings().setPage(strPageId);
 			strFlags = comonFunctions.getFlags(guide.getFlags());
-			logger.debug("displayPage End Flags " + strFlags);
+			logger.debug("displayPage End Flags {}", strFlags);
 			guide.getSettings().setFlags(strFlags);
 			guide.getSettings().saveSettings();
 			appSettings.saveSettings();
@@ -253,15 +246,16 @@ public class MainLogic {
 		}
 	}
 
-	private Page Generate404Page(Guide guide, String chapterName, String strPageId) {
+	private Page generate404Page(Guide guide, String chapterName, String strPageId) {
 		Page objCurrPage = guide.getChapters().get(chapterName).getPages().get("GuideMe404Error");
-		String strText = "<div><p><h1>Oops it looks like page " + strPageId + " does not exist</h1></p>";
+		String strText = "<div><p><h1>Oops it looks like page " + strPageId
+				+ " does not exist</h1></p>";
 		strText = strText + "<p>Please contact the Author to let them know the issue</p></div>";
 		objCurrPage.addText(new Text(strText));
 		return objCurrPage;
 	}
 
-	private Delay ProcessDelay(MainShell mainShell, Guide guide, Page objCurrPage) {
+	private Delay processDelay(MainShell mainShell, Guide guide, Page objCurrPage) {
 		Delay objDelay = null;
 		mainShell.setLblRight("");
 		boolean blnDelay = false;
@@ -300,21 +294,16 @@ public class MainLogic {
 					guide.setDelTarget(objDelay.getTarget());
 					guide.setDelayjScript(objDelay.getjScript());
 					guide.setDelayScriptVar(objDelay.getScriptVar());
-					String strDelStartAt = objDelay.getStartWith();
 					intDelSeconds = objDelay.getDelaySec();
-					try {
-						guide.setDelStartAtOffSet(Integer.parseInt(strDelStartAt));
-						guide.setDelStartAtOffSet(guide.getDelStartAtOffSet() - intDelSeconds);
-					} catch (Exception etemp) {
-						guide.setDelStartAtOffSet(0);
-					}
+					guide.setDelStartAtOffSet(objDelay.getStartWith());
+					guide.setDelStartAtOffSet(guide.getDelStartAtOffSet() - intDelSeconds);
 
 					// record any delay set / unset
 					guide.setDelaySet(objDelay.getSet());
 					guide.setDelayUnSet(objDelay.getUnSet());
-					logger.debug("displayPage Delay Seconds " + intDelSeconds + " Style " + guide.getDelStyle()
-							+ " Target " + guide.getDelTarget() + " Set " + guide.getDelaySet() + " UnSet "
-							+ guide.getDelayUnSet());
+					logger.debug("displayPage Delay Seconds {} Style {} Target {} Set {} UnSet {}",
+							intDelSeconds, guide.getDelStyle(), guide.getDelTarget(),
+							guide.getDelaySet(), guide.getDelayUnSet());
 					Calendar calCountDown = Calendar.getInstance();
 					calCountDown.add(Calendar.SECOND, intDelSeconds);
 					mainShell.setCalCountDown(calCountDown);
@@ -334,7 +323,7 @@ public class MainLogic {
 
 	}
 
-	private void AddTimers(MainShell mainShell, Page objCurrPage, Guide guide) {
+	private void addTimers(MainShell mainShell, Page objCurrPage, Guide guide) {
 		Timer objTimer;
 		if (overRide.timerCount() > 0) {
 			for (int i2 = 0; i2 < overRide.timerCount(); i2++) {
@@ -359,8 +348,8 @@ public class MainLogic {
 
 	}
 
-	private Video ProcessVideo(Page objCurrPage, Guide guide, String fileSeparator, AppSettings appSettings,
-			MainShell mainShell) {
+	private Video processVideo(Page objCurrPage, Guide guide, String fileSeparator,
+			AppSettings appSettings, MainShell mainShell) {
 		Video objVideo;
 		boolean blnVideo = false;
 		objVideo = overRide.getVideo();
@@ -380,42 +369,29 @@ public class MainLogic {
 			}
 			if (blnVideo) {
 				String strVideo = objVideo.getId();
-				logger.trace("displayPage Video " + strVideo);
+				logger.trace("displayPage Video {}", strVideo);
 				String strStartAt = objVideo.getStartAt();
-				logger.trace("displayPage Video Start At " + strStartAt);
+				logger.trace("displayPage Video Start At {}", strStartAt);
 				int intStartAt = 0;
-				try {
-					if (strStartAt != "") {
-						intStartAt = comonFunctions.getMilisecFromTime(strStartAt) / 1000;
-					}
-				} catch (Exception e1) {
-					intStartAt = 0;
-					logger.trace("displayPage startat Exception " + e1.getLocalizedMessage());
+				if (!strStartAt.isBlank()) {
+					intStartAt = comonFunctions.getMilisecFromTime(strStartAt) / 1000;
 				}
 
 				String strStopAt = objVideo.getStopAt();
-				logger.trace("displayPage Video Stop At " + strStopAt);
+				logger.trace("displayPage Video Stop At {}", strStopAt);
 				int intStopAt = 0;
-				try {
-					if (strStopAt != "") {
-						intStopAt = comonFunctions.getMilisecFromTime(strStopAt) / 1000;
-					}
-				} catch (Exception e1) {
-					intStopAt = 0;
-					logger.trace("displayPage stopat Exception " + e1.getLocalizedMessage());
+				if (!strStopAt.isBlank()) {
+					intStopAt = comonFunctions.getMilisecFromTime(strStopAt) / 1000;
 				}
 
-				String imgPath = comonFunctions.getMediaFullPath(strVideo, fileSeparator, appSettings, guide);
+				String imgPath = comonFunctions.getMediaFullPath(strVideo, fileSeparator,
+						appSettings, guide);
 
-				String loops = objVideo.getRepeat();
-				int repeat = 0;
-				try {
-					repeat = Integer.parseInt(loops);
-				} catch (NumberFormatException nfe) {
-				}
+				int repeat = objVideo.getRepeat();
+
 				// Play video
-				mainShell.playVideo(imgPath, intStartAt, intStopAt, repeat, objVideo.getTarget(), objVideo.getJscript(),
-						objVideo.getScriptVar(), objVideo.getVolume(), true);
+				mainShell.playVideo(imgPath, intStartAt, intStopAt, repeat, objVideo.getTarget(),
+						objVideo.getJscript(), objVideo.getScriptVar(), objVideo.getVolume(), true);
 			}
 		} catch (Exception e1) {
 			logger.trace("displayPage Video Exception " + e1.getLocalizedMessage());
@@ -429,8 +405,8 @@ public class MainLogic {
 
 	}
 
-	private Webcam ProcessWebcam(Page objCurrPage, Guide guide, String fileSeparator, AppSettings appSettings,
-			MainShell mainShell) {
+	private Webcam processWebcam(Page objCurrPage, Guide guide, String fileSeparator,
+			AppSettings appSettings, MainShell mainShell) {
 		Webcam objWebcam;
 		boolean blnWebcam = false;
 		objWebcam = overRide.getWebcam();
@@ -463,8 +439,8 @@ public class MainLogic {
 
 	}
 
-	private String ProcessImage(Page objCurrPage, String fileSeparator, AppSettings appSettings, Guide guide,
-			MainShell mainShell) {
+	private String ProcessImage(Page objCurrPage, String fileSeparator, AppSettings appSettings,
+			Guide guide, MainShell mainShell) {
 		// if there is an image over ride from javascript use it
 		boolean blnImage = false;
 		String strImage = overRide.getImage();
@@ -478,35 +454,36 @@ public class MainLogic {
 				blnImage = true;
 			}
 			if (!blnImage) {
-				imgPath = comonFunctions.getMediaFullPath(strImage, fileSeparator, appSettings, guide);
+				imgPath = comonFunctions.getMediaFullPath(strImage, fileSeparator, appSettings,
+						guide);
 				flImage = new File(imgPath);
 				if (flImage.exists()) {
 					blnImage = true;
 				}
 			}
 		}
-		if (!blnImage) {
-			if (objCurrPage.getImageCount() > 0) {
-				for (int i2 = 0; i2 < objCurrPage.getImageCount(); i2++) {
-					objImage = objCurrPage.getImage(i2);
-					if (objImage.canShow(guide.getFlags())) {
-						strImage = objImage.getId();
-						File flImage = new File(strImage);
+		if (!blnImage && (objCurrPage.getImageCount() > 0)) {
+			for (int i2 = 0; i2 < objCurrPage.getImageCount(); i2++) {
+				objImage = objCurrPage.getImage(i2);
+				if (objImage.canShow(guide.getFlags())) {
+					strImage = objImage.getId();
+					File flImage = new File(strImage);
+					if (flImage.exists()) {
+						imgPath = strImage;
+						blnImage = true;
+					}
+					if (!blnImage) {
+						imgPath = comonFunctions.getMediaFullPath(strImage, fileSeparator,
+								appSettings, guide);
+						flImage = new File(imgPath);
 						if (flImage.exists()) {
-							imgPath = strImage;
 							blnImage = true;
-						}
-						if (!blnImage) {
-							imgPath = comonFunctions.getMediaFullPath(strImage, fileSeparator, appSettings, guide);
-							flImage = new File(imgPath);
-							if (flImage.exists()) {
-								blnImage = true;
-								break;
-							}
+							break;
 						}
 					}
 				}
 			}
+
 		}
 		if (blnImage) {
 			try {
@@ -524,8 +501,8 @@ public class MainLogic {
 		}
 	}
 
-	private void ProcessLeftText(Page objCurrPage, String fileSeparator, AppSettings appSettings, Guide guide,
-			MainShell mainShell, UserSettings userSettings) {
+	private void processLeftText(Page objCurrPage, String fileSeparator, AppSettings appSettings,
+			Guide guide, MainShell mainShell, UserSettings userSettings) {
 		// Replace any string pref in the HTML with the user preference
 		// they are encoded #prefName#
 		try {
@@ -538,15 +515,12 @@ public class MainLogic {
 			String displayText = displayTextBuilder.toString();
 
 			// Media Directory
-			try {
-				String mediaPath;
-				mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
-				displayText = displayText.replace(MEDIA_PATH_PLACEHOLDER, mediaPath);
-			} catch (Exception e) {
-				logger.error("displayPage BrwsText Media Directory Exception " + e.getLocalizedMessage(), e);
-			}
+			String mediaPath;
+			mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
+			displayText = displayText.replace(MEDIA_PATH_PLACEHOLDER, mediaPath);
 
-			displayText = comonFunctions.substituteTextVars(displayText, guide.getSettings(), userSettings);
+			displayText = comonFunctions.substituteTextVars(displayText, guide.getSettings(),
+					userSettings);
 
 			mainShell.setLeftText(displayText, overRide.getRightCss());
 		} catch (Exception e) {
@@ -556,7 +530,7 @@ public class MainLogic {
 
 	}
 
-	private void ProcessLeftTextOverRide(String fileSeparator, AppSettings appSettings, Guide guide,
+	private void processLeftTextOverRide(String fileSeparator, AppSettings appSettings, Guide guide,
 			MainShell mainShell, UserSettings userSettings) {
 		if (!overRide.getLeftHtml().equals("")) {
 			String leftHtml = overRide.getLeftHtml();
@@ -567,14 +541,16 @@ public class MainLogic {
 				mediaPath = mediaPath.replace("\\", "/");
 				leftHtml = leftHtml.replace(MEDIA_PATH_PLACEHOLDER, mediaPath);
 			} catch (Exception e) {
-				logger.error("displayPage Over ride lefthtml Media Directory Exception " + e.getLocalizedMessage(), e);
+				logger.error("displayPage Over ride lefthtml Media Directory Exception "
+						+ e.getLocalizedMessage(), e);
 			}
 
 			// Guide CSS Directory
 			try {
 				leftHtml = leftHtml.replace("\\GuideCSS\\", guide.getCss());
 			} catch (Exception e) {
-				logger.error("displayPage Over ride lefthtml Guide CSS Exception " + e.getLocalizedMessage(), e);
+				logger.error("displayPage Over ride lefthtml Guide CSS Exception "
+						+ e.getLocalizedMessage(), e);
 			}
 
 			mainShell.setleftPaneHtml(leftHtml);
@@ -585,15 +561,12 @@ public class MainLogic {
 			try {
 				String displayText = overRide.getLeftBody();
 				// Media Directory
-				try {
-					String mediaPath;
-					mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
-					displayText = displayText.replace("\\MediaDir\\", mediaPath);
-				} catch (Exception e) {
-					logger.error("displayPage BrwsText Media Directory Exception " + e.getLocalizedMessage(), e);
-				}
+				String mediaPath;
+				mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
+				displayText = displayText.replace("\\MediaDir\\", mediaPath);
 
-				displayText = comonFunctions.substituteTextVars(displayText, guide.getSettings(), userSettings);
+				displayText = comonFunctions.substituteTextVars(displayText, guide.getSettings(),
+						userSettings);
 
 				mainShell.setLeftText(displayText, overRide.getLeftCss());
 			} catch (Exception e) {
@@ -604,8 +577,8 @@ public class MainLogic {
 
 	}
 
-	private void ProcessRightPanel(Page objCurrPage, String fileSeparator, AppSettings appSettings, Guide guide,
-			MainShell mainShell, UserSettings userSettings) {
+	private void processRightPanel(Page objCurrPage, String fileSeparator, AppSettings appSettings,
+			Guide guide, MainShell mainShell, UserSettings userSettings) {
 		GuideSettings guideSettings = guide.getSettings();
 
 		// Replace any string pref in the HTML with the user preference
@@ -628,20 +601,17 @@ public class MainLogic {
 			}
 
 			// Media Directory
-			try {
-				String mediaPath;
-				mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
-				displayText = displayText.replace("\\MediaDir\\", mediaPath);
-			} catch (Exception e) {
-				logger.error("displayPage BrwsText Media Directory Exception " + e.getLocalizedMessage(), e);
-			}
+			String mediaPath;
+			mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
+			displayText = displayText.replace("\\MediaDir\\", mediaPath);
 
 			if (overRide.getRightHtml().equals("")) {
-				displayText = comonFunctions.substituteTextVars(displayText, guideSettings, userSettings);
+				displayText = comonFunctions.substituteTextVars(displayText, guideSettings,
+						userSettings);
 				mainShell.setBrwsText(displayText, overRide.getRightCss());
 			} else {
-				mainShell.setRightHtml(
-						comonFunctions.substituteTextVars(overRide.getRightHtml(), guideSettings, userSettings));
+				mainShell.setRightHtml(comonFunctions.substituteTextVars(overRide.getRightHtml(),
+						guideSettings, userSettings));
 			}
 		} catch (Exception e) {
 			logger.error("displayPage BrwsText Exception " + e.getLocalizedMessage(), e);
@@ -650,8 +620,9 @@ public class MainLogic {
 
 	}
 
-	private void ProcessButtons(Page objCurrPage, String fileSeparator, AppSettings appSettings, Guide guide,
-			MainShell mainShell, UserSettings userSettings, Delay objDelay, String imgName, DebugShell debugShell) {
+	private void processButtons(Page objCurrPage, AppSettings appSettings, Guide guide,
+			MainShell mainShell, UserSettings userSettings, Delay objDelay, String imgName,
+			DebugShell debugShell) {
 		Button objButton;
 		GuideSettings guideSettings = guide.getSettings();
 		ArrayList<Button> button = new ArrayList<>();
@@ -674,7 +645,8 @@ public class MainLogic {
 				guide.removeGlobalButton(objGlobalButton.getId());
 				break;
 			default:
-				logger.error("displayPage Global Button invalid action " + objGlobalButton.getAction());
+				logger.error(
+						"displayPage Global Button invalid action " + objGlobalButton.getAction());
 			}
 		}
 
@@ -684,7 +656,8 @@ public class MainLogic {
 		// add top placement global buttons
 		ArrayList<Button> globalTopButtons = new ArrayList<>();
 		for (GlobalButton globalButton : guide.getGlobalButtons()) {
-			if (globalButton.canShow(guide.getFlags()) && globalButton.getPlacement() == GlobalButton.Placement.TOP) {
+			if (globalButton.canShow(guide.getFlags())
+					&& globalButton.getPlacement() == GlobalButton.Placement.TOP) {
 				globalTopButtons.add(globalButton);
 				debugShell.addOverrideButton(globalButton);
 			}
@@ -767,7 +740,7 @@ public class MainLogic {
 
 	}
 
-	private boolean ProcessMetronome(Page objCurrPage, Guide guide, MainShell mainShell) {
+	private boolean processMetronome(Page objCurrPage, Guide guide, MainShell mainShell) {
 		boolean blnMetronome = false;
 		try {
 			Metronome objMetronome = overRide.getMetronome();
@@ -787,17 +760,11 @@ public class MainLogic {
 			if (blnMetronome) {
 				// Metronome
 				int intbpm = objMetronome.getbpm();
-				logger.debug("displayPage Metronome " + intbpm + " BPM");
-				try {
-					mainShell.setMetronomeBPM(objMetronome.getbpm(), objMetronome.getLoops(),
-							objMetronome.getResolution(), objMetronome.getRhythm());
-				} catch (IllegalArgumentException e) {
-					logger.error("displayPage Metronome IllegalArgumentException ", e);
-				} catch (IllegalStateException e) {
-					logger.error("displayPage Metronome IllegalStateException ", e);
-				} catch (Exception e) {
-					logger.error("displayPage Metronome Exception ", e);
-				}
+				logger.debug("displayPage Metronome {} BPM", intbpm);
+
+				mainShell.setMetronomeBPM(objMetronome.getbpm(), objMetronome.getLoops(),
+						objMetronome.getResolution(), objMetronome.getRhythm());
+
 			}
 		} catch (Exception e) {
 			logger.error("displayPage Metronome Exception ", e);
@@ -805,8 +772,8 @@ public class MainLogic {
 		return blnMetronome;
 	}
 
-	private void ProcessAudio(Page objCurrPage, Guide guide, MainShell mainShell, String fileSeparator,
-			AppSettings appSettings) {
+	private void processAudio(Page objCurrPage, Guide guide, MainShell mainShell,
+			String fileSeparator, AppSettings appSettings) {
 		boolean blnAudio = false;
 		Audio objAudio = overRide.getAudio();
 		try {
@@ -834,7 +801,7 @@ public class MainLogic {
 					intAudioLoops = Integer.parseInt(strIntAudio);
 				}
 				strAudio = objAudio.getId();
-				logger.debug("displayPage Audio " + strAudio);
+				logger.debug("displayPage Audio {}", strAudio);
 				String strStartAt = objAudio.getStartAt();
 				int startAtSeconds;
 				if (!strStartAt.equals("")) {
@@ -850,10 +817,12 @@ public class MainLogic {
 					stopAtSeconds = 0;
 				}
 
-				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator, appSettings, guide);
+				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator,
+						appSettings, guide);
 				strAudioTarget = objAudio.getTarget();
-				mainShell.playAudio(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget,
-						objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume(), true);
+				mainShell.playAudio(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops,
+						strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(),
+						objAudio.getVolume(), true);
 				logger.debug("displayPage Audio target " + strAudioTarget);
 			}
 		} catch (Exception e) {
@@ -862,8 +831,8 @@ public class MainLogic {
 
 	}
 
-	private void ProcessAudio2(Page objCurrPage, Guide guide, MainShell mainShell, String fileSeparator,
-			AppSettings appSettings) {
+	private void processAudio2(Page objCurrPage, Guide guide, MainShell mainShell,
+			String fileSeparator, AppSettings appSettings) {
 		boolean blnAudio = false;
 		Audio objAudio = overRide.getAudio2();
 		try {
@@ -891,7 +860,7 @@ public class MainLogic {
 					intAudioLoops = Integer.parseInt(strIntAudio);
 				}
 				strAudio = objAudio.getId();
-				logger.debug("displayPage Audio " + strAudio);
+				logger.debug("displayPage Audio {}", strAudio);
 				String strStartAt = objAudio.getStartAt();
 				int startAtSeconds;
 				if (!strStartAt.equals("")) {
@@ -907,20 +876,22 @@ public class MainLogic {
 					stopAtSeconds = 0;
 				}
 
-				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator, appSettings, guide);
+				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator,
+						appSettings, guide);
 				strAudioTarget = objAudio.getTarget();
-				mainShell.playAudio2(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget,
-						objAudio.getJscript(), objAudio.getScriptVar(), objAudio.getVolume(), true);
-				logger.debug("displayPage Audio target " + strAudioTarget);
+				mainShell.playAudio2(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops,
+						strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(),
+						objAudio.getVolume(), true);
+				logger.debug("displayPage Audio target {}", strAudioTarget);
 			}
 		} catch (Exception e) {
-			logger.error("displayPage Audio Exception " + e.getLocalizedMessage(), e);
+			logger.error("displayPage Audio Exception {}", e.getLocalizedMessage(), e);
 		}
 
 	}
 
-	private Page ProcessLoadGuide(Page objCurrPage, Guide guide, DebugShell debugShell, AppSettings appSettings,
-			MainShell mainShell) {
+	private Page processLoadGuide(Page objCurrPage, Guide guide, DebugShell debugShell,
+			AppSettings appSettings, MainShell mainShell) {
 		boolean blnLoadGuide = false;
 		LoadGuide objLoadGuide = null;
 		String strPageId = "";
@@ -959,18 +930,15 @@ public class MainLogic {
 				logger.error("Clear debug pages " + ex.getLocalizedMessage(), ex);
 			}
 			try {
-				XmlGuideReader.loadXML((appSettings.getDataDirectory() + objLoadGuide.getGuidePath()), guide,
+				XmlGuideReader.loadXML(
+						(appSettings.getDataDirectory() + objLoadGuide.getGuidePath()), guide,
 						appSettings, debugShell);
 				GuideSettings guideSettings = guide.getSettings();
 
 				// run postScript
 				String postScript = objLoadGuide.getPostjScript();
 				if (!(postScript.equals("") || pageJavascript.equals(""))) {
-					try {
-						mainShell.runJscript(postScript, pageJavascript);
-					} catch (Exception e) {
-						logger.error("displayPage javascript Exception " + e.getLocalizedMessage(), e);
-					}
+					mainShell.runJscript(postScript, pageJavascript);
 				}
 				guide.getSettings().saveSettings();
 
@@ -989,7 +957,7 @@ public class MainLogic {
 				// get the page to display
 				objCurrPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
 				if (objCurrPage == null) {
-					objCurrPage = Generate404Page(guide, chapterName, strPageId);
+					objCurrPage = generate404Page(guide, chapterName, strPageId);
 					strPageId = objCurrPage.getId();
 				}
 				guideSettings.setPrevPage(strPageId);
@@ -1011,7 +979,7 @@ public class MainLogic {
 		return objCurrPage;
 	}
 
-	private static void GetGlobalScriptVariables() {
+	private static void loadGlobalScriptVariables() {
 		// globalScriptVariables
 		String dataDirectory;
 		AppSettings appSettings = AppSettings.getAppSettings();
@@ -1025,7 +993,8 @@ public class MainLogic {
 			if (dataDirectory.startsWith("/")) {
 				prefix = "/";
 			}
-			dataDirectory = prefix + comonFunctions.fixSeparator(dataDirectory, appSettings.getFileSeparator());
+			dataDirectory = prefix
+					+ comonFunctions.fixSeparator(dataDirectory, appSettings.getFileSeparator());
 			filename = dataDirectory + appSettings.getFileSeparator() + "Global.state";
 		}
 
@@ -1042,13 +1011,14 @@ public class MainLogic {
 			File xmlFile = new File(filename);
 
 			if (xmlFile.exists()) {
-				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
 				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 				Document doc = docBuilder.parse(xmlFile);
 				Element rootElement = doc.getDocumentElement();
 				rootElement.normalize();
 
-				Element elScriptVariables = comonFunctions.getElement("//scriptVariables", rootElement);
+				Element elScriptVariables = comonFunctions.getElement("//scriptVariables",
+						rootElement);
 				if (elScriptVariables != null) {
 					NodeList nodeList = elScriptVariables.getElementsByTagName("Var");
 					String strName;
@@ -1058,22 +1028,19 @@ public class MainLogic {
 					for (int i = 0; i < nodeList.getLength(); i++) {
 						Node currentNode = nodeList.item(i);
 						if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-							try {
-								Element elVar = (Element) currentNode;
-								strName = elVar.getAttribute("id");
-								strType = elVar.getAttribute("type");
-								CharacterData elChar;
-								elChar = (CharacterData) elVar.getFirstChild();
-								if (elChar != null) {
-									strValue = elChar.getData();
-									objValue = comonFunctions.getSavedObject(strValue, strType, scope);
-								} else {
-									objValue = null;
-								}
-								globalScriptVariables.put(strName, objValue);
-							} catch (Exception e) {
-								logger.error("GuideSettings scriptVariables " + e.getLocalizedMessage(), e);
+							Element elVar = (Element) currentNode;
+							strName = elVar.getAttribute("id");
+							strType = elVar.getAttribute("type");
+							CharacterData elChar;
+							elChar = (CharacterData) elVar.getFirstChild();
+							if (elChar != null) {
+								strValue = elChar.getData();
+								objValue = comonFunctions.getSavedObject(strValue, strType, scope);
+							} else {
+								objValue = null;
 							}
+							globalScriptVariables.put(strName, objValue);
+
 						}
 					}
 				}
@@ -1100,7 +1067,7 @@ public class MainLogic {
 			ScriptableObject scope = context.initStandardObjects();
 
 			File xmlFile = new File(filename);
-			logger.trace("MainLogic saveSettings filename: " + filename);
+			logger.trace("MainLogic saveSettings filename: {}", filename);
 			Element rootElement;
 			Document doc;
 
@@ -1109,14 +1076,14 @@ public class MainLogic {
 			// if nodes do not exist it will add them
 			if (xmlFile.exists()) {
 				logger.trace("MainLogic saveSettings file exists ");
-				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
 				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 				doc = docBuilder.parse(xmlFile);
 				rootElement = doc.getDocumentElement();
 				rootElement.normalize();
 			} else {
 				logger.trace("MainLogic saveSettings does not file exist ");
-				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
 				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 				doc = docBuilder.newDocument();
 				rootElement = doc.createElement("SETTINGS");
@@ -1152,10 +1119,10 @@ public class MainLogic {
 			}
 
 			// write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			TransformerFactory transformerFactory = XMLReaderUtils.getTransformFactory();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			logger.trace("MainLogic saveSettings save file: " + filename);
+			logger.trace("MainLogic saveSettings save file: {}", filename);
 			StreamResult result = new StreamResult(new File(filename));
 			transformer.transform(source, result);
 

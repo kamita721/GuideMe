@@ -61,8 +61,10 @@ public class ImageManager {
 		Image oldImage = imageLabel.getImage();
 		try {
 			imageLabel.setImage(getImage());
-		} catch (InterruptedException | ExecutionException e) {
+		} catch (ExecutionException e) {
 			logger.error("Error loading image: " + currentImagePath, e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 		if (oldImage != null) {
 			oldImage.dispose();
