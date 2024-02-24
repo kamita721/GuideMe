@@ -248,8 +248,7 @@ public class Jscript implements Runnable {
 
 				int argStart;
 				int argEnd;
-				String argstring = "";
-				String[] argArray;
+				String argstring;
 				String javaFunctionFull = javaFunction;
 				argStart = javaFunction.indexOf("(");
 				argEnd = javaFunction.indexOf(")");
@@ -277,6 +276,9 @@ public class Jscript implements Runnable {
 					guide.updateJConsole("Couldn't find function " + javaFunction);
 				}
 			} catch (EvaluatorException ex) {
+				/*
+				 * TODO, we need much better tracability on where the error came from.
+				 */
 				logger.error(JSCRIPT_MARKER,
 						"JavaScriptError line " + ex.lineNumber() + " column " + ex.columnNumber()
 								+ " Source " + ex.lineSource() + " error "

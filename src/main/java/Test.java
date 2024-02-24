@@ -1,4 +1,3 @@
-import org.guideme.guideme.scripting.Jscript;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.FunctionObject;
 import org.mozilla.javascript.Scriptable;
