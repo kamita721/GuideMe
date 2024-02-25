@@ -1297,47 +1297,36 @@ public class MainShell {
 
 	}
 
+	public void runJavascript(String function, String pageJavascript, OverRide overRide,
+			boolean pageLoading) {
+		getFormFields();
+		refreshVars();
+		if (function == null)
+			function = "";
+
+		if (!function.equals("")) {
+			guide.getJavascriptEngine().exec(userSettings, appSettings, pageLoading, null, overRide,
+					pageJavascript, function, pageLoading);
+//			new Jscript(guide).exec(userSettings, appSettings, pageLoading, null, overRide,
+//					pageJavascript, function, pageLoading);
+		}
+	}
+
 	public void runJscript(String function, boolean pageLoading) {
 		runJscript(function, null, pageLoading);
 	}
 
 	// run the javascript function passed
 	public void runJscript(String function, OverRide overRide, boolean pageLoading) {
-		getFormFields();
-		refreshVars();
-		if (function == null)
-			function = "";
-		if (!function.equals("")) {
-			Page objCurrPage = guide.getChapters().get(guideSettings.getChapter()).getPages()
-					.get(guideSettings.getCurrPage());
-			String pageJavascript = objCurrPage.getjScript();
-			Jscript jscript = new Jscript(guide, userSettings, appSettings, guide.getInPrefGuide(),
-					this, overRide, pageJavascript, function, pageLoading);
-			SwingUtilities.invokeLater(jscript);
-			while (jscript.isRunning()) {
-				Display.getCurrent().readAndDispatch();
-			}
-		}
+		Page objCurrPage = guide.getChapters().get(guideSettings.getChapter()).getPages()
+				.get(guideSettings.getCurrPage());
+		String pageJavascript = objCurrPage.getjScript();
+		runJavascript(function, pageJavascript, overRide, pageLoading);
 	}
 
 	// run the javascript function passed
 	public void runJscript(String function, String pageJavascript) {
-		try {
-			getFormFields();
-			refreshVars();
-			if (function == null)
-				function = "";
-			if (!function.equals("")) {
-				Jscript jscript = new Jscript(guide, userSettings, appSettings,
-						guide.getInPrefGuide(), this, null, pageJavascript, function, false);
-				SwingUtilities.invokeLater(jscript);
-				while (jscript.isRunning()) {
-					Display.getCurrent().readAndDispatch();
-				}
-			}
-		} catch (Exception ex) {
-			logger.error(" run java script " + ex.getLocalizedMessage(), ex);
-		}
+		runJavascript(function, pageJavascript, null, false);
 	}
 
 	// get any fields from the html form and store them in guide settings for

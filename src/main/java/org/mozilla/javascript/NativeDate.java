@@ -263,7 +263,8 @@ public final class NativeDate extends IdScriptableObject {
 	}
 
 	@Override
-	public Object execIdCall(IdFunctionObject f, Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+	public Object execIdCall(IdFunctionObject f, Context cx, Scriptable scope, Scriptable thisObj,
+			Object[] args) {
 		if (!f.hasTag(DATE_TAG)) {
 			return super.execIdCall(f, cx, scope, thisObj, args);
 		}
@@ -301,15 +302,17 @@ public final class NativeDate extends IdScriptableObject {
 			}
 			Object toISO = ScriptableObject.getProperty(o, toISOString);
 			if (toISO == NOT_FOUND) {
-				throw ScriptRuntime.typeError2("msg.function.not.found.in", toISOString, ScriptRuntime.toString(o));
+				throw ScriptRuntime.typeError2("msg.function.not.found.in", toISOString,
+						ScriptRuntime.toString(o));
 			}
 			if (!(toISO instanceof Callable)) {
-				throw ScriptRuntime.typeError3("msg.isnt.function.in", toISOString, ScriptRuntime.toString(o),
-						ScriptRuntime.toString(toISO));
+				throw ScriptRuntime.typeError3("msg.isnt.function.in", toISOString,
+						ScriptRuntime.toString(o), ScriptRuntime.toString(toISO));
 			}
 			Object result = ((Callable) toISO).call(cx, scope, o, ScriptRuntime.emptyArgs);
 			if (!ScriptRuntime.isPrimitive(result)) {
-				throw ScriptRuntime.typeError1("msg.toisostring.must.return.primitive", ScriptRuntime.toString(result));
+				throw ScriptRuntime.typeError1("msg.toisostring.must.return.primitive",
+						ScriptRuntime.toString(result));
 			}
 			return result;
 		}
@@ -319,7 +322,7 @@ public final class NativeDate extends IdScriptableObject {
 		// The rest of Date.prototype methods require thisObj to be Date
 
 		if (!(thisObj instanceof NativeDate))
-			throw incompatibleCallError(f);
+			throw new IllegalStateException(f + " Is not instance of NativeDate");
 		NativeDate realThis = (NativeDate) thisObj;
 		double t = realThis.date;
 
@@ -540,8 +543,8 @@ public final class NativeDate extends IdScriptableObject {
 	 * math here has to be f.p, because we need floor((1968 - 1969) / 4) == -1
 	 */
 	private static double DayFromYear(double y) {
-		return ((365 * ((y) - 1970) + Math.floor(((y) - 1969) / 4.0) - Math.floor(((y) - 1901) / 100.0)
-				+ Math.floor(((y) - 1601) / 400.0)));
+		return ((365 * ((y) - 1970) + Math.floor(((y) - 1969) / 4.0)
+				- Math.floor(((y) - 1901) / 100.0) + Math.floor(((y) - 1601) / 400.0)));
 	}
 
 	private static double TimeFromYear(double y) {
@@ -883,8 +886,8 @@ public final class NativeDate extends IdScriptableObject {
 	/* end of ECMA helper functions */
 
 	/* find UTC time from given date... no 1900 correction! */
-	private static double date_msecFromDate(double year, double mon, double mday, double hour, double min, double sec,
-			double msec) {
+	private static double date_msecFromDate(double year, double mon, double mday, double hour,
+			double min, double sec, double msec) {
 		double day;
 		double time;
 		double result;
@@ -923,7 +926,8 @@ public final class NativeDate extends IdScriptableObject {
 		if (array[0] >= 0 && array[0] <= 99)
 			array[0] += 1900;
 
-		return date_msecFromDate(array[0], array[1], array[2], array[3], array[4], array[5], array[6]);
+		return date_msecFromDate(array[0], array[1], array[2], array[3], array[4], array[5],
+				array[6]);
 	}
 
 	private static double jsStaticFunction_UTC(Object[] args) {
@@ -1059,9 +1063,9 @@ public final class NativeDate extends IdScriptableObject {
 			int hour = values[HOUR], min = values[MIN], sec = values[SEC], msec = values[MSEC];
 			int tzhour = values[TZHOUR], tzmin = values[TZMIN];
 			if (year > 275943 // ceil(1e8/365) + 1970 = 275943
-					|| (month < 1 || month > 12) || (day < 1 || day > DaysInMonth(year, month)) || hour > 24
-					|| (hour == 24 && (min > 0 || sec > 0 || msec > 0)) || min > 59 || sec > 59 || tzhour > 23
-					|| tzmin > 59) {
+					|| (month < 1 || month > 12) || (day < 1 || day > DaysInMonth(year, month))
+					|| hour > 24 || (hour == 24 && (min > 0 || sec > 0 || msec > 0)) || min > 59
+					|| sec > 59 || tzhour > 23 || tzmin > 59) {
 				break syntax;
 			}
 			// valid ISO-8601 format, compute date in milliseconds
@@ -1215,8 +1219,9 @@ public final class NativeDate extends IdScriptableObject {
 				 * Use ported code from jsdate.c rather than the locale-specific date-parsing
 				 * code from Java, to keep js and rhino consistent. Is this the right strategy?
 				 */
-				String wtb = "am;pm;" + "monday;tuesday;wednesday;thursday;friday;" + "saturday;sunday;"
-						+ "january;february;march;april;may;june;" + "july;august;september;october;november;december;"
+				String wtb = "am;pm;" + "monday;tuesday;wednesday;thursday;friday;"
+						+ "saturday;sunday;" + "january;february;march;april;may;june;"
+						+ "july;august;september;october;november;december;"
 						+ "gmt;ut;utc;est;edt;cst;cdt;mst;mdt;pst;pdt;";
 				int index = 0;
 				for (int wtbOffset = 0;;) {
@@ -1528,7 +1533,8 @@ public final class NativeDate extends IdScriptableObject {
 		// Take advantage of the fact that all month abbreviations
 		// have the same length to minimize amount of strings runtime has
 		// to keep in memory
-		String months = "Jan" + "Feb" + "Mar" + "Apr" + "May" + "Jun" + "Jul" + "Aug" + "Sep" + "Oct" + "Nov" + "Dec";
+		String months = "Jan" + "Feb" + "Mar" + "Apr" + "May" + "Jun" + "Jul" + "Aug" + "Sep"
+				+ "Oct" + "Nov" + "Dec";
 		index *= 3;
 		for (int i = 0; i != 3; ++i) {
 			sb.append(months.charAt(index + i));
@@ -2008,18 +2014,22 @@ public final class NativeDate extends IdScriptableObject {
 		return id;
 	}
 
-	private static final int ConstructorId_now = -3, ConstructorId_parse = -2, ConstructorId_UTC = -1,
+	private static final int ConstructorId_now = -3, ConstructorId_parse = -2,
+			ConstructorId_UTC = -1,
 
-			Id_constructor = 1, Id_toString = 2, Id_toTimeString = 3, Id_toDateString = 4, Id_toLocaleString = 5,
-			Id_toLocaleTimeString = 6, Id_toLocaleDateString = 7, Id_toUTCString = 8, Id_toSource = 9, Id_valueOf = 10,
-			Id_getTime = 11, Id_getYear = 12, Id_getFullYear = 13, Id_getUTCFullYear = 14, Id_getMonth = 15,
-			Id_getUTCMonth = 16, Id_getDate = 17, Id_getUTCDate = 18, Id_getDay = 19, Id_getUTCDay = 20,
-			Id_getHours = 21, Id_getUTCHours = 22, Id_getMinutes = 23, Id_getUTCMinutes = 24, Id_getSeconds = 25,
-			Id_getUTCSeconds = 26, Id_getMilliseconds = 27, Id_getUTCMilliseconds = 28, Id_getTimezoneOffset = 29,
-			Id_setTime = 30, Id_setMilliseconds = 31, Id_setUTCMilliseconds = 32, Id_setSeconds = 33,
-			Id_setUTCSeconds = 34, Id_setMinutes = 35, Id_setUTCMinutes = 36, Id_setHours = 37, Id_setUTCHours = 38,
-			Id_setDate = 39, Id_setUTCDate = 40, Id_setMonth = 41, Id_setUTCMonth = 42, Id_setFullYear = 43,
-			Id_setUTCFullYear = 44, Id_setYear = 45, Id_toISOString = 46, Id_toJSON = 47,
+			Id_constructor = 1, Id_toString = 2, Id_toTimeString = 3, Id_toDateString = 4,
+			Id_toLocaleString = 5, Id_toLocaleTimeString = 6, Id_toLocaleDateString = 7,
+			Id_toUTCString = 8, Id_toSource = 9, Id_valueOf = 10, Id_getTime = 11, Id_getYear = 12,
+			Id_getFullYear = 13, Id_getUTCFullYear = 14, Id_getMonth = 15, Id_getUTCMonth = 16,
+			Id_getDate = 17, Id_getUTCDate = 18, Id_getDay = 19, Id_getUTCDay = 20,
+			Id_getHours = 21, Id_getUTCHours = 22, Id_getMinutes = 23, Id_getUTCMinutes = 24,
+			Id_getSeconds = 25, Id_getUTCSeconds = 26, Id_getMilliseconds = 27,
+			Id_getUTCMilliseconds = 28, Id_getTimezoneOffset = 29, Id_setTime = 30,
+			Id_setMilliseconds = 31, Id_setUTCMilliseconds = 32, Id_setSeconds = 33,
+			Id_setUTCSeconds = 34, Id_setMinutes = 35, Id_setUTCMinutes = 36, Id_setHours = 37,
+			Id_setUTCHours = 38, Id_setDate = 39, Id_setUTCDate = 40, Id_setMonth = 41,
+			Id_setUTCMonth = 42, Id_setFullYear = 43, Id_setUTCFullYear = 44, Id_setYear = 45,
+			Id_toISOString = 46, Id_toJSON = 47,
 
 			MAX_PROTOTYPE_ID = Id_toJSON;
 
@@ -2032,7 +2042,8 @@ public final class NativeDate extends IdScriptableObject {
 
 	// not thread safe
 	private static final DateFormat timeZoneFormatter = new SimpleDateFormat("zzz");
-	private static final DateFormat localeDateTimeFormatter = new SimpleDateFormat("MMMM d, yyyy h:mm:ss a z");
+	private static final DateFormat localeDateTimeFormatter = new SimpleDateFormat(
+			"MMMM d, yyyy h:mm:ss a z");
 	private static final DateFormat localeDateFormatter = new SimpleDateFormat("MMMM d, yyyy");
 	private static final DateFormat localeTimeFormatter = new SimpleDateFormat("h:mm:ss a z");
 

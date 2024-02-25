@@ -1,67 +1,66 @@
 package org.guideme.guideme.scripting;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.eclipse.swt.widgets.Display;
 import org.guideme.guideme.MainLogic;
 import org.guideme.guideme.model.Guide;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
-import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.main_shell.MainShell;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.ast.*;
 import org.mozilla.javascript.tools.debugger.Main;
+import org.mozilla.javascript.Context;
 
-public class Jscript implements Runnable {
-	private static Guide guide;
-	private static GuideSettings guideSettings;
-	private static UserSettings userSettings;
-	private static AppSettings appSettings;
-	private static OverRide overRide;
+public class Jscript {
+	private Guide guide;
 	private static Logger logger = LogManager.getLogger();
 	private static final Marker JSCRIPT_MARKER = MarkerManager.getMarker("JSCRIPT");
-	private static boolean inPrefGuide;
-	private String javaScriptText;
-	private String javaFunction;
-	private boolean pageloading;
 	private boolean running;
-	private Main dbg;
+	private final Main dbg;
+	private final ContextFactory cntxFact;
+	
 
-	public Jscript(Guide Iguide, UserSettings IuserSettings, AppSettings IappSettings,
-			boolean IinPrefGuide, MainShell ImainShell, OverRide IoverRide, String ijavaScriptText,
-			String ijavaFunction, boolean ipageloading) {
-		super();
-		guide = Iguide;
-		guideSettings = Iguide.getSettings();
-		userSettings = IuserSettings;
-		appSettings = IappSettings;
-		inPrefGuide = IinPrefGuide;
-		guide.setMainshell(ImainShell);
-		overRide = IoverRide;
-		javaScriptText = ijavaScriptText;
-		javaFunction = ijavaFunction;
-		pageloading = ipageloading;
-		running = true;
+	public Jscript(Guide guide) {
+		this.guide = guide;
+
+		cntxFact = new ContextFactory();
+
+		dbg = initJavascriptDebugger();
+
+		dbg.attachTo(cntxFact);
 	}
 
-	public void changePreSettings(GuideSettings IguideSettings) {
-		guideSettings = IguideSettings;
+	private Main initJavascriptDebugger() {
+  Thread dbgThread;
+		Main ans = new Main("GuideMe");
+
+		dbgThread = new Thread(new JscriptConsole(ans, cntxFact,
+				guide.getSettings().getGlobalScope()));
+		dbgThread.setName("JavascriptDebuggerThread");
+		dbgThread.start();
+
+		return ans;
 	}
 
-	public static void jscriptLog(String strMessage) {
-		logger.info(JSCRIPT_MARKER, strMessage);
-		guide.updateJConsole(strMessage);
+	public void updateDebugSettings(AppSettings appSettings) {
+
+		dbg.setBreakOnExceptions(appSettings.getJsDebugError());
+		dbg.setBreakOnEnter(appSettings.getJsDebugEnter());
+		dbg.setBreakOnReturn(appSettings.getJsDebugExit());
+		dbg.setSize(appSettings.getJsDebugWidth(), appSettings.getJsDebugHeight());
+		dbg.setSize(appSettings.getJsDebugWidth(), appSettings.getJsDebugHeight());
+		dbg.setVisible(appSettings.getJsDebug());
 	}
 
 	public class SimpleNodeVisitor implements NodeVisitor {
@@ -77,7 +76,7 @@ public class Jscript implements Runnable {
 			if (nodeType == Token.CALL && !foundCall) {
 				foundCall = true;
 				for (AstNode n2 : ((FunctionCall) node).getArguments()) {
-					if (guideSettings.isConvertArgumentTypes())
+					if (guide.getSettings().isConvertArgumentTypes())
 						args.add(nodeToObj(n2));
 					else
 						args.add(n2.toSource());
@@ -125,7 +124,7 @@ public class Jscript implements Runnable {
 			} else if (node instanceof Name) {
 				String key = ((Name) node).getIdentifier();
 				if (convertName)
-					return guideSettings.getScriptVariables().get(key);
+					return guide.getSettings().getScriptVariables().get(key);
 				else
 					return key;
 			} else
@@ -133,82 +132,80 @@ public class Jscript implements Runnable {
 		}
 	}
 
-	public void run() {
+	public void exec(UserSettings userSettings, AppSettings appSettings, boolean inPrefGuide,
+			MainShell mainShell, OverRide overRide, String javaScriptText, String javaFunction,
+			boolean pageloading) {		
+		running = true;
+		if (javaFunction != null && !javaFunction.isBlank()) {
+			System.err.println("JavaFucntion: " + javaFunction);
+		}
+
+		// TODO shouldn't this already be done?
+		guide.setMainshell(mainShell);
+
+		SwingUtilities.invokeLater(() -> run(userSettings, appSettings, inPrefGuide, mainShell,
+				overRide, javaScriptText, javaFunction, pageloading));
+		while (isRunning()) {
+			Display.getCurrent().readAndDispatch();
+		}
+	}
+
+	public void run(UserSettings userSettings, AppSettings appSettings, boolean inPrefGuide,
+			MainShell mainShell, OverRide overRide, String javaScriptText, String javaFunction,
+			boolean pageloading) {
 		try {
-			String javaScriptToRun = javaScriptText;
+
 			// logger.trace(JSCRIPT_MARKER, "Chapter: " + guideSettings.getChapter());
-			logger.debug(JSCRIPT_MARKER, "Page: " + guideSettings.getCurrPage());
+			logger.debug(JSCRIPT_MARKER, "Page: " + guide.getSettings().getCurrPage());
 			logger.debug(JSCRIPT_MARKER, "javaFunction: " + javaFunction);
 			logger.debug(JSCRIPT_MARKER, "pageloading: " + pageloading);
 			logger.trace(JSCRIPT_MARKER, "javaScriptText: " + javaScriptText);
-			if (!guideSettings.isGlobalScriptLogged()) {
+			if (!guide.getSettings().isGlobalScriptLogged()) {
 				logger.trace(JSCRIPT_MARKER, "globalJavaScriptText: " + guide.getGlobaljScript());
-				guideSettings.setGlobalScriptLogged(true);
+				guide.getSettings().setGlobalScriptLogged(true);
 			}
 			ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
+			Debug debug = new Debug(this);
 			Map<String, Object> scriptVars;
-			scriptVars = guideSettings.getScriptVariables();
-			ContextFactory cntxFact = new ContextFactory();
+			scriptVars = guide.getSettings().getScriptVariables();
 
-			Scriptable globalScope = guideSettings.getGlobalScope();
+			Scriptable globalScope = guide.getSettings().getGlobalScope();
 
-			if (appSettings.getJsDebug()) {
-				dbg = new Main("GuideMe");
-				dbg.attachTo(cntxFact);
-			}
+			dbg.setScope(globalScope);
+
+			System.err.println("FOO: " + appSettings.getJsDebug());
 
 			Context cntx = cntxFact.enterContext();
 			cntx.setOptimizationLevel(-1);
 			cntx.getWrapFactory().setJavaPrimitiveWrap(false);
-
 			if (globalScope.get("GuideObjects", globalScope) != "true") {
 				ScriptableObject.putProperty(globalScope, "GuideObjects", "true");
 				ScriptableObject.putProperty(globalScope, "comonFunctions", comonFunctions);
 				ScriptableObject.putProperty(globalScope, "fileSeparator",
 						java.lang.System.getProperty("file.separator"));
 				ScriptableObject.putProperty(globalScope, "guide", guide);
-				ScriptableObject.putProperty(globalScope, "guideSettings", guideSettings);
+				ScriptableObject.putProperty(globalScope, "guideSettings", guide.getSettings());
 				ScriptableObject.putProperty(globalScope, "mediaDir",
 						appSettings.getDataDirectory());
 				ScriptableObject.putProperty(globalScope, "globalVars",
 						MainLogic.getGlobalScriptVariables());
-				@SuppressWarnings("rawtypes")
-				Class[] cArg = new Class[1];
-				cArg[0] = String.class;
-				java.lang.reflect.Method tjlog = Jscript.class.getMethod("jscriptLog", cArg);
-				FunctionObject jlog = new FunctionObject("jscriptLog", tjlog, globalScope);
-				ScriptableObject.putProperty(globalScope, "jscriptLog", jlog);
-				cArg = null;
-				jlog = null;
-
+				ScriptableObject.putProperty(globalScope, "debug", debug);
+				
+				/* For backwards compatability, maintain a top level logging function called "jscriptLog" */
+				cntx.evaluateString(globalScope, "jscriptLog=debug.log.bind(debug)", "internal", 0, null);
 			}
 			ScriptableObject.putProperty(globalScope, "scriptVars", scriptVars);
 
-			Scriptable parentScope = guideSettings.getScope();
+			Scriptable parentScope = guide.getSettings().getScope();
 			if (parentScope == null) {
-				// parentScope = cntx.initStandardObjects();;
 				parentScope = cntx.newObject(globalScope);
 			}
 			parentScope.setParentScope(globalScope);
-
-			if (appSettings.getJsDebug()) {
-				dbg.setBreakOnExceptions(appSettings.getJsDebugError());
-				dbg.setBreakOnEnter(appSettings.getJsDebugEnter());
-				dbg.setBreakOnReturn(appSettings.getJsDebugExit());
-				dbg.setScope(parentScope);
-				dbg.setSize(appSettings.getJsDebugWidth(), appSettings.getJsDebugHeight());
-				dbg.setVisible(true);
-				JFrame jfWindow = dbg.getDebugFrame();
-				if (appSettings.getMainMonitor() == 1) {
-					showOnScreen(1, jfWindow);
-				} else {
-					showOnScreen(0, jfWindow);
-				}
-				dbg.setExitAction(new DontExitOnClose());
-			}
+			updateDebugSettings(appSettings);
+			dbg.setScope(parentScope);
 
 			cntx.evaluateString(parentScope, guide.getGlobaljScript(), "globalScript", 1, null);
-			guideSettings.setScope(parentScope);
+			guide.getSettings().setScope(parentScope);
 
 			// Scriptable scope = cntx.initStandardObjects();
 			// scope.setParentScope(parentScope);;
@@ -229,14 +226,14 @@ public class Jscript implements Runnable {
 			ScriptableObject.putProperty(scope, "guide", guide);
 			ScriptableObject.putProperty(scope, "mediaDir", appSettings.getDataDirectory());
 			// Deprecated should use guide now
-			ScriptableObject.putProperty(scope, "guideSettings", guideSettings);
+			ScriptableObject.putProperty(scope, "guideSettings", guide.getSettings());
 
 			ScriptableObject.putProperty(scope, "scriptVars", scriptVars);
 			ScriptableObject.putProperty(scope, "guide", guide);
 			// Deprecated should use guide now
-			ScriptableObject.putProperty(scope, "guideSettings", guideSettings);
+			ScriptableObject.putProperty(scope, "guideSettings", guide.getSettings());
 			logger.debug(JSCRIPT_MARKER, "Starting ScriptVariables: " + scriptVars);
-			logger.debug(JSCRIPT_MARKER, "Starting Flags {" + guideSettings.getFlags() + "}");
+			logger.debug(JSCRIPT_MARKER, "Starting Flags {" + guide.getSettings().getFlags() + "}");
 
 			if (pageloading) {
 				ScriptableObject.putProperty(globalScope, "overRide", overRide);
@@ -244,16 +241,12 @@ public class Jscript implements Runnable {
 
 			try {
 
-				cntx.evaluateString(scope, javaScriptToRun, "pageScript", 1, null);
+				cntx.evaluateString(scope, javaScriptText, "pageScript", 1, null);
 
 				int argStart;
-				int argEnd;
-				String argstring;
 				String javaFunctionFull = javaFunction;
 				argStart = javaFunction.indexOf("(");
-				argEnd = javaFunction.indexOf(")");
 				if (argStart > -1) {
-					argstring = javaFunction.substring(argStart + 1, argEnd);
 					javaFunction = javaFunction.substring(0, argStart);
 				}
 				Object fObj = scope.get(javaFunction, scope);
@@ -261,7 +254,7 @@ public class Jscript implements Runnable {
 					fObj = parentScope.get(javaFunction, parentScope);
 				}
 				if ((fObj instanceof Function)) {
-					Object args[] = { "" };
+					Object[] args;
 					IRFactory factory = new IRFactory(new CompilerEnvirons());
 					AstRoot rootNode = factory.parse(javaFunctionFull, null, 0);
 					SimpleNodeVisitor nodeVisitor = new SimpleNodeVisitor();
@@ -292,16 +285,11 @@ public class Jscript implements Runnable {
 				logger.error(" FileRunScript " + ex.getLocalizedMessage(), ex);
 			}
 			logger.debug(JSCRIPT_MARKER, "Ending ScriptVariables: " + scriptVars);
-			logger.debug(JSCRIPT_MARKER, "Ending Flags {" + guideSettings.getFlags() + "}");
+			logger.debug(JSCRIPT_MARKER, "Ending Flags {" + guide.getSettings().getFlags() + "}");
 			Context.exit();
 
-			if (appSettings.getJsDebug()) {
-				dbg.detach();
-				dbg.dispose();
-			}
-
-			guideSettings.setFlags(comonFunctions.getFlags(guide.getFlags()));
-			guideSettings.saveSettings();
+			guide.getSettings().setFlags(comonFunctions.getFlags(guide.getFlags()));
+			guide.getSettings().saveSettings();
 			MainLogic.saveGlobalScriptVariables();
 			if (inPrefGuide) {
 				userSettings.saveUserSettings();
@@ -316,27 +304,8 @@ public class Jscript implements Runnable {
 		return running;
 	}
 
-	public void setOverRide(OverRide overRide) {
-		Jscript.overRide = overRide;
-	}
-
-	private static class DontExitOnClose implements Runnable {
-		@Override
-		public void run() {
-			// System.exit(0);
-		}
-	}
-
-	public static void showOnScreen(int screen, JFrame frame) {
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] gd = ge.getScreenDevices();
-		if (screen > -1 && screen < gd.length) {
-			frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x, frame.getY());
-		} else if (gd.length > 0) {
-			frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x, frame.getY());
-		} else {
-			throw new RuntimeException("No Screens Found");
-		}
+	public Guide getGuide() {
+		return guide;
 	}
 
 }

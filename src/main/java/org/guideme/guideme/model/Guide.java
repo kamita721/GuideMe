@@ -7,6 +7,7 @@ import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
+import org.guideme.guideme.scripting.Jscript;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.GuideSettings;
@@ -51,7 +52,8 @@ public class Guide {
 	/** @exclude */
 	private String id; // name for current xml that is running
 	/** @exclude */
-	private GuideSettings settings = new GuideSettings("startup"); // state for the currently running xml
+	private GuideSettings settings = new GuideSettings("startup"); // state for the currently
+																	// running xml
 	/** @exclude */
 	private String jScript;
 	/** @exclude */
@@ -73,6 +75,8 @@ public class Guide {
 	/** @exclude */
 	private MainShell mainshell;
 
+	private Jscript javascriptEngine;
+
 	/** @exclude */
 	private Guide() {
 
@@ -91,7 +95,8 @@ public class Guide {
 			Page start = new Page("start", "", "", "", "", false, "", "");
 
 			String appDir = appSettings.getUserDir().replace("\\", "\\\\");
-			String fileName = "Welcome_" + appSettings.getLanguage() + "_" + appSettings.getCountry() + ".txt";
+			String fileName = "Welcome_" + appSettings.getLanguage() + "_"
+					+ appSettings.getCountry() + ".txt";
 			File f = new File(appDir + appSettings.getFileSeparator() + fileName);
 			if (!f.exists()) {
 				fileName = "Welcome_" + appSettings.getLanguage() + ".txt";
@@ -114,8 +119,9 @@ public class Guide {
 			guide.autoSetPage = false;
 			guide.title = "";
 			chapter.getPages().put(start.getId(), start);
-			guide.setMediaDirectory(appSettings.getUserDir() + appSettings.getFileSeparator() + "userSettings"
-					+ appSettings.getFileSeparator());
+			guide.setMediaDirectory(appSettings.getUserDir() + appSettings.getFileSeparator()
+					+ "userSettings" + appSettings.getFileSeparator());
+			guide.javascriptEngine = new Jscript(guide);
 		}
 		return guide;
 	}
@@ -399,7 +405,8 @@ public class Guide {
 	public void setCss(String css) {
 		String mediaPath;
 		AppSettings appSettings = AppSettings.getAppSettings();
-		mediaPath = comonFunctions.getMediaFullPath("", appSettings.getFileSeparator(), appSettings, guide);
+		mediaPath = comonFunctions.getMediaFullPath("", appSettings.getFileSeparator(), appSettings,
+				guide);
 		mediaPath = mediaPath.replace("\\", "/");
 		css = css.replace("\\MediaDir\\", mediaPath);
 		this.css = css;
@@ -862,8 +869,8 @@ public class Guide {
 	 * @param id      the identifier (name) of the new timer to manipulate the timer
 	 *                later
 	 */
-	public void addTimer(String delay, String jScript, String imageId, String text, String set, String unSet,
-			String id) {
+	public void addTimer(String delay, String jScript, String imageId, String text, String set,
+			String unSet, String id) {
 		Timer timer = new Timer(delay, jScript, imageId, text, "", "", set, unSet, "", "", id);
 		Calendar timCountDown = Calendar.getInstance();
 		timCountDown.add(Calendar.SECOND, timer.getTimerSec());
@@ -883,7 +890,8 @@ public class Guide {
 	 *                later
 	 * @param target  the page to go to when the timer triggers
 	 */
-	public void addTimer(String delay, String jScript, String set, String unSet, String id, String target) {
+	public void addTimer(String delay, String jScript, String set, String unSet, String id,
+			String target) {
 		Timer timer = new Timer(delay, jScript, "", "", "", "", set, unSet, "", "", id, target);
 		Calendar timCountDown = Calendar.getInstance();
 		timCountDown.add(Calendar.SECOND, timer.getTimerSec());
@@ -910,7 +918,11 @@ public class Guide {
 	 * @param logText text to display in the debug window
 	 */
 	public void updateJConsole(String logText) {
-		Display.getDefault().syncExec(() -> mainshell.updateJConsole(logText));
+		Display.getDefault().syncExec(() -> {
+			if (mainshell != null) {
+				mainshell.updateJConsole(logText);
+			}
+		});
 	}
 
 	/**
@@ -918,9 +930,12 @@ public class Guide {
 	 * 
 	 */
 	public void clearJConsole() {
-		Display.getDefault().syncExec(() -> mainshell.clearJConsole());
+		Display.getDefault().syncExec(() -> {
+			if (mainshell != null) {
+				mainshell.clearJConsole();
+			}
+		});
 	}
-
 
 	/** @exclude */
 	public void refreshVars() {
@@ -997,8 +1012,8 @@ public class Guide {
 	 * @param jscript   the Java Script function to run when the audio stops
 	 * @param scriptVar set script variables
 	 */
-	public void playAudio(String audio, String startAt, String stopAt, int loops, String target, String jscript,
-			String scriptVar) {
+	public void playAudio(String audio, String startAt, String stopAt, int loops, String target,
+			String jscript, String scriptVar) {
 		int startAtSeconds;
 		if (!startAt.equals("")) {
 			startAtSeconds = comonFunctions.getMilisecFromTime(startAt) / 1000;
@@ -1014,8 +1029,10 @@ public class Guide {
 
 		AppSettings appSettings = AppSettings.getAppSettings();
 
-		String imgPath = comonFunctions.getMediaFullPath(audio, appSettings.getFileSeparator(), appSettings, guide);
-		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, 100, false);
+		String imgPath = comonFunctions.getMediaFullPath(audio, appSettings.getFileSeparator(),
+				appSettings, guide);
+		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript,
+				scriptVar, 100, false);
 	}
 
 	/**
@@ -1039,8 +1056,8 @@ public class Guide {
 	 * @param scriptVar set script variables
 	 * @param volume    value between 0 and 100 to set the volume
 	 */
-	public void playAudio(String audio, String startAt, String stopAt, int loops, String target, String jscript,
-			String scriptVar, int volume) {
+	public void playAudio(String audio, String startAt, String stopAt, int loops, String target,
+			String jscript, String scriptVar, int volume) {
 		int startAtSeconds;
 		if (!startAt.equals("")) {
 			startAtSeconds = comonFunctions.getMilisecFromTime(startAt) / 1000;
@@ -1056,8 +1073,10 @@ public class Guide {
 
 		AppSettings appSettings = AppSettings.getAppSettings();
 
-		String imgPath = comonFunctions.getMediaFullPath(audio, appSettings.getFileSeparator(), appSettings, guide);
-		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript, scriptVar, volume, false);
+		String imgPath = comonFunctions.getMediaFullPath(audio, appSettings.getFileSeparator(),
+				appSettings, guide);
+		mainshell.playAudio(imgPath, startAtSeconds, stopAtSeconds, loops, target, jscript,
+				scriptVar, volume, false);
 	}
 
 	/**
@@ -1104,5 +1123,9 @@ public class Guide {
 	 */
 	public void removeGlobalButton(String id) {
 		globalButtons.remove(id);
+	}
+
+	public Jscript getJavascriptEngine() {
+		return javascriptEngine;
 	}
 }
