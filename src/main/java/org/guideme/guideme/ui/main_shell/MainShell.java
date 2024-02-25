@@ -77,10 +77,6 @@ public class MainShell {
 	static Logger logger = LogManager.getLogger();
 
 	AppSettings appSettings;
-	private int mintFontSize;
-	private int mintButtonFontSize;
-	private int mintHtmlFontSize;
-	private int mintTimerFontSize;
 	String strGuidePath;
 	String guideFile;
 	int videoLoops = 0;
@@ -129,8 +125,6 @@ public class MainShell {
 	AudioPlayer audioPlayer2;
 	Thread threadAudioPlayer2;
 	private Thread threadVideoPlayer;
-	boolean videoOn = true;
-	private boolean webcamOn = true;
 	String style = "";
 	String defaultStyle = "";
 	boolean imgOverRide = false;
@@ -147,7 +141,6 @@ public class MainShell {
 	String leftHTML;
 	private ContextFactory factory;
 	private boolean videoPlayed = false;
-	private ResourceBundle displayText;
 	String procStatusText = "";
 	private boolean hasVideoDeferred = false;
 	private boolean hasAudioDeferred = false;
@@ -155,609 +148,559 @@ public class MainShell {
 	boolean pauseRequested = false;
 
 	public Shell createShell(final Display display) {
+		ResourceBundle displayText;
 		Rectangle clientArea;
 		Rectangle clientArea2;
 		Thread threadMetronome;
 		org.eclipse.swt.graphics.Color colourWhite;
 		org.eclipse.swt.graphics.Color colourBlack;
-		logger.trace("Enter createShell");
 		comonFunctions.setDisplay(display);
-		// Initialise variable
-		int[] intWeights1 = new int[2];
-		int[] intWeights2 = new int[2];
 		colourBlack = display.getSystemColor(SWT.COLOR_BLACK);
 		colourWhite = display.getSystemColor(SWT.COLOR_WHITE);
 
-		try {
-			logger.trace("Get appSettings");
-			appSettings = AppSettings.getAppSettings();
+		appSettings = AppSettings.getAppSettings();
 
-			Locale locale = new Locale.Builder().setLanguage(appSettings.getLanguage())
-					.setRegion(appSettings.getCountry()).build();
-			displayText = ResourceBundle.getBundle("DisplayBundle", locale);
-			appSettings.setDisplayText(displayText);
+		Locale locale = new Locale.Builder().setLanguage(appSettings.getLanguage())
+				.setRegion(appSettings.getCountry()).build();
+		displayText = ResourceBundle.getBundle("DisplayBundle", locale);
+		appSettings.setDisplayText(displayText);
 
-			// video flag
-			videoOn = appSettings.getVideoOn();
+		// array to hold the various flags
+		guideSettings.setFlags("");
 
-			// webcam flag
-			webcamOn = appSettings.getWebcamOn();
+		strGuidePath = appSettings.getDataDirectory();
 
-			// font size
-			mintFontSize = appSettings.getFontSize();
+		logger.trace("Get userSettings");
 
-			// font size
-			mintHtmlFontSize = appSettings.getHtmlFontSize();
+		userSettings = UserSettings.getUserSettings();
 
-			// font size
-			mintTimerFontSize = appSettings.getTimerFontSize();
+		// Create the main UI elements
+		myDisplay = display;
+		if (appSettings.isFullScreen()) {
+			shell = new Shell(myDisplay, SWT.NO_TRIM);
+		} else {
+			shell = new Shell(myDisplay);
+		}
+		shell.addShellListener(new shellCloseListen(this));
+		keyListener = new ShellKeyEventListener(this);
+		myDisplay.addFilter(SWT.KeyDown, keyListener);
+		int mainMonitor = appSettings.getMainMonitor();
 
-			// font size
-			mintButtonFontSize = appSettings.getButtonFontSize();
-
-			// path to the xml files
-			strGuidePath = appSettings.getDataDirectory();
-
-			// array to hold the various flags
-			guideSettings.setFlags("");
-
-			// width and height of the sizable containers on the screen
-			intWeights1 = appSettings.getSash1Weights();
-			intWeights2 = appSettings.getSash2Weights();
-
-			logger.trace("Get userSettings");
-
-			userSettings = UserSettings.getUserSettings();
-
-		} catch (NumberFormatException e) {
-			logger.error("OnCreate NumberFormatException ", e);
-		} catch (Exception e) {
-			logger.error("OnCreate Exception ", e);
+		clientArea2 = null;
+		multiMonitor = appSettings.isMultiMonitor();
+		Monitor[] monitors = display.getMonitors();
+		if (multiMonitor) {
+			// multi monitor
+			if (monitors.length > 1) {
+				shell2 = new Shell(myDisplay, SWT.NO_TRIM);
+				if (mainMonitor > 1) {
+					if (appSettings.isFullScreen()) {
+						clientArea2 = monitors[0].getBounds();
+					} else {
+						clientArea2 = monitors[0].getClientArea();
+					}
+				} else {
+					if (appSettings.isFullScreen()) {
+						clientArea2 = monitors[1].getBounds();
+					} else {
+						clientArea2 = monitors[1].getClientArea();
+					}
+				}
+				FormLayout layout2 = new FormLayout();
+				shell2.setLayout(layout2);
+			} else {
+				multiMonitor = false;
+			}
 		}
 
-		try {
-			// Create the main UI elements
-			logger.trace("display");
-			myDisplay = display;
-			logger.trace("shell");
+		// debug shell
+		debugShell = DebugShell.getDebugShell();
+		debugShell.createShell(myDisplay, this);
+
+		// get primary monitor and its size
+		if (mainMonitor == 1) {
 			if (appSettings.isFullScreen()) {
-				shell = new Shell(myDisplay, SWT.NO_TRIM);
+				clientArea = monitors[0].getBounds();
 			} else {
-				shell = new Shell(myDisplay);
+				clientArea = monitors[0].getClientArea();
 			}
-			logger.trace("shell add listener");
-			shell.addShellListener(new shellCloseListen(this));
-			// Good
-			logger.trace("key filter");
-			keyListener = new ShellKeyEventListener(this);
-			myDisplay.addFilter(SWT.KeyDown, keyListener);
-			int mainMonitor = appSettings.getMainMonitor();
-
-			clientArea2 = null;
-			multiMonitor = appSettings.isMultiMonitor();
-			Monitor[] monitors = display.getMonitors();
-			if (multiMonitor) {
-				// multi monitor
-				if (monitors.length > 1) {
-					shell2 = new Shell(myDisplay, SWT.NO_TRIM);
-					if (mainMonitor > 1) {
-						if (appSettings.isFullScreen()) {
-							clientArea2 = monitors[0].getBounds();
-						} else {
-							clientArea2 = monitors[0].getClientArea();
-						}
-					} else {
-						if (appSettings.isFullScreen()) {
-							clientArea2 = monitors[1].getBounds();
-						} else {
-							clientArea2 = monitors[1].getClientArea();
-						}
-					}
-					FormLayout layout2 = new FormLayout();
-					shell2.setLayout(layout2);
+		} else {
+			if (monitors.length > 1) {
+				if (appSettings.isFullScreen()) {
+					clientArea = monitors[1].getBounds();
 				} else {
-					multiMonitor = false;
+					clientArea = monitors[1].getClientArea();
 				}
-			}
-
-			// debug shell
-			debugShell = DebugShell.getDebugShell();
-			debugShell.createShell(myDisplay, this);
-
-			// get primary monitor and its size
-			if (mainMonitor == 1) {
+			} else {
 				if (appSettings.isFullScreen()) {
 					clientArea = monitors[0].getBounds();
 				} else {
 					clientArea = monitors[0].getClientArea();
 				}
-			} else {
-				if (monitors.length > 1) {
-					if (appSettings.isFullScreen()) {
-						clientArea = monitors[1].getBounds();
-					} else {
-						clientArea = monitors[1].getClientArea();
-					}
-				} else {
-					if (appSettings.isFullScreen()) {
-						clientArea = monitors[0].getBounds();
-					} else {
-						clientArea = monitors[0].getClientArea();
-					}
-				}
 			}
-			shell.setText("Guide Me (" + ComonFunctions.getVersion() + ")");
-			FormLayout layout = new FormLayout();
-			shell.setLayout(layout);
+		}
+		shell.setText("Guide Me (" + ComonFunctions.getVersion() + ")");
+		FormLayout layout = new FormLayout();
+		shell.setLayout(layout);
 
-			Font sysFont = display.getSystemFont();
-			FontData[] fD = sysFont.getFontData();
-			fD[0].setHeight(mintFontSize);
-			controlFont = new Font(display, fD);
-			fD[0].setHeight(mintTimerFontSize);
-			timerFont = new Font(display, fD);
-			fD[0].setHeight(mintButtonFontSize);
-			buttonFont = new Font(display, fD);
+		Font sysFont = display.getSystemFont();
+		FontData[] fD = sysFont.getFontData();
+		fD[0].setHeight(appSettings.getFontSize());
+		controlFont = new Font(display, fD);
+		fD[0].setHeight(appSettings.getFontSize());
+		timerFont = new Font(display, fD);
+		fD[0].setHeight(appSettings.getButtonFontSize());
+		buttonFont = new Font(display, fD);
 
-			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-			Calendar cal = Calendar.getInstance();
-			lblLeft = new Label(shell, SWT.LEFT);
-			lblLeft.setBackground(colourBlack);
-			lblLeft.setForeground(colourWhite);
-			lblLeft.setFont(controlFont);
-			lblLeft.setText(dateFormat.format(cal.getTime()));
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+		Calendar cal = Calendar.getInstance();
+		lblLeft = new Label(shell, SWT.LEFT);
+		lblLeft.setBackground(colourBlack);
+		lblLeft.setForeground(colourWhite);
+		lblLeft.setFont(controlFont);
+		lblLeft.setText(dateFormat.format(cal.getTime()));
 
-			lblCentre = new Label(shell, SWT.RIGHT);
-			lblCentre.setBackground(colourBlack);
-			lblCentre.setForeground(colourWhite);
-			lblCentre.setFont(controlFont);
-			lblCentre.setText("Title, Author");
+		lblCentre = new Label(shell, SWT.RIGHT);
+		lblCentre.setBackground(colourBlack);
+		lblCentre.setForeground(colourWhite);
+		lblCentre.setFont(controlFont);
+		lblCentre.setText("Title, Author");
 
+		if (!multiMonitor) {
+			sashform = new SashForm(shell, SWT.HORIZONTAL);
+			sashform.setBackground(colourBlack);
+			leftFrame = new Composite(sashform, SWT.SHADOW_NONE);
+		} else {
+			leftFrame = new Composite(shell, SWT.SHADOW_NONE);
+		}
+
+		leftFrame.setBackground(colourBlack);
+		FormLayout layoutLF = new FormLayout();
+		leftFrame.setLayout(layoutLF);
+
+		mediaPanel = new Composite(leftFrame, SWT.EMBEDDED);
+		FormLayout layout3 = new FormLayout();
+		mediaPanel.setLayout(layout3);
+		mediaPanel.setBackground(colourBlack);
+		mediaPanel.setData("name", "mediaPanel");
+
+		webcamPanel = new Composite(leftFrame, SWT.EMBEDDED);
+		FormLayout layoutwebcam = new FormLayout();
+		webcamPanel.setLayout(layoutwebcam);
+		webcamPanel.setBackground(colourBlack);
+		webcamPanel.setData("name", "webcamPanel");
+
+		imageManager = new ImageManager(myDisplay);
+		imageLabel = new Label(leftFrame, SWT.CENTER);
+		imageLabel.setBackground(colourBlack);
+		imageLabel.setData("name", "imageLabel");
+
+		leftFrame.addControlListener(new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				imageManager.setPreferedSize(leftFrame.getSize());
+				imageManager.updateImageLabel(imageLabel);
+				shell.layout(true);
+
+			}
+		});
+
+		// defaultStyle
+
+		defaultStyle = comonFunctions.readFile("./defaultCSS.TXT", StandardCharsets.UTF_8);
+		defaultStyle = defaultStyle.replace("MintHtmlFontSize",
+				String.valueOf(appSettings.getFontSize()));
+
+		style = defaultStyle;
+
+		// default HTML
+
+		rightHTML = comonFunctions.readFile("DefaultRightHtml.txt", StandardCharsets.UTF_8);
+
+		leftHTML = comonFunctions.readFile("DefaultLeftHtml.txt", StandardCharsets.UTF_8);
+
+		String strHtml = rightHTML.replace("BodyContent", "");
+		strHtml = strHtml.replace("DefaultStyle", defaultStyle);
+		leftPaneBrowser = new Browser(leftFrame, SWT.WEBKIT);
+		leftPaneBrowser.setJavascriptEnabled(true);
+		leftPaneBrowser.setText(leftHTML);
+		leftPaneBrowser.setBackground(colourBlack);
+		leftPaneBrowser.addStatusTextListener(new EventStatusTextListener(this));
+		leftPaneBrowser.setData("name", "leftPaneBrowswer");
+		shell.pack();
+
+		if (!multiMonitor) {
+			sashform2 = new SashForm(sashform, SWT.VERTICAL);
+		} else {
+			sashform2 = new SashForm(shell2, SWT.VERTICAL);
+		}
+		sashform2.setBackground(colourBlack);
+
+		if (!overlayTimer) {
+			lblRight = new Label(sashform2, SWT.RIGHT);
+		} else {
 			if (!multiMonitor) {
-				sashform = new SashForm(shell, SWT.HORIZONTAL);
-				sashform.setBackground(colourBlack);
-				leftFrame = new Composite(sashform, SWT.SHADOW_NONE);
+				lblRight = new Label(shell, SWT.RIGHT);
 			} else {
-				leftFrame = new Composite(shell, SWT.SHADOW_NONE);
+				lblRight = new Label(leftFrame, SWT.RIGHT);
 			}
+		}
+		lblRight.setBackground(colourBlack);
+		lblRight.setForeground(colourWhite);
+		lblRight.setFont(timerFont);
+		lblRight.setAlignment(SWT.CENTER);
 
-			leftFrame.setBackground(colourBlack);
-			FormLayout layoutLF = new FormLayout();
-			leftFrame.setLayout(layoutLF);
+		brwsText = new Browser(sashform2, SWT.NONE);
+		brwsText.setText(strHtml);
+		brwsText.setBackground(colourBlack);
+		brwsText.addStatusTextListener(new EventStatusTextListener(this));
 
-			mediaPanel = new Composite(leftFrame, SWT.EMBEDDED);
-			FormLayout layout3 = new FormLayout();
-			mediaPanel.setLayout(layout3);
-			mediaPanel.setBackground(colourBlack);
-			mediaPanel.addControlListener(new mediaPanelListener(this));
-			mediaPanel.setData("name", "mediaPanel");
+		btnComp = new Composite(sashform2, SWT.SHADOW_NONE);
+		btnComp.setBackground(colourBlack);
+		RowLayout layout2 = new RowLayout();
+		btnComp.setLayout(layout2);
 
-			webcamPanel = new Composite(leftFrame, SWT.EMBEDDED);
-			FormLayout layoutwebcam = new FormLayout();
-			webcamPanel.setLayout(layoutwebcam);
-			webcamPanel.setBackground(colourBlack);
-			webcamPanel.setData("name", "webcamPanel");
+		if (appSettings.getVideoOn()) {
+			logger.trace("Video Enter");
+			libvlc_instance_t instance = LibVlc.libvlc_new(0, null);
 
-			imageManager = new ImageManager(myDisplay);
-			imageLabel = new Label(leftFrame, SWT.CENTER);
-			imageLabel.setBackground(colourBlack);
-			imageLabel.setData("name", "imageLabel");
+			mediaPlayer = new SwtEmbeddedMediaPlayer(instance);
+			mediaPlayer.setVideoSurface(
+					new CompositeVideoSurface(mediaPanel, getVideoSurfaceAdapter()));
+			mediaPlayer.events().addMediaPlayerEventListener(new MediaListener(this));
 
-			leftFrame.addControlListener(new ControlAdapter() {
-				@Override
-				public void controlResized(ControlEvent e) {
-					imageManager.setPreferedSize(leftFrame.getSize());
-					imageManager.updateImageLabel(imageLabel);
-					shell.layout(true);
+			String videoOutputDevice = appSettings.getVideoDevice();
+			if (videoOutputDevice != null && !videoOutputDevice.equals("")) {
+				mediaPlayer.audio().setOutputDevice(null, appSettings.getVideoDevice());
+			}
+			logger.trace("Video Exit");
+		}
 
+		if (appSettings.getWebcamOn()) {
+			Frame frame = SWT_AWT.new_Frame(webcamPanel);
+
+			webcamRoot = new JRootPane();
+			frame.add(webcamRoot);
+		}
+
+		// Set the layout and how it responds to screen resize
+		FormData lblLeftFormData = new FormData();
+		lblLeftFormData.top = new FormAttachment(0, 0);
+		lblLeftFormData.left = new FormAttachment(0, 0);
+		lblLeftFormData.right = new FormAttachment(33, 0);
+		lblLeft.setLayoutData(lblLeftFormData);
+
+		FormData lblCentreFormData = new FormData();
+		lblCentreFormData.top = new FormAttachment(0, 0);
+		lblCentreFormData.left = new FormAttachment(lblLeft, 0);
+		lblCentreFormData.right = new FormAttachment(100, 0);
+		lblCentre.setLayoutData(lblCentreFormData);
+
+		if (overlayTimer) {
+			FormData lblRightFormData = new FormData();
+			lblRightFormData.top = new FormAttachment(leftFrame, 0);
+			lblRightFormData.left = new FormAttachment(leftFrame, 0);
+			lblRight.setLayoutData(lblRightFormData);
+			lblRight.moveAbove(null);
+		}
+
+		if (!multiMonitor) {
+			FormData sashFormData = new FormData();
+			sashFormData.top = new FormAttachment(lblLeft, 0);
+			sashFormData.left = new FormAttachment(0, 0);
+			sashFormData.right = new FormAttachment(100, 0);
+			sashFormData.bottom = new FormAttachment(100, 0);
+			sashform.setLayoutData(sashFormData);
+
+			FormData sashFormData2 = new FormData();
+			sashFormData2.top = new FormAttachment(sashform, 0);
+			sashFormData2.left = new FormAttachment(sashform, 0);
+			sashFormData2.right = new FormAttachment(sashform, 0);
+			sashFormData2.bottom = new FormAttachment(sashform, 0);
+			sashform2.setLayoutData(sashFormData2);
+		} else {
+
+			FormData leftFrameFormData = new FormData();
+			leftFrameFormData.top = new FormAttachment(lblLeft, 0);
+			leftFrameFormData.left = new FormAttachment(0, 0);
+			leftFrameFormData.right = new FormAttachment(100, 0);
+			leftFrameFormData.bottom = new FormAttachment(100, 0);
+			leftFrame.setLayoutData(leftFrameFormData);
+
+			FormData sashFormData2 = new FormData();
+			sashFormData2.top = new FormAttachment(0, 0);
+			sashFormData2.left = new FormAttachment(0, 0);
+			sashFormData2.right = new FormAttachment(100, 0);
+			sashFormData2.bottom = new FormAttachment(100, 0);
+			sashform2.setLayoutData(sashFormData2);
+		}
+
+		FormData btnCompFormData = new FormData();
+		btnCompFormData.top = new FormAttachment(sashform2, 0);
+		btnCompFormData.left = new FormAttachment(sashform2, 0);
+		btnCompFormData.right = new FormAttachment(sashform2, 0);
+		btnCompFormData.bottom = new FormAttachment(sashform2, 0);
+		btnComp.setLayoutData(btnCompFormData);
+
+		FormData leftPaneElementFormData = new FormData();
+		leftPaneElementFormData.top = new FormAttachment(0, 0);
+		leftPaneElementFormData.left = new FormAttachment(0, 0);
+		leftPaneElementFormData.right = new FormAttachment(100, 0);
+		leftPaneElementFormData.bottom = new FormAttachment(100, 0);
+		mediaPanel.setLayoutData(leftPaneElementFormData);
+		webcamPanel.setLayoutData(leftPaneElementFormData);
+		leftPaneBrowser.setLayoutData(leftPaneElementFormData);
+		imageLabel.setLayoutData(leftPaneElementFormData);
+
+		// Menu Bar
+		menuBar = new Menu(shell, SWT.BAR);
+
+		// Top Level File drop down
+		MenuItem fileItem = new MenuItem(menuBar, SWT.CASCADE);
+		fileItem.setText(displayText.getString("MainFile"));
+
+		// Sub Menu for File
+		Menu fileSubMenu = new Menu(shell, SWT.DROP_DOWN);
+		// Associate it with the top level File menu
+		fileItem.setMenu(fileSubMenu);
+
+		// File Load menu item
+		MenuItem fileLoadItem = new MenuItem(fileSubMenu, SWT.PUSH);
+		fileLoadItem.setText(displayText.getString("MainLoad"));
+		fileLoadItem.addSelectionListener(new FileLoadListener(this));
+
+		// File Library menu item
+		MenuItem fileLibraryItem = new MenuItem(fileSubMenu, SWT.PUSH);
+		fileLibraryItem.setText(displayText.getString("MainLibrary"));
+		fileLibraryItem.addSelectionListener(new FileLibraryListener(this));
+
+		// File Restart menu item
+		MenuItem fileRestartItem = new MenuItem(fileSubMenu, SWT.PUSH);
+		fileRestartItem.setText(displayText.getString("MainRestart"));
+		fileRestartItem.addSelectionListener(new FileRestartListener(this));
+
+		// File Reload menu item
+		MenuItem fileReloadItem = new MenuItem(fileSubMenu, SWT.PUSH);
+		fileReloadItem.setText(displayText.getString("MainReload"));
+		fileReloadItem.addSelectionListener(new FileReloadListener(this));
+
+		// File Preferences menu item
+		MenuItem filePreferencesItem = new MenuItem(fileSubMenu, SWT.PUSH);
+		filePreferencesItem.setText(displayText.getString("MainAppPref"));
+		filePreferencesItem.addSelectionListener(new FilePreferences(this));
+
+		// good
+
+		// File Preferences Guide menu item
+		MenuItem filePreferencesGuideItem = new MenuItem(fileSubMenu, SWT.PUSH);
+		filePreferencesGuideItem.setText(displayText.getString("MainUserPref"));
+		filePreferencesGuideItem.addSelectionListener(new FilePreferencesGuide(this));
+
+		// File Guide Preferences menu item
+		MenuItem fileGuidePreferencesItem = new MenuItem(fileSubMenu, SWT.PUSH);
+		fileGuidePreferencesItem.setText(displayText.getString("MainGuidePref"));
+		fileGuidePreferencesItem.addSelectionListener(new FileGuidePreferences(this));
+
+		// File Exit menu item
+		MenuItem fileExitItem = new MenuItem(fileSubMenu, SWT.PUSH);
+		fileExitItem.setText(displayText.getString("MainExit"));
+		fileExitItem.addListener(SWT.Selection, e -> shell.close());
+
+		// Top Level Tools drop down
+		MenuItem toolsItem = new MenuItem(menuBar, SWT.CASCADE);
+		toolsItem.setText(displayText.getString("MainTools"));
+
+		// Sub Menu for Tools
+		Menu toolsSubMenu = new Menu(shell, SWT.DROP_DOWN);
+		// Associate it with the top level File menu
+		toolsItem.setMenu(toolsSubMenu);
+
+		// Tools Compress menu item
+		MenuItem compressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
+		compressGuideItem.setText(displayText.getString("MainToolsCompress"));
+		compressGuideItem.addSelectionListener(new CompressGuideListener(this));
+
+		// Tools UnCompress menu item
+		MenuItem unCompressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
+		unCompressGuideItem.setText(displayText.getString("MainToolsUnCompress"));
+		unCompressGuideItem.addSelectionListener(new UnCompressGuideListener(this));
+
+		// Tools Resize menu item
+		MenuItem resizeGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
+		resizeGuideItem.setText(displayText.getString("MainToolsResizeImage"));
+		resizeGuideItem.addSelectionListener(new ResizeGuideListener(this));
+
+		// good
+		// Audio Output Menus
+		MenuItem audioItem = new MenuItem(menuBar, SWT.CASCADE);
+		audioItem.setText(displayText.getString("MainAudio"));
+
+		Menu audioSubMenu = new Menu(shell, SWT.DROP_DOWN);
+		audioItem.setMenu(audioSubMenu);
+
+		MenuItem videoOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
+		videoOutputItem.setText(displayText.getString("VideoDev"));
+
+		MenuItem audioOneOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
+		audioOneOutputItem.setText(displayText.getString("AudioDevOne"));
+
+		MenuItem audioTwoOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
+		audioTwoOutputItem.setText(displayText.getString("AudioDevTwo"));
+
+		Menu videoSubMenu = new Menu(shell, SWT.DROP_DOWN);
+		videoOutputItem.setMenu(videoSubMenu);
+
+		Menu audioOneSubMenu = new Menu(shell, SWT.DROP_DOWN);
+		audioOneOutputItem.setMenu(audioOneSubMenu);
+
+		Menu audioTwoSubMenu = new Menu(shell, SWT.DROP_DOWN);
+		audioTwoOutputItem.setMenu(audioTwoSubMenu);
+
+		// good
+		boolean userDeviceVideoAvailable = false;
+		boolean userDeviceOneAvailable = false;
+		boolean userDeviceTwoAvailable = false;
+
+		List<AudioDevice> outputs = mediaPlayer.audio().outputDevices();
+
+		for (AudioDevice device : outputs) {
+			boolean userDeviceVideo = device.getDeviceId().equals(appSettings.getVideoDevice());
+			boolean userDeviceOne = device.getDeviceId().equals(appSettings.getAudioOneDevice());
+			boolean userDeviceTwo = device.getDeviceId().equals(appSettings.getAudioTwoDevice());
+
+			MenuItem videoDevice = new MenuItem(videoSubMenu, SWT.RADIO);
+			videoDevice.setText(device.getLongName());
+			videoDevice.setData("device-id", device.getDeviceId());
+			videoDevice.setSelection(userDeviceVideo);
+			videoDevice.addSelectionListener(new VideoDeviceChangedListener(this));
+
+			MenuItem audioOneDevice = new MenuItem(audioOneSubMenu, SWT.RADIO);
+			audioOneDevice.setText(device.getLongName());
+			audioOneDevice.setData("device-id", device.getDeviceId());
+			audioOneDevice.setSelection(userDeviceOne);
+			audioOneDevice.addSelectionListener(new AudioOneDeviceChangedListener(this));
+
+			MenuItem audioTwoDevice = new MenuItem(audioTwoSubMenu, SWT.RADIO);
+			audioTwoDevice.setText(device.getLongName());
+			audioTwoDevice.setData("device-id", device.getDeviceId());
+			audioTwoDevice.setSelection(userDeviceTwo);
+			audioTwoDevice.addSelectionListener(new AudioTwoDeviceChangedListener(this));
+
+			userDeviceVideoAvailable |= userDeviceVideo;
+			userDeviceOneAvailable |= userDeviceOne;
+			userDeviceTwoAvailable |= userDeviceTwo;
+		}
+
+		if (!userDeviceVideoAvailable) {
+			logger.info("User selected Video device not available. Resetting to default");
+			MenuItem videoDefault = videoSubMenu.getItem(0);
+			videoDefault.setSelection(true);
+			appSettings.setVideoDevice(videoDefault.getData("device-id").toString());
+		}
+		if (!userDeviceOneAvailable) {
+			logger.info("User selected Audio device not available. Resetting to default");
+			MenuItem oneDefault = audioOneSubMenu.getItem(0);
+			oneDefault.setSelection(true);
+			appSettings.setAudioOneDevice(oneDefault.getData("device-id").toString());
+		}
+		if (!userDeviceTwoAvailable) {
+			logger.info("User selected Audio2 device not available. Resetting to default");
+			MenuItem twoDefault = audioTwoSubMenu.getItem(0);
+			twoDefault.setSelection(true);
+			appSettings.setAudioTwoDevice(twoDefault.getData("device-id").toString());
+		}
+
+		if (appSettings.getDebug()) {
+			// Top Level Debug drop down
+			MenuItem debugItem = new MenuItem(menuBar, SWT.CASCADE);
+			debugItem.setText(displayText.getString("MainDebug"));
+
+			// Sub Menu for Debug
+			Menu debugSubMenu = new Menu(shell, SWT.DROP_DOWN);
+			// Associate it with the top level File menu
+			debugItem.setMenu(debugSubMenu);
+
+			// Debug Debug Menu Item
+			final MenuItem debugCheck = new MenuItem(debugSubMenu, SWT.CHECK);
+			debugCheck.setText(displayText.getString("MainDebugDebug"));
+			debugCheck.setSelection(appSettings.getDebug());
+			debugCheck.addListener(SWT.Selection, event -> {
+				appSettings.setDebug(debugCheck.getSelection());
+				if (delayButton != null && !delayButton.isDisposed()) {
+					delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
 				}
 			});
 
-			// defaultStyle
+			// Debug Javascript Debug Menu Item
+			final MenuItem jsdebugCheck = new MenuItem(debugSubMenu, SWT.CHECK);
+			jsdebugCheck.setText(displayText.getString("MainDebugJava"));
+			jsdebugCheck.setSelection(appSettings.getJsDebug());
+			jsdebugCheck.addListener(SWT.Selection,
+					event -> appSettings.setJsDebug(jsdebugCheck.getSelection()));
+			// Debug Javascript Debug Menu Error Item
+			final MenuItem jsdebugErrorCheck = new MenuItem(debugSubMenu, SWT.CHECK);
+			jsdebugErrorCheck.setText(displayText.getString("MainDebugException"));
+			jsdebugErrorCheck.setSelection(appSettings.getJsDebugError());
+			jsdebugErrorCheck.addListener(SWT.Selection,
+					event -> appSettings.setJsDebugError(jsdebugErrorCheck.getSelection()));
+			// Debug Javascript Debug Menu Enter Item
+			final MenuItem jsdebugEnterCheck = new MenuItem(debugSubMenu, SWT.CHECK);
+			jsdebugEnterCheck.setText(displayText.getString("MainDebugEnter"));
+			jsdebugEnterCheck.setSelection(appSettings.getJsDebugEnter());
+			jsdebugEnterCheck.addListener(SWT.Selection,
+					event -> appSettings.setJsDebugEnter(jsdebugEnterCheck.getSelection()));
 
-			defaultStyle = comonFunctions.readFile("./defaultCSS.TXT", StandardCharsets.UTF_8);
-			defaultStyle = defaultStyle.replace("MintHtmlFontSize",
-					String.valueOf(mintHtmlFontSize));
+			// Debug Javascript Debug Menu Exit Item
+			final MenuItem jsdebugExitCheck = new MenuItem(debugSubMenu, SWT.CHECK);
+			jsdebugExitCheck.setText(displayText.getString("MainDebugExit"));
+			jsdebugExitCheck.setSelection(appSettings.getJsDebugExit());
+			jsdebugExitCheck.addListener(SWT.Selection,
+					event -> appSettings.setJsDebugExit(jsdebugExitCheck.getSelection()));
 
-			style = defaultStyle;
-
-			// default HTML
-
-			rightHTML = comonFunctions.readFile("DefaultRightHtml.txt", StandardCharsets.UTF_8);
-
-			leftHTML = comonFunctions.readFile("DefaultLeftHtml.txt", StandardCharsets.UTF_8);
-
-			String strHtml = rightHTML.replace("BodyContent", "");
-			strHtml = strHtml.replace("DefaultStyle", defaultStyle);
-			leftPaneBrowser = new Browser(leftFrame, SWT.WEBKIT);
-			leftPaneBrowser.setJavascriptEnabled(true);
-			leftPaneBrowser.setText(leftHTML);
-			leftPaneBrowser.setBackground(colourBlack);
-			leftPaneBrowser.addStatusTextListener(new EventStatusTextListener(this));
-			leftPaneBrowser.setData("name", "leftPaneBrowswer");
-			shell.pack();
-
-			if (!multiMonitor) {
-				sashform2 = new SashForm(sashform, SWT.VERTICAL);
-			} else {
-				sashform2 = new SashForm(shell2, SWT.VERTICAL);
-			}
-			sashform2.setBackground(colourBlack);
-
-			if (!overlayTimer) {
-				lblRight = new Label(sashform2, SWT.RIGHT);
-			} else {
-				if (!multiMonitor) {
-					lblRight = new Label(shell, SWT.RIGHT);
-				} else {
-					lblRight = new Label(leftFrame, SWT.RIGHT);
+			// Debug Pause Item
+			final MenuItem debugPause = new MenuItem(debugSubMenu, SWT.CHECK);
+			debugPause.setText(displayText.getString("MainDebugPause"));
+			debugPause.addListener(SWT.Selection, event -> {
+				pauseRequested = debugPause.getSelection();
+				if (!pauseRequested) {
+					resumeAll();
 				}
-			}
-			lblRight.setBackground(colourBlack);
-			lblRight.setForeground(colourWhite);
-			lblRight.setFont(timerFont);
-			lblRight.setAlignment(SWT.CENTER);
-
-			brwsText = new Browser(sashform2, SWT.NONE);
-			brwsText.setText(strHtml);
-			brwsText.setBackground(colourBlack);
-			brwsText.addStatusTextListener(new EventStatusTextListener(this));
-
-			btnComp = new Composite(sashform2, SWT.SHADOW_NONE);
-			btnComp.setBackground(colourBlack);
-			RowLayout layout2 = new RowLayout();
-			btnComp.setLayout(layout2);
-
-			// Good
-			if (videoOn) {
-				logger.trace("Video Enter");
-				libvlc_instance_t instance = LibVlc.libvlc_new(0, null);
-
-				mediaPlayer = new SwtEmbeddedMediaPlayer(instance);
-				mediaPlayer.setVideoSurface(
-						new CompositeVideoSurface(mediaPanel, getVideoSurfaceAdapter()));
-				mediaPlayer.events().addMediaPlayerEventListener(new MediaListener(this));
-
-				String videoOutputDevice = appSettings.getVideoDevice();
-				if (videoOutputDevice != null && !videoOutputDevice.equals("")) {
-					// TODO this doesn't seem quite right
-					mediaPlayer.audio().setOutputDevice(null, appSettings.getVideoDevice());
+			});
+			new MenuItem(debugSubMenu, SWT.SEPARATOR);
+			// Debug ShowDelay Item
+			final MenuItem showDelay = new MenuItem(debugSubMenu, SWT.CHECK);
+			showDelay.setText(displayText.getString("MainDebugShowDelay"));
+			showDelay.setSelection(appSettings.getShowDelayBtn());
+			showDelay.addListener(SWT.Selection, event -> {
+				appSettings.setShowDelayBtn(showDelay.getSelection());
+				if (delayButton != null && !delayButton.isDisposed()) {
+					delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
 				}
-				logger.trace("Video Exit");
-			}
-
-			if (webcamOn) {
-				Frame frame = SWT_AWT.new_Frame(webcamPanel);
-
-				webcamRoot = new JRootPane();
-				frame.add(webcamRoot);
-			}
-
-			// Set the layout and how it responds to screen resize
-			FormData lblLeftFormData = new FormData();
-			lblLeftFormData.top = new FormAttachment(0, 0);
-			lblLeftFormData.left = new FormAttachment(0, 0);
-			lblLeftFormData.right = new FormAttachment(33, 0);
-			lblLeft.setLayoutData(lblLeftFormData);
-
-			FormData lblCentreFormData = new FormData();
-			lblCentreFormData.top = new FormAttachment(0, 0);
-			lblCentreFormData.left = new FormAttachment(lblLeft, 0);
-			lblCentreFormData.right = new FormAttachment(100, 0);
-			lblCentre.setLayoutData(lblCentreFormData);
-
-			if (overlayTimer) {
-				FormData lblRightFormData = new FormData();
-				lblRightFormData.top = new FormAttachment(leftFrame, 0);
-				lblRightFormData.left = new FormAttachment(leftFrame, 0);
-				lblRight.setLayoutData(lblRightFormData);
-				lblRight.moveAbove(null);
-			}
-
-			if (!multiMonitor) {
-				FormData sashFormData = new FormData();
-				sashFormData.top = new FormAttachment(lblLeft, 0);
-				sashFormData.left = new FormAttachment(0, 0);
-				sashFormData.right = new FormAttachment(100, 0);
-				sashFormData.bottom = new FormAttachment(100, 0);
-				sashform.setLayoutData(sashFormData);
-
-				FormData sashFormData2 = new FormData();
-				sashFormData2.top = new FormAttachment(sashform, 0);
-				sashFormData2.left = new FormAttachment(sashform, 0);
-				sashFormData2.right = new FormAttachment(sashform, 0);
-				sashFormData2.bottom = new FormAttachment(sashform, 0);
-				sashform2.setLayoutData(sashFormData2);
-			} else {
-
-				FormData leftFrameFormData = new FormData();
-				leftFrameFormData.top = new FormAttachment(lblLeft, 0);
-				leftFrameFormData.left = new FormAttachment(0, 0);
-				leftFrameFormData.right = new FormAttachment(100, 0);
-				leftFrameFormData.bottom = new FormAttachment(100, 0);
-				leftFrame.setLayoutData(leftFrameFormData);
-
-				FormData sashFormData2 = new FormData();
-				sashFormData2.top = new FormAttachment(0, 0);
-				sashFormData2.left = new FormAttachment(0, 0);
-				sashFormData2.right = new FormAttachment(100, 0);
-				sashFormData2.bottom = new FormAttachment(100, 0);
-				sashform2.setLayoutData(sashFormData2);
-			}
-
-			FormData btnCompFormData = new FormData();
-			btnCompFormData.top = new FormAttachment(sashform2, 0);
-			btnCompFormData.left = new FormAttachment(sashform2, 0);
-			btnCompFormData.right = new FormAttachment(sashform2, 0);
-			btnCompFormData.bottom = new FormAttachment(sashform2, 0);
-			btnComp.setLayoutData(btnCompFormData);
-
-			FormData leftPaneElementFormData = new FormData();
-			leftPaneElementFormData.top = new FormAttachment(0, 0);
-			leftPaneElementFormData.left = new FormAttachment(0, 0);
-			leftPaneElementFormData.right = new FormAttachment(100, 0);
-			leftPaneElementFormData.bottom = new FormAttachment(100, 0);
-			mediaPanel.setLayoutData(leftPaneElementFormData);
-			webcamPanel.setLayoutData(leftPaneElementFormData);
-			leftPaneBrowser.setLayoutData(leftPaneElementFormData);
-			imageLabel.setLayoutData(leftPaneElementFormData);
-
-			// Menu Bar
-			menuBar = new Menu(shell, SWT.BAR);
-
-			// Top Level File drop down
-			MenuItem fileItem = new MenuItem(menuBar, SWT.CASCADE);
-			fileItem.setText(displayText.getString("MainFile"));
-
-			// Sub Menu for File
-			Menu fileSubMenu = new Menu(shell, SWT.DROP_DOWN);
-			// Associate it with the top level File menu
-			fileItem.setMenu(fileSubMenu);
-
-			// File Load menu item
-			MenuItem fileLoadItem = new MenuItem(fileSubMenu, SWT.PUSH);
-			fileLoadItem.setText(displayText.getString("MainLoad"));
-			fileLoadItem.addSelectionListener(new FileLoadListener(this));
-
-			// File Library menu item
-			MenuItem fileLibraryItem = new MenuItem(fileSubMenu, SWT.PUSH);
-			fileLibraryItem.setText(displayText.getString("MainLibrary"));
-			fileLibraryItem.addSelectionListener(new FileLibraryListener(this));
-
-			// File Restart menu item
-			MenuItem fileRestartItem = new MenuItem(fileSubMenu, SWT.PUSH);
-			fileRestartItem.setText(displayText.getString("MainRestart"));
-			fileRestartItem.addSelectionListener(new FileRestartListener(this));
-
-			// File Reload menu item
-			MenuItem fileReloadItem = new MenuItem(fileSubMenu, SWT.PUSH);
-			fileReloadItem.setText(displayText.getString("MainReload"));
-			fileReloadItem.addSelectionListener(new FileReloadListener(this));
-
-			// File Preferences menu item
-			MenuItem filePreferencesItem = new MenuItem(fileSubMenu, SWT.PUSH);
-			filePreferencesItem.setText(displayText.getString("MainAppPref"));
-			filePreferencesItem.addSelectionListener(new FilePreferences(this));
-
-			// good
-
-			// File Preferences Guide menu item
-			MenuItem filePreferencesGuideItem = new MenuItem(fileSubMenu, SWT.PUSH);
-			filePreferencesGuideItem.setText(displayText.getString("MainUserPref"));
-			filePreferencesGuideItem.addSelectionListener(new FilePreferencesGuide(this));
-
-			// File Guide Preferences menu item
-			MenuItem fileGuidePreferencesItem = new MenuItem(fileSubMenu, SWT.PUSH);
-			fileGuidePreferencesItem.setText(displayText.getString("MainGuidePref"));
-			fileGuidePreferencesItem.addSelectionListener(new FileGuidePreferences(this));
-
-			// File Exit menu item
-			MenuItem fileExitItem = new MenuItem(fileSubMenu, SWT.PUSH);
-			fileExitItem.setText(displayText.getString("MainExit"));
-			fileExitItem.addListener(SWT.Selection, e -> shell.close());
-
-			// Top Level Tools drop down
-			MenuItem toolsItem = new MenuItem(menuBar, SWT.CASCADE);
-			toolsItem.setText(displayText.getString("MainTools"));
-
-			// Sub Menu for Tools
-			Menu toolsSubMenu = new Menu(shell, SWT.DROP_DOWN);
-			// Associate it with the top level File menu
-			toolsItem.setMenu(toolsSubMenu);
-
-			// Tools Compress menu item
-			MenuItem compressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
-			compressGuideItem.setText(displayText.getString("MainToolsCompress"));
-			compressGuideItem.addSelectionListener(new CompressGuideListener(this));
-
-			// Tools UnCompress menu item
-			MenuItem unCompressGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
-			unCompressGuideItem.setText(displayText.getString("MainToolsUnCompress"));
-			unCompressGuideItem.addSelectionListener(new UnCompressGuideListener(this));
-
-			// Tools Resize menu item
-			MenuItem resizeGuideItem = new MenuItem(toolsSubMenu, SWT.PUSH);
-			resizeGuideItem.setText(displayText.getString("MainToolsResizeImage"));
-			resizeGuideItem.addSelectionListener(new ResizeGuideListener(this));
-
-			// good
-			// Audio Output Menus
-			MenuItem audioItem = new MenuItem(menuBar, SWT.CASCADE);
-			audioItem.setText(displayText.getString("MainAudio"));
-
-			Menu audioSubMenu = new Menu(shell, SWT.DROP_DOWN);
-			audioItem.setMenu(audioSubMenu);
-
-			MenuItem videoOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
-			videoOutputItem.setText(displayText.getString("VideoDev"));
-
-			MenuItem audioOneOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
-			audioOneOutputItem.setText(displayText.getString("AudioDevOne"));
-
-			MenuItem audioTwoOutputItem = new MenuItem(audioSubMenu, SWT.CASCADE);
-			audioTwoOutputItem.setText(displayText.getString("AudioDevTwo"));
-
-			Menu videoSubMenu = new Menu(shell, SWT.DROP_DOWN);
-			videoOutputItem.setMenu(videoSubMenu);
-
-			Menu audioOneSubMenu = new Menu(shell, SWT.DROP_DOWN);
-			audioOneOutputItem.setMenu(audioOneSubMenu);
-
-			Menu audioTwoSubMenu = new Menu(shell, SWT.DROP_DOWN);
-			audioTwoOutputItem.setMenu(audioTwoSubMenu);
-
-			// good
-			boolean userDeviceVideoAvailable = false;
-			boolean userDeviceOneAvailable = false;
-			boolean userDeviceTwoAvailable = false;
-
-			List<AudioDevice> outputs = mediaPlayer.audio().outputDevices();
-
-			// bad
-			for (AudioDevice device : outputs) {
-				boolean userDeviceVideo = device.getDeviceId().equals(appSettings.getVideoDevice());
-				boolean userDeviceOne = device.getDeviceId()
-						.equals(appSettings.getAudioOneDevice());
-				boolean userDeviceTwo = device.getDeviceId()
-						.equals(appSettings.getAudioTwoDevice());
-
-				MenuItem videoDevice = new MenuItem(videoSubMenu, SWT.RADIO);
-				videoDevice.setText(device.getLongName());
-				videoDevice.setData("device-id", device.getDeviceId());
-				videoDevice.setSelection(userDeviceVideo);
-				videoDevice.addSelectionListener(new VideoDeviceChangedListener(this));
-
-				MenuItem audioOneDevice = new MenuItem(audioOneSubMenu, SWT.RADIO);
-				audioOneDevice.setText(device.getLongName());
-				audioOneDevice.setData("device-id", device.getDeviceId());
-				audioOneDevice.setSelection(userDeviceOne);
-				audioOneDevice.addSelectionListener(new AudioOneDeviceChangedListener(this));
-
-				MenuItem audioTwoDevice = new MenuItem(audioTwoSubMenu, SWT.RADIO);
-				audioTwoDevice.setText(device.getLongName());
-				audioTwoDevice.setData("device-id", device.getDeviceId());
-				audioTwoDevice.setSelection(userDeviceTwo);
-				audioTwoDevice.addSelectionListener(new AudioTwoDeviceChangedListener(this));
-
-				userDeviceVideoAvailable |= userDeviceVideo;
-				userDeviceOneAvailable |= userDeviceOne;
-				userDeviceTwoAvailable |= userDeviceTwo;
-			}
-//bad
-			if (!userDeviceVideoAvailable) {
-				logger.info("User selected Video device not available. Resetting to default");
-				MenuItem videoDefault = videoSubMenu.getItem(0);
-				videoDefault.setSelection(true);
-				appSettings.setVideoDevice(videoDefault.getData("device-id").toString());
-			}
-			if (!userDeviceOneAvailable) {
-				logger.info("User selected Audio device not available. Resetting to default");
-				MenuItem oneDefault = audioOneSubMenu.getItem(0);
-				oneDefault.setSelection(true);
-				appSettings.setAudioOneDevice(oneDefault.getData("device-id").toString());
-			}
-			if (!userDeviceTwoAvailable) {
-				logger.info("User selected Audio2 device not available. Resetting to default");
-				MenuItem twoDefault = audioTwoSubMenu.getItem(0);
-				twoDefault.setSelection(true);
-				appSettings.setAudioTwoDevice(twoDefault.getData("device-id").toString());
-			}
-
-			if (appSettings.getDebug()) {
-				// Top Level Debug drop down
-				MenuItem debugItem = new MenuItem(menuBar, SWT.CASCADE);
-				debugItem.setText(displayText.getString("MainDebug"));
-
-				// Sub Menu for Debug
-				Menu debugSubMenu = new Menu(shell, SWT.DROP_DOWN);
-				// Associate it with the top level File menu
-				debugItem.setMenu(debugSubMenu);
-
-				// Debug Debug Menu Item
-				final MenuItem debugCheck = new MenuItem(debugSubMenu, SWT.CHECK);
-				debugCheck.setText(displayText.getString("MainDebugDebug"));
-				debugCheck.setSelection(appSettings.getDebug());
-				debugCheck.addListener(SWT.Selection, event -> {
-					appSettings.setDebug(debugCheck.getSelection());
-					if (delayButton != null && !delayButton.isDisposed()) {
-						delayButton.setVisible(
-								appSettings.getDebug() && appSettings.getShowDelayBtn());
-					}
-				});
-
-				// Debug Javascript Debug Menu Item
-				final MenuItem jsdebugCheck = new MenuItem(debugSubMenu, SWT.CHECK);
-				jsdebugCheck.setText(displayText.getString("MainDebugJava"));
-				jsdebugCheck.setSelection(appSettings.getJsDebug());
-				jsdebugCheck.addListener(SWT.Selection,
-						event -> appSettings.setJsDebug(jsdebugCheck.getSelection()));
-				// Debug Javascript Debug Menu Error Item
-				final MenuItem jsdebugErrorCheck = new MenuItem(debugSubMenu, SWT.CHECK);
-				jsdebugErrorCheck.setText(displayText.getString("MainDebugException"));
-				jsdebugErrorCheck.setSelection(appSettings.getJsDebugError());
-				jsdebugErrorCheck.addListener(SWT.Selection,
-						event -> appSettings.setJsDebugError(jsdebugErrorCheck.getSelection()));
-				// Debug Javascript Debug Menu Enter Item
-				final MenuItem jsdebugEnterCheck = new MenuItem(debugSubMenu, SWT.CHECK);
-				jsdebugEnterCheck.setText(displayText.getString("MainDebugEnter"));
-				jsdebugEnterCheck.setSelection(appSettings.getJsDebugEnter());
-				jsdebugEnterCheck.addListener(SWT.Selection,
-						event -> appSettings.setJsDebugEnter(jsdebugEnterCheck.getSelection()));
-
-				// Debug Javascript Debug Menu Exit Item
-				final MenuItem jsdebugExitCheck = new MenuItem(debugSubMenu, SWT.CHECK);
-				jsdebugExitCheck.setText(displayText.getString("MainDebugExit"));
-				jsdebugExitCheck.setSelection(appSettings.getJsDebugExit());
-				jsdebugExitCheck.addListener(SWT.Selection,
-						event -> appSettings.setJsDebugExit(jsdebugExitCheck.getSelection()));
-
-				// Debug Pause Item
-				final MenuItem debugPause = new MenuItem(debugSubMenu, SWT.CHECK);
-				debugPause.setText(displayText.getString("MainDebugPause"));
-				debugPause.addListener(SWT.Selection, event -> {
-					pauseRequested = debugPause.getSelection();
-					if (!pauseRequested) {
-						resumeAll();
-					}
-				});
-				new MenuItem(debugSubMenu, SWT.SEPARATOR);
-				// Debug ShowDelay Item
-				final MenuItem showDelay = new MenuItem(debugSubMenu, SWT.CHECK);
-				showDelay.setText(displayText.getString("MainDebugShowDelay"));
-				showDelay.setSelection(appSettings.getShowDelayBtn());
-				showDelay.addListener(SWT.Selection, event -> {
-					appSettings.setShowDelayBtn(showDelay.getSelection());
-					if (delayButton != null && !delayButton.isDisposed()) {
-						delayButton.setVisible(
-								appSettings.getDebug() && appSettings.getShowDelayBtn());
-					}
-				});
-			}
-			// Add the menu bar to the shell
-			shell.setMenuBar(menuBar);
-
-			// tell SWT to display the correct screen info
-			shell.pack();
-			shell.setMaximized(true);
-			shell.setBounds(clientArea);
-			if (!multiMonitor) {
-				sashform.setWeights(intWeights1);
-			} else {
-				shell2.pack();
-				shell2.setMaximized(true);
-				shell2.setBounds(clientArea2);
-			}
-			sashform2.setWeights(intWeights2);
-			// timer that updates the clock field and handles any timed events
-			// when loading wait 2 seconds before running it
-			myDisplay.timerExec(2000, new ShellTimer(this));
-			metronome = new MetronomePlayer();
-			threadMetronome = new Thread(metronome, "metronome");
-			threadMetronome.setName("threadMetronome");
-			threadMetronome.start();
-		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			});
 		}
+		// Add the menu bar to the shell
+		shell.setMenuBar(menuBar);
+
+		// tell SWT to display the correct screen info
+		shell.pack();
+		shell.setMaximized(true);
+		shell.setBounds(clientArea);
+		if (!multiMonitor) {
+			sashform.setWeights(appSettings.getSash1Weights());
+		} else {
+			shell2.pack();
+			shell2.setMaximized(true);
+			shell2.setBounds(clientArea2);
+		}
+		sashform2.setWeights(appSettings.getSash2Weights());
+		// timer that updates the clock field and handles any timed events
+		// when loading wait 2 seconds before running it
+		myDisplay.timerExec(2000, new ShellTimer(this));
+		metronome = new MetronomePlayer();
+		threadMetronome = new Thread(metronome, "metronome");
+		threadMetronome.setName("threadMetronome");
+		threadMetronome.start();
+
 		logger.trace("Exit createShell");
 		if (!appSettings.getComandLineGuide().equals("")) {
 			loadGuide(appSettings.getDataDirectory() + appSettings.getComandLineGuide());
@@ -888,6 +831,7 @@ public class MainShell {
 	}
 
 	public void setImage(String imgPath) {
+		logger.trace("setImage: {}", imgPath);
 		imgOverRide = false;
 		imageManager.setCurrentImagePath(imgPath);
 		imageManager.updateImageLabel(imageLabel);
@@ -931,7 +875,7 @@ public class MainShell {
 
 	public boolean showWebcam() {
 		// displays the webcam in the area to the left of the screen
-		if (webcamOn) {
+		if (appSettings.getWebcamOn()) {
 			try {
 				webcam = Webcam.getDefault();
 
@@ -970,7 +914,7 @@ public class MainShell {
 		// if the video finishes
 		// starts the video using a non UI thread so VLC can't hang the
 		// application
-		if (videoOn) {
+		if (appSettings.getVideoOn()) {
 			try {
 				setLeftText("", "");
 				setLeftPaneVisibleElement(mediaPanel);
@@ -983,8 +927,8 @@ public class MainShell {
 				videoScriptVar = scriptVar;
 				videoPlay = true;
 				String mrlVideo = "file:///" + video;
-				logger.debug("MainShell playVideo: " + mrlVideo + " videoLoops: " + videoLoops
-						+ " videoTarget: " + videoTarget + " videoPlay: " + videoPlay);
+				logger.debug("MainShell playVideo: {} videoLoops: {} videoTarget: videoPlay: {}",
+						mrlVideo, videoLoops, videoTarget, videoPlay);
 				VideoPlay videoPlayer = new VideoPlay(this);
 				videoPlayer.setVideoPlay(mediaPlayer, mrlVideo, volume);
 				threadVideoPlayer = new Thread(videoPlayer, "videoPlay");
@@ -1305,8 +1249,6 @@ public class MainShell {
 		if (!function.equals("")) {
 			guide.getJavascriptEngine().exec(userSettings, appSettings, pageLoading, null, overRide,
 					pageJavascript, function, pageLoading);
-//			new Jscript(guide).exec(userSettings, appSettings, pageLoading, null, overRide,
-//					pageJavascript, function, pageLoading);
 		}
 	}
 
@@ -1330,8 +1272,7 @@ public class MainShell {
 	// get any fields from the html form and store them in guide settings for
 	// use in the next java script call.
 	private void getFormFields() {
-		try {
-			//@formatter:off
+		//@formatter:off
 			String evaluateScript = "" 
 					+ "var vforms = document.forms;" 
 					+ "var vreturn = '';"
@@ -1353,87 +1294,84 @@ public class MainShell {
 					+ "}" 
 					+ "return vreturn;";
 			//@formatter:on
-			String node = (String) brwsText.evaluate(evaluateScript);
-			if (node == null) {
-				return;
-			}
-			String[] fields = node.split("\\|");
-			String[] values;
-			String name;
-			String value;
-			String type;
-			String checked;
-			for (int i = 0; i < fields.length; i++) {
-				values = fields[i].split("¬");
-				if (!fields[i].equals("")) {
-					name = values[0];
-					value = values[1];
-					type = values[2];
-					checked = values[3];
-					if (type.equals("checkbox")) {
-						guideSettings.setFormField(name, checked);
-						guideSettings.setScriptVar(name, checked);
-					}
-					if (type.equals("radio") && (checked.equals("true"))) {
-						guideSettings.setFormField(name, value);
-						guideSettings.setScriptVar(name, value);
-
-					}
-					if (type.equals("text") || type.equals("textarea")) {
-						guideSettings.setFormField(name, value);
-						guideSettings.setScriptVar(name, value);
-					}
-					if (type.equals("file")) {
-						guideSettings.setFormField(name, value);
-						guideSettings.setScriptVar(name, value);
-					}
-
-					if (type.equals("select-one")) {
-						guideSettings.setFormField(name, value);
-						guideSettings.setScriptVar(name, value);
-					}
-
-					logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
+		String node = (String) brwsText.evaluate(evaluateScript);
+		if (node == null) {
+			return;
+		}
+		String[] fields = node.split("\\|");
+		String[] values;
+		String name;
+		String value;
+		String type;
+		String checked;
+		for (int i = 0; i < fields.length; i++) {
+			values = fields[i].split("¬");
+			if (!fields[i].equals("")) {
+				name = values[0];
+				value = values[1];
+				type = values[2];
+				checked = values[3];
+				if (type.equals("checkbox")) {
+					guideSettings.setFormField(name, checked);
+					guideSettings.setScriptVar(name, checked);
 				}
-			}
-			String node2 = (String) leftPaneBrowser.evaluate(evaluateScript);
-			fields = node2.split("\\|");
-			for (int i = 0; i < fields.length; i++) {
-				values = fields[i].split("¬");
-				if (!fields[i].equals("")) {
-					name = values[0];
-					value = values[1];
-					type = values[2];
-					checked = values[3];
-					if (type.equals("checkbox")) {
-						guideSettings.setFormField(name, checked);
-						guideSettings.setScriptVar(name, checked);
-					}
-					if (type.equals("radio") && (checked.equals("true"))) {
-						guideSettings.setFormField(name, value);
-						guideSettings.setScriptVar(name, value);
+				if (type.equals("radio") && (checked.equals("true"))) {
+					guideSettings.setFormField(name, value);
+					guideSettings.setScriptVar(name, value);
 
-					}
-					if (type.equals("text") || type.equals("textarea")) {
-						guideSettings.setFormField(name, value);
-						guideSettings.setScriptVar(name, value);
-					}
-
-					if (type.equals("file")) {
-						guideSettings.setFormField(name, value);
-						guideSettings.setScriptVar(name, value);
-					}
-
-					if (type.equals("select-one")) {
-						guideSettings.setFormField(name, value);
-						guideSettings.setScriptVar(name, value);
-					}
-
-					logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
 				}
+				if (type.equals("text") || type.equals("textarea")) {
+					guideSettings.setFormField(name, value);
+					guideSettings.setScriptVar(name, value);
+				}
+				if (type.equals("file")) {
+					guideSettings.setFormField(name, value);
+					guideSettings.setScriptVar(name, value);
+				}
+
+				if (type.equals("select-one")) {
+					guideSettings.setFormField(name, value);
+					guideSettings.setScriptVar(name, value);
+				}
+
+				logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
 			}
-		} catch (Exception ex) {
-			logger.error(" get form fields " + ex.getLocalizedMessage(), ex);
+		}
+		String node2 = (String) leftPaneBrowser.evaluate(evaluateScript);
+		fields = node2.split("\\|");
+		for (int i = 0; i < fields.length; i++) {
+			values = fields[i].split("¬");
+			if (!fields[i].equals("")) {
+				name = values[0];
+				value = values[1];
+				type = values[2];
+				checked = values[3];
+				if (type.equals("checkbox")) {
+					guideSettings.setFormField(name, checked);
+					guideSettings.setScriptVar(name, checked);
+				}
+				if (type.equals("radio") && (checked.equals("true"))) {
+					guideSettings.setFormField(name, value);
+					guideSettings.setScriptVar(name, value);
+
+				}
+				if (type.equals("text") || type.equals("textarea")) {
+					guideSettings.setFormField(name, value);
+					guideSettings.setScriptVar(name, value);
+				}
+
+				if (type.equals("file")) {
+					guideSettings.setFormField(name, value);
+					guideSettings.setScriptVar(name, value);
+				}
+
+				if (type.equals("select-one")) {
+					guideSettings.setFormField(name, value);
+					guideSettings.setScriptVar(name, value);
+				}
+
+				logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
+			}
 		}
 	}
 
@@ -1520,7 +1458,7 @@ public class MainShell {
 	}
 
 	public void stopWebcam() {
-		if (webcamOn && webcamVisible) {
+		if (appSettings.getWebcamOn() && webcamVisible) {
 			panel.stop();
 			webcamRoot.getContentPane().removeAll();
 			webcamVisible = false;
@@ -1528,7 +1466,7 @@ public class MainShell {
 	}
 
 	public void stopVideo(boolean shellClosing) {
-		if (videoOn && mediaPlayer.media().info() != null) {
+		if (appSettings.getVideoOn() && mediaPlayer.media().info() != null) {
 			try {
 				videoLoops = 0;
 				videoTarget = "";

@@ -29,3 +29,6 @@ Make Jscript not use so much static
 Improve Javascript debugability
     How to bring up debug window?
     When an error occurs on something like a button press, provide better context
+
+Possible bug when enabling multi-monitor support. No image displays until you manually clear startup.state
+Also, the entire *.state system seems to be ripe with inconsistent state during updates

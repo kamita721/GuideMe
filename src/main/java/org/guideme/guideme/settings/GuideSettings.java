@@ -197,7 +197,7 @@ public class GuideSettings {
 		} catch (ParserConfigurationException pce) {
 			logger.error(pce.getLocalizedMessage(), pce);
 		} catch (SAXException | IOException e) {
-			logger.error(e.getLocalizedMessage(), e);
+			logger.error("Error parsing file: "+ filename+":\n" + e.getLocalizedMessage(), e);
 		}
 		saveSettings();
 	}
