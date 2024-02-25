@@ -34,7 +34,6 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 
 import javax.swing.JRootPane;
-import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.widgets.*;
 import org.guideme.guideme.MainLogic;
@@ -45,7 +44,6 @@ import org.guideme.guideme.model.Page;
 import org.guideme.guideme.model.Timer;
 import org.guideme.guideme.model.WebcamButton;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
-import org.guideme.guideme.scripting.Jscript;
 import org.guideme.guideme.scripting.OverRide;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;

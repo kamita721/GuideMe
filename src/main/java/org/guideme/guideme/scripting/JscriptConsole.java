@@ -2,9 +2,7 @@ package org.guideme.guideme.scripting;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.apache.logging.log4j.LogManager;
@@ -36,7 +34,6 @@ public class JscriptConsole implements Runnable {
 	private final PrintStream stderr;
 	private final ContextFactory cntxFact;
 	private final Scriptable scope;
-	private final Main debugger;
 
 	private boolean shutdown = false;
 
@@ -45,7 +42,6 @@ public class JscriptConsole implements Runnable {
 	public JscriptConsole(Main debugger, ContextFactory cntxFact, Scriptable scope) {
 		this.cmdAccumulator = new StringBuilder();
 
-		this.debugger = debugger;
 		this.stdin = new BufferedReader(new InputStreamReader(debugger.getIn()));
 		this.stdout = new PrintStream(debugger.getOut());
 		this.stderr = new PrintStream(debugger.getErr());
