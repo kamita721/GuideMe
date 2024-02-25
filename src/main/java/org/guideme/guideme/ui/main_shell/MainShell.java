@@ -726,6 +726,13 @@ public class MainShell {
 				getShell2().open();
 			}
 
+			/*
+			 * If monitorChanging is ever set to true, the below loop will terminate, and
+			 * the outer loop will cycle back to here, at which point we are done responding
+			 * to the new monitor settings.
+			 */
+			appSettings.setMonitorChanging(false);
+
 			// loop round until the window is closed
 			while (!shell.isDisposed()) {
 				if (appSettings.isMonitorChanging()) {
