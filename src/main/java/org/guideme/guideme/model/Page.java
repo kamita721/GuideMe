@@ -96,6 +96,11 @@ public class Page {
 	public Button getButton(int butIndex) {
 		return button.get(butIndex);
 	}
+	
+
+	public Button[] getButtons() {
+		return button.toArray(new Button[] {});
+	}
 
 	public void addButton(Button button) {
 		this.button.add(button);
@@ -107,6 +112,11 @@ public class Page {
 
 	public void addWebcamButton(WebcamButton button) {
 		this.webcamButton.add(button);
+	}
+	
+
+	public Delay[] getDelays() {
+		return delay.toArray(new Delay[] {});
 	}
 
 	public Delay getDelay(int delIndex) {
@@ -129,6 +139,11 @@ public class Page {
 		return video.get(vidIndex);
 	}
 	
+
+	public Video[] getVideos() {
+		return video.toArray(new Video[] {});
+	}
+	
 	public void addVideo(Video video) {
 		this.video.add(video);
 	}
@@ -143,6 +158,11 @@ public class Page {
 
 	public Image getImage(int imgIndex) {
 		return image.get(imgIndex);
+	}
+	
+
+	public Image[] getImages() {
+		return image.toArray(new Image[] {});
 	}
 	
 	public void addImage(Image image) {
@@ -169,12 +189,21 @@ public class Page {
 		return audio.get(audIndex);
 	}
 	
+
+	public Audio[] getAudios() {
+		return audio.toArray(new Audio[] {});
+	}
+	
 	public void addAudio(Audio audio) {
 		this.audio.add(audio);
 	}
 
 	public Metronome getMetronome(int metIndex) {
 		return metronome.get(metIndex);
+	}
+
+	public Metronome[] getMetronomes() {
+		return metronome.toArray(new Metronome[] {});
 	}
 	
 	public void addMetronome(Metronome metronome) {

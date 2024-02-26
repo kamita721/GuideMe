@@ -32,3 +32,9 @@ Improve Javascript debugability
 
 Possible bug when enabling multi-monitor support. No image displays until you manually clear startup.state
 Also, the entire *.state system seems to be ripe with inconsistent state during updates
+
+Make the debug and JS debug toggles immidietly toggle the relevent debug window
+    Currently the JS window will show up when the page changes, and the normal debug window requires an alt-d to appear
+    Also, the normal debug window needs some love
+In the main tab of the debug window, the last column stretches all the way to the edge of the window
+Changing monitor settings leaks a debug shell. (E.G, with a debug shell visible, change monitor settings, then try toggling the debug shell)

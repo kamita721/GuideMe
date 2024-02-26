@@ -2,3 +2,6 @@ Resolve segfault on Linux (Update VLCJ library)
 Rework how static images are handled
 Cache static images
 Code Cleanup
+Improve JS debugging:
+    Debugger window stays up between pages
+    Debug console is usable

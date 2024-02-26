@@ -22,7 +22,7 @@ import org.guideme.guideme.readers.UnicodeBOMInputStream;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.GuideSettings;
-import org.guideme.guideme.ui.DebugShell;
+import org.guideme.guideme.ui.debug_shell.DebugShell;
 import org.guideme.guideme.util.XMLReaderUtils;
 
 public class XmlGuideReader {

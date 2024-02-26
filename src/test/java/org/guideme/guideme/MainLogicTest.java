@@ -19,7 +19,7 @@ import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
-import org.guideme.guideme.ui.DebugShell;
+import org.guideme.guideme.ui.debug_shell.DebugShell;
 import org.guideme.guideme.ui.main_shell.MainShell;
 import org.guideme.guidme.mock.AppSettingsMock;
 import org.guideme.guidme.mock.MainShellMock;

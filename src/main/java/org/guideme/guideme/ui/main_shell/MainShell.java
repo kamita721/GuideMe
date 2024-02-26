@@ -51,9 +51,9 @@ import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.AudioPlayer;
 import org.guideme.guideme.ui.CompositeVideoSurface;
-import org.guideme.guideme.ui.DebugShell;
 import org.guideme.guideme.ui.MetronomePlayer;
 import org.guideme.guideme.ui.SwtEmbeddedMediaPlayer;
+import org.guideme.guideme.ui.debug_shell.DebugShell;
 import org.guideme.guideme.util.ImageManager;
 import org.mozilla.javascript.ContextFactory;
 

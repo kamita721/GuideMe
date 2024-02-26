@@ -136,9 +136,6 @@ public class Jscript {
 			MainShell mainShell, OverRide overRide, String javaScriptText, String javaFunction,
 			boolean pageloading) {		
 		running = true;
-		if (javaFunction != null && !javaFunction.isBlank()) {
-			System.err.println("JavaFucntion: " + javaFunction);
-		}
 
 		// TODO shouldn't this already be done?
 		guide.setMainshell(mainShell);
@@ -172,8 +169,6 @@ public class Jscript {
 			Scriptable globalScope = guide.getSettings().getGlobalScope();
 
 			dbg.setScope(globalScope);
-
-			System.err.println("FOO: " + appSettings.getJsDebug());
 
 			Context cntx = cntxFact.enterContext();
 			cntx.setOptimizationLevel(-1);
