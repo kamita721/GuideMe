@@ -152,8 +152,8 @@ public class MainShell {
 		Rectangle clientArea;
 		Rectangle clientArea2;
 		Thread threadMetronome;
-		org.eclipse.swt.graphics.Color colourWhite;
-		org.eclipse.swt.graphics.Color colourBlack;
+		Color colourWhite;
+		Color colourBlack;
 		comonFunctions.setDisplay(display);
 		colourBlack = display.getSystemColor(SWT.COLOR_BLACK);
 		colourWhite = display.getSystemColor(SWT.COLOR_WHITE);
@@ -836,7 +836,7 @@ public class MainShell {
 		// usually displays the clock
 		this.lblRight.setText(lblRight);
 	}
-
+	
 	public void setImage(String imgPath) {
 		logger.trace("setImage: {}", imgPath);
 		imgOverRide = false;
@@ -1018,7 +1018,7 @@ public class MainShell {
 			hasAudio2Deferred = false;
 		}
 	}
-
+	
 	public void setBrwsText(String brwsText, String overRideStyle) {
 		// set HTML to be displayed in the browser control to the right of the
 		// screen
@@ -1258,7 +1258,7 @@ public class MainShell {
 					pageJavascript, function, pageLoading);
 		}
 	}
-
+	
 	public void runJscript(String function, boolean pageLoading) {
 		runJscript(function, null, pageLoading);
 	}
@@ -1686,6 +1686,68 @@ public class MainShell {
 
 	public void setGuideSettings(GuideSettings guideSettings) {
 		this.guideSettings = guideSettings;
+	}
+	
+
+
+	/*
+	 * Begin "Uncooked" functions. These functions take their arguements directly from
+	 * the model, and "cook" them into a more processed form before calling the underlying
+	 * implementatin function.
+	 */
+	
+	public void runJscriptUncooked(String function, boolean pageLoading) {
+		if(function.isBlank()) {
+			return;
+		}
+		runJscript(function, pageLoading);
+	}
+	
+	public void gotoTargetUncooked(String target) {
+		if(target.isBlank()) {
+			return;
+		}
+		lblRight.setText("");
+		mainLogic.displayPage(target, false, guide, this,
+				appSettings, userSettings, guideSettings,
+				debugShell);
+	}
+	
+	public void setImageByUncooked(String imgId) {
+		if(imgId.isBlank()) {
+			return;
+		}
+		String imgPath = comonFunctions.getMediaFullPath(imgId,
+				appSettings.getFileSeparator(), appSettings,
+				guide);
+		File flImage = new File(imgPath);
+		if (flImage.exists()) {
+			setImage(imgPath);
+		}
+	}
+	
+	public void setBrwsTextUncooked(String brwsTextUncooked) {
+		if(brwsTextUncooked.isBlank()) {
+			return;
+		}
+		// Media Directory
+		String mediaPath;
+		mediaPath = comonFunctions.getMediaFullPath("",
+				appSettings.getFileSeparator(), appSettings,
+				guide);
+		String displayText = brwsTextUncooked.replace("\\MediaDir\\", mediaPath);
+
+		displayText = comonFunctions.substituteTextVars(displayText,
+				guideSettings, userSettings);
+
+		setBrwsText(displayText, "");
+	}
+	
+	public void setUnsetFlagsUncooked(String setFlags, String unSetFlags) {
+
+		comonFunctions.setFlags(setFlags, guide.getFlags());
+		comonFunctions.unsetFlags(unSetFlags,
+				guide.getFlags());
 	}
 
 }

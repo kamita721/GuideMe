@@ -97,7 +97,7 @@ public class MainLogic {
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
-
+	
 	// display page without a chapter
 	public void displayPage(String pageId, boolean reDisplay, Guide guide, MainShell mainShell,
 			AppSettings appSettings, UserSettings userSettings, GuideSettings guideSettings,

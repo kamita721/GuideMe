@@ -38,3 +38,10 @@ Make the debug and JS debug toggles immidietly toggle the relevent debug window
     Also, the normal debug window needs some love
 In the main tab of the debug window, the last column stretches all the way to the edge of the window
 Changing monitor settings leaks a debug shell. (E.G, with a debug shell visible, change monitor settings, then try toggling the debug shell)
+
+Factor out the pattern:
+    			mainShell.comonFunctions.setFlags(objTimer.getSet(), mainShell.guide.getFlags());
+				mainShell.comonFunctions.unsetFlags(objTimer.getUnSet(),
+						mainShell.guide.getFlags());
+
+Introduce type safety around the cooked/uncooked distinction

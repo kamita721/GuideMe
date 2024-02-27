@@ -300,7 +300,7 @@ public class ComonFunctions {
 			logger.error(e.getLocalizedMessage(), e);
 		}
 	}
-
+	
 	public String getFlags(List<String> setList) {
 		StringBuilder strFlags = new StringBuilder();
 		try {
