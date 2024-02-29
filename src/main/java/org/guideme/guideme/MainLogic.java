@@ -97,7 +97,7 @@ public class MainLogic {
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
-	
+
 	// display page without a chapter
 	public void displayPage(String pageId, boolean reDisplay, Guide guide, MainShell mainShell,
 			AppSettings appSettings, UserSettings userSettings, GuideSettings guideSettings,
@@ -125,125 +125,114 @@ public class MainLogic {
 		logger.debug("displayPage PagePassed {}", pageId);
 		logger.debug(() -> "displayPage Flags " + comonFunctions.getFlags(guide.getFlags()));
 
-		try {
-			mainShell.stopAll(false);
-			overRide.clear();
-			guideSettings.setChapter(chapterName);
-			// handle random page
-			strPageId = pageFilter.getSingleMatchingPage(pageId, guide, chapterName);
-			// get the page to display
-			objCurrPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
-			if (objCurrPage == null) {
-				objCurrPage = generate404Page(guide, chapterName, strPageId);
-				strPageId = objCurrPage.getId();
-			}
-			guideSettings.setPrevPage(guideSettings.getCurrPage());
-			guideSettings.setCurrPage(strPageId);
-
-			// load new guide?
-			objCurrPage = processLoadGuide(objCurrPage, guide, debugShell, appSettings, mainShell);
+		mainShell.stopAll(false);
+		overRide.clear();
+		guideSettings.setChapter(chapterName);
+		// handle random page
+		strPageId = pageFilter.getSingleMatchingPage(pageId, guide, chapterName);
+		// get the page to display
+		objCurrPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
+		if (objCurrPage == null) {
+			objCurrPage = generate404Page(guide, chapterName, strPageId);
 			strPageId = objCurrPage.getId();
-
-			debugShell.setPage(strPageId, true);
-
-			// run the pageLoad script
-			String pageJavascript = objCurrPage.getjScript();
-			// TODO, this can't be the right way to detect if a pageLoad function is
-			// present.
-			if (pageJavascript.contains("pageLoad")) {
-				mainShell.runJscript("pageLoad", overRide, true);
-			}
-
-			// PageChangeClick
-			if (appSettings.isPageSound() && guideSettings.isPageSound()) {
-				song.setFramePosition(0);
-				song.start();
-			}
-
-			// delay
-			objDelay = processDelay(mainShell, guide, objCurrPage);
-
-			// If we are going straight to another page we can skip this section
-			if ((objDelay == null || objDelay.getDelaySec() > 0) && overRide.getPage().equals("")) {
-				// add timers
-				addTimers(mainShell, objCurrPage, guide);
-
-				// If we haven't over ridden the left pane then populate it
-				if (overRide.getLeftHtml().equals("") && overRide.getLeftBody().equals("")) {
-					// Video
-					objVideo = processVideo(objCurrPage, guide, fileSeparator, appSettings,
-							mainShell);
-					if (objVideo == null) {
-						objWebcam = processWebcam(objCurrPage, guide, fileSeparator, appSettings,
-								mainShell);
-					} else {
-						objWebcam = null;
-					}
-					if (objVideo == null && objWebcam == null) {
-						// image
-						imgName = ProcessImage(objCurrPage, fileSeparator, appSettings, guide,
-								mainShell);
-						if (imgName.equals("")) {
-							// Left text
-							processLeftText(objCurrPage, fileSeparator, appSettings, guide,
-									mainShell, userSettings);
-						}
-					} else {
-						if (objWebcam == null || objWebcam.getWebCamFound()) {
-							mainShell.clearImage();
-							// No image
-						}
-					}
-
-				} else {
-					processLeftTextOverRide(fileSeparator, appSettings, guide, mainShell,
-							userSettings);
-				}
-
-				// Browser text
-				processRightPanel(objCurrPage, fileSeparator, appSettings, guide, mainShell,
-						userSettings);
-
-				// Buttons
-				processButtons(objCurrPage, appSettings, guide, mainShell, userSettings, objDelay,
-						imgName, debugShell);
-
-			}
-
-			if (!reDisplay) {
-				// Audio / Metronome
-				blnMetronome = processMetronome(objCurrPage, guide, mainShell);
-				if (!blnMetronome) {
-					// Audio
-					processAudio(objCurrPage, guide, mainShell, fileSeparator, appSettings);
-					// Audio2
-					processAudio2(objCurrPage, guide, mainShell, fileSeparator, appSettings);
-				}
-			}
-
-			// Save current page and flags
-			// set page
-			if (guide.getAutoSetPage()) {
-				comonFunctions.setFlags(strPageId, guide.getFlags());
-			}
-
-			// do page set / unset
-			objCurrPage.setUnSet(guide.getFlags());
-
-			// Start all media at the same time
-			mainShell.startDeferredMedia();
-
-			guide.getSettings().setPage(strPageId);
-			strFlags = comonFunctions.getFlags(guide.getFlags());
-			logger.debug("displayPage End Flags {}", strFlags);
-			guide.getSettings().setFlags(strFlags);
-			guide.getSettings().saveSettings();
-			appSettings.saveSettings();
-			guide.getSettings().formFieldsReset();
-			mainShell.layoutButtons();
-		} catch (Exception e) {
-			logger.error("displayPage Exception ", e);
 		}
+		guideSettings.setPrevPage(guideSettings.getCurrPage());
+		guideSettings.setCurrPage(strPageId);
+
+		// load new guide?
+		objCurrPage = processLoadGuide(objCurrPage, guide, debugShell, appSettings, mainShell);
+		strPageId = objCurrPage.getId();
+
+		debugShell.setPage(strPageId, true);
+
+		mainShell.runJscript("pageLoad()", overRide, true);
+
+		// PageChangeClick
+		if (appSettings.isPageSound() && guideSettings.isPageSound()) {
+			song.setFramePosition(0);
+			song.start();
+		}
+
+		// delay
+		objDelay = processDelay(mainShell, guide, objCurrPage);
+
+		// If we are going straight to another page we can skip this section
+		if ((objDelay == null || objDelay.getDelaySec() > 0) && overRide.getPage().equals("")) {
+			// add timers
+			addTimers(mainShell, objCurrPage, guide);
+
+			// If we haven't over ridden the left pane then populate it
+			if (overRide.getLeftHtml().equals("") && overRide.getLeftBody().equals("")) {
+				// Video
+				objVideo = processVideo(objCurrPage, guide, fileSeparator, appSettings, mainShell);
+				if (objVideo == null) {
+					objWebcam = processWebcam(objCurrPage, guide, fileSeparator, appSettings,
+							mainShell);
+				} else {
+					objWebcam = null;
+				}
+				if (objVideo == null && objWebcam == null) {
+					// image
+					imgName = ProcessImage(objCurrPage, fileSeparator, appSettings, guide,
+							mainShell);
+					if (imgName.equals("")) {
+						// Left text
+						processLeftText(objCurrPage, fileSeparator, appSettings, guide, mainShell,
+								userSettings);
+					}
+				} else {
+					if (objWebcam == null || objWebcam.getWebCamFound()) {
+						mainShell.clearImage();
+						// No image
+					}
+				}
+
+			} else {
+				processLeftTextOverRide(fileSeparator, appSettings, guide, mainShell, userSettings);
+			}
+
+			// Browser text
+			processRightPanel(objCurrPage, fileSeparator, appSettings, guide, mainShell,
+					userSettings);
+
+			// Buttons
+			processButtons(objCurrPage, appSettings, guide, mainShell, userSettings, objDelay,
+					imgName, debugShell);
+
+		}
+
+		if (!reDisplay) {
+			// Audio / Metronome
+			blnMetronome = processMetronome(objCurrPage, guide, mainShell);
+			if (!blnMetronome) {
+				// Audio
+				processAudio(objCurrPage, guide, mainShell, fileSeparator, appSettings);
+				// Audio2
+				processAudio2(objCurrPage, guide, mainShell, fileSeparator, appSettings);
+			}
+		}
+
+		// Save current page and flags
+		// set page
+		if (guide.getAutoSetPage()) {
+			comonFunctions.setFlags(strPageId, guide.getFlags());
+		}
+
+		// do page set / unset
+		objCurrPage.setUnSet(guide.getFlags());
+
+		// Start all media at the same time
+		mainShell.startDeferredMedia();
+
+		guide.getSettings().setPage(strPageId);
+		strFlags = comonFunctions.getFlags(guide.getFlags());
+		logger.debug("displayPage End Flags {}", strFlags);
+		guide.getSettings().setFlags(strFlags);
+		guide.getSettings().saveSettings();
+		appSettings.saveSettings();
+		guide.getSettings().formFieldsReset();
+		mainShell.layoutButtons();
+
 	}
 
 	private Page generate404Page(Guide guide, String chapterName, String strPageId) {

@@ -30,6 +30,12 @@ public class Jscript {
 	private final Main dbg;
 	private final ContextFactory cntxFact;
 	
+	private final static String IMPLICIT_JAVASCRIPT="""
+			//For backwards compatability, maintain a top level logging function called "jscriptLog"
+			jscriptLog=debug.log.bind(debug);
+			
+			function pageLoad(){};
+			""";
 
 	public Jscript(Guide guide) {
 		this.guide = guide;
@@ -186,8 +192,7 @@ public class Jscript {
 						MainLogic.getGlobalScriptVariables());
 				ScriptableObject.putProperty(globalScope, "debug", debug);
 				
-				/* For backwards compatability, maintain a top level logging function called "jscriptLog" */
-				cntx.evaluateString(globalScope, "jscriptLog=debug.log.bind(debug)", "internal", 0, null);
+				cntx.evaluateString(globalScope, IMPLICIT_JAVASCRIPT, "internal", 0, null);
 			}
 			ScriptableObject.putProperty(globalScope, "scriptVars", scriptVars);
 
@@ -238,6 +243,10 @@ public class Jscript {
 
 				cntx.evaluateString(scope, javaScriptText, "pageScript", 1, null);
 
+				/*
+				 * TODO, why the song and dance around javaFunction?
+				 * Can't we still just call it as normal javascript?
+				 */
 				int argStart;
 				String javaFunctionFull = javaFunction;
 				argStart = javaFunction.indexOf("(");
@@ -247,6 +256,9 @@ public class Jscript {
 				Object fObj = scope.get(javaFunction, scope);
 				if (!(fObj instanceof Function)) {
 					fObj = parentScope.get(javaFunction, parentScope);
+				}
+				if (!(fObj instanceof Function)) {
+					fObj = globalScope.get(javaFunction, parentScope);
 				}
 				if ((fObj instanceof Function)) {
 					Object[] args;
