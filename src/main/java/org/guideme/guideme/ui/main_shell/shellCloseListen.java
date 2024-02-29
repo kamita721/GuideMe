@@ -25,7 +25,7 @@ class shellCloseListen extends ShellAdapter {
 			// exitTriggered = true;
 			this.mainShell.myDisplay.removeFilter(SWT.KeyDown, this.mainShell.keyListener);
 			this.mainShell.keyListener = null;
-			if (this.mainShell.shell2 != null) {
+			if (this.mainShell.shell2 != null && !this.mainShell.shell2.isDisposed()) {
 				this.mainShell.shell2.close();
 			}
 			this.mainShell.debugShell.closeShell();
