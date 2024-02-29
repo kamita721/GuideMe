@@ -637,7 +637,6 @@ public class MainLogic {
 		// process global buttons on page
 		for (int i1 = 0; i1 < objCurrPage.getGlobalButtonCount(); i1++) {
 			GlobalButton objGlobalButton = objCurrPage.getGlobalButton(i1);
-			System.err.println("Found Global Button " + objGlobalButton.getId());
 			switch (objGlobalButton.getAction()) {
 			case ADD:
 				guide.addGlobalButton(objGlobalButton.getId(), objGlobalButton);

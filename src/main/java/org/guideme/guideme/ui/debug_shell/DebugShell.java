@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.guideme.guideme.model.Button;
+import org.guideme.guideme.model.Chapter;
 import org.guideme.guideme.model.Guide;
 import org.guideme.guideme.model.Page;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
@@ -122,7 +123,6 @@ public class DebugShell {
 		btnCurrent.setLayoutData(btnCurrentFormData);
 		btnCurrent.addSelectionListener(new CurrentButtonListener());
 
-		
 		tabFolder = new TabFolder(shell, SWT.NONE);
 		FormLayout mainlayout = new FormLayout();
 		tabFolder.setLayout(mainlayout);
@@ -134,9 +134,7 @@ public class DebugShell {
 		tabFolder.setLayoutData(mainCompFormData);
 
 		mainTab = new MainTab(tabFolder, appSettings);
-		debugTabs = new DebugTab[] {
-				mainTab
-		};
+		debugTabs = new DebugTab[] { mainTab };
 
 		// Text Tab
 		TabItem tabText = new TabItem(tabFolder, SWT.NONE);
@@ -391,8 +389,8 @@ public class DebugShell {
 			}
 		}
 		txtText.setText(txtBuilder.toString());
-		
-		for(DebugTab tab : debugTabs) {
+
+		for (DebugTab tab : debugTabs) {
 			tab.onPageChange(dispPage, currPage);
 		}
 
@@ -405,6 +403,16 @@ public class DebugShell {
 		shell.layout();
 		varScrlComp.setMinSize(varComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
+	}
+
+	public void loadChapter(Chapter chapter) {
+		if (chapter == null) {
+			return;
+		}
+		for (Page page : chapter.getPages().values()) {
+			addPagesCombo(page.getId());
+		}
+		setPage(guide.getCurrPage(), true);
 	}
 
 	public void updateJConsole(String logText) {
@@ -463,7 +471,6 @@ public class DebugShell {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
 	}
-
 
 	public void closeShell() {
 		try {
