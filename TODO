@@ -45,3 +45,5 @@ Factor out the pattern:
 						mainShell.guide.getFlags());
 
 Introduce type safety around the cooked/uncooked distinction
+
+Check all usages of "setData()". Seems pretty stringly typed

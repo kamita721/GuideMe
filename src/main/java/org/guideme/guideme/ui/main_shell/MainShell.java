@@ -1153,96 +1153,57 @@ public class MainShell {
 		String strBtnText;
 		String strBtnImage;
 		boolean isWebCamButton = button instanceof WebcamButton;
-		try {
-			strBtnTarget = button.getTarget();
-			strBtnText = button.getText();
-			strBtnImage = button.getImage();
-			if (!strBtnImage.equals("")) {
-				String imgPath = comonFunctions.getMediaFullPath(strBtnImage,
-						appSettings.getFileSeparator(), appSettings, guide);
-				File flImage = new File(imgPath);
-				if (flImage.exists()) {
-					strBtnImage = imgPath;
-				} else {
-					strBtnImage = "";
-				}
-			}
-			SquareButton btnDynamic = new SquareButton(btnComp, SWT.PUSH);
+		strBtnTarget = button.getTarget();
+		strBtnText = button.getText();
+		SquareButton btnDynamic = new SquareButton(btnComp, SWT.PUSH);
 
-			int fntHeight = button.getFontHeight();
+		setFontUncooked(btnDynamic, buttonFont, button.getFontName(), button.getFontHeight());
 
-			if (button.getFontName().isBlank() && fntHeight == 0) {
-				btnDynamic.setFont(buttonFont);
-			} else {
-				FontData[] fontData = buttonFont.getFontData();
-				if (fntHeight > 0) {
-					fontData[0].setHeight(fntHeight);
-				}
-				if (!button.getFontName().isBlank()) {
-					fontData[0].setName(button.getFontName());
-				}
+		Color bgColor1 = button.getbgColor1();
+		Color bgColor2 = button.getbgColor2();
+		Color fontColor = button.getfontColor();
 
-				final Font newFont = new Font(myDisplay, fontData);
-				btnDynamic.setFont(newFont);
+		btnDynamic.setDefaultColors(bgColor1, bgColor2, btnDynamic.getBackground(), fontColor);
+		btnDynamic.setText(strBtnText);
 
-				// Since you created the font, you must dispose it
-				btnDynamic.addDisposeListener(event -> newFont.dispose());
-			}
-			Color bgColor1 = button.getbgColor1();
-			Color bgColor2 = button.getbgColor2();
-			Color fontColor = button.getfontColor();
-
-			btnDynamic.setDefaultColors(bgColor1, bgColor2, btnDynamic.getBackground(), fontColor);
-			btnDynamic.setText(strBtnText);
-			if (!strBtnImage.equals("")) {
-				btnDynamic.setBackgroundImage(new Image(myDisplay, strBtnImage));
-				btnDynamic.setBackgroundImageStyle(com.snapps.swt.SquareButton.BG_IMAGE_FIT);
-			}
-
-			// record any button set / unset
-			String strButtonSet;
-			String strButtonUnSet;
-			strButtonSet = button.getSet();
-			if (!strButtonSet.equals("")) {
-				btnDynamic.setData("Set", strButtonSet);
-			} else {
-				btnDynamic.setData("Set", "");
-			}
-			strButtonUnSet = button.getUnSet();
-			if (!strButtonUnSet.equals("")) {
-				btnDynamic.setData("UnSet", strButtonUnSet);
-			} else {
-				btnDynamic.setData("UnSet", "");
-			}
-			btnDynamic.setData("scriptVar", button.getScriptVar());
-			btnDynamic.setData("javascript", javascript);
-			logger.debug("displayPage Button Text {} Target {} Set {} UnSet {} ", strBtnText,
-					strBtnTarget, strButtonSet, strButtonUnSet);
-
-			String hotKey = button.getHotKey();
-			if (!hotKey.equals("")) {
-				hotKeys.put(hotKey, btnDynamic);
-			}
-
-			String btnId = button.getId();
-			if (!btnId.equals("")) {
-				buttons.put(btnId, btnDynamic);
-			}
-
-			btnDynamic.setData("Target", strBtnTarget);
-			if (isWebCamButton) {
-				WebcamButton webcamButton = (WebcamButton) button;
-				btnDynamic.setData("webcamFile", webcamButton.get_destination());
-				if (webcamButton.get_type().equals("Capture")) {
-					btnDynamic.addSelectionListener(new WebcamCaptureListener(this));
-				}
-			} else {
-				btnDynamic.addSelectionListener(new DynamicButtonListner(this));
-			}
-			btnDynamic.setEnabled(!button.getDisabled());
-		} catch (Exception e) {
-			logger.error("addButton " + e.getLocalizedMessage(), e);
+		strBtnImage = cookImage(button.getImage());
+		if (strBtnImage != null) {
+			btnDynamic.setBackgroundImage(new Image(myDisplay, strBtnImage));
+			btnDynamic.setBackgroundImageStyle(com.snapps.swt.SquareButton.BG_IMAGE_FIT);
 		}
+
+		// record any button set / unset
+		String strButtonSet = button.getSet();
+		String strButtonUnSet = button.getUnSet();
+		btnDynamic.setData("Set", strButtonSet);
+		btnDynamic.setData("UnSet", strButtonUnSet);
+
+		btnDynamic.setData("scriptVar", button.getScriptVar());
+		btnDynamic.setData("javascript", javascript);
+		logger.debug("displayPage Button Text {} Target {} Set {} UnSet {} ", strBtnText,
+				strBtnTarget, strButtonSet, strButtonUnSet);
+
+		String hotKey = button.getHotKey();
+		if (!hotKey.equals("")) {
+			hotKeys.put(hotKey, btnDynamic);
+		}
+
+		String btnId = button.getId();
+		if (!btnId.equals("")) {
+			buttons.put(btnId, btnDynamic);
+		}
+
+		btnDynamic.setData("Target", strBtnTarget);
+		if (isWebCamButton) {
+			WebcamButton webcamButton = (WebcamButton) button;
+			btnDynamic.setData("webcamFile", webcamButton.get_destination());
+			if (webcamButton.get_type().equals("Capture")) {
+				btnDynamic.addSelectionListener(new WebcamCaptureListener(this));
+			}
+		} else {
+			btnDynamic.addSelectionListener(new DynamicButtonListner(this));
+		}
+		btnDynamic.setEnabled(!button.getDisabled());
 
 	}
 
@@ -1686,16 +1647,28 @@ public class MainShell {
 				debugShell);
 	}
 
-	public void setImageByUncooked(String imgId) {
-		if (imgId.isBlank()) {
-			return;
+	public String cookImage(String imgPath) {
+		if (imgPath == null || imgPath.isBlank()) {
+			return null;
 		}
-		String imgPath = comonFunctions.getMediaFullPath(imgId, appSettings.getFileSeparator(),
-				appSettings, guide);
+
 		File flImage = new File(imgPath);
 		if (flImage.exists()) {
-			setImage(imgPath);
+			return imgPath;
 		}
+
+		imgPath = comonFunctions.getMediaFullPath(imgPath, appSettings.getFileSeparator(),
+				appSettings, guide);
+		flImage = new File(imgPath);
+		if (flImage.exists()) {
+			return imgPath;
+		}
+
+		return null;
+	}
+
+	public void setImageByUncooked(String imgId) {
+		setImage(cookImage(imgId));
 	}
 
 	public void setBrwsTextUncooked(String brwsTextUncooked) {
@@ -1717,6 +1690,27 @@ public class MainShell {
 
 		comonFunctions.setFlags(setFlags, guide.getFlags());
 		comonFunctions.unsetFlags(unSetFlags, guide.getFlags());
+	}
+
+	public void setFontUncooked(Control control, Font baseFont, String fontName, int fontHeight) {
+		final Font ans;
+		if (fontName.isBlank() && fontHeight == 0) {
+			ans = baseFont;
+		} else {
+			FontData fontData = baseFont.getFontData()[0];
+			if (fontHeight > 0) {
+				fontData.setHeight(fontHeight);
+			}
+			if (fontName.isBlank()) {
+				fontData.setName(fontName);
+			}
+
+			ans = new Font(myDisplay, fontData);
+
+			// Since you created the font, you must dispose it
+			control.addDisposeListener(event -> ans.dispose());
+		}
+		control.setFont(ans);
 	}
 
 }
