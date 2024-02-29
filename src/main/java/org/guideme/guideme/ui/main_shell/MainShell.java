@@ -836,7 +836,7 @@ public class MainShell {
 		// usually displays the clock
 		this.lblRight.setText(lblRight);
 	}
-	
+
 	public void setImage(String imgPath) {
 		logger.trace("setImage: {}", imgPath);
 		imgOverRide = false;
@@ -1018,7 +1018,7 @@ public class MainShell {
 			hasAudio2Deferred = false;
 		}
 	}
-	
+
 	public void setBrwsText(String brwsText, String overRideStyle) {
 		// set HTML to be displayed in the browser control to the right of the
 		// screen
@@ -1258,7 +1258,7 @@ public class MainShell {
 					pageJavascript, function, pageLoading);
 		}
 	}
-	
+
 	public void runJscript(String function, boolean pageLoading) {
 		runJscript(function, null, pageLoading);
 	}
@@ -1276,9 +1276,14 @@ public class MainShell {
 		runJavascript(function, pageJavascript, null, false);
 	}
 
+	private void getFormFields() {
+		getFormFieldsFromBrowser(brwsText);
+		getFormFieldsFromBrowser(leftPaneBrowser);
+	}
+
 	// get any fields from the html form and store them in guide settings for
 	// use in the next java script call.
-	private void getFormFields() {
+	private void getFormFieldsFromBrowser(Browser brwsr) {
 		//@formatter:off
 			String evaluateScript = "" 
 					+ "var vforms = document.forms;" 
@@ -1301,7 +1306,7 @@ public class MainShell {
 					+ "}" 
 					+ "return vreturn;";
 			//@formatter:on
-		String node = (String) brwsText.evaluate(evaluateScript);
+		String node = (String) brwsr.evaluate(evaluateScript);
 		if (node == null) {
 			return;
 		}
@@ -1311,75 +1316,46 @@ public class MainShell {
 		String value;
 		String type;
 		String checked;
-		for (int i = 0; i < fields.length; i++) {
-			values = fields[i].split("¬");
-			if (!fields[i].equals("")) {
-				name = values[0];
-				value = values[1];
-				type = values[2];
-				checked = values[3];
-				if (type.equals("checkbox")) {
-					guideSettings.setFormField(name, checked);
-					guideSettings.setScriptVar(name, checked);
-				}
-				if (type.equals("radio") && (checked.equals("true"))) {
-					guideSettings.setFormField(name, value);
-					guideSettings.setScriptVar(name, value);
-
-				}
-				if (type.equals("text") || type.equals("textarea")) {
-					guideSettings.setFormField(name, value);
-					guideSettings.setScriptVar(name, value);
-				}
-				if (type.equals("file")) {
-					guideSettings.setFormField(name, value);
-					guideSettings.setScriptVar(name, value);
-				}
-
-				if (type.equals("select-one")) {
-					guideSettings.setFormField(name, value);
-					guideSettings.setScriptVar(name, value);
-				}
-
-				logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
+		for (String field : fields) {
+			values = field.split("¬");
+			if (values.length != 4) {
+				logger.warn("Invalid form field {}. Expected 4 segments, found {}", field,
+						values.length);
+				continue;
 			}
-		}
-		String node2 = (String) leftPaneBrowser.evaluate(evaluateScript);
-		fields = node2.split("\\|");
-		for (int i = 0; i < fields.length; i++) {
-			values = fields[i].split("¬");
-			if (!fields[i].equals("")) {
-				name = values[0];
-				value = values[1];
-				type = values[2];
-				checked = values[3];
-				if (type.equals("checkbox")) {
-					guideSettings.setFormField(name, checked);
-					guideSettings.setScriptVar(name, checked);
-				}
-				if (type.equals("radio") && (checked.equals("true"))) {
-					guideSettings.setFormField(name, value);
-					guideSettings.setScriptVar(name, value);
-
-				}
-				if (type.equals("text") || type.equals("textarea")) {
+			name = values[0];
+			value = values[1];
+			type = values[2];
+			checked = values[3];
+			switch (type) {
+			case "checkbox":
+				guideSettings.setFormField(name, checked);
+				guideSettings.setScriptVar(name, checked);
+				break;
+			case "radio":
+				if (checked.equals("true")) {
 					guideSettings.setFormField(name, value);
 					guideSettings.setScriptVar(name, value);
 				}
-
-				if (type.equals("file")) {
+				break;
+			case "text":
+				if (type.equals("textarea")) {
 					guideSettings.setFormField(name, value);
 					guideSettings.setScriptVar(name, value);
 				}
+				break;
+			case "file":
+			case "select-one":
+				guideSettings.setFormField(name, value);
+				guideSettings.setScriptVar(name, value);
+				break;
+			default:
+				logger.warn("Invalid form field type {}", type);
 
-				if (type.equals("select-one")) {
-					guideSettings.setFormField(name, value);
-					guideSettings.setScriptVar(name, value);
-				}
-
-				logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
 			}
+			logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
 		}
+
 	}
 
 	// force a redisplay of the button are
@@ -1687,67 +1663,60 @@ public class MainShell {
 	public void setGuideSettings(GuideSettings guideSettings) {
 		this.guideSettings = guideSettings;
 	}
-	
-
 
 	/*
-	 * Begin "Uncooked" functions. These functions take their arguements directly from
-	 * the model, and "cook" them into a more processed form before calling the underlying
-	 * implementatin function.
+	 * Begin "Uncooked" functions. These functions take their arguements directly
+	 * from the model, and "cook" them into a more processed form before calling the
+	 * underlying implementatin function.
 	 */
-	
+
 	public void runJscriptUncooked(String function, boolean pageLoading) {
-		if(function.isBlank()) {
+		if (function.isBlank()) {
 			return;
 		}
 		runJscript(function, pageLoading);
 	}
-	
+
 	public void gotoTargetUncooked(String target) {
-		if(target.isBlank()) {
+		if (target.isBlank()) {
 			return;
 		}
 		lblRight.setText("");
-		mainLogic.displayPage(target, false, guide, this,
-				appSettings, userSettings, guideSettings,
+		mainLogic.displayPage(target, false, guide, this, appSettings, userSettings, guideSettings,
 				debugShell);
 	}
-	
+
 	public void setImageByUncooked(String imgId) {
-		if(imgId.isBlank()) {
+		if (imgId.isBlank()) {
 			return;
 		}
-		String imgPath = comonFunctions.getMediaFullPath(imgId,
-				appSettings.getFileSeparator(), appSettings,
-				guide);
+		String imgPath = comonFunctions.getMediaFullPath(imgId, appSettings.getFileSeparator(),
+				appSettings, guide);
 		File flImage = new File(imgPath);
 		if (flImage.exists()) {
 			setImage(imgPath);
 		}
 	}
-	
+
 	public void setBrwsTextUncooked(String brwsTextUncooked) {
-		if(brwsTextUncooked.isBlank()) {
+		if (brwsTextUncooked.isBlank()) {
 			return;
 		}
 		// Media Directory
 		String mediaPath;
-		mediaPath = comonFunctions.getMediaFullPath("",
-				appSettings.getFileSeparator(), appSettings,
+		mediaPath = comonFunctions.getMediaFullPath("", appSettings.getFileSeparator(), appSettings,
 				guide);
 		String displayText = brwsTextUncooked.replace("\\MediaDir\\", mediaPath);
 
-		displayText = comonFunctions.substituteTextVars(displayText,
-				guideSettings, userSettings);
+		displayText = comonFunctions.substituteTextVars(displayText, guideSettings, userSettings);
 
 		setBrwsText(displayText, "");
 	}
-	
+
 	public void setUnsetFlagsUncooked(String setFlags, String unSetFlags) {
 
 		comonFunctions.setFlags(setFlags, guide.getFlags());
-		comonFunctions.unsetFlags(unSetFlags,
-				guide.getFlags());
+		comonFunctions.unsetFlags(unSetFlags, guide.getFlags());
 	}
 
 }
