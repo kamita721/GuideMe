@@ -59,14 +59,14 @@ public class MainTab implements DebugTab {
 		for (Control kid : content.getChildren()) {
 			kid.dispose();
 		}
-		
+
 		bottomWidget = content;
 
 		constructTable(new String[] { "Page", "set", "unset", "If Set", "If not set" },
 				new Page[] { dispPage }, page -> new String[] { page.getId(), page.getSet(),
 						page.getUnSet(), page.getIfSet(), page.getIfNotSet() });
 
-		constructTable(
+		btnTable = constructTable(
 				new String[] { "Button", "target", "jScript", "set", "unset", "If Set",
 						"If not set", "image", "hotkey" },
 				dispPage.getButtons(),
@@ -139,10 +139,11 @@ public class MainTab implements DebugTab {
 	 *                information.
 	 * @return
 	 */
-	private <T> void constructTable(String[] headers, T[] objs, Function<T, String[]> getter) {
+	private <T> Table constructTable(String[] headers, T[] objs, Function<T, String[]> getter) {
 		Color dataColor = content.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
 
-		Table ans = new Table(content, SWT.HIDE_SELECTION | SWT.NO_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		Table ans = new Table(content,
+				SWT.HIDE_SELECTION | SWT.NO_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		ans.setLinesVisible(true);
 		ans.setHeaderVisible(true);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -152,13 +153,13 @@ public class MainTab implements DebugTab {
 			TableColumn column = new TableColumn(ans, SWT.NONE);
 			column.setText(headers[i]);
 		}
-		
+
 		for (T obj : objs) {
 			TableItem item = new TableItem(ans, SWT.NONE);
 			item.setBackground(dataColor);
 			item.setText(getter.apply(obj));
 		}
-		for(int i=0; i<ans.getColumnCount(); i++) {
+		for (int i = 0; i < ans.getColumnCount(); i++) {
 			ans.getColumn(i).pack();
 		}
 
@@ -172,5 +173,7 @@ public class MainTab implements DebugTab {
 		ans.setLayoutData(formData);
 		ans.pack();
 		bottomWidget = ans;
+
+		return ans;
 	}
 }

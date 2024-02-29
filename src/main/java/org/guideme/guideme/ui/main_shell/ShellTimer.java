@@ -32,7 +32,7 @@ class ShellTimer implements Runnable {
 			return;
 		}
 
-		if (mainShell.lblRight.isDisposed()) {
+		if (mainShell.lblTimer.isDisposed()) {
 			return;
 		}
 
@@ -75,9 +75,9 @@ class ShellTimer implements Runnable {
 		Calendar cal = Calendar.getInstance();
 
 		if (mainShell.appSettings.isClock()) {
-			mainShell.lblLeft.setText(dateFormat.format(cal.getTime()));
+			mainShell.lblClock.setText(dateFormat.format(cal.getTime()));
 		} else {
-			mainShell.lblLeft.setText("");
+			mainShell.lblClock.setText("");
 		}
 	}
 
@@ -88,15 +88,15 @@ class ShellTimer implements Runnable {
 				onDelayEnd();
 			} else {
 				if (mainShell.guide.getDelStyle().equals("hidden")) {
-					mainShell.lblRight.setText("");
+					mainShell.lblTimer.setText("");
 				} else if (mainShell.guide.getDelStyle().equals("secret")) {
-					mainShell.lblRight.setText("??:??");
+					mainShell.lblTimer.setText("??:??");
 				} else {
 					// Normal delay so display seconds left
 					// (plus any offset if you are being sneaky)
 					long diff = mainShell.calCountDown.getTimeInMillis() - cal.getTimeInMillis();
 					diff = diff + (mainShell.guide.getDelStartAtOffSet() * 1000);
-					mainShell.lblRight.setText(formatTimeLeft(diff));
+					mainShell.lblTimer.setText(formatTimeLeft(diff));
 				}
 
 			}
@@ -105,7 +105,7 @@ class ShellTimer implements Runnable {
 
 	private void onDelayEnd() {
 		mainShell.calCountDown = null;
-		mainShell.lblRight.setText("");
+		mainShell.lblTimer.setText("");
 		mainShell.comonFunctions.setFlags(mainShell.guide.getDelaySet(),
 				mainShell.guide.getFlags());
 		mainShell.comonFunctions.unsetFlags(mainShell.guide.getDelayUnSet(),

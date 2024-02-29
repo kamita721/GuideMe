@@ -31,10 +31,10 @@ class shellCloseListen extends ShellAdapter {
 			this.mainShell.debugShell.closeShell();
 			int[] intWeights;
 			if (!this.mainShell.multiMonitor) {
-				intWeights = this.mainShell.sashform.getWeights();
+				intWeights = this.mainShell.singleMonitorWrapper.getWeights();
 				this.mainShell.appSettings.setSash1Weights(intWeights);
 				int[] intWeights2;
-				intWeights2 = this.mainShell.sashform2.getWeights();
+				intWeights2 = this.mainShell.textPaneWrapper.getWeights();
 				this.mainShell.appSettings.setSash2Weights(intWeights2);
 			}
 			// appSettings.setDataDirectory(strGuidePath);

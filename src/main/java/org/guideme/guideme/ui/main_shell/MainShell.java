@@ -90,15 +90,29 @@ public class MainShell {
 	Guide guide = Guide.getGuide();
 	GuideSettings guideSettings = guide.getSettings();
 	UserSettings userSettings = null;
-	Label lblLeft;
-	private Label lblCentre;
-	Label lblRight;
+	Label lblClock;
+
+	/*
+	 * In debug mode. the GuideTitle shows the page instead
+	 */
+	private Label lblGuideTitle;
+	Label lblTimer;
 	Browser leftPaneBrowser;
 	Label imageLabel;
 	ImageManager imageManager;
 	private Browser brwsText;
-	SashForm sashform;
-	SashForm sashform2;
+
+	/*
+	 * formerly sashform1
+	 * 
+	 * When we are running in a single window, this contains both the text pane, and
+	 * the media pane.
+	 * 
+	 */
+	SashForm singleMonitorWrapper;
+
+	/* formerly sashform2 */
+	SashForm textPaneWrapper;
 	private Composite btnComp;
 	Composite leftFrame;
 	Calendar calCountDown = null;
@@ -129,7 +143,6 @@ public class MainShell {
 	String defaultStyle = "";
 	boolean imgOverRide = false;
 	boolean multiMonitor = true;
-	private boolean overlayTimer = false;
 	HashMap<String, com.snapps.swt.SquareButton> hotKeys = new HashMap<>();
 	private HashMap<String, com.snapps.swt.SquareButton> buttons = new HashMap<>();
 	ShellKeyEventListener keyListener;
@@ -157,6 +170,7 @@ public class MainShell {
 		comonFunctions.setDisplay(display);
 		colourBlack = display.getSystemColor(SWT.COLOR_BLACK);
 		colourWhite = display.getSystemColor(SWT.COLOR_WHITE);
+		Color colourDEBUG = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
 
 		appSettings = AppSettings.getAppSettings();
 
@@ -176,11 +190,8 @@ public class MainShell {
 
 		// Create the main UI elements
 		myDisplay = display;
-		if (appSettings.isFullScreen()) {
-			shell = new Shell(myDisplay, SWT.NO_TRIM);
-		} else {
-			shell = new Shell(myDisplay);
-		}
+		shell = new Shell(myDisplay, appSettings.isFullScreen() ? SWT.NO_TRIM : SWT.SHELL_TRIM);
+
 		shell.addShellListener(new shellCloseListen(this));
 		keyListener = new ShellKeyEventListener(this);
 		myDisplay.addFilter(SWT.KeyDown, keyListener);
@@ -254,22 +265,22 @@ public class MainShell {
 
 		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 		Calendar cal = Calendar.getInstance();
-		lblLeft = new Label(shell, SWT.LEFT);
-		lblLeft.setBackground(colourBlack);
-		lblLeft.setForeground(colourWhite);
-		lblLeft.setFont(controlFont);
-		lblLeft.setText(dateFormat.format(cal.getTime()));
+		lblClock = new Label(shell, SWT.LEFT);
+		lblClock.setBackground(colourBlack);
+		lblClock.setForeground(colourWhite);
+		lblClock.setFont(controlFont);
+		lblClock.setText(dateFormat.format(cal.getTime()));
 
-		lblCentre = new Label(shell, SWT.RIGHT);
-		lblCentre.setBackground(colourBlack);
-		lblCentre.setForeground(colourWhite);
-		lblCentre.setFont(controlFont);
-		lblCentre.setText("Title, Author");
+		lblGuideTitle = new Label(shell, SWT.RIGHT);
+		lblGuideTitle.setBackground(colourBlack);
+		lblGuideTitle.setForeground(colourWhite);
+		lblGuideTitle.setFont(controlFont);
+		lblGuideTitle.setText("Title, Author");
 
 		if (!multiMonitor) {
-			sashform = new SashForm(shell, SWT.HORIZONTAL);
-			sashform.setBackground(colourBlack);
-			leftFrame = new Composite(sashform, SWT.SHADOW_NONE);
+			singleMonitorWrapper = new SashForm(shell, SWT.HORIZONTAL);
+			singleMonitorWrapper.setBackground(colourBlack);
+			leftFrame = new Composite(singleMonitorWrapper, SWT.SHADOW_NONE);
 		} else {
 			leftFrame = new Composite(shell, SWT.SHADOW_NONE);
 		}
@@ -330,32 +341,25 @@ public class MainShell {
 		shell.pack();
 
 		if (!multiMonitor) {
-			sashform2 = new SashForm(sashform, SWT.VERTICAL);
+			textPaneWrapper = new SashForm(singleMonitorWrapper, SWT.VERTICAL);
 		} else {
-			sashform2 = new SashForm(shell2, SWT.VERTICAL);
+			textPaneWrapper = new SashForm(shell2, SWT.VERTICAL);
 		}
-		sashform2.setBackground(colourBlack);
+		textPaneWrapper.setBackground(colourBlack);
 
-		if (!overlayTimer) {
-			lblRight = new Label(sashform2, SWT.RIGHT);
-		} else {
-			if (!multiMonitor) {
-				lblRight = new Label(shell, SWT.RIGHT);
-			} else {
-				lblRight = new Label(leftFrame, SWT.RIGHT);
-			}
-		}
-		lblRight.setBackground(colourBlack);
-		lblRight.setForeground(colourWhite);
-		lblRight.setFont(timerFont);
-		lblRight.setAlignment(SWT.CENTER);
+		lblTimer = new Label(textPaneWrapper, SWT.RIGHT);
 
-		brwsText = new Browser(sashform2, SWT.NONE);
+		lblTimer.setBackground(colourBlack);
+		lblTimer.setForeground(colourWhite);
+		lblTimer.setFont(timerFont);
+		lblTimer.setAlignment(SWT.CENTER);
+
+		brwsText = new Browser(textPaneWrapper, SWT.NONE);
 		brwsText.setText(strHtml);
 		brwsText.setBackground(colourBlack);
 		brwsText.addStatusTextListener(new EventStatusTextListener(this));
 
-		btnComp = new Composite(sashform2, SWT.SHADOW_NONE);
+		btnComp = new Composite(textPaneWrapper, SWT.SHADOW_NONE);
 		btnComp.setBackground(colourBlack);
 		RowLayout layout2 = new RowLayout();
 		btnComp.setLayout(layout2);
@@ -388,40 +392,32 @@ public class MainShell {
 		lblLeftFormData.top = new FormAttachment(0, 0);
 		lblLeftFormData.left = new FormAttachment(0, 0);
 		lblLeftFormData.right = new FormAttachment(33, 0);
-		lblLeft.setLayoutData(lblLeftFormData);
+		lblClock.setLayoutData(lblLeftFormData);
 
 		FormData lblCentreFormData = new FormData();
 		lblCentreFormData.top = new FormAttachment(0, 0);
-		lblCentreFormData.left = new FormAttachment(lblLeft, 0);
+		lblCentreFormData.left = new FormAttachment(lblClock, 0);
 		lblCentreFormData.right = new FormAttachment(100, 0);
-		lblCentre.setLayoutData(lblCentreFormData);
-
-		if (overlayTimer) {
-			FormData lblRightFormData = new FormData();
-			lblRightFormData.top = new FormAttachment(leftFrame, 0);
-			lblRightFormData.left = new FormAttachment(leftFrame, 0);
-			lblRight.setLayoutData(lblRightFormData);
-			lblRight.moveAbove(null);
-		}
+		lblGuideTitle.setLayoutData(lblCentreFormData);
 
 		if (!multiMonitor) {
 			FormData sashFormData = new FormData();
-			sashFormData.top = new FormAttachment(lblLeft, 0);
+			sashFormData.top = new FormAttachment(lblClock, 0);
 			sashFormData.left = new FormAttachment(0, 0);
 			sashFormData.right = new FormAttachment(100, 0);
 			sashFormData.bottom = new FormAttachment(100, 0);
-			sashform.setLayoutData(sashFormData);
+			singleMonitorWrapper.setLayoutData(sashFormData);
 
 			FormData sashFormData2 = new FormData();
-			sashFormData2.top = new FormAttachment(sashform, 0);
-			sashFormData2.left = new FormAttachment(sashform, 0);
-			sashFormData2.right = new FormAttachment(sashform, 0);
-			sashFormData2.bottom = new FormAttachment(sashform, 0);
-			sashform2.setLayoutData(sashFormData2);
+			sashFormData2.top = new FormAttachment(singleMonitorWrapper, 0);
+			sashFormData2.left = new FormAttachment(singleMonitorWrapper, 0);
+			sashFormData2.right = new FormAttachment(singleMonitorWrapper, 0);
+			sashFormData2.bottom = new FormAttachment(singleMonitorWrapper, 0);
+			textPaneWrapper.setLayoutData(sashFormData2);
 		} else {
 
 			FormData leftFrameFormData = new FormData();
-			leftFrameFormData.top = new FormAttachment(lblLeft, 0);
+			leftFrameFormData.top = new FormAttachment(lblClock, 0);
 			leftFrameFormData.left = new FormAttachment(0, 0);
 			leftFrameFormData.right = new FormAttachment(100, 0);
 			leftFrameFormData.bottom = new FormAttachment(100, 0);
@@ -432,14 +428,14 @@ public class MainShell {
 			sashFormData2.left = new FormAttachment(0, 0);
 			sashFormData2.right = new FormAttachment(100, 0);
 			sashFormData2.bottom = new FormAttachment(100, 0);
-			sashform2.setLayoutData(sashFormData2);
+			textPaneWrapper.setLayoutData(sashFormData2);
 		}
 
 		FormData btnCompFormData = new FormData();
-		btnCompFormData.top = new FormAttachment(sashform2, 0);
-		btnCompFormData.left = new FormAttachment(sashform2, 0);
-		btnCompFormData.right = new FormAttachment(sashform2, 0);
-		btnCompFormData.bottom = new FormAttachment(sashform2, 0);
+		btnCompFormData.top = new FormAttachment(textPaneWrapper, 0);
+		btnCompFormData.left = new FormAttachment(textPaneWrapper, 0);
+		btnCompFormData.right = new FormAttachment(textPaneWrapper, 0);
+		btnCompFormData.bottom = new FormAttachment(textPaneWrapper, 0);
 		btnComp.setLayoutData(btnCompFormData);
 
 		FormData leftPaneElementFormData = new FormData();
@@ -452,6 +448,44 @@ public class MainShell {
 		leftPaneBrowser.setLayoutData(leftPaneElementFormData);
 		imageLabel.setLayoutData(leftPaneElementFormData);
 
+		initMenuBar(displayText);
+
+		// tell SWT to display the correct screen info
+		shell.pack();
+		shell.setMaximized(true);
+		shell.setBounds(clientArea);
+		if (!multiMonitor) {
+			singleMonitorWrapper.setWeights(appSettings.getSash1Weights());
+		} else {
+			shell2.pack();
+			shell2.setMaximized(true);
+			shell2.setBounds(clientArea2);
+		}
+		textPaneWrapper.setWeights(appSettings.getSash2Weights());
+		// timer that updates the clock field and handles any timed events
+		// when loading wait 2 seconds before running it
+		myDisplay.timerExec(2000, new ShellTimer(this));
+		metronome = new MetronomePlayer();
+		threadMetronome = new Thread(metronome, "metronome");
+		threadMetronome.setName("threadMetronome");
+		threadMetronome.start();
+
+		logger.trace("Exit createShell");
+		if (!appSettings.getComandLineGuide().equals("")) {
+			loadGuide(appSettings.getDataDirectory() + appSettings.getComandLineGuide());
+		}
+		displayPage(guideSettings.getCurrPage());
+		Chapter chapter = guide.getChapters().get("default");
+		if (chapter != null) {
+			for (Page page : chapter.getPages().values()) {
+				debugShell.addPagesCombo(page.getId());
+			}
+			debugShell.setPage(guide.getCurrPage(), true);
+		}
+		return shell;
+	}
+
+	private void initMenuBar(ResourceBundle displayText) {
 		// Menu Bar
 		menuBar = new Menu(shell, SWT.BAR);
 
@@ -680,40 +714,6 @@ public class MainShell {
 		}
 		// Add the menu bar to the shell
 		shell.setMenuBar(menuBar);
-
-		// tell SWT to display the correct screen info
-		shell.pack();
-		shell.setMaximized(true);
-		shell.setBounds(clientArea);
-		if (!multiMonitor) {
-			sashform.setWeights(appSettings.getSash1Weights());
-		} else {
-			shell2.pack();
-			shell2.setMaximized(true);
-			shell2.setBounds(clientArea2);
-		}
-		sashform2.setWeights(appSettings.getSash2Weights());
-		// timer that updates the clock field and handles any timed events
-		// when loading wait 2 seconds before running it
-		myDisplay.timerExec(2000, new ShellTimer(this));
-		metronome = new MetronomePlayer();
-		threadMetronome = new Thread(metronome, "metronome");
-		threadMetronome.setName("threadMetronome");
-		threadMetronome.start();
-
-		logger.trace("Exit createShell");
-		if (!appSettings.getComandLineGuide().equals("")) {
-			loadGuide(appSettings.getDataDirectory() + appSettings.getComandLineGuide());
-		}
-		displayPage(guideSettings.getCurrPage());
-		Chapter chapter = guide.getChapters().get("default");
-		if (chapter != null) {
-			for (Page page : chapter.getPages().values()) {
-				debugShell.addPagesCombo(page.getId());
-			}
-			debugShell.setPage(guide.getCurrPage(), true);
-		}
-		return shell;
 	}
 
 	public void run(Display display) {
@@ -822,19 +822,19 @@ public class MainShell {
 	public void setLblLeft(String lblLeft) {
 		// header to the left of the screen
 		// usually displays teh delay
-		this.lblLeft.setText(lblLeft);
+		this.lblClock.setText(lblLeft);
 	}
 
 	public void setLblCentre(String lblCentre) {
 		// header to the centre of the screen
 		// usually displays the title and author
-		this.lblCentre.setText(lblCentre);
+		this.lblGuideTitle.setText(lblCentre);
 	}
 
 	public void setLblRight(String lblRight) {
 		// header to the right of the screen
 		// usually displays the clock
-		this.lblRight.setText(lblRight);
+		this.lblTimer.setText(lblRight);
 	}
 
 	public void setImage(String imgPath) {
@@ -1435,8 +1435,8 @@ public class MainShell {
 	public void stopDelay() {
 		try {
 			calCountDown = null;
-			if (!lblRight.isDisposed()) {
-				lblRight.setText("");
+			if (!lblTimer.isDisposed()) {
+				lblTimer.setText("");
 			}
 		} catch (Exception ex) {
 			logger.error(" stopDelay " + ex.getLocalizedMessage(), ex);
@@ -1642,7 +1642,7 @@ public class MainShell {
 		if (target.isBlank()) {
 			return;
 		}
-		lblRight.setText("");
+		lblTimer.setText("");
 		mainLogic.displayPage(target, false, guide, this, appSettings, userSettings, guideSettings,
 				debugShell);
 	}

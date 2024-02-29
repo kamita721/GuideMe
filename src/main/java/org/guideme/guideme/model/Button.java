@@ -57,11 +57,18 @@ public class Button implements Comparable<Button> {
 		this.disabled = getAttributeOrDefaultNoNS(reader, "disabled", false);
 		this.defaultBtn = getAttributeOrDefaultNoNS(reader, "default", true);
 		this.id = getAttributeOrDefaultNoNS(reader, "id", "");
+		initAttributes(reader);
 		this.text = XmlGuideReader.processText(reader);
-
-
 	}
-
+	
+	/*
+	 * Since our constructor advances the reader, we need a hook for subclasses to evaluate
+	 * the reader while it is still on the top node.
+	 */
+	protected void initAttributes(XMLStreamReader reader) {
+		/* For subclasses to override*/
+	}
+	
 	public Button(String target, String text) {
 		this(target, text, "", "", "", "", "", "", "");
 	}
