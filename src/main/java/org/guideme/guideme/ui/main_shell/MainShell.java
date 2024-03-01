@@ -37,6 +37,7 @@ import javax.swing.JRootPane;
 
 import org.eclipse.swt.widgets.*;
 import org.guideme.guideme.MainLogic;
+import org.guideme.guideme.model.Audio;
 import org.guideme.guideme.model.Button;
 import org.guideme.guideme.model.Chapter;
 import org.guideme.guideme.model.Guide;
@@ -1221,7 +1222,7 @@ public class MainShell {
 		if (function == null)
 			function = "";
 
-		if (!function.equals("")) {
+		if (!function.isBlank() && !pageJavascript.isBlank()) {
 			guide.getJavascriptEngine().exec(userSettings, appSettings, pageLoading, null, overRide,
 					pageJavascript, function, pageLoading);
 		}
@@ -1758,6 +1759,59 @@ public class MainShell {
 		// Play video
 		playVideo(imgPath, intStartAt, intStopAt, repeat, video.getTarget(), video.getJscript(),
 				video.getScriptVar(), video.getVolume(), true);
+	}
+
+	public void playAudioUncooked(Audio audio) {
+		playAudioUncooked(audio, false);
+	}
+
+	public void playAudio2Uncooked(Audio audio) {
+		playAudioUncooked(audio, true);
+	}
+
+	public void playAudioUncooked(Audio audio, boolean audio2) {
+		if (audio == null) {
+			return;
+		}
+		int intAudioLoops;
+		String strAudio;
+		String strAudioTarget;
+		String strIntAudio = audio.getRepeat();
+		if (strIntAudio.equals("")) {
+			intAudioLoops = 0;
+		} else {
+			intAudioLoops = Integer.parseInt(strIntAudio);
+		}
+		strAudio = audio.getId();
+		logger.debug("displayPage Audio {}", strAudio);
+		String strStartAt = audio.getStartAt();
+		int startAtSeconds;
+		if (!strStartAt.equals("")) {
+			startAtSeconds = comonFunctions.getMilisecFromTime(strStartAt) / 1000;
+		} else {
+			startAtSeconds = 0;
+		}
+		String strStopAt = audio.getStopAt();
+		int stopAtSeconds;
+		if (!strStopAt.equals("")) {
+			stopAtSeconds = comonFunctions.getMilisecFromTime(strStopAt) / 1000;
+		} else {
+			stopAtSeconds = 0;
+		}
+
+		String imgPath = comonFunctions.getMediaFullPath(strAudio, appSettings.getFileSeparator(),
+				appSettings, guide);
+		strAudioTarget = audio.getTarget();
+
+		if (audio2) {
+			playAudio2(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget,
+					audio.getJscript(), audio.getScriptVar(), audio.getVolume(), true);
+
+		} else {
+			playAudio(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget,
+					audio.getJscript(), audio.getScriptVar(), audio.getVolume(), true);
+		}
+		logger.debug("displayPage Audio target " + strAudioTarget);
 	}
 
 	public void addButtonUncooked(Button btn) {

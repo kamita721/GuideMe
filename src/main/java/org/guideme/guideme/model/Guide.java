@@ -38,6 +38,7 @@ public class Guide {
 	/** @exclude */
 	private String delTarget; // target for currently running delay
 	/** @exclude */
+	//TODO, does this need to be part of GuideSettings?
 	private List<String> flags = new ArrayList<>(); // current flags
 	/** @exclude */
 	private boolean autoSetPage;
@@ -67,6 +68,7 @@ public class Guide {
 	/** @exclude */
 	private boolean inPrefGuide;
 	/** @exclude */
+	//TODO, this needs to be part of GuideSettings. Otherwise global buttons do not persist:
 	private HashMap<String, GlobalButton> globalButtons = new HashMap<>();
 	/** @exclude */
 	private static Logger logger = LogManager.getLogger();
@@ -300,6 +302,27 @@ public class Guide {
 		this.autoSetPage = autoSetPage;
 	}
 
+	public Calendar setDelay(Delay delay) {
+		logger.debug("displayPage Delay");
+		guide.setDelStyle(delay.getstyle());
+		guide.setDelTarget(delay.getTarget());
+		guide.setDelayjScript(delay.getjScript());
+		guide.setDelayScriptVar(delay.getScriptVar());
+		int intDelSeconds = delay.getDelaySec();
+		guide.setDelStartAtOffSet(delay.getStartWith());
+		guide.setDelStartAtOffSet(guide.getDelStartAtOffSet() - intDelSeconds);
+
+		// record any delay set / unset
+		guide.setDelaySet(delay.getSet());
+		guide.setDelayUnSet(delay.getUnSet());
+		logger.debug("Guide.setDelay: Delay Seconds {} Style {} Target {} Set {} UnSet {}",
+				intDelSeconds, guide.getDelStyle(), guide.getDelTarget(), guide.getDelaySet(),
+				guide.getDelayUnSet());
+		Calendar calCountDown = Calendar.getInstance();
+		calCountDown.add(Calendar.SECOND, intDelSeconds);
+		return calCountDown;
+	}
+	
 	/** @exclude */
 	public String getDelaySet() {
 		return delaySet;

@@ -10,6 +10,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -117,7 +118,6 @@ public class MainLogic {
 		String strFlags;
 		Page objCurrPage;
 		Delay objDelay;
-		String fileSeparator = appSettings.getFileSeparator();
 
 		logger.debug("displayPage PagePassed {}", pageId);
 		logger.debug(() -> "displayPage Flags " + comonFunctions.getFlags(guide.getFlags()));
@@ -144,6 +144,12 @@ public class MainLogic {
 
 		mainShell.runJscript("pageLoad()", overRide, true);
 
+		if (!overRide.getPage().isBlank()) {
+			displayPage(chapterName, overRide.getPage(), reDisplay, guide, mainShell, appSettings,
+					userSettings, guideSettings, debugShell);
+			return;
+		}
+
 		// PageChangeClick
 		if (appSettings.isPageSound() && guideSettings.isPageSound()) {
 			song.setFramePosition(0);
@@ -151,10 +157,10 @@ public class MainLogic {
 		}
 
 		// delay
-		objDelay = processDelay(mainShell, guide, objCurrPage);
+		objDelay = getDelay(guide, objCurrPage);
 
 		// If we are going straight to another page we can skip this section
-		if ((objDelay == null || objDelay.getDelaySec() > 0) && overRide.getPage().equals("")) {
+		if (objDelay == null || objDelay.getDelaySec() > 0) {
 			renderPage(mainShell, objCurrPage, guide, appSettings, userSettings, objDelay,
 					debugShell);
 		}
@@ -164,9 +170,12 @@ public class MainLogic {
 			blnMetronome = processMetronome(objCurrPage, guide, mainShell);
 			if (!blnMetronome) {
 				// Audio
-				processAudio(objCurrPage, guide, mainShell, fileSeparator, appSettings);
+				Audio audio = getAudio(objCurrPage, guide);
+				mainShell.playAudioUncooked(audio);
+
 				// Audio2
-				processAudio2(objCurrPage, guide, mainShell, fileSeparator, appSettings);
+				audio = getAudio2(objCurrPage, guide);
+				mainShell.playAudio2Uncooked(audio);
 			}
 		}
 
@@ -214,9 +223,10 @@ public class MainLogic {
 		Webcam objWebcam;
 		String imgPath = null;
 		// Video
-		objVideo = getVideo(objCurrPage, guide, appSettings, mainShell);
-		objWebcam = getWebcam(objCurrPage, guide, appSettings, mainShell);
-		imgPath = getImage(objCurrPage, appSettings, guide, mainShell);
+		objVideo = getVideo(objCurrPage, guide);
+		objWebcam = getWebcam(objCurrPage, guide);
+		imgPath = getImage(objCurrPage, guide, mainShell);
+		String imgName = "";
 
 		if (!overRide.getLeftBody().isBlank()) {
 			mainShell.setLeftPaneTextUncooked(overRide.getLeftBody(), overRide.getLeftCss());
@@ -229,7 +239,7 @@ public class MainLogic {
 			mainShell.showWebcam();
 		} else if (imgPath != null) {
 			mainShell.setImage(imgPath);
-			String imgName = new File(imgPath).getName();
+			imgName = new File(imgPath).getName();
 			if (imgName.equals("")) {
 				processLeftText(objCurrPage, appSettings, guide, mainShell, userSettings);
 			}
@@ -242,8 +252,23 @@ public class MainLogic {
 		processRightPanel(objCurrPage, appSettings, guide, mainShell, userSettings);
 
 		// Buttons
-		processButtons(objCurrPage, appSettings, guide, mainShell, userSettings, objDelay, imgPath,
-				debugShell);
+		processButtons(objCurrPage, appSettings, guide, mainShell, objDelay, debugShell);
+
+		// TODO why clear lblRight?
+		mainShell.setLblRight("");
+
+		if (objDelay == null) {
+			mainShell.setLblLeft("");
+		} else {
+			Calendar calCountDown = guide.setDelay(objDelay);
+			mainShell.setCalCountDown(calCountDown);
+		}
+
+		if (appSettings.getDebug()) {
+			mainShell.setLblCentre(" " + objCurrPage.getId() + " / " + imgName);
+		} else {
+			mainShell.setLblCentre(guide.getTitle());
+		}
 	}
 
 	private Page generate404Page(Guide guide, String chapterName, String strPageId) {
@@ -255,71 +280,22 @@ public class MainLogic {
 		return objCurrPage;
 	}
 
-	private Delay processDelay(MainShell mainShell, Guide guide, Page objCurrPage) {
-		Delay objDelay = null;
-		mainShell.setLblRight("");
-		boolean blnDelay = false;
-		int intDelSeconds = 1;
-		// override page
-		try {
-			if (!overRide.getPage().equals("")) {
-				intDelSeconds = 0;
-				guide.setDelStyle("hidden");
-				guide.setDelTarget(overRide.getPage());
-				guide.setDelayjScript("");
-				guide.setDelStartAtOffSet(0);
-				guide.setDelaySet("");
-				guide.setDelayUnSet("");
-				Calendar calCountDown = Calendar.getInstance();
-				calCountDown.add(Calendar.SECOND, intDelSeconds);
-				mainShell.setCalCountDown(calCountDown);
-			} else {
-				objDelay = overRide.getDelay();
-				if (objDelay != null) {
-					blnDelay = true;
-				} else {
-					if (objCurrPage.getDelayCount() > 0) {
-						for (int i2 = 0; i2 < objCurrPage.getDelayCount(); i2++) {
-							objDelay = objCurrPage.getDelay(i2);
-							if (objDelay.canShow(guide.getFlags())) {
-								blnDelay = true;
-								break;
-							}
-						}
-					}
-				}
-				if (blnDelay) {
-					logger.debug("displayPage Delay");
-					guide.setDelStyle(objDelay.getstyle());
-					guide.setDelTarget(objDelay.getTarget());
-					guide.setDelayjScript(objDelay.getjScript());
-					guide.setDelayScriptVar(objDelay.getScriptVar());
-					intDelSeconds = objDelay.getDelaySec();
-					guide.setDelStartAtOffSet(objDelay.getStartWith());
-					guide.setDelStartAtOffSet(guide.getDelStartAtOffSet() - intDelSeconds);
+	private Delay getDelay(Guide guide, Page objCurrPage) {
 
-					// record any delay set / unset
-					guide.setDelaySet(objDelay.getSet());
-					guide.setDelayUnSet(objDelay.getUnSet());
-					logger.debug("displayPage Delay Seconds {} Style {} Target {} Set {} UnSet {}",
-							intDelSeconds, guide.getDelStyle(), guide.getDelTarget(),
-							guide.getDelaySet(), guide.getDelayUnSet());
-					Calendar calCountDown = Calendar.getInstance();
-					calCountDown.add(Calendar.SECOND, intDelSeconds);
-					mainShell.setCalCountDown(calCountDown);
-				} else {
-					mainShell.setLblLeft("");
+		Delay objDelay = overRide.getDelay();
+		if (objDelay != null) {
+			return objDelay;
+		}
+
+		if (objCurrPage.getDelayCount() > 0) {
+			for (Delay d : objCurrPage.getDelays()) {
+				if (d.canShow(guide.getFlags())) {
+					return d;
 				}
 			}
-		} catch (Exception e1) {
-			logger.error("displayPage Delay Exception " + e1.getLocalizedMessage(), e1);
-			mainShell.setLblLeft("");
 		}
-		if (blnDelay) {
-			return objDelay;
-		} else {
-			return null;
-		}
+
+		return null;
 
 	}
 
@@ -348,8 +324,7 @@ public class MainLogic {
 
 	}
 
-	private Video getVideo(Page objCurrPage, Guide guide, AppSettings appSettings,
-			MainShell mainShell) {
+	private Video getVideo(Page objCurrPage, Guide guide) {
 		Video objVideo = overRide.getVideo();
 		if (objVideo != null) {
 			return objVideo;
@@ -365,8 +340,7 @@ public class MainLogic {
 
 	}
 
-	private Webcam getWebcam(Page objCurrPage, Guide guide, AppSettings appSettings,
-			MainShell mainShell) {
+	private Webcam getWebcam(Page objCurrPage, Guide guide) {
 		Webcam objWebcam = overRide.getWebcam();
 		if (objWebcam != null) {
 			return objWebcam;
@@ -382,8 +356,7 @@ public class MainLogic {
 
 	}
 
-	private String getImage(Page objCurrPage, AppSettings appSettings, Guide guide,
-			MainShell mainShell) {
+	private String getImage(Page objCurrPage, Guide guide, MainShell mainShell) {
 		// if there is an image over ride from javascript use it
 		String strImage = overRide.getImage();
 		strImage = mainShell.cookImage(strImage);
@@ -478,10 +451,7 @@ public class MainLogic {
 	}
 
 	private void processButtons(Page objCurrPage, AppSettings appSettings, Guide guide,
-			MainShell mainShell, UserSettings userSettings, Delay objDelay, String imgName,
-			DebugShell debugShell) {
-		Button objButton;
-		GuideSettings guideSettings = guide.getSettings();
+			MainShell mainShell, Delay objDelay, DebugShell debugShell) {
 		ArrayList<Button> button = new ArrayList<>();
 
 		for (GlobalButton b : overRide.getGlobalButtons()) {
@@ -522,19 +492,8 @@ public class MainLogic {
 
 		button.forEach(mainShell::addButtonUncooked);
 
-		try {
-			if (appSettings.getDebug()) {
-				// add a button to trigger the delay target if debug is set by
-				// the user
-				if (objDelay != null) {
-					mainShell.addDelayButton(guide);
-				}
-				mainShell.setLblCentre(" " + objCurrPage.getId() + " / " + imgName);
-			} else {
-				mainShell.setLblCentre(guide.getTitle());
-			}
-		} catch (Exception e1) {
-			logger.error("displayPage Debug Exception " + e1.getLocalizedMessage(), e1);
+		if (appSettings.getDebug() && objDelay != null) {
+			mainShell.addDelayButton(guide);
 		}
 
 	}
@@ -571,210 +530,107 @@ public class MainLogic {
 		return blnMetronome;
 	}
 
-	private void processAudio(Page objCurrPage, Guide guide, MainShell mainShell,
-			String fileSeparator, AppSettings appSettings) {
-		boolean blnAudio = false;
+	private Audio getAudio(Page objCurrPage, Guide guide) {
 		Audio objAudio = overRide.getAudio();
-		try {
-			if (objAudio != null) {
-				blnAudio = true;
-			} else {
-				if (objCurrPage.getAudioCount() > 0) {
-					for (int i2 = 0; i2 < objCurrPage.getAudioCount(); i2++) {
-						objAudio = objCurrPage.getAudio(i2);
-						if (objAudio.canShow(guide.getFlags())) {
-							blnAudio = true;
-							break;
-						}
-					}
-				}
-			}
-			if (blnAudio) {
-				int intAudioLoops;
-				String strAudio;
-				String strAudioTarget;
-				String strIntAudio = objAudio.getRepeat();
-				if (strIntAudio.equals("")) {
-					intAudioLoops = 0;
-				} else {
-					intAudioLoops = Integer.parseInt(strIntAudio);
-				}
-				strAudio = objAudio.getId();
-				logger.debug("displayPage Audio {}", strAudio);
-				String strStartAt = objAudio.getStartAt();
-				int startAtSeconds;
-				if (!strStartAt.equals("")) {
-					startAtSeconds = comonFunctions.getMilisecFromTime(strStartAt) / 1000;
-				} else {
-					startAtSeconds = 0;
-				}
-				String strStopAt = objAudio.getStopAt();
-				int stopAtSeconds;
-				if (!strStopAt.equals("")) {
-					stopAtSeconds = comonFunctions.getMilisecFromTime(strStopAt) / 1000;
-				} else {
-					stopAtSeconds = 0;
-				}
 
-				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator,
-						appSettings, guide);
-				strAudioTarget = objAudio.getTarget();
-				mainShell.playAudio(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops,
-						strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(),
-						objAudio.getVolume(), true);
-				logger.debug("displayPage Audio target " + strAudioTarget);
-			}
-		} catch (Exception e) {
-			logger.error("displayPage Audio Exception " + e.getLocalizedMessage(), e);
+		if (objAudio != null) {
+			return objAudio;
 		}
+		for (Audio aud : objCurrPage.getAudios()) {
+			if (aud.canShow(guide.getFlags())) {
+				return aud;
+			}
+		}
+		return null;
 
 	}
 
-	private void processAudio2(Page objCurrPage, Guide guide, MainShell mainShell,
-			String fileSeparator, AppSettings appSettings) {
-		boolean blnAudio = false;
+	private Audio getAudio2(Page objCurrPage, Guide guide) {
 		Audio objAudio = overRide.getAudio2();
-		try {
-			if (objAudio != null) {
-				blnAudio = true;
-			} else {
-				if (objCurrPage.getAudio2Count() > 0) {
-					for (int i2 = 0; i2 < objCurrPage.getAudio2Count(); i2++) {
-						objAudio = objCurrPage.getAudio2(i2);
-						if (objAudio.canShow(guide.getFlags())) {
-							blnAudio = true;
-							break;
-						}
-					}
+		if (objAudio != null) {
+			return objAudio;
+		} else {
+			for (Audio audio : objCurrPage.getAudio2s()) {
+				if (audio.canShow(guide.getFlags())) {
+					return audio;
 				}
 			}
-			if (blnAudio) {
-				int intAudioLoops;
-				String strAudio;
-				String strAudioTarget;
-				String strIntAudio = objAudio.getRepeat();
-				if (strIntAudio.equals("")) {
-					intAudioLoops = 0;
-				} else {
-					intAudioLoops = Integer.parseInt(strIntAudio);
-				}
-				strAudio = objAudio.getId();
-				logger.debug("displayPage Audio {}", strAudio);
-				String strStartAt = objAudio.getStartAt();
-				int startAtSeconds;
-				if (!strStartAt.equals("")) {
-					startAtSeconds = comonFunctions.getMilisecFromTime(strStartAt) / 1000;
-				} else {
-					startAtSeconds = 0;
-				}
-				String strStopAt = objAudio.getStopAt();
-				int stopAtSeconds;
-				if (!strStopAt.equals("")) {
-					stopAtSeconds = comonFunctions.getMilisecFromTime(strStopAt) / 1000;
-				} else {
-					stopAtSeconds = 0;
-				}
-
-				String imgPath = comonFunctions.getMediaFullPath(strAudio, fileSeparator,
-						appSettings, guide);
-				strAudioTarget = objAudio.getTarget();
-				mainShell.playAudio2(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops,
-						strAudioTarget, objAudio.getJscript(), objAudio.getScriptVar(),
-						objAudio.getVolume(), true);
-				logger.debug("displayPage Audio target {}", strAudioTarget);
-			}
-		} catch (Exception e) {
-			logger.error("displayPage Audio Exception {}", e.getLocalizedMessage(), e);
 		}
+		return null;
 
 	}
 
 	private Page processLoadGuide(Page objCurrPage, Guide guide, DebugShell debugShell,
 			AppSettings appSettings, MainShell mainShell) {
-		boolean blnLoadGuide = false;
 		LoadGuide objLoadGuide = null;
 		String strPageId = "";
 		String pageJavascript = objCurrPage.getjScript();
-		if (objCurrPage.getLoadGuideCount() > 0) {
-			for (int i2 = 0; i2 < objCurrPage.getLoadGuideCount(); i2++) {
-				objLoadGuide = objCurrPage.getLoadGuide(i2);
-				if (objLoadGuide.canShow(guide.getFlags())) {
-					blnLoadGuide = true;
-					break;
-				}
+		for (LoadGuide lg : objCurrPage.getLoadGuides()) {
+			if (lg.canShow(guide.getFlags())) {
+				objLoadGuide = lg;
+				break;
 			}
 		}
 
-		if (blnLoadGuide) {
-			String returnTarget = objLoadGuide.getReturnTarget();
-			if (returnTarget.equals("")) {
-				returnTarget = "start";
-			}
-			guide.getSettings().setPage(returnTarget);
-
-			// run preScript
-			String preScript = objLoadGuide.getPrejScript();
-			if (!(preScript.equals("") || pageJavascript.equals(""))) {
-				try {
-					mainShell.runJscript(preScript, false);
-				} catch (Exception e) {
-					logger.error("displayPage javascript Exception " + e.getLocalizedMessage(), e);
-				}
-			}
-			guide.getSettings().saveSettings();
-			guide.getSettings().formFieldsReset();
-			try {
-				debugShell.clearPagesCombo();
-			} catch (Exception ex) {
-				logger.error("Clear debug pages " + ex.getLocalizedMessage(), ex);
-			}
-			try {
-				XmlGuideReader.loadXML(
-						(appSettings.getDataDirectory() + objLoadGuide.getGuidePath()), guide,
-						appSettings, debugShell);
-				GuideSettings guideSettings = guide.getSettings();
-
-				// run postScript
-				String postScript = objLoadGuide.getPostjScript();
-				if (!(postScript.equals("") || pageJavascript.equals(""))) {
-					mainShell.runJscript(postScript, pageJavascript);
-				}
-				guide.getSettings().saveSettings();
-
-				String strTarget = objLoadGuide.getTarget();
-				String chapterName = guideSettings.getChapter();
-				if (chapterName.equals("")) {
-					chapterName = "default";
-					guideSettings.setChapter(chapterName);
-				}
-
-				if (!strTarget.equals("")) {
-					strPageId = pageFilter.getSingleMatchingPage(strTarget, guide, chapterName);
-				} else {
-					strPageId = guideSettings.getCurrPage();
-				}
-				// get the page to display
-				objCurrPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
-				if (objCurrPage == null) {
-					objCurrPage = generate404Page(guide, chapterName, strPageId);
-					strPageId = objCurrPage.getId();
-				}
-				guideSettings.setPrevPage(strPageId);
-				guideSettings.setCurrPage(strPageId);
-				guideSettings.setPage(strPageId);
-
-				mainShell.setGuideSettings(guideSettings);
-				if (guide.getCss().equals("")) {
-					mainShell.setDefaultStyle();
-				} else {
-					mainShell.setStyle(guide.getCss());
-				}
-
-			} catch (Exception ex) {
-				logger.error("Load Guide " + ex.getLocalizedMessage(), ex);
-			}
-
+		if (objLoadGuide == null) {
+			return objCurrPage;
 		}
+
+		String returnTarget = objLoadGuide.getReturnTarget();
+		if (returnTarget.equals("")) {
+			returnTarget = "start";
+		}
+		guide.getSettings().setPage(returnTarget);
+
+		mainShell.runJscript(objLoadGuide.getPrejScript(), false);
+
+		guide.getSettings().saveSettings();
+		guide.getSettings().formFieldsReset();
+		debugShell.clearPagesCombo();
+
+		try {
+			XmlGuideReader.loadXML((appSettings.getDataDirectory() + objLoadGuide.getGuidePath()),
+					guide, appSettings, debugShell);
+		} catch (XMLStreamException | IOException e) {
+			logger.error("Error loading new guide {}", objLoadGuide.getGuidePath(), e);
+			// TODO, this should go to an error page.
+			return objCurrPage;
+		}
+		GuideSettings guideSettings = guide.getSettings();
+
+		mainShell.runJscript(objLoadGuide.getPostjScript(), pageJavascript);
+
+		guide.getSettings().saveSettings();
+
+		String strTarget = objLoadGuide.getTarget();
+		String chapterName = guideSettings.getChapter();
+		if (chapterName.equals("")) {
+			chapterName = "default";
+			guideSettings.setChapter(chapterName);
+		}
+
+		if (!strTarget.equals("")) {
+			strPageId = pageFilter.getSingleMatchingPage(strTarget, guide, chapterName);
+		} else {
+			strPageId = guideSettings.getCurrPage();
+		}
+		// get the page to display
+		objCurrPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
+		if (objCurrPage == null) {
+			objCurrPage = generate404Page(guide, chapterName, strPageId);
+			strPageId = objCurrPage.getId();
+		}
+		guideSettings.setPrevPage(strPageId);
+		guideSettings.setCurrPage(strPageId);
+		guideSettings.setPage(strPageId);
+
+		mainShell.setGuideSettings(guideSettings);
+		if (guide.getCss().equals("")) {
+			mainShell.setDefaultStyle();
+		} else {
+			mainShell.setStyle(guide.getCss());
+		}
+
 		return objCurrPage;
 	}
 
@@ -796,62 +652,51 @@ public class MainLogic {
 					+ comonFunctions.fixSeparator(dataDirectory, appSettings.getFileSeparator());
 			filename = dataDirectory + appSettings.getFileSeparator() + "Global.state";
 		}
+		File xmlFile = new File(filename);
+		if (!xmlFile.exists()) {
+			return;
+		}
 
+		DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
+		Document doc;
 		try {
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			doc = docBuilder.parse(xmlFile);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			logger.warn("Error reading in global state {}", filename, e);
+			return;
+		}
+		Element rootElement = doc.getDocumentElement();
+		rootElement.normalize();
 
-			ContextFactory cntxFact = new ContextFactory();
+		Element elScriptVariables = comonFunctions.getElement("//scriptVariables", rootElement);
 
-			Context context = cntxFact.enterContext();
+		if (elScriptVariables == null) {
+			return;
+		}
+
+		ContextFactory cntxFact = new ContextFactory();
+		try (Context context = cntxFact.enterContext()) {
 			context.setOptimizationLevel(-1);
 			context.getWrapFactory().setJavaPrimitiveWrap(false);
 			ScriptableObject scope = context.initStandardObjects();
 
-			// if a state file already exists use it
-			File xmlFile = new File(filename);
-
-			if (xmlFile.exists()) {
-				DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
-				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-				Document doc = docBuilder.parse(xmlFile);
-				Element rootElement = doc.getDocumentElement();
-				rootElement.normalize();
-
-				Element elScriptVariables = comonFunctions.getElement("//scriptVariables",
-						rootElement);
-				if (elScriptVariables != null) {
-					NodeList nodeList = elScriptVariables.getElementsByTagName("Var");
-					String strName;
-					String strType;
-					String strValue;
-					Object objValue;
-					for (int i = 0; i < nodeList.getLength(); i++) {
-						Node currentNode = nodeList.item(i);
-						if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element elVar = (Element) currentNode;
-							strName = elVar.getAttribute("id");
-							strType = elVar.getAttribute("type");
-							CharacterData elChar;
-							elChar = (CharacterData) elVar.getFirstChild();
-							if (elChar != null) {
-								strValue = elChar.getData();
-								objValue = comonFunctions.getSavedObject(strValue, strType, scope);
-							} else {
-								objValue = null;
-							}
-							globalScriptVariables.put(strName, objValue);
-
-						}
+			NodeList nodeList = elScriptVariables.getElementsByTagName("Var");
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				Node currentNode = nodeList.item(i);
+				if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element elVar = (Element) currentNode;
+					String strName = elVar.getAttribute("id");
+					String strType = elVar.getAttribute("type");
+					Object objValue = null;
+					CharacterData elChar = (CharacterData) elVar.getFirstChild();
+					if (elChar != null) {
+						objValue = comonFunctions.getSavedObject(elChar.getData(), strType, scope);
 					}
+					globalScriptVariables.put(strName, objValue);
 				}
-
 			}
 
-		} catch (ParserConfigurationException pce) {
-			logger.error(pce.getLocalizedMessage(), pce);
-		} catch (SAXException | IOException e) {
-			logger.error(e.getLocalizedMessage(), e);
-		} finally {
-			Context.exit();
 		}
 
 	}

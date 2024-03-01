@@ -108,12 +108,10 @@ public class Page {
 	public WebcamButton getWebcamButton(int butIndex) {
 		return webcamButton.get(butIndex);
 	}
-	
 
 	public WebcamButton[] getWebcamButtons() {
 		return webcamButton.toArray(new WebcamButton[] {});
 	}
-
 
 	public void addWebcamButton(WebcamButton button) {
 		this.webcamButton.add(button);
@@ -181,6 +179,10 @@ public class Page {
 
 	public LoadGuide getLoadGuide(int guideIndex) {
 		return loadGuide.get(guideIndex);
+	}
+
+	public LoadGuide[] getLoadGuides() {
+		return loadGuide.toArray(new LoadGuide[] {});
 	}
 
 	public void addLoadGuide(LoadGuide loadGuide) {
@@ -349,6 +351,10 @@ public class Page {
 		return audio2.get(audIndex);
 	}
 
+	public Audio[] getAudio2s() {
+		return audio2.toArray(new Audio[] {});
+	}
+
 	public void addAudio2(Audio audio) {
 		this.audio2.add(audio);
 	}
@@ -360,7 +366,7 @@ public class Page {
 	public GlobalButton getGlobalButton(int butIndex) {
 		return globalButton.get(butIndex);
 	}
-	
+
 	public GlobalButton[] getGlobalButtons() {
 		return globalButton.toArray(new GlobalButton[] {});
 	}
@@ -376,6 +382,5 @@ public class Page {
 	public void clearGlobalButtons() {
 		globalButton.clear();
 	}
-
 
 }
