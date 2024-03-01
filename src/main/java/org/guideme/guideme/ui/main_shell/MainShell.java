@@ -1159,6 +1159,9 @@ public class MainShell {
 		boolean isWebCamButton = button instanceof WebcamButton;
 		strBtnTarget = button.getTarget();
 		strBtnText = button.getText();
+
+		strBtnText = comonFunctions.substituteTextVars(strBtnText, guideSettings, userSettings);
+
 		SquareButton btnDynamic = new SquareButton(btnComp, SWT.PUSH);
 
 		setFontUncooked(btnDynamic, buttonFont, button.getFontName(), button.getFontHeight());
@@ -1755,6 +1758,11 @@ public class MainShell {
 		// Play video
 		playVideo(imgPath, intStartAt, intStopAt, repeat, video.getTarget(), video.getJscript(),
 				video.getScriptVar(), video.getVolume(), true);
+	}
+
+	public void addButtonUncooked(Button btn) {
+		String javascriptid = btn.getjScript();
+		addButton(btn, javascriptid);
 	}
 
 }

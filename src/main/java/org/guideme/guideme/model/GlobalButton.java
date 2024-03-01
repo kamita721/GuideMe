@@ -81,6 +81,18 @@ public class GlobalButton extends Button {
 		this.action = action;
 	}
 
+	@Override
+	public int getMetaSortOrder() {
+		switch (placement) {
+		case TOP:
+			return -1;
+		case BOTTOM:
+			return 1;
+		default:
+			return 2;
+		}
+	}
+
 	public enum Placement {
 		TOP, BOTTOM;
 
@@ -100,7 +112,6 @@ public class GlobalButton extends Button {
 	public enum Action {
 		ADD, REMOVE, NONE;
 
-		
 		public static Action fromString(String s) {
 			switch (s) {
 			case "add":

@@ -108,6 +108,12 @@ public class Page {
 	public WebcamButton getWebcamButton(int butIndex) {
 		return webcamButton.get(butIndex);
 	}
+	
+
+	public WebcamButton[] getWebcamButtons() {
+		return webcamButton.toArray(new WebcamButton[] {});
+	}
+
 
 	public void addWebcamButton(WebcamButton button) {
 		this.webcamButton.add(button);
@@ -354,6 +360,10 @@ public class Page {
 	public GlobalButton getGlobalButton(int butIndex) {
 		return globalButton.get(butIndex);
 	}
+	
+	public GlobalButton[] getGlobalButtons() {
+		return globalButton.toArray(new GlobalButton[] {});
+	}
 
 	public void addGlobalButton(GlobalButton button) {
 		globalButton.add(button);
@@ -366,5 +376,6 @@ public class Page {
 	public void clearGlobalButtons() {
 		globalButton.clear();
 	}
+
 
 }

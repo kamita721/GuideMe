@@ -501,4 +501,11 @@ public class DebugShell {
 		shell.layout();
 		varScrlComp.setMinSize(varComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
+
+	public void addOverrideButtons(List<Button> button) {
+		for(Button b : button) {
+			addOverrideButton(b);
+		}
+		
+	}
 }

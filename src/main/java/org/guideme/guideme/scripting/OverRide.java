@@ -214,6 +214,11 @@ public class OverRide {
 		return button.get(i);
 	}
 	
+	public Button[] getButtons() {
+		// TODO Auto-generated method stub
+		return button.toArray(new Button[] {});
+	}
+	
 	/** @exclude */
 	public int buttonCount() {
 		return button.size();
@@ -370,6 +375,10 @@ public class OverRide {
 		return globalButton.get(i);
 	}
 
+	public GlobalButton[] getGlobalButtons() {
+		return globalButton.toArray(new GlobalButton[] {});
+	}
+	
 	/** @exclude */
 	public int globalButtonCount() {
 		return globalButton.size();
@@ -554,6 +563,10 @@ public class OverRide {
 	/** @exclude */
 	public WebcamButton getWebcamButton(int i) {
 		return webcamButton.get(i);
+	}
+
+	public WebcamButton[] getWebcamButtons() {
+		return webcamButton.toArray(new WebcamButton[] {});
 	}
 	
 	/** @exclude */
@@ -1012,5 +1025,7 @@ public class OverRide {
 	public void setRightHtml(String rightHtml) {
 		this.rightHtml = rightHtml;
 	}
+
+
 
 }

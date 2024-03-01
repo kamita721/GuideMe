@@ -484,101 +484,43 @@ public class MainLogic {
 		GuideSettings guideSettings = guide.getSettings();
 		ArrayList<Button> button = new ArrayList<>();
 
-		// Move global buttons into page object.
-		for (int i1 = 0; i1 < overRide.globalButtonCount(); i1++) {
-			GlobalButton objGlobalButton = overRide.getGlobalButton(i1);
-			objCurrPage.addGlobalButton(objGlobalButton);
+		for (GlobalButton b : overRide.getGlobalButtons()) {
+			objCurrPage.addGlobalButton(b);
 		}
 		overRide.clearGlobalButtons();
 
 		// process global buttons on page
-		for (int i1 = 0; i1 < objCurrPage.getGlobalButtonCount(); i1++) {
-			GlobalButton objGlobalButton = objCurrPage.getGlobalButton(i1);
-			switch (objGlobalButton.getAction()) {
+		for (GlobalButton b : objCurrPage.getGlobalButtons()) {
+			switch (b.getAction()) {
 			case ADD:
-				guide.addGlobalButton(objGlobalButton.getId(), objGlobalButton);
+				guide.addGlobalButton(b.getId(), b);
 				break;
 			case REMOVE:
-				guide.removeGlobalButton(objGlobalButton.getId());
+				guide.removeGlobalButton(b.getId());
 				break;
 			default:
-				logger.error(
-						"displayPage Global Button invalid action " + objGlobalButton.getAction());
+				logger.error("displayPage Global Button invalid action " + b.getAction());
 			}
 		}
 
 		// remove old buttons
 		mainShell.removeButtons();
 
-		// add top placement global buttons
-		ArrayList<Button> globalTopButtons = new ArrayList<>();
-		for (GlobalButton globalButton : guide.getGlobalButtons()) {
-			if (globalButton.canShow(guide.getFlags())
-					&& globalButton.getPlacement() == GlobalButton.Placement.TOP) {
-				globalTopButtons.add(globalButton);
-				debugShell.addOverrideButton(globalButton);
-			}
-		}
-		Collections.sort(globalTopButtons);
+		Collections.addAll(button, guide.getGlobalButtons());
+		Collections.addAll(button, overRide.getButtons());
+		Collections.addAll(button, overRide.getWebcamButtons());
 
-		// add new buttons
-		ArrayList<Button> pageButtons = new ArrayList<>();
-		for (int i1 = 0; i1 < objCurrPage.getButtonCount(); i1++) {
-			objButton = objCurrPage.getButton(i1);
-			if (objButton.canShow(guide.getFlags())) {
-				pageButtons.add(objButton);
-			}
-		}
-		for (int i1 = 0; i1 < overRide.buttonCount(); i1++) {
-			objButton = overRide.getButton(i1);
-			if (objButton.canShow(guide.getFlags())) {
-				pageButtons.add(objButton);
-				debugShell.addOverrideButton(objButton);
-			}
-		}
-		for (int i1 = 0; i1 < objCurrPage.getWebcamButtonCount(); i1++) {
-			objButton = objCurrPage.getWebcamButton(i1);
-			if (objButton.canShow(guide.getFlags())) {
-				pageButtons.add(objButton);
-			}
-		}
-		for (int i1 = 0; i1 < overRide.webcamButtonCount(); i1++) {
-			objButton = overRide.getWebcamButton(i1);
-			if (objButton.canShow(guide.getFlags())) {
-				pageButtons.add(objButton);
-				debugShell.addOverrideButton(objButton);
-			}
-		}
-		Collections.sort(pageButtons);
+		button.removeIf(btn -> !btn.canShow(guide.getFlags()));
+		debugShell.addOverrideButtons(button);
 
-		// add bottom placement global buttons
-		ArrayList<Button> globalBottomButtons = new ArrayList<>();
-		for (GlobalButton globalButton : guide.getGlobalButtons()) {
-			if (globalButton.canShow(guide.getFlags())
-					&& globalButton.getPlacement() == GlobalButton.Placement.BOTTOM) {
-				globalBottomButtons.add(globalButton);
-				debugShell.addOverrideButton(globalButton);
-			}
-		}
-		Collections.sort(globalBottomButtons);
+		Collections.addAll(button, objCurrPage.getButtons());
+		Collections.addAll(button, objCurrPage.getWebcamButtons());
 
-		// Add all buttons in reverse order
-		button.addAll(globalBottomButtons);
-		button.addAll(pageButtons);
-		button.addAll(globalTopButtons);
+		button.removeIf(btn -> !btn.canShow(guide.getFlags()));
 
-		for (int i1 = button.size() - 1; i1 >= 0; i1--) {
-			try {
-				objButton = button.get(i1);
-				String javascriptid = objButton.getjScript();
-				String btnText = objButton.getText();
-				btnText = comonFunctions.substituteTextVars(btnText, guideSettings, userSettings);
-				objButton.setText(btnText);
-				mainShell.addButton(objButton, javascriptid);
-			} catch (Exception e1) {
-				logger.error("displayPage Button Exception " + e1.getLocalizedMessage(), e1);
-			}
-		}
+		Collections.sort(button);
+
+		button.forEach(mainShell::addButtonUncooked);
 
 		try {
 			if (appSettings.getDebug()) {

@@ -1092,8 +1092,8 @@ public class Guide {
 	 * 
 	 * @return Global buttons
 	 */
-	public List<GlobalButton> getGlobalButtons() {
-		return new ArrayList<>(globalButtons.values());
+	public GlobalButton[] getGlobalButtons() {
+		return globalButtons.values().toArray(new GlobalButton[] {});
 	}
 
 	/**

@@ -50,9 +50,11 @@ public class Button implements Comparable<Button> {
 		this.scriptVar = getAttributeOrDefaultNoNS(reader, "scriptvar", "");
 		this.fontName = getAttributeOrDefaultNoNS(reader, "fontName", "");
 		this.fontHeight = getAttributeOrDefaultNoNS(reader, "fontHeight", 0);
-		this.bgColor1 = getAttributeOrDefaultNoNS(reader, "bgColor1", comonFunctions.getSwtColor(SWT.COLOR_WHITE));
+		this.bgColor1 = getAttributeOrDefaultNoNS(reader, "bgColor1",
+				comonFunctions.getSwtColor(SWT.COLOR_WHITE));
 		this.bgColor2 = getAttributeOrDefaultNoNS(reader, "bgColor2", this.bgColor1);
-		this.fontColor = getAttributeOrDefaultNoNS(reader, "fontColor", comonFunctions.getSwtColor(SWT.COLOR_BLACK));
+		this.fontColor = getAttributeOrDefaultNoNS(reader, "fontColor",
+				comonFunctions.getSwtColor(SWT.COLOR_BLACK));
 		this.sortOrder = getAttributeOrDefaultNoNS(reader, "sortOrder", 1);
 		this.disabled = getAttributeOrDefaultNoNS(reader, "disabled", false);
 		this.defaultBtn = getAttributeOrDefaultNoNS(reader, "default", true);
@@ -60,29 +62,30 @@ public class Button implements Comparable<Button> {
 		initAttributes(reader);
 		this.text = XmlGuideReader.processText(reader);
 	}
-	
+
 	/*
-	 * Since our constructor advances the reader, we need a hook for subclasses to evaluate
-	 * the reader while it is still on the top node.
+	 * Since our constructor advances the reader, we need a hook for subclasses to
+	 * evaluate the reader while it is still on the top node.
 	 */
 	protected void initAttributes(XMLStreamReader reader) {
-		/* For subclasses to override*/
+		/* For subclasses to override */
 	}
-	
+
 	public Button(String target, String text) {
 		this(target, text, "", "", "", "", "", "", "");
 	}
 
-	public Button(String target, String text, String ifSet, String ifNotSet, String set, String unSet, String jScript,
-			String image, String hotKey) {
-		this(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, "", 0, "", "", "", 1, "", "", false,
-				"", "", false);
+	public Button(String target, String text, String ifSet, String ifNotSet, String set,
+			String unSet, String jScript, String image, String hotKey) {
+		this(target, text, ifSet, ifNotSet, set, unSet, jScript, image, hotKey, "", 0, "", "", "",
+				1, "", "", false, "", "", false);
 	}
 
-	public Button(String target, String text, String ifSet, String ifNotSet, String set, String unSet, String jScript,
-			String image, String hotKey, String fontName, int fontHeight, String fontColor, String bgColor1,
-			String bgColor2, int sortOrder, String ifAfter, String ifBefore, boolean disabled, String id,
-			String scriptVar, boolean defaultBtn) {
+	public Button(String target, String text, String ifSet, String ifNotSet, String set,
+			String unSet, String jScript, String image, String hotKey, String fontName,
+			int fontHeight, String fontColor, String bgColor1, String bgColor2, int sortOrder,
+			String ifAfter, String ifBefore, boolean disabled, String id, String scriptVar,
+			boolean defaultBtn) {
 		this.target = target;
 		this.text = text;
 		this.ifNotSet = ifNotSet;
@@ -256,10 +259,6 @@ public class Button implements Comparable<Button> {
 		}
 	}
 
-	public int getSortOrder() {
-		return sortOrder;
-	}
-
 	public LocalTime getIfBefore() {
 		return ifBefore;
 	}
@@ -284,10 +283,28 @@ public class Button implements Comparable<Button> {
 		}
 	}
 
+	/*
+	 * Buttons are sorted in a hierarchical fasion. First, they are binned by the
+	 * meta-sort. Within each bin, they are sorted by the regular sort.
+	 * 
+	 * All normal buttons are binned together. Global buttons use this to control
+	 * where they are placed.
+	 */
+	public int getMetaSortOrder() {
+		return 0;
+	}
+
+	public int getSortOrder() {
+		return sortOrder;
+	}
+
 	@Override
 	public int compareTo(Button compareButton) {
-		int compareOrder = compareButton.getSortOrder();
-		return compareOrder - this.sortOrder;
+		int ans = this.getMetaSortOrder() - compareButton.getMetaSortOrder();
+		if (ans != 0) {
+			return ans;
+		}
+		return this.getSortOrder() - compareButton.sortOrder;
 	}
 
 	public boolean getDisabled() {
