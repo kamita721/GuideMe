@@ -191,7 +191,7 @@ public class MainShell {
 		myDisplay = display;
 		shell = new Shell(myDisplay, appSettings.isFullScreen() ? SWT.NO_TRIM : SWT.SHELL_TRIM);
 
-		shell.addShellListener(new shellCloseListen(this));
+		shell.addShellListener(new ShellCloseListen(this));
 		keyListener = new ShellKeyEventListener(this);
 		myDisplay.addFilter(SWT.KeyDown, keyListener);
 		int mainMonitor = appSettings.getMainMonitor();
