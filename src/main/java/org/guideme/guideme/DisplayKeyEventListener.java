@@ -10,34 +10,20 @@ import org.guideme.guideme.ui.main_shell.MainShell;
 public class DisplayKeyEventListener implements Listener {
 	private Logger logger = LogManager.getLogger();
 	private MainShell mainShell;
-	
-	public DisplayKeyEventListener() {
+
+	public void setMainShell(MainShell mainShell) {
+		this.mainShell = mainShell;
 	}
 
-	
-	public void setMainShell(MainShell mainShell) {
-		this.mainShell = mainShell;  
-	}
-	
 	@Override
 	public void handleEvent(Event event) {
-		try {
-			logger.trace(event.character + "|" + event.keyCode + "|" + event.keyLocation + "|" + event.stateMask);
-			if (((event.stateMask & SWT.ALT) == SWT.ALT)) {
-				switch (event.character) {
-				case 'd' :
-					mainShell.showDebug();
-					break;
-				case 'D' :
-					mainShell.showDebug();
-					break;
-				}
-			}
+		logger.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation,
+				event.stateMask);
+		if (((event.stateMask & SWT.ALT) == SWT.ALT)
+				&& (event.character == 'd' || event.character == 'D')) {
+			mainShell.showDebug();
 		}
-		catch (Exception ex) {
-			logger.error(" DisplayKeyEventListener " + ex.getLocalizedMessage(), ex);
-		}
-	}
 
+	}
 
 }

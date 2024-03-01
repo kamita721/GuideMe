@@ -4,7 +4,6 @@ import static org.guideme.guideme.util.XMLReaderUtils.getAttributeLocalTime;
 import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamReader;
@@ -16,7 +15,7 @@ public class Delay {
 	private final String ifNotSet;
 	private final String set;
 	private final String unSet;
-	private final String delay;
+	private final String seconds;
 	private final String target;
 	private final int startWith;
 	private final String style;
@@ -30,7 +29,7 @@ public class Delay {
 		this.target = getAttributeOrDefaultNoNS(reader, "target", "");
 		this.startWith = getAttributeOrDefaultNoNS(reader, "start-with", 0);
 		this.style = getAttributeOrDefaultNoNS(reader, "style", "");
-		this.delay = getAttributeOrDefaultNoNS(reader, "seconds", "");
+		this.seconds = getAttributeOrDefaultNoNS(reader, "seconds", "");
 		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
 		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
 		this.ifBefore = getAttributeLocalTime(reader, "if-before");
@@ -43,7 +42,7 @@ public class Delay {
 	
 	public Delay(String target, String delay, String ifSet, String ifNotSet, int startWith, String style, String set, String unSet, String jScript, String ifAfter, String ifBefore, String scriptVar) {
 		this.target = target;
-		this.delay = delay;
+		this.seconds = delay;
 		this.ifNotSet = ifNotSet;
 		this.ifSet = ifSet;
 		this.startWith = startWith;
@@ -74,7 +73,7 @@ public class Delay {
 	}
 
 	public int getDelaySec() {
-		return comonFunctions.getRandom(delay);
+		return comonFunctions.getRandom(seconds);
 	}
 
 	public String getTarget() {
@@ -89,7 +88,7 @@ public class Delay {
 		return style;
 	}
 	
-	public void setUnSet(ArrayList<String> setList) {
+	public void setUnSet(List<String> setList) {
 		//pass in the current flags and either add or remove the ones for this delay
 		comonFunctions.setFlags(set, setList);
 		comonFunctions.unsetFlags(unSet, setList);

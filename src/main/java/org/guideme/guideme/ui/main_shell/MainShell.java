@@ -1811,7 +1811,7 @@ public class MainShell {
 			playAudio(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget,
 					audio.getJscript(), audio.getScriptVar(), audio.getVolume(), true);
 		}
-		logger.debug("displayPage Audio target " + strAudioTarget);
+		logger.debug("displayPage Audio target {}", strAudioTarget);
 	}
 
 	public void addButtonUncooked(Button btn) {
