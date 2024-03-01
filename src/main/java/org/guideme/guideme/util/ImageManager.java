@@ -72,6 +72,9 @@ public class ImageManager {
 	}
 
 	public void prefetch(String path) {
+		if(path == null) {
+			return;
+		}
 		fullsizeCache.get(path);
 	}
 

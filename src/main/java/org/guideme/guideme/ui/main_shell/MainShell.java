@@ -42,6 +42,7 @@ import org.guideme.guideme.model.Chapter;
 import org.guideme.guideme.model.Guide;
 import org.guideme.guideme.model.Page;
 import org.guideme.guideme.model.Timer;
+import org.guideme.guideme.model.Video;
 import org.guideme.guideme.model.WebcamButton;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 import org.guideme.guideme.scripting.OverRide;
@@ -370,7 +371,7 @@ public class MainShell {
 			shell2.setBounds(clientArea2);
 		}
 	}
-	
+
 	private SashForm getTextPane(Composite parent, Display display) {
 		SashForm ans = new SashForm(parent, SWT.VERTICAL);
 
@@ -899,7 +900,7 @@ public class MainShell {
 				webcam = Webcam.getDefault();
 
 				if (webcam != null) {
-					setLeftText("", "");
+					setLeftPaneText("", "");
 					setLeftPaneVisibleElement(webcamPanel);
 
 					Dimension[] dimensions = webcam.getViewSizes();
@@ -915,7 +916,7 @@ public class MainShell {
 					logger.debug("MainShell playVideo: ShowWebcam");
 
 				} else {
-					setLeftText("No Webcam detected", "");
+					setLeftPaneText("No Webcam detected", "");
 					Webcam.getDiscoveryService().stop();
 				}
 
@@ -935,7 +936,7 @@ public class MainShell {
 		// application
 		if (appSettings.getVideoOn()) {
 			try {
-				setLeftText("", "");
+				setLeftPaneText("", "");
 				setLeftPaneVisibleElement(mediaPanel);
 				leftFrame.layout(true);
 				videoLoops = loops;
@@ -1071,31 +1072,22 @@ public class MainShell {
 		}
 	}
 
-	public void setLeftText(String brwsText, String overRideStyle) {
+	public void setLeftPaneText(String brwsText, String overRideStyle) {
 		// set HTML to be displayed in the browser control to the left of the screen
 		if (overRideStyle.equals("")) {
 			overRideStyle = style;
 		}
-		String strHTML;
-		try {
-			strHTML = leftHTML.replace("DefaultStyle", overRideStyle);
-			strHTML = strHTML.replace("BodyContent", brwsText);
-			this.leftPaneBrowser.setText(strHTML);
-			if (appSettings.isToclipboard()) {
-				// copy text to clip board for use in TTS
-				String htmlString = brwsText.replaceAll("\\<[^>]*\\>", " ");
-				StringSelection stringSelection = new StringSelection(htmlString);
-				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				clipboard.setContents(stringSelection, stringSelection);
+		String strHTML = leftHTML.replace("DefaultStyle", overRideStyle);
+		strHTML = strHTML.replace("BodyContent", brwsText);
+		if (appSettings.isToclipboard()) {
+			// copy text to clip board for use in TTS
+			String htmlString = brwsText.replaceAll("\\<[^>]*\\>", " ");
+			StringSelection stringSelection = new StringSelection(htmlString);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(stringSelection, stringSelection);
 
-			}
-		} catch (Exception e1) {
-			logger.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
-			strHTML = leftHTML.replace("DefaultStyle", overRideStyle);
-			strHTML = strHTML.replace("BodyContent", "");
-			this.leftPaneBrowser.setText(strHTML);
 		}
-		setLeftPaneVisibleElement(leftPaneBrowser);
+		setLeftHtml(strHTML);
 	}
 
 	public void setLeftHtml(String strHTML) {
@@ -1698,6 +1690,19 @@ public class MainShell {
 		setBrwsText(displayText, "");
 	}
 
+	public void setLeftPaneHtmlUncooked(String uncookedHTML) {
+		uncookedHTML = uncookedHTML.replace("\\MediaDir\\", "");
+		uncookedHTML = uncookedHTML.replace("\\GuideCSS\\", guide.getCss());
+		setleftPaneHtml(uncookedHTML);
+	}
+
+	public void setLeftPaneTextUncooked(String uncookedText, String css) {
+		uncookedText = uncookedText.replace("\\MediaDir\\", "");
+		uncookedText = comonFunctions.substituteTextVars(uncookedText, guide.getSettings(),
+				userSettings);
+		setLeftPaneText(uncookedText, css);
+	}
+
 	public void setUnsetFlagsUncooked(String setFlags, String unSetFlags) {
 
 		comonFunctions.setFlags(setFlags, guide.getFlags());
@@ -1723,6 +1728,33 @@ public class MainShell {
 			control.addDisposeListener(event -> ans.dispose());
 		}
 		control.setFont(ans);
+	}
+
+	public void playVideoUncooked(Video video) {
+		String strVideo = video.getId();
+		logger.trace("displayPage Video {}", strVideo);
+		String strStartAt = video.getStartAt();
+		logger.trace("displayPage Video Start At {}", strStartAt);
+		int intStartAt = 0;
+		if (!strStartAt.isBlank()) {
+			intStartAt = comonFunctions.getMilisecFromTime(strStartAt) / 1000;
+		}
+
+		String strStopAt = video.getStopAt();
+		logger.trace("displayPage Video Stop At {}", strStopAt);
+		int intStopAt = 0;
+		if (!strStopAt.isBlank()) {
+			intStopAt = comonFunctions.getMilisecFromTime(strStopAt) / 1000;
+		}
+
+		String imgPath = comonFunctions.getMediaFullPath(strVideo, appSettings.getFileSeparator(),
+				appSettings, guide);
+
+		int repeat = video.getRepeat();
+
+		// Play video
+		playVideo(imgPath, intStartAt, intStopAt, repeat, video.getTarget(), video.getJscript(),
+				video.getScriptVar(), video.getVolume(), true);
 	}
 
 }

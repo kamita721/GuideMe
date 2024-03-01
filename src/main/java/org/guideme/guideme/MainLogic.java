@@ -117,10 +117,7 @@ public class MainLogic {
 		String strFlags;
 		Page objCurrPage;
 		Delay objDelay;
-		Video objVideo;
-		Webcam objWebcam;
 		String fileSeparator = appSettings.getFileSeparator();
-		String imgName = "";
 
 		logger.debug("displayPage PagePassed {}", pageId);
 		logger.debug(() -> "displayPage Flags " + comonFunctions.getFlags(guide.getFlags()));
@@ -158,47 +155,8 @@ public class MainLogic {
 
 		// If we are going straight to another page we can skip this section
 		if ((objDelay == null || objDelay.getDelaySec() > 0) && overRide.getPage().equals("")) {
-			// add timers
-			addTimers(mainShell, objCurrPage, guide);
-
-			// If we haven't over ridden the left pane then populate it
-			if (overRide.getLeftHtml().equals("") && overRide.getLeftBody().equals("")) {
-				// Video
-				objVideo = processVideo(objCurrPage, guide, fileSeparator, appSettings, mainShell);
-				if (objVideo == null) {
-					objWebcam = processWebcam(objCurrPage, guide, fileSeparator, appSettings,
-							mainShell);
-				} else {
-					objWebcam = null;
-				}
-				if (objVideo == null && objWebcam == null) {
-					// image
-					imgName = ProcessImage(objCurrPage, fileSeparator, appSettings, guide,
-							mainShell);
-					if (imgName.equals("")) {
-						// Left text
-						processLeftText(objCurrPage, fileSeparator, appSettings, guide, mainShell,
-								userSettings);
-					}
-				} else {
-					if (objWebcam == null || objWebcam.getWebCamFound()) {
-						mainShell.clearImage();
-						// No image
-					}
-				}
-
-			} else {
-				processLeftTextOverRide(fileSeparator, appSettings, guide, mainShell, userSettings);
-			}
-
-			// Browser text
-			processRightPanel(objCurrPage, fileSeparator, appSettings, guide, mainShell,
-					userSettings);
-
-			// Buttons
-			processButtons(objCurrPage, appSettings, guide, mainShell, userSettings, objDelay,
-					imgName, debugShell);
-
+			renderPage(mainShell, objCurrPage, guide, appSettings, userSettings, objDelay,
+					debugShell);
 		}
 
 		if (!reDisplay) {
@@ -233,6 +191,59 @@ public class MainLogic {
 		guide.getSettings().formFieldsReset();
 		mainShell.layoutButtons();
 
+	}
+
+	/**
+	 * Process all of the UI elements of a new page. This section can be safely
+	 * skipped for 'intermediate' pages that immidietly forward the user to another
+	 * page.
+	 * 
+	 * @param mainShell
+	 * @param objCurrPage
+	 * @param guide
+	 * @param appSettings
+	 * @param userSettings
+	 * @param objDelay
+	 * @param debugShell
+	 */
+	private void renderPage(MainShell mainShell, Page objCurrPage, Guide guide,
+			AppSettings appSettings, UserSettings userSettings, Delay objDelay,
+			DebugShell debugShell) {
+		addTimers(mainShell, objCurrPage, guide);
+		Video objVideo;
+		Webcam objWebcam;
+		String imgPath = null;
+		// Video
+		objVideo = getVideo(objCurrPage, guide, appSettings, mainShell);
+		objWebcam = getWebcam(objCurrPage, guide, appSettings, mainShell);
+		imgPath = getImage(objCurrPage, appSettings, guide, mainShell);
+
+		if (!overRide.getLeftBody().isBlank()) {
+			mainShell.setLeftPaneTextUncooked(overRide.getLeftBody(), overRide.getLeftCss());
+		} else if (!overRide.getLeftHtml().isBlank()) {
+			mainShell.setLeftPaneHtmlUncooked(overRide.getLeftHtml());
+		}
+		if (objVideo != null) {
+			mainShell.playVideoUncooked(objVideo);
+		} else if (objWebcam != null) {
+			mainShell.showWebcam();
+		} else if (imgPath != null) {
+			mainShell.setImage(imgPath);
+			String imgName = new File(imgPath).getName();
+			if (imgName.equals("")) {
+				processLeftText(objCurrPage, appSettings, guide, mainShell, userSettings);
+			}
+		} else {
+			// TODO guard on getWebCamFound() ?
+			mainShell.clearImage();
+		}
+
+		// Browser text
+		processRightPanel(objCurrPage, appSettings, guide, mainShell, userSettings);
+
+		// Buttons
+		processButtons(objCurrPage, appSettings, guide, mainShell, userSettings, objDelay, imgPath,
+				debugShell);
 	}
 
 	private Page generate404Page(Guide guide, String chapterName, String strPageId) {
@@ -337,161 +348,63 @@ public class MainLogic {
 
 	}
 
-	private Video processVideo(Page objCurrPage, Guide guide, String fileSeparator,
-			AppSettings appSettings, MainShell mainShell) {
-		Video objVideo;
-		boolean blnVideo = false;
-		objVideo = overRide.getVideo();
-		try {
-			if (objVideo != null) {
-				blnVideo = true;
-			} else {
-				if (objCurrPage.getVideoCount() > 0) {
-					for (int i2 = 0; i2 < objCurrPage.getVideoCount(); i2++) {
-						objVideo = objCurrPage.getVideo(i2);
-						if (objVideo.canShow(guide.getFlags())) {
-							blnVideo = true;
-							break;
-						}
-					}
-				}
-			}
-			if (blnVideo) {
-				String strVideo = objVideo.getId();
-				logger.trace("displayPage Video {}", strVideo);
-				String strStartAt = objVideo.getStartAt();
-				logger.trace("displayPage Video Start At {}", strStartAt);
-				int intStartAt = 0;
-				if (!strStartAt.isBlank()) {
-					intStartAt = comonFunctions.getMilisecFromTime(strStartAt) / 1000;
-				}
-
-				String strStopAt = objVideo.getStopAt();
-				logger.trace("displayPage Video Stop At {}", strStopAt);
-				int intStopAt = 0;
-				if (!strStopAt.isBlank()) {
-					intStopAt = comonFunctions.getMilisecFromTime(strStopAt) / 1000;
-				}
-
-				String imgPath = comonFunctions.getMediaFullPath(strVideo, fileSeparator,
-						appSettings, guide);
-
-				int repeat = objVideo.getRepeat();
-
-				// Play video
-				mainShell.playVideo(imgPath, intStartAt, intStopAt, repeat, objVideo.getTarget(),
-						objVideo.getJscript(), objVideo.getScriptVar(), objVideo.getVolume(), true);
-			}
-		} catch (Exception e1) {
-			logger.trace("displayPage Video Exception " + e1.getLocalizedMessage());
-		}
-
-		if (blnVideo) {
+	private Video getVideo(Page objCurrPage, Guide guide, AppSettings appSettings,
+			MainShell mainShell) {
+		Video objVideo = overRide.getVideo();
+		if (objVideo != null) {
 			return objVideo;
-		} else {
-			return null;
 		}
+
+		for (Video video : objCurrPage.getVideos()) {
+			if (video.canShow(guide.getFlags())) {
+				return video;
+			}
+		}
+
+		return null;
 
 	}
 
-	private Webcam processWebcam(Page objCurrPage, Guide guide, String fileSeparator,
-			AppSettings appSettings, MainShell mainShell) {
-		Webcam objWebcam;
-		boolean blnWebcam = false;
-		objWebcam = overRide.getWebcam();
-		try {
-			if (objWebcam != null) {
-				blnWebcam = true;
-			} else {
-				if (objCurrPage.getWebcamCount() > 0) {
-					for (int i2 = 0; i2 < objCurrPage.getWebcamCount(); i2++) {
-						objWebcam = objCurrPage.getWebcam(i2);
-						if (objWebcam.canShow(guide.getFlags())) {
-							blnWebcam = true;
-							break;
-						}
-					}
-				}
-			}
-			if (blnWebcam) {
-				mainShell.showWebcam();
-			}
-		} catch (Exception e1) {
-			logger.trace("displayPage Webcam Exception " + e1.getLocalizedMessage());
-		}
-
-		if (blnWebcam) {
+	private Webcam getWebcam(Page objCurrPage, Guide guide, AppSettings appSettings,
+			MainShell mainShell) {
+		Webcam objWebcam = overRide.getWebcam();
+		if (objWebcam != null) {
 			return objWebcam;
-		} else {
-			return null;
 		}
+
+		for (Webcam webcam : objCurrPage.getWebcams()) {
+			if (webcam.canShow(guide.getFlags())) {
+				return webcam;
+			}
+		}
+
+		return null;
 
 	}
 
-	private String ProcessImage(Page objCurrPage, String fileSeparator, AppSettings appSettings,
-			Guide guide, MainShell mainShell) {
+	private String getImage(Page objCurrPage, AppSettings appSettings, Guide guide,
+			MainShell mainShell) {
 		// if there is an image over ride from javascript use it
-		boolean blnImage = false;
 		String strImage = overRide.getImage();
-		String imgPath = "";
-		String imgName = "";
-		Image objImage;
-		if (!strImage.equals("")) {
-			File flImage = new File(strImage);
-			if (flImage.exists()) {
-				imgPath = strImage;
-				blnImage = true;
-			}
-			if (!blnImage) {
-				imgPath = comonFunctions.getMediaFullPath(strImage, fileSeparator, appSettings,
-						guide);
-				flImage = new File(imgPath);
-				if (flImage.exists()) {
-					blnImage = true;
-				}
-			}
+		strImage = mainShell.cookImage(strImage);
+		if (strImage != null) {
+			return strImage;
 		}
-		if (!blnImage && (objCurrPage.getImageCount() > 0)) {
-			for (int i2 = 0; i2 < objCurrPage.getImageCount(); i2++) {
-				objImage = objCurrPage.getImage(i2);
-				if (objImage.canShow(guide.getFlags())) {
-					strImage = objImage.getId();
-					File flImage = new File(strImage);
-					if (flImage.exists()) {
-						imgPath = strImage;
-						blnImage = true;
-					}
-					if (!blnImage) {
-						imgPath = comonFunctions.getMediaFullPath(strImage, fileSeparator,
-								appSettings, guide);
-						flImage = new File(imgPath);
-						if (flImage.exists()) {
-							blnImage = true;
-							break;
-						}
-					}
-				}
-			}
 
-		}
-		if (blnImage) {
-			try {
-				mainShell.setImage(imgPath);
-			} catch (Exception e1) {
-				logger.error("displayPage Image Exception " + e1.getLocalizedMessage(), e1);
-				mainShell.clearImage();
+		for (Image img : objCurrPage.getImages()) {
+			if (img.canShow(guide.getFlags())) {
+				strImage = mainShell.cookImage(img.getId());
+				if (strImage != null) {
+					return strImage;
+				}
 			}
 		}
-		imgName = new File(imgPath).getName();
-		if (blnImage) {
-			return imgName;
-		} else {
-			return "";
-		}
+
+		return null;
 	}
 
-	private void processLeftText(Page objCurrPage, String fileSeparator, AppSettings appSettings,
-			Guide guide, MainShell mainShell, UserSettings userSettings) {
+	private void processLeftText(Page objCurrPage, AppSettings appSettings, Guide guide,
+			MainShell mainShell, UserSettings userSettings) {
 		// Replace any string pref in the HTML with the user preference
 		// they are encoded #prefName#
 		try {
@@ -505,69 +418,23 @@ public class MainLogic {
 
 			// Media Directory
 			String mediaPath;
-			mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
+			mediaPath = comonFunctions.getMediaFullPath("", appSettings.getFileSeparator(),
+					appSettings, guide);
 			displayText = displayText.replace(MEDIA_PATH_PLACEHOLDER, mediaPath);
 
 			displayText = comonFunctions.substituteTextVars(displayText, guide.getSettings(),
 					userSettings);
 
-			mainShell.setLeftText(displayText, overRide.getRightCss());
+			mainShell.setLeftPaneText(displayText, overRide.getRightCss());
 		} catch (Exception e) {
 			logger.error("displayPage BrwsText Exception " + e.getLocalizedMessage(), e);
-			mainShell.setLeftText("", "");
+			mainShell.setLeftPaneText("", "");
 		}
 
 	}
 
-	private void processLeftTextOverRide(String fileSeparator, AppSettings appSettings, Guide guide,
+	private void processRightPanel(Page objCurrPage, AppSettings appSettings, Guide guide,
 			MainShell mainShell, UserSettings userSettings) {
-		if (!overRide.getLeftHtml().equals("")) {
-			String leftHtml = overRide.getLeftHtml();
-			// Media Directory
-			try {
-				String mediaPath;
-				mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
-				mediaPath = mediaPath.replace("\\", "/");
-				leftHtml = leftHtml.replace(MEDIA_PATH_PLACEHOLDER, mediaPath);
-			} catch (Exception e) {
-				logger.error("displayPage Over ride lefthtml Media Directory Exception "
-						+ e.getLocalizedMessage(), e);
-			}
-
-			// Guide CSS Directory
-			try {
-				leftHtml = leftHtml.replace("\\GuideCSS\\", guide.getCss());
-			} catch (Exception e) {
-				logger.error("displayPage Over ride lefthtml Guide CSS Exception "
-						+ e.getLocalizedMessage(), e);
-			}
-
-			mainShell.setleftPaneHtml(leftHtml);
-		} else {
-			// Left text
-			// Replace any string pref in the HTML with the user preference
-			// they are encoded #prefName#
-			try {
-				String displayText = overRide.getLeftBody();
-				// Media Directory
-				String mediaPath;
-				mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
-				displayText = displayText.replace("\\MediaDir\\", mediaPath);
-
-				displayText = comonFunctions.substituteTextVars(displayText, guide.getSettings(),
-						userSettings);
-
-				mainShell.setLeftText(displayText, overRide.getLeftCss());
-			} catch (Exception e) {
-				logger.error("displayPage BrwsText Exception " + e.getLocalizedMessage(), e);
-				mainShell.setLeftText("", "");
-			}
-		}
-
-	}
-
-	private void processRightPanel(Page objCurrPage, String fileSeparator, AppSettings appSettings,
-			Guide guide, MainShell mainShell, UserSettings userSettings) {
 		GuideSettings guideSettings = guide.getSettings();
 
 		// Replace any string pref in the HTML with the user preference
@@ -591,7 +458,8 @@ public class MainLogic {
 
 			// Media Directory
 			String mediaPath;
-			mediaPath = comonFunctions.getMediaFullPath("", fileSeparator, appSettings, guide);
+			mediaPath = comonFunctions.getMediaFullPath("", appSettings.getFileSeparator(),
+					appSettings, guide);
 			displayText = displayText.replace("\\MediaDir\\", mediaPath);
 
 			if (overRide.getRightHtml().equals("")) {

@@ -14,14 +14,15 @@ import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 
 public class Page {
-	private final String id; //Page Name
-	private final ArrayList<Text> text = new ArrayList<Text>(); //HTML to display
-	private final ArrayList<Text> leftText = new ArrayList<Text>(); //HTML to display in the left pane instead of an image
+	private final String id; // Page Name
+	private final ArrayList<Text> text = new ArrayList<Text>(); // HTML to display
+	private final ArrayList<Text> leftText = new ArrayList<Text>(); // HTML to display in the left
+																	// pane instead of an image
 	private final ArrayList<Button> button = new ArrayList<Button>();
 	private final ArrayList<GlobalButton> globalButton = new ArrayList<GlobalButton>();
 	private final ArrayList<WebcamButton> webcamButton = new ArrayList<WebcamButton>();
 	private final ArrayList<Delay> delay = new ArrayList<Delay>();
-	private final ArrayList<Timer> timer = new ArrayList<Timer>(); 
+	private final ArrayList<Timer> timer = new ArrayList<Timer>();
 	private final ArrayList<Video> video = new ArrayList<Video>();
 	private final ArrayList<Webcam> webcam = new ArrayList<Webcam>();
 	private final ArrayList<Image> image = new ArrayList<Image>();
@@ -31,15 +32,14 @@ public class Page {
 	private final ArrayList<Metronome> metronome = new ArrayList<Metronome>();
 	private String ifSet;
 	private String ifNotSet;
-	private LocalTime ifBefore; //Time of day must be before this time
-	private LocalTime ifAfter; //Time of day must be after this time
+	private LocalTime ifBefore; // Time of day must be before this time
+	private LocalTime ifAfter; // Time of day must be after this time
 	private String set;
 	private String unSet;
 	private String jScript = "";
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private static Logger logger = LogManager.getLogger();
-	
-	
+
 	public Text getLeftText(int txtIndex) {
 		return leftText.get(txtIndex);
 	}
@@ -53,20 +53,21 @@ public class Page {
 	}
 
 	public Page(XMLStreamReader reader) {
-		this.id=getAttributeOrDefaultNoNS(reader, "id", "");
-		this.ifSet=getAttributeOrDefaultNoNS(reader, "if-set", "");
-		this.ifNotSet=getAttributeOrDefaultNoNS(reader, "if-not-set", "");
-		this.set=getAttributeOrDefaultNoNS(reader, "set", "");
-		this.unSet=getAttributeOrDefaultNoNS(reader, "unset", "");
+		this.id = getAttributeOrDefaultNoNS(reader, "id", "");
+		this.ifSet = getAttributeOrDefaultNoNS(reader, "if-set", "");
+		this.ifNotSet = getAttributeOrDefaultNoNS(reader, "if-not-set", "");
+		this.set = getAttributeOrDefaultNoNS(reader, "set", "");
+		this.unSet = getAttributeOrDefaultNoNS(reader, "unset", "");
 		this.ifBefore = getAttributeLocalTime(reader, "if-before");
 		this.ifAfter = getAttributeLocalTime(reader, "if-after");
 	}
-	
+
 	public Page(String id) {
 		this.id = id;
 	}
 
-	public Page(String id, String ifSet, String ifNotSet, String set, String unSet, boolean autoSet, String ifAfter, String ifBefore) {
+	public Page(String id, String ifSet, String ifNotSet, String set, String unSet, boolean autoSet,
+			String ifAfter, String ifBefore) {
 		this.id = id;
 		this.ifSet = ifSet;
 		this.ifNotSet = ifNotSet;
@@ -82,7 +83,7 @@ public class Page {
 		} else {
 			this.ifAfter = LocalTime.parse(ifAfter);
 		}
-		
+
 		if (autoSet) {
 			if (this.set.length() == 0) {
 				this.set = id;
@@ -92,11 +93,9 @@ public class Page {
 		}
 	}
 
-
 	public Button getButton(int butIndex) {
 		return button.get(butIndex);
 	}
-	
 
 	public Button[] getButtons() {
 		return button.toArray(new Button[] {});
@@ -113,7 +112,6 @@ public class Page {
 	public void addWebcamButton(WebcamButton button) {
 		this.webcamButton.add(button);
 	}
-	
 
 	public Delay[] getDelays() {
 		return delay.toArray(new Delay[] {});
@@ -138,12 +136,11 @@ public class Page {
 	public Video getVideo(int vidIndex) {
 		return video.get(vidIndex);
 	}
-	
 
 	public Video[] getVideos() {
 		return video.toArray(new Video[] {});
 	}
-	
+
 	public void addVideo(Video video) {
 		this.video.add(video);
 	}
@@ -151,7 +148,11 @@ public class Page {
 	public Webcam getWebcam(int vidIndex) {
 		return webcam.get(vidIndex);
 	}
-	
+
+	public Webcam[] getWebcams() {
+		return webcam.toArray(new Webcam[] {});
+	}
+
 	public void addWebcam(Webcam webcam) {
 		this.webcam.add(webcam);
 	}
@@ -159,12 +160,11 @@ public class Page {
 	public Image getImage(int imgIndex) {
 		return image.get(imgIndex);
 	}
-	
 
 	public Image[] getImages() {
 		return image.toArray(new Image[] {});
 	}
-	
+
 	public void addImage(Image image) {
 		if (image.getId().isBlank()) {
 			logger.warn("Image without id. Ignoring.");
@@ -176,7 +176,7 @@ public class Page {
 	public LoadGuide getLoadGuide(int guideIndex) {
 		return loadGuide.get(guideIndex);
 	}
-	
+
 	public void addLoadGuide(LoadGuide loadGuide) {
 		if (loadGuide.getGuidePath().isBlank()) {
 			logger.warn("Image without guidePath. Ignoring.");
@@ -188,12 +188,11 @@ public class Page {
 	public Audio getAudio(int audIndex) {
 		return audio.get(audIndex);
 	}
-	
 
 	public Audio[] getAudios() {
 		return audio.toArray(new Audio[] {});
 	}
-	
+
 	public void addAudio(Audio audio) {
 		this.audio.add(audio);
 	}
@@ -205,7 +204,7 @@ public class Page {
 	public Metronome[] getMetronomes() {
 		return metronome.toArray(new Metronome[] {});
 	}
-	
+
 	public void addMetronome(Metronome metronome) {
 		if (!metronome.isValid()) {
 			logger.warn("Invalid metronome. Ignoring.");
@@ -258,11 +257,10 @@ public class Page {
 		boolean retVal = comonFunctions.canShowTime(ifBefore, ifAfter);
 		if (retVal) {
 			String ifNotSetPage = id;
-			if (ifNotSet.length() > 0)
-			{
+			if (ifNotSet.length() > 0) {
 				ifNotSetPage = ifNotSetPage + "+" + ifNotSet;
 			}
-			retVal =  comonFunctions.canShow(setList, ifSet, ifNotSetPage);
+			retVal = comonFunctions.canShow(setList, ifSet, ifNotSetPage);
 		}
 		return retVal;
 	}
@@ -344,7 +342,7 @@ public class Page {
 	public Audio getAudio2(int audIndex) {
 		return audio2.get(audIndex);
 	}
-	
+
 	public void addAudio2(Audio audio) {
 		this.audio2.add(audio);
 	}
@@ -353,23 +351,20 @@ public class Page {
 		return audio2.size();
 	}
 
-	public GlobalButton getGlobalButton(int butIndex)
-	{
+	public GlobalButton getGlobalButton(int butIndex) {
 		return globalButton.get(butIndex);
 	}
 
-	public void addGlobalButton(GlobalButton button)
-	{
+	public void addGlobalButton(GlobalButton button) {
 		globalButton.add(button);
 	}
 
-	public int getGlobalButtonCount()
-	{
+	public int getGlobalButtonCount() {
 		return globalButton.size();
 	}
 
-	public void clearGlobalButtons()
-	{
+	public void clearGlobalButtons() {
 		globalButton.clear();
 	}
+
 }
