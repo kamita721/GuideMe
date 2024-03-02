@@ -463,10 +463,10 @@ public class MainLogic {
 		for (GlobalButton b : objCurrPage.getGlobalButtons()) {
 			switch (b.getAction()) {
 			case ADD:
-				guide.addGlobalButton(b.getId(), b);
+				guide.getSettings().addGlobalButton(b.getId(), b);
 				break;
 			case REMOVE:
-				guide.removeGlobalButton(b.getId());
+				guide.getSettings().removeGlobalButton(b.getId());
 				break;
 			default:
 				logger.error("displayPage Global Button invalid action " + b.getAction());
@@ -476,7 +476,7 @@ public class MainLogic {
 		// remove old buttons
 		mainShell.removeButtons();
 
-		Collections.addAll(button, guide.getGlobalButtons());
+		Collections.addAll(button, guide.getSettings().getGlobalButtons());
 		Collections.addAll(button, overRide.getButtons());
 		Collections.addAll(button, overRide.getWebcamButtons());
 

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,6 +22,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.guideme.model.GlobalButton;
 import org.guideme.guideme.model.Preference;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.util.XMLReaderUtils;
@@ -49,6 +51,7 @@ public class GuideSettings {
 	private HashMap<String, String> formFields;
 	private Map<String, Object> scriptVariables; // variables used by javascript
 	private HashMap<String, Preference> prefs;
+	private HashMap<String, GlobalButton> globalButtons = new HashMap<>();
 	private boolean pageSound;
 	private boolean forceStartPage;
 	private boolean globalScriptLogged;
@@ -265,6 +268,7 @@ public class GuideSettings {
 		formFields = new HashMap<>();
 		scriptVariables = new HashMap<>();
 		prefs = new HashMap<>();
+		globalButtons = new HashMap<>();
 		pageSound = true;
 		forceStartPage = false;
 		globalScriptLogged = false;
@@ -378,7 +382,7 @@ public class GuideSettings {
 
 		}
 	}
-	
+
 	private void saveScriptVariables(Element el, Document doc) {
 
 		logger.trace("GuideSettings saveSettings scriptVariables");
@@ -463,6 +467,21 @@ public class GuideSettings {
 			}
 		}
 	}
+
+
+
+	//TODO
+	private void loadGlobalButtons(Node n) {
+		
+	}
+
+	//TODO
+	private void saveGlobalButtons(Element elGlobalButtons, Document doc) {
+		for(Entry<String, GlobalButton> entry : globalButtons.entrySet()) {
+			Element elButton = comonFunctions.addElement(SettingsNames.GLOBAL_BUTTON,
+					elGlobalButtons, doc);
+		}
+	}
 	
 	public void saveSettings() {
 		try {
@@ -484,15 +503,21 @@ public class GuideSettings {
 			comonFunctions.addElement(SettingsNames.FLAGS, rootElement, doc)
 					.setTextContent(getFlags());
 
-			Element elScriptVariables = comonFunctions.addElement("scriptVariables", rootElement, doc);
+			Element elScriptVariables = comonFunctions.addElement(SettingsNames.SCRIPT_VARIABLES,
+					rootElement, doc);
 			saveScriptVariables(elScriptVariables, doc);
 
-			Element elScope = comonFunctions.addElement("scope", rootElement, doc);
+			Element elScope = comonFunctions.addElement(SettingsNames.SCOPE, rootElement, doc);
 			String strValue = comonFunctions.createSaveObject(scope, "Scope", getGlobalScope());
 			comonFunctions.addCdata(strValue, elScope, doc);
 
-			Element elscriptPreferences = comonFunctions.addElement("scriptPreferences", rootElement, doc);
+			Element elscriptPreferences = comonFunctions
+					.addElement(SettingsNames.SCRIPT_PREFERENCES, rootElement, doc);
 			saveScriptPreferences(elscriptPreferences, doc);
+
+			Element elGlobalButtons = comonFunctions.addElement(SettingsNames.GLOBAL_BUTTONS,
+					rootElement, doc);
+			saveGlobalButtons(elGlobalButtons, doc);
 
 			// write the content into xml file
 			TransformerFactory transformerFactory = XMLReaderUtils.getTransformFactory();
@@ -596,6 +621,34 @@ public class GuideSettings {
 		return globalScope;
 	}
 
+	/**
+	 * Get all global buttons
+	 * 
+	 * @return Global buttons
+	 */
+	public GlobalButton[] getGlobalButtons() {
+		return globalButtons.values().toArray(new GlobalButton[] {});
+	}
+
+	/**
+	 * Adds a new global button
+	 * 
+	 * @param id     ID of button
+	 * @param button Button object
+	 */
+	public void addGlobalButton(String id, GlobalButton button) {
+		globalButtons.put(id, button);
+	}
+
+	/**
+	 * Removes a global button by ID
+	 * 
+	 * @param id ID to remove
+	 */
+	public void removeGlobalButton(String id) {
+		globalButtons.remove(id);
+	}
+
 	private class SettingsNames {
 		public static final String ROOT_ELEMENT = "SETTINGS";
 		public static final String VAR = "Var";
@@ -607,6 +660,15 @@ public class GuideSettings {
 		public static final String SCRIPT_VARIABLES = "scriptVariables";
 		public static final String SCOPE = "scope";
 		public static final String SCRIPT_PREFERENCES = "scriptPreferences";
+		public static final String GLOBAL_BUTTONS = "globalButtons";
+		public static final String GLOBAL_BUTTON = "globalButton";
+		
+	}
+	
+	private class SettingsAttributes{
+		public static final String GLOBAL_BUTTON_ID = "id";
+		public static final String GLOBAL_BUTTON_PLACEMENT = "placement";
+		
 	}
 
 }

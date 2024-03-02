@@ -68,9 +68,6 @@ public class Guide {
 	/** @exclude */
 	private boolean inPrefGuide;
 	/** @exclude */
-	//TODO, this needs to be part of GuideSettings. Otherwise global buttons do not persist:
-	private HashMap<String, GlobalButton> globalButtons = new HashMap<>();
-	/** @exclude */
 	private static Logger logger = LogManager.getLogger();
 	/** @exclude */
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
@@ -379,7 +376,6 @@ public class Guide {
 			css = "";
 			inPrefGuide = false;
 			globaljScript = "";
-			globalButtons = new HashMap<>();
 		} catch (Exception e) {
 			logger.error("Guide reset " + e.getLocalizedMessage(), e);
 		}
@@ -1108,44 +1104,6 @@ public class Guide {
 	 */
 	public String getDataDirectory() {
 		return AppSettings.getAppSettings().getDataDirectory();
-	}
-
-	/**
-	 * Get all global buttons
-	 * 
-	 * @return Global buttons
-	 */
-	public GlobalButton[] getGlobalButtons() {
-		return globalButtons.values().toArray(new GlobalButton[] {});
-	}
-
-	/**
-	 * Get a specific global button
-	 * 
-	 * @param id ID of button
-	 * @return Global button object
-	 */
-	public GlobalButton getGlobalButton(String id) {
-		return globalButtons.get(id);
-	}
-
-	/**
-	 * Adds a new global button
-	 * 
-	 * @param id     ID of button
-	 * @param button Button object
-	 */
-	public void addGlobalButton(String id, GlobalButton button) {
-		globalButtons.put(id, button);
-	}
-
-	/**
-	 * Removes a global button by ID
-	 * 
-	 * @param id ID to remove
-	 */
-	public void removeGlobalButton(String id) {
-		globalButtons.remove(id);
 	}
 
 	public Jscript getJavascriptEngine() {
