@@ -1,0 +1,227 @@
+<model>
+    <attributes>
+        <attribute name="id" type="java.lang.String"/>
+        <attribute name="target" type="java.lang.String"/>
+        <attribute javaName="scriptVar" name="scriptvar" type="java.lang.String"/>
+        <attribute name="image" type="java.lang.String"/>
+        <attribute name="text" textContent="true" type="java.lang.String"/>
+        <attributeSet name="playable">
+            <attribute name="start-at" javaName="startAt" type="java.lang.String"/>
+            <attribute name="stop-at" javaName="stopAt" type="java.lang.String"/>
+            <attribute name="repeat" type="java.lang.String"/>
+            <attribute name="volume" type="int" default="100"/>
+            <attribute javaName="jscript" name="onTriggered" type="java.lang.String"/>
+            <attribute javaName="jScript" name="onclick" type="java.lang.String"/>
+        </attributeSet>
+        <attributeSet name="flagSet">
+            <attribute name="set" type="java.lang.String"/>
+            <attribute name="unSet" type="java.lang.String"/>
+        </attributeSet>
+        <attributeSet name="filterable">
+            <attribute name="if-set" javaName="ifSet" type="java.lang.String"/>
+            <attribute name="if-not-set" javaName="ifNotSet" type="java.lang.String"/>
+            <attribute name="if-before" javaName="ifBefore" type="java.time.LocalTime"/>
+            <attribute name="if-after" javaName="ifAfter" type="java.time.LocalTime"/>
+        </attributeSet>
+        <attributeSet name="Audio">
+            <attribute ref="id"/>
+            <attributeSet ref="playable"/>
+            <attributeSet ref="flagSet"/>
+            <attributeSet ref="filterable"/>
+            <attribute ref="scriptvar"/>
+        </attributeSet>
+        <attributeSet name="Button">
+            <attribute ref="target"/>
+            <attribute ref="id"/>
+            <attributeSet ref="flagSet"/>
+            <attributeSet ref="filterable"/>
+            <attribute ref="onclick"/>
+            <attribute ref="image"/>
+            <attribute name="hotkey" type="java.lang.String"/>
+            <attribute ref="scriptvar"/>
+            <attribute name="fontName" type="java.lang.String"/>
+            <attribute name="fontHeight" type="int" default="0"/>
+            <attribute name="fontColor" type="org.eclipse.swt.graphics.Color" default="comonFunctions.getSwtColor(SWT.COLOR_BLACK)"/>
+            <attribute name="bgColor1" type="org.eclipse.swt.graphics.Color" default="comonFunctions.getSwtColor(SWT.COLOR_WHITE)"/>
+            <attribute name="bgColor2" type="org.eclipse.swt.graphics.Color" default="comonFunctions.getSwtColor(SWT.COLOR_BLACK)"/>
+            <attribute name="sortOrder" type="int" default="1"/>
+            <attribute name="disabled" type="boolean" default="false"/>
+            <attribute javaName="defaultBtn" name="default" type="boolean" default="true"/>
+        </attributeSet>
+        <attributeSet name="Text">
+            <attributeSet ref="filterable"/>
+            <attribute ref="text"/>
+        </attributeSet>
+    </attributes>
+
+    <elements>
+        <element name="Tease" callback="TeaseHandler.handle({}, chapter, guideSettings)">
+            <attribute name="minimumVersion" type="java.lang.String" />
+        </element>
+
+        <element name="pref" callback="PrefHandler.handle({}, guideSettings)">
+            <attribute name="key" type="java.lang.String" />
+            <attribute name="type" type="java.lang.String" />
+            <attribute name="sortOrder" type="java.lang.String" />
+            <attribute name="screen" type="java.lang.String" />
+            <attribute name="value" type="java.lang.String" />
+        </element>
+
+        <element name="Title" callback="guide.setTitle({}.getText())">
+            <attribute ref="text"/>
+        </element>
+
+        <element name="Author" callback="AuthorHandler.handle({}, guide)">
+            <element name="Name" callback="">
+                <attribute ref="text"/>
+            </element>
+        </element>
+
+        <element name="MediaDirectory" callback="guide.setMediaDirectory({}.getText())">
+            <attribute ref="text"/>
+        </element>
+
+        <element name="Settings" callback="SettingsHandler.handle({}, guide, guideSettings)">
+            <element name="AutoSetPageWhenSeen" callback="">
+                <attribute name="value" type="boolean" default="true" textContent="true"/>
+            </element>
+            <element name="PageSound" callback="">
+                <attribute name="value" type="boolean" default="true" textContent="true"/>
+            </element>
+            <element name="ForceStartPage" callback="">
+                <attribute name="value" type="boolean" default="false" textContent="true"/>
+            </element>
+            <element name="ConvertArgumentTypes" callback="">
+                <attribute name="value" type="boolean" default="false" textContent="true"/>
+            </element>
+        </element>
+
+        <element name="Page" callback="parseState.setPage({});\ndebugShell.addPagesCombo(parseState.getPage())">
+            <attribute ref="id"/>
+            <attributeSet ref="filterable"/>
+            <attributeSet ref="flagSet"/>
+        </element>
+
+        <element name="Metronome" callback="page.addMetronome({})">
+            <attributeSet ref="filterable"/>
+            <attribute name="bpm" type="java.lang.String"/>
+            <attribute name="rythm" type="java.lang.String"/>
+            <attribute name="beats" javaName="resolutions" type="int" default="4"/>
+            <attribute name="loops" type="int" default="-1"/>
+        </element>
+        
+        <element name="Image" callback="page.addImage({})">
+            <attribute ref="id"/>
+            <attributeSet ref="filterable"/>
+        </element>
+
+        <element name="Audio" callback="page.addAudio({})">
+            <attributeSet ref="Audio"/>
+        </element>
+
+        <element name="Audio2" callback="page.addAudio2({})">
+            <attributeSet ref="Audio"/>
+        </element>
+
+        <element name="Video" callback="page.addVideo({})">
+            <attribute ref="target"/>
+            <attribute ref="id"/>
+            <attributeSet ref="playable"/>
+            <attributeSet ref="filterable"/>
+            <attributeSet ref="flagSet"/>
+            <attribute ref="onTriggered"/>
+            <attribute ref="scriptvar"/>
+        </element>
+
+        <element name="Webcam" callback="page.addWebcam({})">
+            <attributeSet ref="filterable"/>
+        </element>
+
+        <element name="Delay" callback="page.addDelay({})">
+            <attributeSet ref="filterable"/>
+            <attributeSet ref="flagSet"/>
+            <attribute ref="target"/>
+            <attribute name="seconds" type="java.lang.String"/>
+            <attribute name="start-with" javaName="startWith" type="int" default="0"/>
+            <attribute name="style" type="java.lang.String"/>
+            <attribute ref="onTriggered"/>
+            <attribute ref="scriptvar"/>
+        </element>
+
+        <element name="Timer" callback="page.addTimer({})">
+            <attribute ref="target"/>
+            <attribute ref="onTriggered"/>
+            <attribute ref="id"/>
+            <attribute ref="target"/>
+            <attribute name="imageId" type="java.lang.String"/> 
+            <attributeSet ref="filterable"/>
+            <attributeSet ref="flagSet"/>
+            <attribute ref="text"/>
+        </element>
+
+        <element name="Button" callback="page.addButton({})">
+            <attributeSet ref="Button"/>
+            <attribute ref="text"/>
+        </element>
+
+        <element name="GlobalButton" callback="page.addGlobalButton({})">
+            <attributeSet ref="Button"/>
+            <attribute name="Placement" type="org.guideme.guideme.model.ButtonPlacement" default="bottom"/>
+            <attribute name="action" type="org.guideme.guideme.model.ButtonAction" default="none"/>
+        </element>
+
+        <element name="WebcamButton" callback="page.addWebcamButton({})">
+            <attributeSet ref="Button"/>
+            <attribute name="file" javaName="destination" type="java.lang.String"/>"
+            <attribute name="type" type="java.lang.String" default="Capture"/>
+        </element>
+
+        <element name="LeftText" callback="page.addText({})">
+            <attributeSet ref="Text"/>
+            <attribute ref="text"/>
+        </element>
+        <element name="Text" callback="page.addText({})">
+            <attributeSet ref="Text"/>
+            <attribute ref="text"/>
+        </element>
+
+        <element name="javascript" callback="page.setjScript({}.getText())">
+            <attribute ref="text"/>
+        </element>
+
+        <element name="GlobalJavascript" callback="guide.appendGlobaljScript({}.getText())">
+            <attribute ref="text"/>
+        </element>
+
+        <element name="CSS" callback="guide.setCss({}.getText())">
+            <attribute ref="text"/>
+        </element>
+
+        <element name="Include" callback="handleInclude({}, appSettings, guide, presName, chapter, debugShell)">
+            <attribute name="file" type="java.lang.String"/>
+        </element>
+
+        <element name="LoadGuide" callback="page.addLoadGuide({})">
+            <attribute name="guidePath" type="java.lang.String"/>
+            <attribute ref="target"/>
+            <attribute name="return-target" javaName="returnTarget" type="java.lang.String"/>
+            <attribute name="preScript" type="java.lang.String"/>
+            <attribute name="postScript" type="java.lang.String"/>
+            <attributeSet ref="filterable"/>
+        </element>
+
+        <!--
+            If we were smarter, our parser would recognize the pages element. Instead, it simply ignore it, and assumes that any Page element is correct,
+            weather it is under Pages or not.
+            We inherited this behaviour, so must maintain it for compatability.
+            The element is here just for completeness. We must still be aware of it so we do not emit any warnings when we encounter it.
+        -->
+        <element name="Pages" callback=""/>
+
+        <!--
+        NOVALUE is intended to be an internal sentinal value. However, the codebase we inherited exposed it as something that guides could include, so we must
+        be prepared to deal with them.
+        -->
+        <element name="NOVALUE" callback=""/>
+    </elements>
+</model>

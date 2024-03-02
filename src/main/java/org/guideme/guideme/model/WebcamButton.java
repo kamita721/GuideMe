@@ -6,8 +6,8 @@ import static org.guideme.guideme.util.XMLReaderUtils.getAttributeOrDefaultNoNS;
 
 public class WebcamButton extends Button {
 	
-	private String _type;
-	private String _destination;
+	private String type;
+	private String destination;
 	
 	public WebcamButton(XMLStreamReader reader) throws XMLStreamException {
 		super(reader);
@@ -34,25 +34,25 @@ public class WebcamButton extends Button {
 		{
 			case "capture":
 			default:
-				_type = "Capture";
+				type = "Capture";
 				break;
 		}
-		_destination = destination;
+		destination = destination;
 	}
 	
 	
 	public String get_type() {
-		return _type;
+		return type;
 	}
 	public void set_type(String _type) {
-		this._type = _type;
+		this.type = _type;
 	}
 
 	public String get_destination() {
-		return _destination;
+		return destination;
 	}
 	public void set_destination(String _destination) {
-		this._destination = _destination;
+		this.destination = _destination;
 	}
 
 }

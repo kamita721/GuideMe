@@ -114,7 +114,9 @@ public class XmlGuideReader {
 			case XMLStreamConstants.END_DOCUMENT:
 				break;
 			case XMLStreamConstants.START_ELEMENT:
-				page = handleElement(reader, chapter, guideSettings, guide, page, appSettings, presName, debugShell);
+				ParserState parserState = new ParserState(reader, chapter, guideSettings, guide, page, appSettings, presName, debugShell);
+				parseElement(parserState);
+				page = parserState.getPage();
 				break;
 			case XMLStreamConstants.END_ELEMENT:
 				if (reader.getName().getLocalPart().equals("Page")) {
@@ -137,16 +139,23 @@ public class XmlGuideReader {
 		}
 	}
 
-	private static Page handleElement(XMLStreamReader reader, Chapter chapter, GuideSettings guideSettings, Guide guide,
-			Page page, AppSettings appSettings, String presName, DebugShell debugShell)
+	private static void parseElement(ParserState parseState)
 			throws XMLStreamException, IOException {
+		XMLStreamReader reader = parseState.getReader();
+		Chapter chapter = parseState.getChapter();
+		GuideSettings guideSettings = parseState.getGuideSettings();
+		Guide guide = parseState.getGuide();
+		Page page = parseState.getPage();
+		DebugShell debugShell = parseState.getDebugShell();
+		AppSettings appSettings = parseState.getAppSettings();
+		String presName = parseState.getPresName();
+		
 		String sTagName = reader.getName().getLocalPart();
 		TagName tagName = TagName.toTag(sTagName);
 		if(tagName == null) {
 			logger.warn("Unhandled tag '{}' at location \n{}", sTagName, reader.getLocation());
 			/* Consume data until we are at the end of the unused tag*/
 			XMLReaderUtils.getStringContentUntilElementEnd(reader);
-			return page;
 		}
 		
 		switch (tagName) {
@@ -201,6 +210,7 @@ public class XmlGuideReader {
 		case Page:
 			page = new Page(reader);
 			debugShell.addPagesCombo(page.getId());
+			parseState.setPage(page);
 			break;
 		case Settings:
 			SettingsHandler.handle(reader, guide, guideSettings);
@@ -232,7 +242,6 @@ public class XmlGuideReader {
 			XMLReaderUtils.getStringContentUntilElementEnd(reader);
 			break;
 		}
-		return page;
 	}
 
 	public static String processText(XMLStreamReader reader) throws XMLStreamException {
