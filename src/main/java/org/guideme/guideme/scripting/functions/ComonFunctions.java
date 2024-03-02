@@ -15,7 +15,6 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -300,7 +299,7 @@ public class ComonFunctions {
 			logger.error(e.getLocalizedMessage(), e);
 		}
 	}
-	
+
 	public String getFlags(List<String> setList) {
 		StringBuilder strFlags = new StringBuilder();
 		try {
@@ -813,7 +812,8 @@ public class ComonFunctions {
 				Object[] propIds = ScriptableObject.getPropertyIds((Scriptable) objPassed);
 				for (Object propId : propIds) {
 					String key = propId.toString();
-					String value = ScriptableObject.getProperty((Scriptable) objPassed, key).toString();
+					String value = ScriptableObject.getProperty((Scriptable) objPassed, key)
+							.toString();
 					returnVal.append(key);
 					returnVal.append(": ");
 					returnVal.append(value);
@@ -956,7 +956,8 @@ public class ComonFunctions {
 
 		logger.debug("CommonFunctions ListGuides {}", dataDirectory);
 		File file = new File(dataDirectory);
-		String[] filesList = file.list((current, name) -> new File(current, name).isFile() && name.endsWith(".xml"));
+		String[] filesList = file
+				.list((current, name) -> new File(current, name).isFile() && name.endsWith(".xml"));
 
 		for (int i = 0; i < filesList.length; i++) {
 			String errorFile = filesList[i];
@@ -979,7 +980,8 @@ public class ComonFunctions {
 			if (!Files.exists(thumbf) || !Files.exists(titlef)) {
 				try {
 					XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-					inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+					inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES,
+							false);
 					InputStream in = new FileInputStream(fileName);
 					XMLStreamReader streamReader = inputFactory.createXMLStreamReader(in);
 					while (streamReader.hasNext()) {
@@ -1002,8 +1004,8 @@ public class ComonFunctions {
 								if (image == null)
 									image = "";
 								if (!image.contains("*") && image.endsWith(".jpg")) {
-									File fileCheck = new File(
-											dataDirectory + fileSeparator + media + fileSeparator + image);
+									File fileCheck = new File(dataDirectory + fileSeparator + media
+											+ fileSeparator + image);
 									if (fileCheck.isFile() && fileCheck.length() > 10000) {
 										foundimage = true;
 									}
@@ -1050,8 +1052,8 @@ public class ComonFunctions {
 							newHeight = (int) (thumb * factor);
 						}
 
-						BufferedImage imageNew = Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC, newWidth,
-								newHeight, Scalr.OP_ANTIALIAS);
+						BufferedImage imageNew = Scalr.resize(img, Scalr.Method.QUALITY,
+								Scalr.Mode.AUTOMATIC, newWidth, newHeight, Scalr.OP_ANTIALIAS);
 						File outputfile = new File(tumbFileName);
 						ImageIO.write(imageNew, "jpg", outputfile);
 						image = tumbFileName;
@@ -1104,7 +1106,8 @@ public class ComonFunctions {
 		return getRandomFile(wildcard, strSubDir, fullPath, guideMediaDirectory);
 	}
 
-	public String getRandomFile(String wildcard, String strSubDir, boolean fullPath, String guideMediaDirectory) {
+	public String getRandomFile(String wildcard, String strSubDir, boolean fullPath,
+			String guideMediaDirectory) {
 		String mediaFound = "";
 		AppSettings appSettings = AppSettings.getAppSettings();
 		String fileSeparator = appSettings.getFileSeparator();
@@ -1292,7 +1295,8 @@ public class ComonFunctions {
 		try {
 			java.awt.Color c = java.awt.Color.decode(hexString);
 
-			return new org.eclipse.swt.graphics.Color(display, c.getRed(), c.getGreen(), c.getBlue());
+			return new org.eclipse.swt.graphics.Color(display, c.getRed(), c.getGreen(),
+					c.getBlue());
 		} catch (NumberFormatException e) {
 			return null;
 		}
@@ -1306,7 +1310,8 @@ public class ComonFunctions {
 		this.display = display;
 	}
 
-	public String getMediaFullPath(String mediaFile, String fileSeparator, AppSettings appSettings, Guide guide) {
+	public String getMediaFullPath(String mediaFile, String fileSeparator, AppSettings appSettings,
+			Guide guide) {
 		String mediaFound = "";
 		String dataDirectory;
 		String prefix = "";
@@ -1317,9 +1322,11 @@ public class ComonFunctions {
 			if (dataDirectory.startsWith("/")) {
 				prefix = "/";
 			}
-			dataDirectory = prefix + comonFunctions.fixSeparator(appSettings.getDataDirectory(), fileSeparator);
+			dataDirectory = prefix
+					+ comonFunctions.fixSeparator(appSettings.getDataDirectory(), fileSeparator);
 		}
-		String mediaDirectory = comonFunctions.fixSeparator(guide.getMediaDirectory(), fileSeparator);
+		String mediaDirectory = comonFunctions.fixSeparator(guide.getMediaDirectory(),
+				fileSeparator);
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = comonFunctions.fixSeparator(mediaFile, fileSeparator);
@@ -1327,7 +1334,8 @@ public class ComonFunctions {
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
-			strSubDir = comonFunctions.fixSeparator(media.substring(0, intSubDir + 1), fileSeparator);
+			strSubDir = comonFunctions.fixSeparator(media.substring(0, intSubDir + 1),
+					fileSeparator);
 			media = media.substring(intSubDir + 1);
 		} else {
 			strSubDir = "";
@@ -1349,7 +1357,8 @@ public class ComonFunctions {
 		return mediaFound;
 	}
 
-	public String substituteTextVars(String inString, GuideSettings guideSettings, UserSettings userSettings) {
+	public String substituteTextVars(String inString, GuideSettings guideSettings,
+			UserSettings userSettings) {
 		String retString = inString;
 		// Script Variables
 		Set<String> set = guideSettings.getScriptVariables().keySet();
@@ -1362,7 +1371,8 @@ public class ComonFunctions {
 					retString = retString.replace("<span>" + s + "</span>", varValue);
 				}
 			} catch (Exception e) {
-				logger.error("displayPage BrwsText ScriptVariables Exception " + s + " " + e.getLocalizedMessage(), e);
+				logger.error("displayPage BrwsText ScriptVariables Exception " + s + " "
+						+ e.getLocalizedMessage(), e);
 			}
 		}
 
@@ -1374,16 +1384,16 @@ public class ComonFunctions {
 			try {
 				type = guideSettings.getPrefType(s);
 				if (type.equals("String")) {
-					retString = retString.replace("<span>" + s + "</span>", guideSettings.getPref(s));
+					retString = retString.replace("<span>" + s + "</span>",
+							guideSettings.getPref(s));
 				}
 				if (type.equals("Number")) {
 					numberRet = formatNumPref(guideSettings.getPrefNumber(s));
 					retString = retString.replace("<span>" + s + "</span>", numberRet);
 				}
 			} catch (Exception e) {
-				logger.error(
-						"displayPage BrwsText String Guide Preferences Exception " + s + " " + e.getLocalizedMessage(),
-						e);
+				logger.error("displayPage BrwsText String Guide Preferences Exception " + s + " "
+						+ e.getLocalizedMessage(), e);
 			}
 		}
 
@@ -1393,9 +1403,8 @@ public class ComonFunctions {
 			try {
 				retString = retString.replace("<span>" + s + "</span>", userSettings.getPref(s));
 			} catch (Exception e) {
-				logger.error(
-						"displayPage BrwsText String User Preferences Exception " + s + " " + e.getLocalizedMessage(),
-						e);
+				logger.error("displayPage BrwsText String User Preferences Exception " + s + " "
+						+ e.getLocalizedMessage(), e);
 			}
 		}
 
@@ -1403,11 +1412,11 @@ public class ComonFunctions {
 		set = userSettings.getNumberKeys();
 		for (String s : set) {
 			try {
-				retString = retString.replace("<span>" + s + "</span>", formatNumPref(userSettings.getPrefNumber(s)));
+				retString = retString.replace("<span>" + s + "</span>",
+						formatNumPref(userSettings.getPrefNumber(s)));
 			} catch (Exception e) {
-				logger.error(
-						"displayPage BrwsText Number User Preferences Exception " + s + " " + e.getLocalizedMessage(),
-						e);
+				logger.error("displayPage BrwsText Number User Preferences Exception " + s + " "
+						+ e.getLocalizedMessage(), e);
 			}
 		}
 		return retString;
@@ -1495,8 +1504,9 @@ public class ComonFunctions {
 			GC gc = new GC(newImage);
 			int cropWidth = originalImage.getBounds().width - width;
 
-			gc.drawImage(originalImage, (cropWidth / 2), 0, originalImage.getBounds().width - cropWidth,
-					originalImage.getBounds().height, 0, 0, width, height);
+			gc.drawImage(originalImage, (cropWidth / 2), 0,
+					originalImage.getBounds().width - cropWidth, originalImage.getBounds().height,
+					0, 0, width, height);
 			gc.dispose();
 		} catch (Exception ex) {
 			logger.error("cropImageWidth " + ex.getLocalizedMessage(), ex);
@@ -1598,7 +1608,8 @@ public class ComonFunctions {
 			XMLStreamReader streamReader = inputFactory.createXMLStreamReader(in);
 			boolean foundmedia = false;
 			while (streamReader.hasNext()) {
-				if (streamReader.isStartElement() && (streamReader.getLocalName().equals("MediaDirectory"))) {
+				if (streamReader.isStartElement()
+						&& (streamReader.getLocalName().equals("MediaDirectory"))) {
 					media = streamReader.getElementText().trim();
 					foundmedia = true;
 				}
@@ -1617,9 +1628,11 @@ public class ComonFunctions {
 		ColorModel colorModel = null;
 		PaletteData palette = data.palette;
 		if (palette.isDirect) {
-			colorModel = new DirectColorModel(data.depth, palette.redMask, palette.greenMask, palette.blueMask);
+			colorModel = new DirectColorModel(data.depth, palette.redMask, palette.greenMask,
+					palette.blueMask);
 			BufferedImage bufferedImage = new BufferedImage(colorModel,
-					colorModel.createCompatibleWritableRaster(data.width, data.height), false, null);
+					colorModel.createCompatibleWritableRaster(data.width, data.height), false,
+					null);
 			for (int y = 0; y < data.height; y++) {
 				for (int x = 0; x < data.width; x++) {
 					int pixel = data.getPixel(x, y);
@@ -1640,12 +1653,14 @@ public class ComonFunctions {
 				blue[i] = (byte) rgb.blue;
 			}
 			if (data.transparentPixel != -1) {
-				colorModel = new IndexColorModel(data.depth, rgbs.length, red, green, blue, data.transparentPixel);
+				colorModel = new IndexColorModel(data.depth, rgbs.length, red, green, blue,
+						data.transparentPixel);
 			} else {
 				colorModel = new IndexColorModel(data.depth, rgbs.length, red, green, blue);
 			}
 			BufferedImage bufferedImage = new BufferedImage(colorModel,
-					colorModel.createCompatibleWritableRaster(data.width, data.height), false, null);
+					colorModel.createCompatibleWritableRaster(data.width, data.height), false,
+					null);
 			WritableRaster raster = bufferedImage.getRaster();
 			int[] pixelArray = new int[1];
 			for (int y = 0; y < data.height; y++) {
@@ -1662,8 +1677,8 @@ public class ComonFunctions {
 	public static ImageData convertToSWT(BufferedImage bufferedImage) {
 		if (bufferedImage.getColorModel() instanceof DirectColorModel) {
 			DirectColorModel colorModel = (DirectColorModel) bufferedImage.getColorModel();
-			PaletteData palette = new PaletteData(colorModel.getRedMask(), colorModel.getGreenMask(),
-					colorModel.getBlueMask());
+			PaletteData palette = new PaletteData(colorModel.getRedMask(),
+					colorModel.getGreenMask(), colorModel.getBlueMask());
 			ImageData data = new ImageData(bufferedImage.getWidth(), bufferedImage.getHeight(),
 					colorModel.getPixelSize(), palette);
 			WritableRaster raster = bufferedImage.getRaster();
@@ -1671,7 +1686,8 @@ public class ComonFunctions {
 			for (int y = 0; y < data.height; y++) {
 				for (int x = 0; x < data.width; x++) {
 					raster.getPixel(x, y, pixelArray);
-					int pixel = palette.getPixel(new RGB(pixelArray[0], pixelArray[1], pixelArray[2]));
+					int pixel = palette
+							.getPixel(new RGB(pixelArray[0], pixelArray[1], pixelArray[2]));
 					data.setPixel(x, y, pixel);
 				}
 			}
@@ -1707,7 +1723,8 @@ public class ComonFunctions {
 	}
 
 	public BufferedImage dropAlphaChannel(BufferedImage src) {
-		BufferedImage convertedImg = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_RGB);
+		BufferedImage convertedImg = new BufferedImage(src.getWidth(), src.getHeight(),
+				BufferedImage.TYPE_INT_RGB);
 		convertedImg.getGraphics().drawImage(src, 0, 0, null);
 
 		return convertedImg;
@@ -1722,89 +1739,60 @@ public class ComonFunctions {
 	}
 
 	public Object getSavedObject(String attribute, String strType, Scriptable scope) {
-		Object returned;
-
-		returned = attribute;
 
 		ContextFactory cntxFact = new ContextFactory();
-		Context context = cntxFact.enterContext();
-		context.setOptimizationLevel(-1);
-		context.getWrapFactory().setJavaPrimitiveWrap(false);
+		try (Context context = cntxFact.enterContext()) {
+			context.setOptimizationLevel(-1);
+			context.getWrapFactory().setJavaPrimitiveWrap(false);
 
-		if (strType.equals("Scope")) {
-			try {
+			byte[] decodedBytes;
+
+			switch (strType) {
+			case "Scope":
 				logger.trace("GuideSettings getSavedObject scope");
-				byte[] decodedBytes = Base64.decodeBase64(attribute.getBytes());
-				ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
-				ObjectInputStream oInputStream = new ScriptableInputStream(bis, scope);
-				Scriptable readObject = (Scriptable) oInputStream.readObject();
-				oInputStream.close();
-				returned = readObject;
-			} catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
-			}
-
-		}
-
-		if (strType.equals("org.mozilla.javascript.NativeArray")) {
-			try {
+				decodedBytes = Base64.decodeBase64(attribute.getBytes());
+				try (ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
+						ScriptableInputStream sis = new ScriptableInputStream(bis, scope)) {
+					return sis.readObject();
+				}
+			case "org.mozilla.javascript.NativeArray":
 				logger.trace("GuideSettings getSavedObject NativeArray");
-				byte[] decodedBytes = Base64.decodeBase64(attribute.getBytes());
-				ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
-				ObjectInputStream oInputStream = new ScriptableInputStream(bis, scope);
-				NativeArray readObject = (NativeArray) ScriptValueConverter.wrapValue(scope, oInputStream.readObject());
-				oInputStream.close();
-				returned = readObject;
-			} catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
-			}
-
-		}
-
-		if (strType.equals("org.mozilla.javascript.NativeObject")) {
-			try {
+				decodedBytes = Base64.decodeBase64(attribute.getBytes());
+				try (ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
+						ScriptableInputStream sis = new ScriptableInputStream(bis, scope)) {
+					return ScriptValueConverter.wrapValue(scope, sis.readObject());
+				}
+			case "org.mozilla.javascript.NativeObject":
 				logger.trace("GuideSettings getSavedObject NativeObject");
-				byte[] decodedBytes = Base64.decodeBase64(attribute.getBytes());
-				ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
-				ObjectInputStream oInputStream = new ScriptableInputStream(bis, scope);
-				NativeObject readObject = (NativeObject) oInputStream.readObject();
-				oInputStream.close();
-				returned = readObject;
-			} catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
-			}
-
-		}
-
-		if (strType.equals("org.mozilla.javascript.NativeDate")) {
-			try {
+				decodedBytes = Base64.decodeBase64(attribute.getBytes());
+				try (ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
+						ScriptableInputStream sis = new ScriptableInputStream(bis, scope)) {
+					return sis.readObject();
+				}
+			case "org.mozilla.javascript.NativeDate":
 				logger.trace("GuideSettings getSavedObject NativeDate");
-				byte[] decodedBytes = Base64.decodeBase64(attribute.getBytes());
-				ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
-				ObjectInputStream oInputStream = new ScriptableInputStream(bis, scope);
-				NativeDate readObject = (NativeDate) oInputStream.readObject();
-				oInputStream.close();
-				returned = readObject;
-			} catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
+				decodedBytes = Base64.decodeBase64(attribute.getBytes());
+				try (ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
+						ScriptableInputStream sis = new ScriptableInputStream(bis, scope)) {
+					return sis.readObject();
+				}
+
+			case "java.lang.Double":
+				logger.trace("GuideSettings getSavedObject Double");
+				Double restoredDouble = Double.parseDouble(attribute);
+				return restoredDouble;
+			case "java.lang.Boolean":
+				logger.trace("GuideSettings getSavedObject Boolean");
+				Boolean restoredBoolean = Boolean.parseBoolean(attribute);
+				return restoredBoolean;
+			default:
+				return attribute;
 			}
 
+		} catch (IOException | ClassNotFoundException e) {
+			logger.warn("Error getting saved object of type {}: '{}'", strType, attribute, e);
+			return null;
 		}
-
-		if (strType.equals("java.lang.Double")) {
-			logger.trace("GuideSettings getSavedObject Double");
-			Double restoredDouble = Double.parseDouble(attribute);
-			returned = restoredDouble;
-		}
-
-		if (strType.equals("java.lang.Boolean")) {
-			logger.trace("GuideSettings getSavedObject Boolean");
-			Boolean restoredBoolean = Boolean.parseBoolean(attribute);
-			returned = restoredBoolean;
-		}
-
-		Context.exit();
-		return returned;
 	}
 
 	public String createSaveObject(Object value, String strType, Scriptable scope) {
@@ -1813,7 +1801,8 @@ public class ComonFunctions {
 			returnVal = value.toString();
 			if (strType.equals("org.mozilla.javascript.NativeArray")
 					|| strType.equals("org.mozilla.javascript.NativeObject")
-					|| strType.equals("org.mozilla.javascript.NativeDate") || strType.equals("Scope")) {
+					|| strType.equals("org.mozilla.javascript.NativeDate")
+					|| strType.equals("Scope")) {
 				try {
 					ContextFactory cntxFact = new ContextFactory();
 					Context cntx = cntxFact.enterContext();
@@ -1882,6 +1871,5 @@ public class ComonFunctions {
 		}
 		return returnVal;
 	}
-
 
 }

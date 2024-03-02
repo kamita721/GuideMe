@@ -39,34 +39,28 @@ public class GuideSettings {
 	 * 
 	 */
 	// State information for xml file, stored in a .state file in xml format
-	private String chapter = ""; // current chapter
-	private String page = "start"; // current page
-	private String currPage = "start"; // current page
-	private String prevPage = "start"; // current page
-	private String flags = ""; // current flags
+	private String chapter; // current chapter
+	private String page; // current page
+	private String currPage; // current page
+	private String prevPage; // current page
+	private String flags; // current flags
 	private String filename; // name of file to store persistent state
 	private String name; // GuideId for these settings
-	private HashMap<String, String> formFields = new HashMap<>();
-	private Map<String, Object> scriptVariables = new HashMap<>(); // variables used by javascript
-	private HashMap<String, Preference> prefs = new HashMap<>();
-	private boolean pageSound = true;
-	private boolean forceStartPage = false;
-	private boolean globalScriptLogged = false;
-	private boolean convertArgumentTypes = false;
+	private HashMap<String, String> formFields;
+	private Map<String, Object> scriptVariables; // variables used by javascript
+	private HashMap<String, Preference> prefs;
+	private boolean pageSound;
+	private boolean forceStartPage;
+	private boolean globalScriptLogged;
+	private boolean convertArgumentTypes;
 	private static Logger logger = LogManager.getLogger();
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private Scriptable scope;
 	private Scriptable globalScope;
 
 	public GuideSettings(String guideId) {
-		super();
+		reset();
 		name = guideId;
-		Element elProp;
-		String key;
-		String value;
-		String type;
-		String desc;
-		int sortOrder;
 		String dataDirectory;
 		AppSettings appSettings = AppSettings.getAppSettings();
 		if (appSettings.isStateInDataDir()) {
@@ -78,127 +72,22 @@ public class GuideSettings {
 			if (dataDirectory.startsWith("/")) {
 				prefix = "/";
 			}
-			dataDirectory = prefix + comonFunctions.fixSeparator(dataDirectory, appSettings.getFileSeparator());
+			dataDirectory = prefix
+					+ comonFunctions.fixSeparator(dataDirectory, appSettings.getFileSeparator());
 			filename = dataDirectory + appSettings.getFileSeparator() + guideId + ".state";
 		}
-		logger.debug("GuideSettings appSettings.getDataDirectory(): {}", appSettings.getDataDirectory());
+		logger.debug("GuideSettings appSettings.getDataDirectory(): {}",
+				appSettings.getDataDirectory());
 		logger.debug("GuideSettings dataDirectory: {}", dataDirectory);
-		logger.debug("GuideSettings appSettings.getFileSeparator(): {}", appSettings.getFileSeparator());
+		logger.debug("GuideSettings appSettings.getFileSeparator(): {}",
+				appSettings.getFileSeparator());
 		logger.debug("GuideSettings GuideId: {}", guideId);
 		logger.debug("GuideSettings filename: {}", filename);
 
-		try {
-			// if a state file already exists use it
-			File xmlFile = new File(filename);
-
-			if (xmlFile.exists()) {
-				DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
-				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-				Document doc = docBuilder.parse(xmlFile);
-				Element rootElement = doc.getDocumentElement();
-				rootElement.normalize();
-
-				Element elPage = comonFunctions.getElement("//Page", rootElement);
-				if (elPage != null) {
-					setPage(elPage.getTextContent());
-				}
-
-				Element elCurrPage = comonFunctions.getElement("//CurrPage", rootElement);
-				if (elCurrPage != null) {
-					setCurrPage(elCurrPage.getTextContent());
-				}
-
-				Element elPrevPage = comonFunctions.getElement("//PrevPage", rootElement);
-				if (elPrevPage != null) {
-					setPrevPage(elPrevPage.getTextContent());
-				}
-
-				Element elFlags = comonFunctions.getElement("//Flags", rootElement);
-				if (elFlags != null) {
-					setFlags(elFlags.getTextContent());
-				}
-
-				logger.trace("GuideSettings scriptVariables");
-				Element elScriptVariables = comonFunctions.getElement("//scriptVariables", rootElement);
-				if (elScriptVariables != null) {
-					NodeList nodeList = elScriptVariables.getElementsByTagName("Var");
-					String strName;
-					String strType;
-					String strValue;
-					Object objValue;
-					for (int i = 0; i < nodeList.getLength(); i++) {
-						Node currentNode = nodeList.item(i);
-						if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element elVar = (Element) currentNode;
-							strName = elVar.getAttribute("id");
-							strType = elVar.getAttribute("type");
-							logger.trace("GuideSettings scriptVariables strName {} strType {}", strName, strType);
-							CharacterData elChar;
-							elChar = (CharacterData) elVar.getFirstChild();
-							if (elChar != null) {
-								strValue = elChar.getData();
-								objValue = comonFunctions.getSavedObject(strValue, strType, getGlobalScope());
-							} else {
-								objValue = null;
-							}
-							scriptVariables.put(strName, objValue);
-
-						}
-					}
-				}
-
-				Element elPrefVariables = comonFunctions.getElement("//scriptPreferences", rootElement);
-				if (elPrefVariables != null) {
-					for (Node childNode = elPrefVariables.getFirstChild(); childNode != null; childNode = childNode
-							.getNextSibling()) {
-						if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-							elProp = (Element) childNode;
-							key = elProp.getAttribute("key");
-							value = elProp.getAttribute("value");
-							type = elProp.getAttribute("type");
-							desc = elProp.getAttribute("screen");
-							sortOrder = XMLReaderUtils.getAttributeOrDefault(elProp, "sortOrder", 0);
-							elProp.getAttribute("sortOrder");
-							if (type.equals("String")) {
-								Preference pref = new Preference(key, type, sortOrder, desc, null, null, value);
-								prefs.put(key, pref);
-							}
-							if (type.equals("Boolean")) {
-								Preference pref = new Preference(key, type, sortOrder, desc,
-										Boolean.parseBoolean(value), null, null);
-								prefs.put(key, pref);
-							}
-							if (type.equals("Number")) {
-								Preference pref = new Preference(key, type, sortOrder, desc, null,
-										Double.parseDouble(value), null);
-								prefs.put(key, pref);
-							}
-						}
-					}
-				}
-
-				logger.trace("GuideSettings scriptVariables scope");
-				Element elScope = comonFunctions.getElement("//scope", rootElement);
-				if (elScope != null) {
-					CharacterData elChar;
-					String strValue;
-					Object objValue;
-					elChar = (CharacterData) elScope.getFirstChild();
-					if (elChar != null) {
-						strValue = elChar.getData();
-						objValue = comonFunctions.getSavedObject(strValue, "Scope", getGlobalScope());
-					} else {
-						objValue = null;
-					}
-					scope = (Scriptable) objValue;
-				}
-			}
-
-		} catch (ParserConfigurationException pce) {
-			logger.error(pce.getLocalizedMessage(), pce);
-		} catch (SAXException | IOException e) {
-			logger.error("Error parsing file: "+ filename+":\n" + e.getLocalizedMessage(), e);
+		if (new File(filename).exists()) {
+			loadSettings(filename);
 		}
+
 		saveSettings();
 	}
 
@@ -365,104 +254,245 @@ public class GuideSettings {
 		return name;
 	}
 
+	public void reset() {
+		chapter = "";
+		page = "start";
+		currPage = "start";
+		prevPage = "start";
+		flags = "";
+		filename = null;
+		name = null;
+		formFields = new HashMap<>();
+		scriptVariables = new HashMap<>();
+		prefs = new HashMap<>();
+		pageSound = true;
+		forceStartPage = false;
+		globalScriptLogged = false;
+		convertArgumentTypes = false;
+		scope = null;
+		globalScope = null;
+	}
+
+	public void loadSettings(String filename) {
+		this.filename = filename;
+
+		Document doc;
+		try {
+			DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			doc = docBuilder.parse(new File(filename));
+		} catch (SAXException | IOException | ParserConfigurationException e) {
+			logger.warn("Error loading guide state {}", filename, e);
+			reset();
+			return;
+		}
+
+		Element rootElement = doc.getDocumentElement();
+		rootElement.normalize();
+		if (!rootElement.getNodeName().equals(SettingsNames.ROOT_ELEMENT)) {
+			logger.warn("Error loading guide state {} because root element is {} not {}", filename,
+					rootElement.getNodeName(), SettingsNames.ROOT_ELEMENT);
+			reset();
+			return;
+
+		}
+		NodeList children = rootElement.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++) {
+			loadSettingsElement(children.item(i));
+		}
+	}
+
+	private void loadSettingsElement(Node n) {
+		switch (n.getNodeType()) {
+		case Node.ELEMENT_NODE:
+			switch (n.getNodeName()) {
+			case SettingsNames.PAGE:
+				setPage(n.getTextContent());
+				break;
+			case SettingsNames.CURR_PAGE:
+				setCurrPage(n.getTextContent());
+				break;
+			case SettingsNames.PREV_PAGE:
+				setPrevPage(n.getTextContent());
+				break;
+			case SettingsNames.FLAGS:
+				setFlags(n.getTextContent());
+				break;
+			case SettingsNames.SCRIPT_VARIABLES:
+				loadScriptVariables(n);
+				break;
+			case SettingsNames.SCOPE:
+				String txtContent = n.getTextContent();
+				if (txtContent.isBlank()) {
+					scope = null;
+				} else {
+					scope = (Scriptable) comonFunctions.getSavedObject(n.getTextContent(), "Scope",
+							getGlobalScope());
+				}
+				break;
+			case SettingsNames.SCRIPT_PREFERENCES:
+				loadScriptPreferences(n);
+				break;
+			default:
+				logger.warn("Unrecognized script state field {} in {}", n.getNodeName(), filename);
+			}
+			break;
+		case Node.COMMENT_NODE:
+			break;
+		default:
+			logger.warn("Unexpected node type ({}) while parsing guide state {}:\n{}",
+					n.getNodeType(), filename);
+			break;
+		}
+	}
+
+	private void loadScriptVariables(Node n) {
+		if (n.getNodeType() != Node.ELEMENT_NODE
+				|| !n.getNodeName().equals(SettingsNames.SCRIPT_VARIABLES)) {
+			throw new IllegalStateException();
+		}
+		NodeList nodeList = n.getChildNodes();
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node currentNode = nodeList.item(i);
+			if (currentNode.getNodeType() != Node.ELEMENT_NODE
+					|| currentNode.getNodeName().equals(SettingsNames.VAR)) {
+				logger.warn(
+						"Unexpected node type {} and name {} inside scriptVariables section of {}",
+						currentNode.getNodeType(), currentNode.getNodeName(), filename);
+				continue;
+			}
+			Element elVar = (Element) currentNode;
+			String strName = elVar.getAttribute("id");
+			String strType = elVar.getAttribute("type");
+			Object objValue;
+			logger.trace("GuideSettings scriptVariables strName {} strType {}", strName, strType);
+			CharacterData elChar;
+			elChar = (CharacterData) elVar.getFirstChild();
+			if (elChar != null) {
+				String strValue = elChar.getData();
+				objValue = comonFunctions.getSavedObject(strValue, strType, getGlobalScope());
+			} else {
+				objValue = null;
+			}
+			scriptVariables.put(strName, objValue);
+
+		}
+	}
+	
+	private void saveScriptVariables(Element el, Document doc) {
+
+		logger.trace("GuideSettings saveSettings scriptVariables");
+		Iterator<String> it = scriptVariables.keySet().iterator();
+		Element elVar;
+		while (it.hasNext()) {
+			String key = it.next();
+			Object value = scriptVariables.get(key);
+			String strType;
+			String strValue;
+			if (value == null) {
+				strType = "Null";
+				strValue = "";
+			} else {
+				strType = value.getClass().getName();
+				strValue = comonFunctions.createSaveObject(value, strType, getGlobalScope());
+			}
+			if (!strValue.equals("ignore")) {
+				elVar = comonFunctions.addElement("Var", el, doc);
+				elVar.setAttribute("id", key);
+				comonFunctions.addCdata(strValue, elVar, doc);
+				elVar.setAttribute("type", strType);
+			}
+		}
+	}
+
+	private void loadScriptPreferences(Node n) {
+		if (n.getNodeType() != Node.ELEMENT_NODE
+				|| !n.getNodeName().equals(SettingsNames.SCRIPT_PREFERENCES)) {
+			throw new IllegalStateException();
+		}
+
+		NodeList nodeList = n.getChildNodes();
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node childNode = nodeList.item(i);
+			if (childNode.getNodeType() != Node.ELEMENT_NODE) {
+				logger.warn("Unexpected node type {} inside scriptVariables section of {}",
+						childNode.getNodeType(), filename);
+				continue;
+			}
+			Element elProp = (Element) childNode;
+			String key = elProp.getAttribute("key");
+			String value = elProp.getAttribute("value");
+			String type = elProp.getAttribute("type");
+			String desc = elProp.getAttribute("screen");
+			int sortOrder = XMLReaderUtils.getAttributeOrDefault(elProp, "sortOrder", 0);
+			elProp.getAttribute("sortOrder");
+			if (type.equals("String")) {
+				Preference pref = new Preference(key, type, sortOrder, desc, null, null, value);
+				prefs.put(key, pref);
+			}
+			if (type.equals("Boolean")) {
+				Preference pref = new Preference(key, type, sortOrder, desc,
+						Boolean.parseBoolean(value), null, null);
+				prefs.put(key, pref);
+			}
+			if (type.equals("Number")) {
+				Preference pref = new Preference(key, type, sortOrder, desc, null,
+						Double.parseDouble(value), null);
+				prefs.put(key, pref);
+			}
+		}
+
+	}
+
+	private void saveScriptPreferences(Element el, Document doc) {
+		for (Map.Entry<String, Preference> entry : prefs.entrySet()) {
+			Preference pref = entry.getValue();
+			Element elPref = comonFunctions.addElement("pref", el, doc);
+			elPref.setAttribute("key", pref.getKey());
+			elPref.setAttribute("screen", pref.getScreenDesc());
+			elPref.setAttribute("type", pref.getType());
+			elPref.setAttribute("sortOrder", String.valueOf(pref.getSortOrder()));
+			if (pref.getType().equals("String")) {
+				elPref.setAttribute("value", pref.getstrValue());
+			}
+			if (pref.getType().equals("Boolean")) {
+				elPref.setAttribute("value", String.valueOf(pref.getBlnValue()));
+			}
+			if (pref.getType().equals("Number")) {
+				elPref.setAttribute("value", String.valueOf(pref.getDblValue()));
+			}
+		}
+	}
+	
 	public void saveSettings() {
 		try {
-			File xmlFile = new File(filename);
 			logger.trace("GuideSettings saveSettings filename: {}", filename);
-			Element rootElement;
-			Document doc;
 
-			// if the file exists then use the current one, otherwise create a new one.
-			// if nodes do not exist it will add them
-			if (xmlFile.exists()) {
-				logger.trace("GuideSettings saveSettings file exists ");
-				DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
-				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-				doc = docBuilder.parse(xmlFile);
-				rootElement = doc.getDocumentElement();
-				rootElement.normalize();
-			} else {
-				logger.trace("GuideSettings saveSettings does not file exist ");
-				DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
-				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-				doc = docBuilder.newDocument();
-				rootElement = doc.createElement("SETTINGS");
-				doc.appendChild(rootElement);
-			}
+			logger.trace("GuideSettings saveSettings does not file exist ");
+			DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("SETTINGS");
+			doc.appendChild(rootElement);
 
-			Element elPage = comonFunctions.getOrAddElement("//Page", "Page", rootElement, doc);
-			elPage.setTextContent(getPage());
+			comonFunctions.addElement(SettingsNames.PAGE, rootElement, doc)
+					.setTextContent(getPage());
+			comonFunctions.addElement(SettingsNames.CURR_PAGE, rootElement, doc)
+					.setTextContent(getCurrPage());
+			comonFunctions.addElement(SettingsNames.PREV_PAGE, rootElement, doc)
+					.setTextContent(getPrevPage());
+			comonFunctions.addElement(SettingsNames.FLAGS, rootElement, doc)
+					.setTextContent(getFlags());
 
-			Element elCurrPage = comonFunctions.getOrAddElement("//CurrPage", "CurrPage", rootElement, doc);
-			elCurrPage.setTextContent(getCurrPage());
+			Element elScriptVariables = comonFunctions.addElement("scriptVariables", rootElement, doc);
+			saveScriptVariables(elScriptVariables, doc);
 
-			Element elPrevPage = comonFunctions.getOrAddElement("//PrevPage", "PrevPage", rootElement, doc);
-			elPrevPage.setTextContent(getPrevPage());
-
-			Element elFlags = comonFunctions.getOrAddElement("//Flags", "Flags", rootElement, doc);
-			elFlags.setTextContent(getFlags());
-
-			Element elScriptVariables = comonFunctions.getElement("//scriptVariables", rootElement);
-			if (elScriptVariables != null) {
-				rootElement.removeChild(elScriptVariables);
-			}
-			elScriptVariables = comonFunctions.addElement("scriptVariables", rootElement, doc);
-
-			logger.trace("GuideSettings saveSettings scriptVariables");
-			Iterator<String> it = scriptVariables.keySet().iterator();
-			Element elVar;
-			while (it.hasNext()) {
-				String key = it.next();
-				Object value = scriptVariables.get(key);
-				String strType;
-				String strValue;
-				if (value == null) {
-					strType = "Null";
-					strValue = "";
-				} else {
-					strType = value.getClass().getName();
-					strValue = comonFunctions.createSaveObject(value, strType, getGlobalScope());
-				}
-				if (!strValue.equals("ignore")) {
-					elVar = comonFunctions.addElement("Var", elScriptVariables, doc);
-					elVar.setAttribute("id", key);
-					comonFunctions.addCdata(strValue, elVar, doc);
-					elVar.setAttribute("type", strType);
-				}
-			}
-
-			Element elScope = comonFunctions.getElement("//scope", rootElement);
-			logger.trace("GuideSettings saveSettings scope");
-
-			if (elScope != null) {
-				rootElement.removeChild(elScope);
-			}
-			elScope = comonFunctions.addElement("scope", rootElement, doc);
+			Element elScope = comonFunctions.addElement("scope", rootElement, doc);
 			String strValue = comonFunctions.createSaveObject(scope, "Scope", getGlobalScope());
 			comonFunctions.addCdata(strValue, elScope, doc);
 
-			Element elscriptPreferences = comonFunctions.getElement("//scriptPreferences", rootElement);
-			if (elscriptPreferences != null) {
-				rootElement.removeChild(elscriptPreferences);
-			}
-			elscriptPreferences = comonFunctions.addElement("scriptPreferences", rootElement, doc);
-			for (Map.Entry<String, Preference> entry : prefs.entrySet()) {
-				Preference pref = entry.getValue();
-				Element elPref = comonFunctions.addElement("pref", elscriptPreferences, doc);
-				elPref.setAttribute("key", pref.getKey());
-				elPref.setAttribute("screen", pref.getScreenDesc());
-				elPref.setAttribute("type", pref.getType());
-				elPref.setAttribute("sortOrder", String.valueOf(pref.getSortOrder()));
-				if (pref.getType().equals("String")) {
-					elPref.setAttribute("value", pref.getstrValue());
-				}
-				if (pref.getType().equals("Boolean")) {
-					elPref.setAttribute("value", String.valueOf(pref.getBlnValue()));
-				}
-				if (pref.getType().equals("Number")) {
-					elPref.setAttribute("value", String.valueOf(pref.getDblValue()));
-				}
-			}
+			Element elscriptPreferences = comonFunctions.addElement("scriptPreferences", rootElement, doc);
+			saveScriptPreferences(elscriptPreferences, doc);
 
 			// write the content into xml file
 			TransformerFactory transformerFactory = XMLReaderUtils.getTransformFactory();
@@ -471,8 +501,7 @@ public class GuideSettings {
 			logger.trace("GuideSettings saveSettings save file: {}", filename);
 			StreamResult result = new StreamResult(new File(filename));
 			transformer.transform(source, result);
-
-		} catch (TransformerException | ParserConfigurationException | SAXException | IOException ex) {
+		} catch (TransformerException | ParserConfigurationException ex) {
 			logger.error(ex.getLocalizedMessage(), ex);
 		}
 	}
@@ -565,6 +594,19 @@ public class GuideSettings {
 			Context.exit();
 		}
 		return globalScope;
+	}
+
+	private class SettingsNames {
+		public static final String ROOT_ELEMENT = "SETTINGS";
+		public static final String VAR = "Var";
+
+		public static final String PAGE = "Page";
+		public static final String CURR_PAGE = "CurrPage";
+		public static final String PREV_PAGE = "PrevPage";
+		public static final String FLAGS = "Flags";
+		public static final String SCRIPT_VARIABLES = "scriptVariables";
+		public static final String SCOPE = "scope";
+		public static final String SCRIPT_PREFERENCES = "scriptPreferences";
 	}
 
 }
