@@ -310,7 +310,7 @@ public class OverRide {
 		buttonThread.hotKey = hotKey;
 		buttonThread.sortOrder = sortOrder;
 		buttonThread.placement = placement;
-		buttonThread.action = GlobalButton.Action.ADD;
+		buttonThread.action = GlobalButtonAction.ADD;
 		Display.getDefault().syncExec(buttonThread);
 	}
 
@@ -332,7 +332,7 @@ public class OverRide {
 		buttonThread.hotKey = "";
 		buttonThread.sortOrder = "";
 		buttonThread.placement = "";
-		buttonThread.action = GlobalButton.Action.REMOVE;
+		buttonThread.action = GlobalButtonAction.REMOVE;
 		Display.getDefault().syncExec(buttonThread);
 	}
 
@@ -349,13 +349,13 @@ public class OverRide {
 		public String hotKey;
 		public String sortOrder;
 		public String placement;
-		public GlobalButton.Action action;
+		public GlobalButtonAction action;
 
 		public void run()
 		{
-			GlobalButton.Placement placement = this.placement.equals("top")
-					? GlobalButton.Placement.TOP
-					: GlobalButton.Placement.BOTTOM;
+			GlobalButtonPlacement placement = this.placement.equals("top")
+					? GlobalButtonPlacement.TOP
+					: GlobalButtonPlacement.BOTTOM;
 			int iSortOrder;
 			try {
 				iSortOrder = Integer.parseInt(sortOrder);

@@ -53,7 +53,8 @@ public class XMLReaderUtils {
 		return ans;
 	}
 
-	public static String getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName, String defaultValue) {
+	public static String getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName,
+			String defaultValue) {
 		String ans = reader.getAttributeValue(null, localName);
 		if (ans == null) {
 			ans = defaultValue;
@@ -61,7 +62,8 @@ public class XMLReaderUtils {
 		return ans;
 	}
 
-	public static int getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName, int defaultValue) {
+	public static int getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName,
+			int defaultValue) {
 		String sAns = reader.getAttributeValue(null, localName);
 		if (sAns == null) {
 			return defaultValue;
@@ -74,7 +76,8 @@ public class XMLReaderUtils {
 		return defaultValue;
 	}
 
-	public static boolean getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName, boolean defaultValue) {
+	public static boolean getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName,
+			boolean defaultValue) {
 		String sAns = reader.getAttributeValue(null, localName);
 		if (sAns == null || sAns.trim().isEmpty()) {
 			return defaultValue;
@@ -92,19 +95,25 @@ public class XMLReaderUtils {
 	}
 
 	public static LocalTime getAttributeLocalTime(XMLStreamReader reader, String localName) {
+		return getAttributeLocalTimeDefaultable(reader, localName, null);
+	}
+
+	public static LocalTime getAttributeLocalTimeDefaultable(XMLStreamReader reader,
+			String localName, LocalTime defaultValue) {
 		String sAns = reader.getAttributeValue(null, localName);
 		if (sAns == null) {
-			return null;
+			return defaultValue;
 		}
 		try {
 			return LocalTime.parse(sAns);
 		} catch (DateTimeException e) {
 			logger.warn("Error parsing time '{}' from xml", sAns, e);
 		}
-		return null;
+		return defaultValue;
 	}
 
-	public static Color getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName, Color defaultValue) {
+	public static Color getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName,
+			Color defaultValue) {
 		String sAns = reader.getAttributeValue(null, localName);
 		if (sAns == null || sAns.equals("")) {
 			return defaultValue;
@@ -117,7 +126,7 @@ public class XMLReaderUtils {
 
 	public static int getAttributeOrDefault(Element e, String attributeName, int defaultValue) {
 		String sAns = e.getAttribute(attributeName);
-		if(sAns == null) {
+		if (sAns == null) {
 			return defaultValue;
 		}
 		try {
@@ -126,7 +135,7 @@ public class XMLReaderUtils {
 			return defaultValue;
 		}
 	}
-	
+
 	public static boolean isAtElementEnd(XMLStreamReader reader, String localName) {
 		return reader.getEventType() == XMLStreamConstants.END_ELEMENT
 				&& (reader.getName().getLocalPart().equals(localName));
@@ -145,8 +154,9 @@ public class XMLReaderUtils {
 		UserErrorManager.log("Cannot read text content of xml. \n{}", reader.getLocation());
 		return "";
 	}
-	
-	public static String getStringContentUntilElementEnd(XMLStreamReader reader) throws XMLStreamException {
+
+	public static String getStringContentUntilElementEnd(XMLStreamReader reader)
+			throws XMLStreamException {
 		int depth = 0;
 		StringBuilder ans = new StringBuilder();
 		do {

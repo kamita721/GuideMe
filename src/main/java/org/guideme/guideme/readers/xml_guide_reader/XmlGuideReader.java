@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.model.*;
@@ -33,9 +34,9 @@ public class XmlGuideReader {
 	}
 
 	private enum TagName {
-		Tease, pref, Title, Author, MediaDirectory, Settings, Pages, Page, Metronome, Image, Audio, Audio2, Video, Webcam,
-		Delay, Timer, Button, GlobalButton, WebcamButton, LeftText, Text, javascript, GlobalJavascript, CSS, Include,
-		LoadGuide, NOVALUE;
+		Tease, pref, Title, Author, MediaDirectory, Settings, Pages, Page, Metronome, Image, Audio,
+		Audio2, Video, Webcam, Delay, Timer, Button, GlobalButton, WebcamButton, LeftText, Text,
+		javascript, GlobalJavascript, CSS, Include, LoadGuide, NOVALUE;
 
 		public static TagName toTag(String str) {
 			try {
@@ -46,8 +47,8 @@ public class XmlGuideReader {
 		}
 	}
 
-	public static String loadXML(String xmlFileName, Guide guide, AppSettings appSettings, DebugShell debugShell)
-			throws XMLStreamException, IOException {
+	public static String loadXML(String xmlFileName, Guide guide, AppSettings appSettings,
+			DebugShell debugShell) throws XMLStreamException, IOException {
 		String strFlags;
 		GuideSettings guideSettings;
 
@@ -64,7 +65,8 @@ public class XmlGuideReader {
 		parseFile(xmlFileName, guide, presName, chapter, appSettings, debugShell);
 
 		// Return to where we left off
-		if (guideSettings.isForceStartPage() && !guideSettings.getPage().equals("GuideMeVersionNotMet")) {
+		if (guideSettings.isForceStartPage()
+				&& !guideSettings.getPage().equals("GuideMeVersionNotMet")) {
 			guideSettings.setPage("start");
 		}
 		strFlags = guideSettings.getFlags();
@@ -100,8 +102,9 @@ public class XmlGuideReader {
 		}
 	}
 
-	private static void parseGuideXML(XMLStreamReader reader, Chapter chapter, GuideSettings guideSettings, Guide guide,
-			AppSettings appSettings, String presName, DebugShell debugShell) throws XMLStreamException, IOException {
+	private static void parseGuideXML(XMLStreamReader reader, Chapter chapter,
+			GuideSettings guideSettings, Guide guide, AppSettings appSettings, String presName,
+			DebugShell debugShell) throws XMLStreamException, IOException {
 		Page dummyPage = new Page("dummyPage");
 		dummyPage.addText(new Text("If you are reading this, something went horribly wrong."));
 
@@ -114,7 +117,8 @@ public class XmlGuideReader {
 			case XMLStreamConstants.END_DOCUMENT:
 				break;
 			case XMLStreamConstants.START_ELEMENT:
-				ParserState parserState = new ParserState(reader, chapter, guideSettings, guide, page, appSettings, presName, debugShell);
+				ParserState parserState = new ParserState(reader, chapter, guideSettings, guide,
+						page, appSettings, presName, debugShell);
 				parseElement(parserState);
 				page = parserState.getPage();
 				break;
@@ -149,15 +153,16 @@ public class XmlGuideReader {
 		DebugShell debugShell = parseState.getDebugShell();
 		AppSettings appSettings = parseState.getAppSettings();
 		String presName = parseState.getPresName();
-		
+
 		String sTagName = reader.getName().getLocalPart();
 		TagName tagName = TagName.toTag(sTagName);
-		if(tagName == null) {
+		if (tagName == null) {
 			logger.warn("Unhandled tag '{}' at location \n{}", sTagName, reader.getLocation());
-			/* Consume data until we are at the end of the unused tag*/
+			/* Consume data until we are at the end of the unused tag */
 			XMLReaderUtils.getStringContentUntilElementEnd(reader);
+			return;
 		}
-		
+
 		switch (tagName) {
 		case Tease:
 			TeaseHandler.handle(reader, chapter, guideSettings);
@@ -204,7 +209,10 @@ public class XmlGuideReader {
 		case Metronome:
 			page.addMetronome(new Metronome(reader));
 			break;
-		/* We do not actually care about the Pages element; we handle a Page tag just fine where-ever it is.*/
+		/*
+		 * We do not actually care about the Pages element; we handle a Page tag just
+		 * fine where-ever it is.
+		 */
 		case Pages, NOVALUE:
 			break;
 		case Page:
@@ -238,10 +246,22 @@ public class XmlGuideReader {
 			break;
 		default:
 			logger.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
-			/* Consume data until we are at the end of the unused tag*/
+			/* Consume data until we are at the end of the unused tag */
 			XMLReaderUtils.getStringContentUntilElementEnd(reader);
 			break;
 		}
+	}
+
+	/*
+	 * We take a localName and defaultValue to have the same type signature as
+	 * XMLReaderUtils.getAttributeOrDefaultNoNS Doing this makes codegen easier.
+	 */
+	public static String processText(XMLStreamReader reader, String localName, String defaultValue)
+			throws XMLStreamException {
+		if (!defaultValue.isBlank() || !localName.equals("text")) {
+			throw new NotImplementedException();
+		}
+		return processText(reader);
 	}
 
 	public static String processText(XMLStreamReader reader) throws XMLStreamException {
@@ -311,8 +331,9 @@ public class XmlGuideReader {
 		return text.toString();
 	}
 
-	private static void handleInclude(XMLStreamReader reader, AppSettings appSettings, Guide guide, String presName,
-			Chapter chapter, DebugShell debugShell) throws IOException, XMLStreamException {
+	private static void handleInclude(XMLStreamReader reader, AppSettings appSettings, Guide guide,
+			String presName, Chapter chapter, DebugShell debugShell)
+			throws IOException, XMLStreamException {
 		String incFileName;
 		String dataDirectory;
 		String prefix = "";
@@ -321,18 +342,22 @@ public class XmlGuideReader {
 		if (dataDirectory.startsWith("/")) {
 			prefix = "/";
 		}
-		dataDirectory = prefix + comonFunctions.fixSeparator(appSettings.getDataDirectory(), fileSeparator);
-		String mediaDirectory = comonFunctions.fixSeparator(guide.getMediaDirectory(), fileSeparator);
+		dataDirectory = prefix
+				+ comonFunctions.fixSeparator(appSettings.getDataDirectory(), fileSeparator);
+		String mediaDirectory = comonFunctions.fixSeparator(guide.getMediaDirectory(),
+				fileSeparator);
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 		if (!dataDirectory.endsWith(fileSeparator)) {
 			dataDirectory = dataDirectory + fileSeparator;
 		}
 
 		// Handle wild cards
-		incFileName = comonFunctions.fixSeparator(reader.getAttributeValue(null, "file"), fileSeparator);
+		incFileName = comonFunctions.fixSeparator(reader.getAttributeValue(null, "file"),
+				fileSeparator);
 		if (incFileName.toLowerCase().endsWith("*.js")) {
 			ArrayList<String> filesList = new ArrayList<>();
-			try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(Paths.get(dataDirectory), incFileName)) {
+			try (DirectoryStream<Path> dirStream = Files
+					.newDirectoryStream(Paths.get(dataDirectory), incFileName)) {
 				dirStream.forEach(path -> filesList.add(path.toString()));
 			}
 			for (String filePath : filesList) {
@@ -340,7 +365,8 @@ public class XmlGuideReader {
 			}
 		} else if (incFileName.toLowerCase().endsWith("*.xml")) {
 			ArrayList<String> filesList = new ArrayList<>();
-			try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(Paths.get(dataDirectory), incFileName)) {
+			try (DirectoryStream<Path> dirStream = Files
+					.newDirectoryStream(Paths.get(dataDirectory), incFileName)) {
 				dirStream.forEach(path -> filesList.add(path.toString()));
 			}
 			for (String filePath : filesList) {

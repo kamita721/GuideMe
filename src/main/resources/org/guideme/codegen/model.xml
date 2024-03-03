@@ -115,7 +115,7 @@
             <attributeSet ref="filterable"/>
         </element>
 
-        <element name="Audio" callback="page.addAudio({})">
+        <element name="Audio" javaName="Audio1" callback="page.addAudio({})">
             <attributeSet ref="Audio"/>
         </element>
 
@@ -159,15 +159,15 @@
             <attribute ref="text"/>
         </element>
 
-        <element name="Button" callback="page.addButton({})">
+        <element name="Button" javaName="BasicButton" callback="page.addButton({})">
             <attributeSet ref="Button"/>
             <attribute ref="text"/>
         </element>
 
         <element name="GlobalButton" callback="page.addGlobalButton({})">
             <attributeSet ref="Button"/>
-            <attribute name="Placement" type="org.guideme.guideme.model.ButtonPlacement" default="bottom"/>
-            <attribute name="action" type="org.guideme.guideme.model.ButtonAction" default="none"/>
+            <attribute name="Placement" type="org.guideme.guideme.model.GlobalButtonPlacement" default="bottom"/>
+            <attribute name="action" type="org.guideme.guideme.model.GlobalButtonAction" default="none"/>
         </element>
 
         <element name="WebcamButton" callback="page.addWebcamButton({})">
