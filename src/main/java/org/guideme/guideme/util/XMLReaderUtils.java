@@ -15,6 +15,8 @@ import javax.xml.transform.TransformerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.graphics.Color;
+import org.guideme.guideme.model.GlobalButtonAction;
+import org.guideme.guideme.model.GlobalButtonPlacement;
 import org.guideme.guideme.readers.xml_guide_reader.UserErrorManager;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.w3c.dom.Element;
@@ -83,6 +85,23 @@ public class XMLReaderUtils {
 			return defaultValue;
 		}
 		return Boolean.valueOf(sAns);
+	}
+
+	public static GlobalButtonPlacement getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName,
+			GlobalButtonPlacement defaultValue) {
+		String sAns = reader.getAttributeValue(null, localName);
+		if (sAns == null || sAns.trim().isEmpty()) {
+			return defaultValue;
+		}
+		return GlobalButtonPlacement.fromString(sAns);
+	}
+	public static GlobalButtonAction getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName,
+			GlobalButtonAction defaultValue) {
+		String sAns = reader.getAttributeValue(null, localName);
+		if (sAns == null || sAns.trim().isEmpty()) {
+			return defaultValue;
+		}
+		return GlobalButtonAction.fromString(sAns);
 	}
 
 	public static LocalTime getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName,

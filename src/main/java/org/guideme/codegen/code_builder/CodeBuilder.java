@@ -1,32 +1,13 @@
-package org.guideme.codegen.model;
+package org.guideme.codegen.code_builder;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-public class CodeBuilder {	
-	private static Logger logger = LogManager.getLogger();
-
+public class CodeBuilder {
 	private final StringBuilder builder = new StringBuilder();
 
-	private final String[] packageName;
-	private final String className;
-	private final Set<String> imports = new HashSet<>();
-
 	private int indentLevel = 0;
-
-	public CodeBuilder(String[] packageName, String className) {
-		this.packageName = packageName;
-		this.className = className;
-		
-		logger.info("Entering CodeBuilder for {}.{}", getPackageName(), className);
-	}
 
 	public void addLine(String fmt, Object... args) {
 		String toAdd = fmt.formatted(args);
@@ -74,22 +55,6 @@ public class CodeBuilder {
 		}
 	}
 
-	public <T extends ImportProvider> void addInterfaceImports(Collection<T> providers) {
-		for (ImportProvider provider : providers) {
-			imports.addAll(provider.getInterfaceImports());
-		}
-	}
-
-	public <T extends ImportProvider> void addClassImports(Collection<T> providers) {
-		for (ImportProvider provider : providers) {
-			imports.addAll(provider.getClassImports());
-		}
-	}
-
-	public void addImport(String imp) {
-		imports.add(imp);
-	}
-
 	public void addLine() {
 		builder.append('\n');
 	}
@@ -109,30 +74,19 @@ public class CodeBuilder {
 		}
 	}
 
-	private String getPackageName() {
-		return String.join(".", packageName);
-	}
-
 	@Override
 	public String toString() {
-		StringBuilder ans = new StringBuilder();
-		ans.append("package " + getPackageName() + ";");
-		ans.append('\n');
-		for (String s : imports) {
-			ans.append("import " + s + ";");
-		}
-		ans.append(builder);
 		return builder.toString();
 	}
 
-	public void generate(File srcRoot) throws IOException {
-		File dir = srcRoot;
-		for (String compontent : packageName) {
-			dir = new File(dir, compontent);
+	public void generate(File srcRoot, String[] packagePath, String fileName) throws IOException {
+		File dst = srcRoot;
+		for (String packageComponent : packagePath) {
+			dst = new File(dst, packageComponent);
 		}
-		dir.mkdirs();
-		File outputFile = new File(dir, className + ".java");
-		try (FileOutputStream os = new FileOutputStream(outputFile)) {
+		dst.mkdirs();
+		dst = new File(dst, fileName + ".java");
+		try(FileOutputStream os= new FileOutputStream(dst)){
 			os.write(toString().getBytes());
 		}
 	}

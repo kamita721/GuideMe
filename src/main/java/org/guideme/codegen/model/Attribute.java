@@ -1,21 +1,32 @@
 package org.guideme.codegen.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.codegen.code_builder.AbstractMethod;
+import org.guideme.codegen.code_builder.CodeBlock;
+import org.guideme.codegen.code_builder.CodeBuilder;
+import org.guideme.codegen.code_builder.CodeFile;
+import org.guideme.codegen.code_builder.FieldDecl;
+import org.guideme.codegen.code_builder.Line;
+import org.guideme.codegen.code_builder.Method;
+import org.guideme.codegen.code_builder.Type;
+import org.guideme.codegen.code_builder.Variable;
 import org.guideme.guideme.util.StringUtil;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-public class Attribute implements ImportProvider, Comparable<Attribute>{
+public class Attribute implements Comparable<Attribute> {
 	private static Logger logger = LogManager.getLogger();
 
 	private final String name;
 	private final String javaName;
-	private final String type;
+	private final Type type;
 	private final String defaultValue;
 	private final boolean isText;
 
@@ -84,7 +95,7 @@ public class Attribute implements ImportProvider, Comparable<Attribute>{
 		}
 
 		name = sName;
-		type = sType;
+		type = new Type(sType);
 		defaultValue = sDefaultValue;
 		javaName = sJavaName;
 		isText = bIsText;
@@ -97,75 +108,101 @@ public class Attribute implements ImportProvider, Comparable<Attribute>{
 		return javaName;
 	}
 
-	public Set<String> getInterfaceImports() {
-		Set<String> ans = new HashSet<>();
-		
-		if(type.contains(".") && !type.startsWith("java.lang")) {
-			ans.add(type);
-		}
-		return ans;
-	}
-	public Set<String> getClassImports() {
-		Set<String> ans = new HashSet<>();
-		
-		if(type.contains(".") && !type.startsWith("java.lang")) {
-			ans.add(type);
-		}
-		ans.add("org.guideme.guideme.util.XMLReaderUtils");
-		return ans;
-	}
-
-	private String getTypeBrief() {
-		String[] ss = type.split("\\.");
-		return ss[ss.length - 1];
-	}
-
 	private String getterName() {
 		return "get" + StringUtil.capitalizeFirstChar(javaName);
 	}
 
-	public void generateInterfaceMethod(CodeBuilder builder) {
-		builder.addLine("public %s %s();", getTypeBrief(), getterName());
+	public FieldDecl[] generateFieldDecls() {
+		List<FieldDecl> ans = new ArrayList<>();
+		ans.add(new FieldDecl(new Variable(type, javaName), null));
+
+		if (defaultValue.contains("comonFunctions")) {
+			ans.add(new FieldDecl(new Variable(new Type("ComonFunctions"), "comonFunctions"),
+					"ComonFunctions.getComonFunctions()"));
+		}
+
+		return ans.toArray(new FieldDecl[] {});
 	}
-	
-	public void generateFieldDecl(CodeBuilder builder) {
-		builder.addLine("private final %s %s;", getTypeBrief(), getJavaName());
+
+	public Method[] generateMethods() {
+		Method ans = new Method(type, getterName());
+		ans.addCodeBlock(new Line("return %s;", getJavaName()));
+		return new Method[] { ans };
 	}
-	
-	public void generateMethod(CodeBuilder builder) {
-		builder.addLine("public %s %s(){", getTypeBrief(), getterName());
-		builder.addLine("return %s;", getJavaName());
-		builder.addLine("}");
-	}
-	
+
 	private String getParseMethod() {
-		if(isText) {
+		if (isText) {
 			return "XmlGuideReader.processText";
 		}
-		if(type.equals("java.time.LocalTime")) {
-			return "XMLReaderUtils.getAttributeLocalTime";
+		if (type.isType("java.time.LocalTime")) {
+			return "XMLReaderUtils.getAttributeLocalTimeDefaultable";
 		}
 		return "XMLReaderUtils.getAttributeOrDefaultNoNS";
 	}
-	
-	public void generateParser(CodeBuilder builder) {
-		builder.addLine("this.%s = %s(reader, \"%s\",%s);", getJavaName(), getParseMethod(), name, defaultValue);
+
+	private String getDefaultValue() {
+		if (type.isType("java.lang.String")) {
+			return '"' + defaultValue + '"';
+		}
+		if (defaultValue.isBlank()) {
+			return null;
+		}
+		return defaultValue;
 	}
 
+	public CodeBlock getConstructorFragment() {
+		CodeBlock ans = new Line("this.%s = %s(reader, \"%s\",%s);", getJavaName(),
+				getParseMethod(), name, getDefaultValue());
+
+		ans.addImport(type);
+
+		if (defaultValue.contains("comonFunctions")) {
+			ans.addImport(new Type("org.guideme.guideme.scripting.functions.ComonFunctions"));
+		}
+		if (defaultValue.contains("SWT")) {
+			ans.addImport(new Type("org.eclipse.swt.SWT"));
+		}
+
+		if (isText) {
+			ans.addImport(new Type("org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader"));
+			ans.addThrowable(new Type("javax.xml.stream.XMLStreamException"));
+		}
+
+		ans.addImport(new Type("org.guideme.guideme.util.XMLReaderUtils"));
+
+		return ans;
+	}
+	
+	public void applyToClassFile(CodeFile cf) {
+		cf.constructor.addCodeBlock(getConstructorFragment());
+		cf.addMethods(generateMethods());
+		cf.addFieldDecls(generateFieldDecls());
+	}
+	
+	public void applyToInterfaceFile(CodeFile cf) {
+		cf.addMethod(new AbstractMethod(type, getterName()));
+	}
+
+
+	public void generateInterfaceMethod(CodeBuilder builder) {
+		builder.addLine("public %s %s();", type.getTypeBrief(), getterName());
+	}
+	
 	@Override
 	public int compareTo(Attribute o) {
 		/*
-		 * Because of the way the stream parser works, we need text attributes to be at the end.
+		 * Because of the way the stream parser works, we need text attributes to be at
+		 * the end.
 		 */
-		if(this.isText && o.isText) {
+		if (this.isText && o.isText) {
 			/*
-			 * This will only happen if we try putting 2 text attributes on the same element.
-			 * Since this does not actually work, we take this oppurtunity to bail.
+			 * This will only happen if we try putting 2 text attributes on the same
+			 * element. Since this does not actually work, we take this oppurtunity to bail.
 			 */
 			throw new IllegalStateException("Multiple text attributes are being compared.");
 		}
-		
-		if(this.isText == o.isText) {
+
+		if (this.isText == o.isText) {
 			return 0;
 		}
 		if (this.isText) {

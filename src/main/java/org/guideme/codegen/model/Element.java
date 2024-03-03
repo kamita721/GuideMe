@@ -9,6 +9,14 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.codegen.code_builder.CodeBlock;
+import org.guideme.codegen.code_builder.CodeBlockList;
+import org.guideme.codegen.code_builder.CodeBuilder;
+import org.guideme.codegen.code_builder.CodeFile;
+import org.guideme.codegen.code_builder.Line;
+import org.guideme.codegen.code_builder.CodeFile.CodeFileType;
+import org.guideme.codegen.code_builder.Method;
+import org.guideme.codegen.code_builder.Variable;
 import org.guideme.guideme.util.StringUtil;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -18,6 +26,7 @@ public class Element {
 	private static Logger logger = LogManager.getLogger();
 
 	private final String name;
+	private final String javaName;
 	private final String callback;
 
 	private final ArrayList<AttributeSet> attributeSets = new ArrayList<>();
@@ -49,6 +58,7 @@ public class Element {
 
 		NamedNodeMap nnm = xmlRoot.getAttributes();
 		String sName = null;
+		String sJavaName = null;
 		String sCallback = null;
 
 		for (int i = 0; i < nnm.getLength(); i++) {
@@ -58,6 +68,9 @@ public class Element {
 			switch (attrName) {
 			case "name":
 				sName = attrValue;
+				break;
+			case "javaName":
+				sJavaName = attrValue;
 				break;
 			case "callback":
 				sCallback = attrValue;
@@ -73,10 +86,14 @@ public class Element {
 		if (sCallback == null) {
 			throw new IllegalStateException("Element missing callback attribute");
 		}
+		if (sJavaName == null) {
+			sJavaName = sName;
+		}
 
 		name = sName;
+		javaName = sJavaName;
 		callback = sCallback;
-
+		
 		logger.info("Element {} initialized", name);
 	}
 
@@ -108,38 +125,25 @@ public class Element {
 	}
 
 	private String getClassName() {
-		return StringUtil.capitalizeFirstChar(name);
+		return StringUtil.capitalizeFirstChar(javaName);
 	}
 
 	public void generateClass(File srcRoot, String[] packageName) throws IOException {
-		CodeBuilder ans = new CodeBuilder(packageName, getClassName());
-		ans.addImport("javax.xml.stream.XMLStreamReader;");
-		ans.addClassImports(getAllAttributesRecursive());
-		ans.addLine();
-		ans.addLine("public class %s %s {", getClassName(), getImplementsPhrase());
+		CodeFile ans = new CodeFile(CodeFileType.CLASS, packageName, javaName);
 
-		for (Attribute attr : getAllAttributesRecursive()) {
-			attr.generateFieldDecl(ans);
+		for (AttributeSet as : attributeSets) {
+			as.applyToClassFile(ans);
 		}
-
-		ans.addLine();
-		ans.addLine("public %s(XMLStreamReader reader) {", getClassName());
 
 		/*
 		 * We need the parsers in sorted order so that the text parser (if present) will
 		 * be the last one.
 		 */
 		for (Attribute attr : getAllAttributesRecursiveSorted()) {
-			attr.generateParser(ans);
+			attr.applyToClassFile(ans);
 		}
 
-		ans.addLine("}"); // constructor
-
-		for (Attribute attr : getAllAttributesRecursive()) {
-			attr.generateMethod(ans);
-		}
-
-		ans.addLine("}"); // public class
+		ans.constructor.addArg(new Variable("javax.xml.stream.XMLStreamReader", "reader"));
 
 		ans.generate(srcRoot);
 	}
@@ -148,12 +152,16 @@ public class Element {
 		return name;
 	}
 
-	public void generateCallback(CodeBuilder builder) {
+	public CodeBlock generateCallback() {
+		CodeBlockList ans = new CodeBlockList();
+
 		String[] lines = callback.split("\n");
 		for (String line : lines) {
-			line = line.replace("{}", "reader");
-			builder.addLine(line);
+			line = line.replace("{}", "new %s(reader)".formatted(getClassName()));
+			ans.addContent(new Line(line));
 		}
+
+		return ans;
 	}
 
 }

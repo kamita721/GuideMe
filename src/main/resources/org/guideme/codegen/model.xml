@@ -48,7 +48,7 @@
             <attribute name="disabled" type="boolean" default="false"/>
             <attribute javaName="defaultBtn" name="default" type="boolean" default="true"/>
         </attributeSet>
-        <attributeSet name="Text">
+        <attributeSet name="IText">
             <attributeSet ref="filterable"/>
             <attribute ref="text"/>
         </attributeSet>
@@ -166,8 +166,8 @@
 
         <element name="GlobalButton" callback="page.addGlobalButton({})">
             <attributeSet ref="Button"/>
-            <attribute name="Placement" type="org.guideme.guideme.model.GlobalButtonPlacement" default="bottom"/>
-            <attribute name="action" type="org.guideme.guideme.model.GlobalButtonAction" default="none"/>
+            <attribute name="Placement" type="org.guideme.guideme.model.GlobalButtonPlacement" default="GlobalButtonPlacement.BOTTOM"/>
+            <attribute name="action" type="org.guideme.guideme.model.GlobalButtonAction" default="GlobalButtonAction.NONE"/>
         </element>
 
         <element name="WebcamButton" callback="page.addWebcamButton({})">
@@ -177,11 +177,11 @@
         </element>
 
         <element name="LeftText" callback="page.addText({})">
-            <attributeSet ref="Text"/>
+            <attributeSet ref="IText"/>
             <attribute ref="text"/>
         </element>
         <element name="Text" callback="page.addText({})">
-            <attributeSet ref="Text"/>
+            <attributeSet ref="IText"/>
             <attribute ref="text"/>
         </element>
 

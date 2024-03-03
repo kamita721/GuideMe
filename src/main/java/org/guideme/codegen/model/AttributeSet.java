@@ -9,6 +9,9 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.codegen.code_builder.CodeBuilder;
+import org.guideme.codegen.code_builder.CodeFile;
+import org.guideme.codegen.code_builder.CodeFile.CodeFileType;
 import org.guideme.guideme.util.StringUtil;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -106,26 +109,29 @@ public class AttributeSet {
 		}
 		return "extends " + String.join(", ", supers);
 	}
-	
 
 	public void generateInterface(File srcRoot, String[] packageName) throws IOException {
-		CodeBuilder ans = new CodeBuilder(packageName, getInterfaceName());
-		ans.addInterfaceImports(attributes);
-		
-		ans.addLine("public interface %s %s{", getInterfaceName(), getExtendsPhrase());
-		for (Attribute attr : attributes) {
-			attr.generateInterfaceMethod(ans);
+		CodeFile ans = new CodeFile(CodeFileType.INTERFACE, packageName, getInterfaceName());
+
+		for(Attribute attr : attributes) {
+			attr.applyToInterfaceFile(ans);
 		}
-		
-		ans.addLine("}");// public interface
+
+		for(AttributeSet as : subsets) {
+			ans.addInterface(as.getInterfaceName());
+		}
 
 		ans.generate(srcRoot);
+	}
+
+	public void applyToClassFile(CodeFile cf) {
+		cf.addInterface(getInterfaceName());
 	}
 
 	public Set<Attribute> getAllAttributesRecursive() {
 		HashSet<Attribute> ans = new HashSet<>();
 		ans.addAll(attributes);
-		for(AttributeSet as : subsets) {
+		for (AttributeSet as : subsets) {
 			ans.addAll(as.getAllAttributesRecursive());
 		}
 		return ans;
