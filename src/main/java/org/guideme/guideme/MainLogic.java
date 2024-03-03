@@ -24,10 +24,24 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.generated.model.Audio;
+import org.guideme.generated.model.Button;
+import org.guideme.generated.model.Delay;
+import org.guideme.generated.model.GlobalButton;
+import org.guideme.generated.model.IText;
+import org.guideme.generated.model.Image;
+import org.guideme.generated.model.LoadGuide;
+import org.guideme.generated.model.Metronome;
+import org.guideme.generated.model.Page;
+import org.guideme.generated.model.Text;
+import org.guideme.generated.model.Timer;
+import org.guideme.generated.model.Video;
+import org.guideme.generated.model.Webcam;
 import org.guideme.guideme.model.*;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 import org.guideme.guideme.scripting.OverRide;
@@ -276,7 +290,9 @@ public class MainLogic {
 		String strText = "<div><p><h1>Oops it looks like page " + strPageId
 				+ " does not exist</h1></p>";
 		strText = strText + "<p>Please contact the Author to let them know the issue</p></div>";
-		objCurrPage.addText(new Text(strText));
+		Text toAdd = new Text();
+		toAdd.setText(strText);
+		objCurrPage.addText(toAdd);
 		return objCurrPage;
 	}
 
@@ -300,25 +316,18 @@ public class MainLogic {
 	}
 
 	private void addTimers(MainShell mainShell, Page objCurrPage, Guide guide) {
-		Timer objTimer;
-		if (overRide.timerCount() > 0) {
-			for (int i2 = 0; i2 < overRide.timerCount(); i2++) {
-				objTimer = overRide.getTimer(i2);
+		for (Timer objTimer : overRide.getTimers()) {
+			Calendar timCountDown = Calendar.getInstance();
+			timCountDown.add(Calendar.SECOND, objTimer.getTimerSec());
+			objTimer.setTimerEnd(timCountDown);
+			mainShell.addTimer(objTimer);
+		}
+		for (Timer objTimer : objCurrPage.getTimers()) {
+			if (objTimer.canShow(guide.getFlags())) {
 				Calendar timCountDown = Calendar.getInstance();
 				timCountDown.add(Calendar.SECOND, objTimer.getTimerSec());
 				objTimer.setTimerEnd(timCountDown);
 				mainShell.addTimer(objTimer);
-			}
-		}
-		if (objCurrPage.getTimerCount() > 0) {
-			for (int i2 = 0; i2 < objCurrPage.getTimerCount(); i2++) {
-				objTimer = objCurrPage.getTimer(i2);
-				if (objTimer.canShow(guide.getFlags())) {
-					Calendar timCountDown = Calendar.getInstance();
-					timCountDown.add(Calendar.SECOND, objTimer.getTimerSec());
-					objTimer.setTimerEnd(timCountDown);
-					mainShell.addTimer(objTimer);
-				}
 			}
 		}
 
@@ -382,10 +391,11 @@ public class MainLogic {
 		// they are encoded #prefName#
 		try {
 			StringBuilder displayTextBuilder = new StringBuilder();
-			for (int i = 0; i < objCurrPage.getLeftTextCount(); i++) {
-				if (objCurrPage.getLeftText(i).canShow(guide.getFlags())) {
-					displayTextBuilder.append(objCurrPage.getLeftText(i).getText());
+			for (IText objText : objCurrPage.getTexts()) {
+				if (objText.canShow(guide.getFlags())) {
+					displayTextBuilder.append(objText.getText());
 				}
+
 			}
 			String displayText = displayTextBuilder.toString();
 
@@ -416,9 +426,9 @@ public class MainLogic {
 			String displayText = "";
 			if (overRide.getHtml().equals("") && overRide.getRightHtml().equals("")) {
 				StringBuilder displayTextBuilder = new StringBuilder();
-				for (int i = 0; i < objCurrPage.getTextCount(); i++) {
-					if (objCurrPage.getText(i).canShow(guide.getFlags())) {
-						displayTextBuilder.append(objCurrPage.getText(i).getText());
+				for (IText objText : objCurrPage.getTexts()) {
+					if (objText.canShow(guide.getFlags())) {
+						displayTextBuilder.append(objText.getText());
 					}
 				}
 				displayText = displayTextBuilder.toString();
@@ -452,7 +462,7 @@ public class MainLogic {
 
 	private void processButtons(Page objCurrPage, AppSettings appSettings, Guide guide,
 			MainShell mainShell, Delay objDelay, DebugShell debugShell) {
-		ArrayList<Button> button = new ArrayList<>();
+		List<Button> button = new ArrayList<>();
 
 		for (GlobalButton b : overRide.getGlobalButtons()) {
 			objCurrPage.addGlobalButton(b);
@@ -483,12 +493,12 @@ public class MainLogic {
 		button.removeIf(btn -> !btn.canShow(guide.getFlags()));
 		debugShell.addOverrideButtons(button);
 
-		Collections.addAll(button, objCurrPage.getButtons());
-		Collections.addAll(button, objCurrPage.getWebcamButtons());
+		button.addAll(objCurrPage.getButtons());
+		button.addAll(objCurrPage.getWebcamButtons());
 
 		button.removeIf(btn -> !btn.canShow(guide.getFlags()));
 
-		Collections.sort(button);
+		Collections.sort(button, new ButtonSorter());
 
 		button.forEach(mainShell::addButtonUncooked);
 
@@ -499,35 +509,25 @@ public class MainLogic {
 	}
 
 	private boolean processMetronome(Page objCurrPage, Guide guide, MainShell mainShell) {
-		boolean blnMetronome = false;
-		try {
-			Metronome objMetronome = overRide.getMetronome();
-			if (objMetronome != null) {
-				blnMetronome = true;
-			} else {
-				if (objCurrPage.getMetronomeCount() > 0) {
-					for (int i2 = 0; i2 < objCurrPage.getMetronomeCount(); i2++) {
-						objMetronome = objCurrPage.getMetronome(i2);
-						if (objMetronome.canShow(guide.getFlags())) {
-							blnMetronome = true;
-							break;
-						}
-					}
-				}
-			}
-			if (blnMetronome) {
-				// Metronome
-				int intbpm = objMetronome.getbpm();
-				logger.debug("displayPage Metronome {} BPM", intbpm);
+		Metronome objMetronome = overRide.getMetronome();
 
-				mainShell.setMetronomeBPM(objMetronome.getbpm(), objMetronome.getLoops(),
-						objMetronome.getResolution(), objMetronome.getRhythm());
-
+		for (Metronome metronome : objCurrPage.getMetronomes()) {
+			if (metronome.canShow(guide.getFlags())) {
+				objMetronome = metronome;
+				break;
 			}
-		} catch (Exception e) {
-			logger.error("displayPage Metronome Exception ", e);
 		}
-		return blnMetronome;
+
+		if (objMetronome != null) {
+			// Metronome
+			int intbpm = objMetronome.getbpm();
+			logger.debug("displayPage Metronome {} BPM", intbpm);
+
+			mainShell.setMetronomeBPM(objMetronome.getbpm(), objMetronome.getLoops(),
+					objMetronome.getResolution(), objMetronome.getRhythm());
+
+		}
+		return objMetronome != null;
 	}
 
 	private Audio getAudio(Page objCurrPage, Guide guide) {
@@ -564,7 +564,7 @@ public class MainLogic {
 			AppSettings appSettings, MainShell mainShell) {
 		LoadGuide objLoadGuide = null;
 		String strPageId = "";
-		String pageJavascript = objCurrPage.getjScript();
+		String pageJavascript = objCurrPage.getJScript();
 		for (LoadGuide lg : objCurrPage.getLoadGuides()) {
 			if (lg.canShow(guide.getFlags())) {
 				objLoadGuide = lg;
@@ -582,7 +582,7 @@ public class MainLogic {
 		}
 		guide.getSettings().setPage(returnTarget);
 
-		mainShell.runJscript(objLoadGuide.getPrejScript(), false);
+		mainShell.runJscript(objLoadGuide.getPreScript(), false);
 
 		guide.getSettings().saveSettings();
 		guide.getSettings().formFieldsReset();
@@ -598,7 +598,7 @@ public class MainLogic {
 		}
 		GuideSettings guideSettings = guide.getSettings();
 
-		mainShell.runJscript(objLoadGuide.getPostjScript(), pageJavascript);
+		mainShell.runJscript(objLoadGuide.getPostScript(), pageJavascript);
 
 		guide.getSettings().saveSettings();
 

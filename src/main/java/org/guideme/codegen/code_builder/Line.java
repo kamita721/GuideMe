@@ -5,11 +5,7 @@ public class Line extends CodeBlock {
 	private final String content;
 
 	public Line(String content, Object... args) {
-		content = content.formatted(args);
-		if (!content.endsWith(";")) {
-			content = content + ";";
-		}
-		this.content = content;
+		this.content = content.formatted(args);
 	}
 
 	@Override

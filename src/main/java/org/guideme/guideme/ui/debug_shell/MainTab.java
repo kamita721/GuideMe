@@ -1,5 +1,6 @@
 package org.guideme.guideme.ui.debug_shell;
 
+import java.util.Collection;
 import java.util.function.Function;
 
 import org.eclipse.swt.SWT;
@@ -16,8 +17,8 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.guideme.guideme.model.Button;
-import org.guideme.guideme.model.Page;
+import org.guideme.generated.model.Button;
+import org.guideme.generated.model.Page;
 import org.guideme.guideme.settings.AppSettings;
 
 public class MainTab implements DebugTab {
@@ -70,15 +71,15 @@ public class MainTab implements DebugTab {
 				new String[] { "Button", "target", "jScript", "set", "unset", "If Set",
 						"If not set", "image", "hotkey" },
 				dispPage.getButtons(),
-				btn -> new String[] { btn.getText(), btn.getTarget(), btn.getjScript(),
+				btn -> new String[] { btn.getText(), btn.getTarget(), btn.getJScript(),
 						btn.getSet(), btn.getUnSet(), btn.getIfSet(), btn.getIfNotSet(),
-						btn.getImage(), btn.getHotKey() });
+						btn.getImage(), btn.getHotkey() });
 		constructTable(
 				new String[] { "Delay", "style", "target", "jScript", "startWith", "set", "unset",
 						"If Set", "If not set" },
 				dispPage.getDelays(),
-				delay -> new String[] { String.valueOf(delay.getDelaySec()), delay.getstyle(),
-						delay.getTarget(), delay.getjScript(),
+				delay -> new String[] { String.valueOf(delay.getDelaySec()), delay.getStyle(),
+						delay.getTarget(), delay.getJscript(),
 						Integer.toString(delay.getStartWith()), delay.getSet(), delay.getUnSet(),
 						delay.getIfSet(), delay.getIfNotSet() });
 		constructTable(new String[] { "Image", "If Set", "If not set" }, dispPage.getImages(),
@@ -95,12 +96,12 @@ public class MainTab implements DebugTab {
 						"If Set", "If not set" },
 				dispPage.getVideos(),
 				video -> new String[] { video.getId(), video.getTarget(), video.getJscript(),
-						video.getStartAt(), video.getStopAt(), Integer.toString(video.getRepeat()),
+						video.getStartAt(), video.getStopAt(), video.getRepeat(),
 						video.getIfSet(), video.getIfNotSet() });
 		constructTable(
 				new String[] { "metronome", "If Set", "If Unset", "Resolution", "Loops", "Rhythm" },
 				dispPage.getMetronomes(),
-				metronome -> new String[] { String.valueOf(metronome.getbpm()),
+				metronome -> new String[] { String.valueOf(metronome.getBpm()),
 						metronome.getIfSet(), metronome.getIfNotSet(),
 						String.valueOf(metronome.getResolution()),
 						String.valueOf(metronome.getLoops()), metronome.getRhythm() });
@@ -114,13 +115,13 @@ public class MainTab implements DebugTab {
 		item.setBackground(color);
 		item.setText(0, button.getText());
 		item.setText(1, button.getTarget());
-		item.setText(2, button.getjScript());
+		item.setText(2, button.getJScript());
 		item.setText(3, button.getSet());
 		item.setText(4, button.getUnSet());
 		item.setText(5, button.getIfSet());
 		item.setText(6, button.getIfNotSet());
 		item.setText(7, button.getImage());
-		item.setText(8, button.getHotKey());
+		item.setText(8, button.getHotkey());
 		container.layout();
 		container.pack();
 		container.update();
@@ -175,5 +176,10 @@ public class MainTab implements DebugTab {
 		bottomWidget = ans;
 
 		return ans;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T> Table constructTable(String[] headers, Collection<T> objs, Function<T, String[]> getter) {
+		return constructTable(headers, (T[])objs.toArray(), getter);
 	}
 }

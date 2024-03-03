@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.guideme.guideme.model.Button;
+import org.guideme.generated.model.Button;
 import org.guideme.guideme.model.Guide;
 import org.guideme.guideme.ui.main_shell.MainShell;
 

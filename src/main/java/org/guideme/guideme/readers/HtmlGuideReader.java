@@ -8,6 +8,8 @@ import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.generated.model.Image;
+import org.guideme.generated.model.Page;
 import org.guideme.guideme.model.*;
 
 public class HtmlGuideReader {
@@ -50,11 +52,9 @@ public class HtmlGuideReader {
 		}
 		if (doc.select("head link[rel=icon]").size() > 0) {
 			String url = doc.select("head link[rel=icon]").attr("href");
-			//String mimeType = doc.select("head link[rel=icon]").attr("type");
-			//String sizes = doc.select("head link[rel=icon]").attr("sizes");
-			//int width = Integer.parseInt(sizes.split("x")[0]);
-			//int height = Integer.parseInt(sizes.split("x")[1]);
-			guide.setThumbnail(new Image(url, "", "", "", ""));
+			Image toAdd = new Image();
+			toAdd.setId(url);
+			guide.setThumbnail(toAdd);
 		}
 	}
 
@@ -76,7 +76,8 @@ public class HtmlGuideReader {
 			Element section = sections.get(i);
 			
 			//TODO need to add in the rest of the page stuff
-			Page page = new Page(section.attr("id"), "", "", "", "", false, "", "");
+			Page page = new Page();
+			page.setId(section.attr("id"));
 			
 			chapter.getPages().put(section.attr("id"), page);
 		}

@@ -18,6 +18,10 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.generated.model.Include;
+import org.guideme.generated.model.Page;
+import org.guideme.generated.model.Parsers;
+import org.guideme.generated.model.Text;
 import org.guideme.guideme.model.*;
 import org.guideme.guideme.readers.UnicodeBOMInputStream;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
@@ -31,20 +35,6 @@ public class XmlGuideReader {
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
 	private XmlGuideReader() {
-	}
-
-	private enum TagName {
-		Tease, pref, Title, Author, MediaDirectory, Settings, Pages, Page, Metronome, Image, Audio,
-		Audio2, Video, Webcam, Delay, Timer, Button, GlobalButton, WebcamButton, LeftText, Text,
-		javascript, GlobalJavascript, CSS, Include, LoadGuide, NOVALUE;
-
-		public static TagName toTag(String str) {
-			try {
-				return valueOf(str);
-			} catch (Exception ex) {
-				return null;
-			}
-		}
 	}
 
 	public static String loadXML(String xmlFileName, Guide guide, AppSettings appSettings,
@@ -84,7 +74,8 @@ public class XmlGuideReader {
 		logger.info("parseFile: {}", xmlFileName);
 		GuideSettings guideSettings = guide.getSettings();
 
-		Page page404 = new Page("GuideMe404Error", "", "", "", "", false, "", "");
+		Page page404 = new Page();
+		page404.setId("GuideMe404Error");
 		chapter.getPages().put(page404.getId(), page404);
 
 		XMLStreamReader reader = null;
@@ -105,8 +96,12 @@ public class XmlGuideReader {
 	private static void parseGuideXML(XMLStreamReader reader, Chapter chapter,
 			GuideSettings guideSettings, Guide guide, AppSettings appSettings, String presName,
 			DebugShell debugShell) throws XMLStreamException, IOException {
-		Page dummyPage = new Page("dummyPage");
-		dummyPage.addText(new Text("If you are reading this, something went horribly wrong."));
+		Page dummyPage = new Page();
+		dummyPage.setId("dummyPage");
+		Text toAdd = new Text();
+		toAdd.setText("If you are reading this, something went horribly wrong.");
+		
+		dummyPage.addText(toAdd);
 
 		Page page = dummyPage;
 		while (reader.hasNext()) {
@@ -119,7 +114,7 @@ public class XmlGuideReader {
 			case XMLStreamConstants.START_ELEMENT:
 				ParserState parserState = new ParserState(reader, chapter, guideSettings, guide,
 						page, appSettings, presName, debugShell);
-				parseElement(parserState);
+				Parsers.parseElement(parserState);
 				page = parserState.getPage();
 				break;
 			case XMLStreamConstants.END_ELEMENT:
@@ -140,115 +135,6 @@ public class XmlGuideReader {
 			default:
 				logger.warn("Unandled event type '{}' while parsing guide XML.", eventType);
 			}
-		}
-	}
-
-	private static void parseElement(ParserState parseState)
-			throws XMLStreamException, IOException {
-		XMLStreamReader reader = parseState.getReader();
-		Chapter chapter = parseState.getChapter();
-		GuideSettings guideSettings = parseState.getGuideSettings();
-		Guide guide = parseState.getGuide();
-		Page page = parseState.getPage();
-		DebugShell debugShell = parseState.getDebugShell();
-		AppSettings appSettings = parseState.getAppSettings();
-		String presName = parseState.getPresName();
-
-		String sTagName = reader.getName().getLocalPart();
-		TagName tagName = TagName.toTag(sTagName);
-		if (tagName == null) {
-			logger.warn("Unhandled tag '{}' at location \n{}", sTagName, reader.getLocation());
-			/* Consume data until we are at the end of the unused tag */
-			XMLReaderUtils.getStringContentUntilElementEnd(reader);
-			return;
-		}
-
-		switch (tagName) {
-		case Tease:
-			TeaseHandler.handle(reader, chapter, guideSettings);
-			break;
-		case pref:
-			PrefHandler.handle(reader, guideSettings);
-			break;
-		case Title:
-			guide.setTitle(XMLReaderUtils.getStringContent(reader));
-			break;
-		case Audio:
-			page.addAudio(new Audio(reader));
-			break;
-		case Audio2:
-			page.addAudio2(new Audio(reader));
-			break;
-		case Author:
-			AuthorHandler.handle(reader, guide);
-			break;
-		case Button:
-			page.addButton(new Button(reader));
-			break;
-		case GlobalButton:
-			page.addGlobalButton(new GlobalButton(reader));
-			break;
-		case WebcamButton:
-			page.addWebcamButton(new WebcamButton(reader));
-			break;
-		case Delay:
-			page.addDelay(new Delay(reader));
-			break;
-		case Timer:
-			page.addTimer(new Timer(reader));
-			break;
-		case Image:
-			page.addImage(new Image(reader));
-			break;
-		case LoadGuide:
-			page.addLoadGuide(new LoadGuide(reader));
-			break;
-		case MediaDirectory:
-			guide.setMediaDirectory(XMLReaderUtils.getStringContent(reader));
-			break;
-		case Metronome:
-			page.addMetronome(new Metronome(reader));
-			break;
-		/*
-		 * We do not actually care about the Pages element; we handle a Page tag just
-		 * fine where-ever it is.
-		 */
-		case Pages, NOVALUE:
-			break;
-		case Page:
-			page = new Page(reader);
-			debugShell.addPagesCombo(page.getId());
-			parseState.setPage(page);
-			break;
-		case Settings:
-			SettingsHandler.handle(reader, guide, guideSettings);
-			break;
-		case LeftText, Text:
-			page.addText(new Text(reader));
-			break;
-		case Video:
-			page.addVideo(new Video(reader));
-			break;
-		case Webcam:
-			page.addWebcam(new Webcam(reader));
-			break;
-		case javascript:
-			page.setjScript(XMLReaderUtils.getStringContentUntilElementEnd(reader));
-			break;
-		case GlobalJavascript:
-			guide.appendGlobaljScript(XMLReaderUtils.getStringContentUntilElementEnd(reader));
-			break;
-		case CSS:
-			guide.setCss(XMLReaderUtils.getStringContentUntilElementEnd(reader));
-			break;
-		case Include:
-			handleInclude(reader, appSettings, guide, presName, chapter, debugShell);
-			break;
-		default:
-			logger.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
-			/* Consume data until we are at the end of the unused tag */
-			XMLReaderUtils.getStringContentUntilElementEnd(reader);
-			break;
 		}
 	}
 
@@ -331,7 +217,7 @@ public class XmlGuideReader {
 		return text.toString();
 	}
 
-	private static void handleInclude(XMLStreamReader reader, AppSettings appSettings, Guide guide,
+	public static void handleInclude(Include incl, AppSettings appSettings, Guide guide,
 			String presName, Chapter chapter, DebugShell debugShell)
 			throws IOException, XMLStreamException {
 		String incFileName;
@@ -352,7 +238,7 @@ public class XmlGuideReader {
 		}
 
 		// Handle wild cards
-		incFileName = comonFunctions.fixSeparator(reader.getAttributeValue(null, "file"),
+		incFileName = comonFunctions.fixSeparator(incl.getFile(),
 				fileSeparator);
 		if (incFileName.toLowerCase().endsWith("*.js")) {
 			ArrayList<String> filesList = new ArrayList<>();

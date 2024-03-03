@@ -33,7 +33,7 @@ public class StringSwitch extends CodeBlock{
 		}
 		
 		if(defaultCase != null) {
-			builder.addLine("case default:");
+			builder.addLine("default:");
 			defaultCase.generate(builder);
 			builder.addLine("break;");
 		}

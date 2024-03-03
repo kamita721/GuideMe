@@ -3,9 +3,7 @@ package org.guideme.codegen.model;
 import java.io.File;
 import java.io.IOException;
 
-import org.guideme.codegen.code_builder.CodeBlock;
 import org.guideme.codegen.code_builder.CodeBlockList;
-import org.guideme.codegen.code_builder.CodeBuilder;
 import org.guideme.codegen.code_builder.CodeFile;
 import org.guideme.codegen.code_builder.CodeFile.CodeFileType;
 import org.guideme.codegen.code_builder.Line;
@@ -13,13 +11,9 @@ import org.guideme.codegen.code_builder.Method;
 import org.guideme.codegen.code_builder.StringSwitch;
 import org.guideme.codegen.code_builder.Type;
 import org.guideme.codegen.code_builder.Variable;
-import org.guideme.guideme.settings.AppSettings;
-import org.guideme.guideme.ui.debug_shell.DebugShell;
-import org.guideme.guideme.util.XMLReaderUtils;
 
 public class Parsers {
 	private Parsers() {
-
 	}
 
 	public static void generateParsersClass(String[] packageName, File srcRoot, Model model)
@@ -27,6 +21,7 @@ public class Parsers {
 		CodeFile ans = new CodeFile(CodeFileType.CLASS, packageName, "Parsers");
 
 		ans.addMethod(generateParseElement(model));
+		ans.constructor.makePrivate();
 
 		ans.generate(srcRoot);
 	}
@@ -35,8 +30,23 @@ public class Parsers {
 		Method ans = new Method(new Type("void"), "parseElement");
 		ans.makeStatic();
 
+		ans.addImport("org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader");
+		ans.addImport("org.guideme.guideme.readers.xml_guide_reader.TeaseHandler");
+		ans.addImport("org.guideme.guideme.readers.xml_guide_reader.PrefHandler");
+		ans.addImport("org.guideme.guideme.readers.xml_guide_reader.SettingsHandler");
+		ans.addImport("org.guideme.guideme.readers.xml_guide_reader.AuthorHandler");
+		ans.addImport("org.apache.logging.log4j.LogManager");
+		ans.addImport("org.guideme.guideme.util.XMLReaderUtils");
+		ans.addThrowable("java.io.IOException");
+		ans.addThrowable("javax.xml.stream.XMLStreamException");
+		
+		
 		ans.addArg(new Variable("org.guideme.guideme.readers.xml_guide_reader.ParserState",
 				"parseState"));
+
+		ans.addCodeBlock(
+				Line.getFinalAssignment(new Variable("org.apache.logging.log4j.Logger", "logger"),
+						"LogManager.getLogger()"));
 
 		ans.addCodeBlock(
 				Line.getFinalAssignment(new Variable("javax.xml.stream.XMLStreamReader", "reader"),
@@ -50,7 +60,7 @@ public class Parsers {
 		ans.addCodeBlock(Line.getFinalAssignment(
 				new Variable("org.guideme.guideme.model.Guide", "guide"), "parseState.getGuide()"));
 		ans.addCodeBlock(Line.getFinalAssignment(
-				new Variable("org.guideme.guideme.model.Page", "page"), "parseState.getPage()"));
+				new Variable("org.guideme.generated.model.Page", "page"), "parseState.getPage()"));
 		ans.addCodeBlock(Line.getFinalAssignment(
 				new Variable("org.guideme.guideme.ui.debug_shell.DebugShell", "debugShell"),
 				"parseState.getDebugShell()"));
@@ -69,11 +79,12 @@ public class Parsers {
 		CodeBlockList tagNotFoundHandler = new CodeBlockList();
 		tagNotFoundHandler.addContent(new Line(
 				"logger.warn(\"Unhandled tag '{}' at location \\n{}\", tagName, reader.getLocation());"));
-		tagNotFoundHandler.addContent(new Line("XMLReaderUtils.getStringContentUntilElementEnd(reader);"));
+		tagNotFoundHandler
+				.addContent(new Line("XMLReaderUtils.getStringContentUntilElementEnd(reader);"));
 		mainSwitch.setDefault(tagNotFoundHandler);
-		
+
 		ans.addCodeBlock(mainSwitch);
-		
+
 		return ans;
 	}
 

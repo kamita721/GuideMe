@@ -205,4 +205,12 @@ public class XMLReaderUtils {
 		}
 		return defaultValue;
 	}
+	public static String getStringContentOrDefault(XMLStreamReader reader, String defaultValue)
+			throws XMLStreamException {
+		reader.next();
+		if (reader.getEventType() == XMLStreamConstants.CHARACTERS) {
+			return reader.getText();
+		}
+		return defaultValue;
+	}
 }

@@ -11,11 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.guideme.codegen.code_builder.CodeBlock;
 import org.guideme.codegen.code_builder.CodeBlockList;
-import org.guideme.codegen.code_builder.CodeBuilder;
 import org.guideme.codegen.code_builder.CodeFile;
+import org.guideme.codegen.code_builder.FieldDecl;
 import org.guideme.codegen.code_builder.Line;
 import org.guideme.codegen.code_builder.CodeFile.CodeFileType;
-import org.guideme.codegen.code_builder.Method;
+import org.guideme.codegen.code_builder.StringSwitch;
+import org.guideme.codegen.code_builder.Type;
 import org.guideme.codegen.code_builder.Variable;
 import org.guideme.guideme.util.StringUtil;
 import org.w3c.dom.NamedNodeMap;
@@ -32,9 +33,12 @@ public class Element {
 	private final ArrayList<AttributeSet> attributeSets = new ArrayList<>();
 	private final ArrayList<Attribute> attributes = new ArrayList<>();
 	private final ArrayList<Element> elements = new ArrayList<>();
+	private final ArrayList<Type> extraImports = new ArrayList<>();
+	private final String extraBody;
 
 	public Element(Node xmlRoot) {
 		NodeList nl = xmlRoot.getChildNodes();
+		String sExtraBody = null;
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node n = nl.item(i);
 			if (n.getNodeType() == Node.ELEMENT_NODE) {
@@ -49,12 +53,20 @@ public class Element {
 				case "element":
 					elements.add(new Element(n));
 					break;
+				case "extraBody":
+					sExtraBody = n.getFirstChild().getTextContent();
+					break;
+				case "extraImport":
+					String toAdd = n.getFirstChild().getTextContent();
+					extraImports.add(new Type(toAdd));
+					break;
 				default:
 					throw new IllegalStateException(
 							"Unexpected tag " + tagName + " under <element>");
 				}
 			}
 		}
+		extraBody = sExtraBody;
 
 		NamedNodeMap nnm = xmlRoot.getAttributes();
 		String sName = null;
@@ -93,7 +105,7 @@ public class Element {
 		name = sName;
 		javaName = sJavaName;
 		callback = sCallback;
-		
+
 		logger.info("Element {} initialized", name);
 	}
 
@@ -113,23 +125,78 @@ public class Element {
 		return ans;
 	}
 
-	private String getImplementsPhrase() {
-		if (attributeSets.isEmpty()) {
-			return "";
-		}
-		String[] supers = new String[attributeSets.size()];
-		for (int i = 0; i < supers.length; i++) {
-			supers[i] = attributeSets.get(i).getInterfaceName();
-		}
-		return "implements " + String.join(", ", supers);
-	}
-
 	private String getClassName() {
 		return StringUtil.capitalizeFirstChar(javaName);
 	}
 
+	private String getLowerJavaName() {
+		return StringUtil.lowerFirstChar(javaName);
+	}
+
+	private void generateSubelementHandler(CodeFile cf) {
+
+		CodeBlockList toAdd = new CodeBlockList();
+		toAdd.addImport("javax.xml.stream.XMLStreamConstants");
+		toAdd.addImport("org.guideme.guideme.util.XMLReaderUtils");
+		toAdd.addImport("org.apache.logging.log4j.LogManager");
+
+		toAdd.addThrowable("javax.xml.stream.XMLStreamException");
+
+		toAdd.addContent(
+				Line.getFinalAssignment(new Variable("org.apache.logging.log4j.Logger", "logger"),
+						"LogManager.getLogger()"));
+
+		toAdd.addLine("int depth = 1;");
+		toAdd.addLine("while (depth > 0) {");
+		toAdd.addLine(" int eventType = reader.next();");
+		toAdd.addLine(" if (eventType == XMLStreamConstants.START_ELEMENT) {");
+		toAdd.addLine("  depth++;");
+		toAdd.addLine("  String tagName = reader.getName().getLocalPart();");
+		StringSwitch switchBlock = new StringSwitch("tagName");
+		for (Element child : elements) {
+			ArrayList<Attribute> attrs = child.attributes;
+			if (attrs.size() != 1) {
+				throw new IllegalStateException();
+			}
+
+			Attribute attr = attrs.get(0);
+			String fieldName = child.getLowerJavaName();
+			Line line = new Line("%s = XMLReaderUtils.getStringContentOrDefault(reader, %s);",
+					fieldName, attr.getDefaultValue());
+			switchBlock.addCase(child.getXmlTag(), line);
+
+			FieldDecl decl = new FieldDecl(new Variable(attr.getType(), fieldName),
+					attr.getDefaultValue());
+
+			cf.addFieldDecl(decl);
+			cf.addMethod(decl.getter());
+			cf.addMethod(decl.setter());
+		}
+
+		CodeBlockList tagNotFoundHandler = new CodeBlockList();
+		tagNotFoundHandler.addContent(new Line(
+				"logger.warn(\"Unhandled tag '{}' at location \\n{}\", tagName, reader.getLocation());"));
+		tagNotFoundHandler
+				.addContent(new Line("XMLReaderUtils.getStringContentUntilElementEnd(reader);"));
+		switchBlock.setDefault(tagNotFoundHandler);
+
+		toAdd.addContent(switchBlock);
+		toAdd.addLine("  eventType = reader.next();");
+		toAdd.addLine("  if (XMLReaderUtils.isAtElementEnd(reader, \"Settings\")) {");
+		toAdd.addLine("   return;");
+		toAdd.addLine("  }");
+		toAdd.addLine(" }"); // if eventType == START_ELEMENT
+		toAdd.addLine(" if (eventType == XMLStreamConstants.END_ELEMENT) {");
+		toAdd.addLine("  depth--;");
+		toAdd.addLine(" }");
+		toAdd.addLine("}"); // while
+
+		cf.constructor.addCodeBlock(toAdd);
+
+	}
+
 	public void generateClass(File srcRoot, String[] packageName) throws IOException {
-		CodeFile ans = new CodeFile(CodeFileType.CLASS, packageName, javaName);
+		CodeFile ans = new CodeFile(CodeFileType.CLASS, packageName, getClassName());
 
 		for (AttributeSet as : attributeSets) {
 			as.applyToClassFile(ans);
@@ -141,6 +208,14 @@ public class Element {
 		 */
 		for (Attribute attr : getAllAttributesRecursiveSorted()) {
 			attr.applyToClassFile(ans);
+		}
+
+		if (extraBody != null) {
+			ans.addExtraBody(CodeBlockList.fromString(extraBody));
+		}
+
+		if (!elements.isEmpty()) {
+			generateSubelementHandler(ans);
 		}
 
 		ans.constructor.addArg(new Variable("javax.xml.stream.XMLStreamReader", "reader"));
@@ -155,9 +230,16 @@ public class Element {
 	public CodeBlock generateCallback() {
 		CodeBlockList ans = new CodeBlockList();
 
-		String[] lines = callback.split("\n");
+		String[] lines = callback.split("\\\\n");
 		for (String line : lines) {
 			line = line.replace("{}", "new %s(reader)".formatted(getClassName()));
+			line = line.strip();
+			if(line.isBlank()) {
+				continue;
+			}
+			if (!line.endsWith(";")) {
+				line = line + ";";
+			}
 			ans.addContent(new Line(line));
 		}
 

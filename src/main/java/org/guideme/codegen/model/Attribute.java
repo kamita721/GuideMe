@@ -2,15 +2,12 @@ package org.guideme.codegen.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.guideme.codegen.code_builder.AbstractMethod;
 import org.guideme.codegen.code_builder.CodeBlock;
-import org.guideme.codegen.code_builder.CodeBuilder;
+import org.guideme.codegen.code_builder.CodeBlockEmpty;
 import org.guideme.codegen.code_builder.CodeFile;
 import org.guideme.codegen.code_builder.FieldDecl;
 import org.guideme.codegen.code_builder.Line;
@@ -105,16 +102,24 @@ public class Attribute implements Comparable<Attribute> {
 	}
 
 	public String getJavaName() {
-		return javaName;
+		return StringUtil.lowerFirstChar(javaName);
 	}
 
-	private String getterName() {
-		return "get" + StringUtil.capitalizeFirstChar(javaName);
+	private String getJavaNameCaps() {
+		return StringUtil.capitalizeFirstChar(javaName);
+	}
+	
+	public Type getType() {
+		return type;
 	}
 
+	private FieldDecl getMainDecl() {
+		return new FieldDecl(new Variable(type, getJavaName()), getDefaultValue());
+	}
+	
 	public FieldDecl[] generateFieldDecls() {
 		List<FieldDecl> ans = new ArrayList<>();
-		ans.add(new FieldDecl(new Variable(type, javaName), null));
+		ans.add(getMainDecl());
 
 		if (defaultValue.contains("comonFunctions")) {
 			ans.add(new FieldDecl(new Variable(new Type("ComonFunctions"), "comonFunctions"),
@@ -125,9 +130,25 @@ public class Attribute implements Comparable<Attribute> {
 	}
 
 	public Method[] generateMethods() {
-		Method ans = new Method(type, getterName());
-		ans.addCodeBlock(new Line("return %s;", getJavaName()));
-		return new Method[] { ans };
+		ArrayList<Method> ans = new ArrayList<>();
+
+		FieldDecl decl = getMainDecl();
+		ans.add(decl.getter());
+		ans.add(decl.setter());
+		if (type.isType("java.util.ArrayList")) {
+			Type innerType = type.getGenericParameter();
+			Method arrayAdd = new Method(Type.VOID, "add" + getJavaNameCaps());
+			arrayAdd.addArg(new Variable(innerType, "toAdd"));
+			arrayAdd.addCodeBlock(new Line("%s.add(toAdd);", getJavaName()));
+			ans.add(arrayAdd);
+
+			Method arrayCount = new Method(new Type("int"),
+					"get%sCount".formatted(getJavaNameCaps()));
+			arrayCount.addCodeBlock(new Line("return %s.size();", getJavaName()));
+			ans.add(arrayCount);
+		}
+
+		return ans.toArray(new Method[] {});
 	}
 
 	private String getParseMethod() {
@@ -140,7 +161,7 @@ public class Attribute implements Comparable<Attribute> {
 		return "XMLReaderUtils.getAttributeOrDefaultNoNS";
 	}
 
-	private String getDefaultValue() {
+	public String getDefaultValue() {
 		if (type.isType("java.lang.String")) {
 			return '"' + defaultValue + '"';
 		}
@@ -151,12 +172,20 @@ public class Attribute implements Comparable<Attribute> {
 	}
 
 	public CodeBlock getConstructorFragment() {
+		if (name.isBlank()) {
+			return new CodeBlockEmpty();
+		}
+
 		CodeBlock ans = new Line("this.%s = %s(reader, \"%s\",%s);", getJavaName(),
 				getParseMethod(), name, getDefaultValue());
+		
+		if(getParseMethod().contains("XMLReaderUtils")) {
+			ans.addImport(new Type("org.guideme.guideme.util.XMLReaderUtils"));
+		}
 
-		ans.addImport(type);
+		ans.addImport(type.getTypeAbstract());
 
-		if (defaultValue.contains("comonFunctions")) {
+		if (defaultValue.contains("ComonFunctions")) {
 			ans.addImport(new Type("org.guideme.guideme.scripting.functions.ComonFunctions"));
 		}
 		if (defaultValue.contains("SWT")) {
@@ -168,26 +197,22 @@ public class Attribute implements Comparable<Attribute> {
 			ans.addThrowable(new Type("javax.xml.stream.XMLStreamException"));
 		}
 
-		ans.addImport(new Type("org.guideme.guideme.util.XMLReaderUtils"));
 
 		return ans;
 	}
-	
+
 	public void applyToClassFile(CodeFile cf) {
 		cf.constructor.addCodeBlock(getConstructorFragment());
 		cf.addMethods(generateMethods());
 		cf.addFieldDecls(generateFieldDecls());
 	}
-	
+
 	public void applyToInterfaceFile(CodeFile cf) {
-		cf.addMethod(new AbstractMethod(type, getterName()));
+		for(Method m : generateMethods()) {
+			cf.addMethod(m.asAbstract());
+		}
 	}
 
-
-	public void generateInterfaceMethod(CodeBuilder builder) {
-		builder.addLine("public %s %s();", type.getTypeBrief(), getterName());
-	}
-	
 	@Override
 	public int compareTo(Attribute o) {
 		/*

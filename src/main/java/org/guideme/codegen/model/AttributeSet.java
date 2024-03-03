@@ -9,8 +9,9 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.guideme.codegen.code_builder.CodeBuilder;
+import org.guideme.codegen.code_builder.CodeBlockList;
 import org.guideme.codegen.code_builder.CodeFile;
+import org.guideme.codegen.code_builder.Type;
 import org.guideme.codegen.code_builder.CodeFile.CodeFileType;
 import org.guideme.guideme.util.StringUtil;
 import org.w3c.dom.NamedNodeMap;
@@ -22,6 +23,10 @@ public class AttributeSet {
 
 	private ArrayList<Attribute> attributes = new ArrayList<>();
 	private ArrayList<AttributeSet> subsets = new ArrayList<>();
+	private String extraBody = null;
+	private String extraImplBody = null;
+	private ArrayList<Type> extraImports = new ArrayList<>();
+	private ArrayList<Type> extraImplImports = new ArrayList<>();
 
 	private final String name;
 
@@ -30,6 +35,7 @@ public class AttributeSet {
 	public AttributeSet(Attribute singleton) {
 		attributes.add(singleton);
 		name = singleton.getJavaName();
+		extraBody = null;
 	}
 
 	public static AttributeSet get(Node xmlRoot) {
@@ -54,6 +60,7 @@ public class AttributeSet {
 		NodeList nl = xmlRoot.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node n = nl.item(i);
+			String toAdd;
 			if (n.getNodeType() == Node.ELEMENT_NODE) {
 				String tagName = n.getNodeName();
 				switch (tagName) {
@@ -62,6 +69,22 @@ public class AttributeSet {
 					break;
 				case "attributeSet":
 					subsets.add(AttributeSet.get(n));
+					break;
+				case "extraBody":
+					extraBody = n.getFirstChild().getTextContent();
+					break;
+				case "extraImplBody":
+					extraImplBody = n.getFirstChild().getTextContent();
+					break;
+				case "extraImport":
+					toAdd = n.getFirstChild().getTextContent();
+					toAdd = toAdd.strip();
+					extraImports.add(new Type(toAdd));
+					break;
+				case "extraImplImport":
+					toAdd = n.getFirstChild().getTextContent();
+					toAdd = toAdd.strip();
+					extraImplImports.add(new Type(toAdd));
 					break;
 				default:
 					throw new IllegalStateException(
@@ -77,11 +100,9 @@ public class AttributeSet {
 			Node n = nnm.item(i);
 			String attrName = n.getNodeName();
 			String attrValue = n.getNodeValue();
-			switch (attrName) {
-			case "name":
+			if (attrName.equals("name")) {
 				sName = attrValue;
-				break;
-			default:
+			} else {
 				throw new IllegalStateException("Unexpected attribtue name " + attrName);
 			}
 		}
@@ -99,33 +120,39 @@ public class AttributeSet {
 		return StringUtil.capitalizeFirstChar(name);
 	}
 
-	private String getExtendsPhrase() {
-		if (subsets.isEmpty()) {
-			return "";
-		}
-		String[] supers = new String[subsets.size()];
-		for (int i = 0; i < supers.length; i++) {
-			supers[i] = subsets.get(i).getInterfaceName();
-		}
-		return "extends " + String.join(", ", supers);
-	}
-
 	public void generateInterface(File srcRoot, String[] packageName) throws IOException {
 		CodeFile ans = new CodeFile(CodeFileType.INTERFACE, packageName, getInterfaceName());
 
-		for(Attribute attr : attributes) {
+		for (Attribute attr : attributes) {
 			attr.applyToInterfaceFile(ans);
 		}
 
-		for(AttributeSet as : subsets) {
+		for (AttributeSet as : subsets) {
 			ans.addInterface(as.getInterfaceName());
 		}
+
+		if (extraBody != null) {
+			ans.addExtraBody(CodeBlockList.fromString(extraBody));
+		}
+		ans.addImports(extraImports);
 
 		ans.generate(srcRoot);
 	}
 
 	public void applyToClassFile(CodeFile cf) {
 		cf.addInterface(getInterfaceName());
+
+		if (extraImplBody != null) {
+			cf.addExtraBody(CodeBlockList.fromString(extraImplBody));
+		}
+
+		for (AttributeSet child : subsets) {
+			child.applyToClassFile(cf);
+		}
+
+		cf.addImports(extraImports);
+		cf.addImports(extraImplImports);
+
 	}
 
 	public Set<Attribute> getAllAttributesRecursive() {

@@ -1,31 +1,32 @@
 package org.guideme.guideme.readers.xml_guide_reader;
 
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.guideme.generated.model.Pref;
 import org.guideme.guideme.settings.GuideSettings;
 
 public class PrefHandler {
+	private static Logger logger = LogManager.getLogger();
+	
 	private PrefHandler() {
 	}
 
-	public static void handle(XMLStreamReader reader, GuideSettings guideSettings) {
-		String key;
-		String screen = "";
-		String type;
-		String value = "";
-		String order = "";
+	public static void handle(Pref pref, GuideSettings guideSettings) {
+
 		int sortOrder = 0;
-		key = reader.getAttributeValue(null, "key");
-		type = reader.getAttributeValue(null, "type");
-		order = reader.getAttributeValue(null, "sortOrder");
+		
+		String key = pref.getKey();
+		String type = pref.getType();
+		String screen = pref.getScreen();
+		String value = pref.getValue();
+		String order = pref.getSortOrder();
 		try {
 			sortOrder = Integer.parseInt(order);
-		} catch (Exception ex) {
+		} catch (NumberFormatException ex) {
+			logger.warn("Malformed sortOrder '{}' in pref field of guide xml.", order);
 			sortOrder = 0;
 		}
 		if (!guideSettings.keyExists(key, type)) {
-			screen = reader.getAttributeValue(null, "screen");
-			value = reader.getAttributeValue(null, "value");
 			if (type.equals("String")) {
 				guideSettings.addPref(key, value, screen, sortOrder);
 			}

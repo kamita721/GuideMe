@@ -28,10 +28,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.guideme.guideme.model.Button;
+import org.guideme.generated.model.Button;
+import org.guideme.generated.model.IText;
+import org.guideme.generated.model.Page;
 import org.guideme.guideme.model.Chapter;
 import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.model.Page;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.ui.main_shell.MainShell;
@@ -383,10 +384,11 @@ public class DebugShell {
 		}
 		dispPage = guide.getChapters().get("default").getPages().get(page);
 		StringBuilder txtBuilder = new StringBuilder();
-		for (int i = 0; i < dispPage.getTextCount(); i++) {
-			if (dispPage.getText(i).canShow(guide.getFlags())) {
-				txtBuilder.append(dispPage.getText(i).getText());
+		for(IText objText : dispPage.getTexts()) {
+			if (objText.canShow(guide.getFlags())) {
+				txtBuilder.append(objText.getText());
 			}
+			
 		}
 		txtText.setText(txtBuilder.toString());
 
@@ -395,7 +397,7 @@ public class DebugShell {
 		}
 
 		// Java Script
-		txtScript.setText(dispPage.getjScript());
+		txtScript.setText(dispPage.getJScript());
 
 		tabFolder.layout();
 		tabFolder.pack();

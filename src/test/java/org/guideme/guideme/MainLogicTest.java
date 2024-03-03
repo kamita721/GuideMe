@@ -11,9 +11,9 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.guideme.generated.model.Page;
 import org.guideme.guideme.model.Chapter;
 import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.model.Page;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;

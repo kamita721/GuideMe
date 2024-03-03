@@ -28,6 +28,15 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
+
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
@@ -35,16 +44,15 @@ import java.nio.charset.StandardCharsets;
 
 import javax.swing.JRootPane;
 
-import org.eclipse.swt.widgets.*;
+import org.guideme.generated.model.Audio;
+import org.guideme.generated.model.Button;
+import org.guideme.generated.model.Page;
+import org.guideme.generated.model.Timer;
+import org.guideme.generated.model.Video;
+import org.guideme.generated.model.WebcamButton;
 import org.guideme.guideme.MainLogic;
-import org.guideme.guideme.model.Audio;
-import org.guideme.guideme.model.Button;
 import org.guideme.guideme.model.Chapter;
 import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.model.Page;
-import org.guideme.guideme.model.Timer;
-import org.guideme.guideme.model.Video;
-import org.guideme.guideme.model.WebcamButton;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 import org.guideme.guideme.scripting.OverRide;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
@@ -1167,9 +1175,9 @@ public class MainShell {
 
 		setFontUncooked(btnDynamic, buttonFont, button.getFontName(), button.getFontHeight());
 
-		Color bgColor1 = button.getbgColor1();
-		Color bgColor2 = button.getbgColor2();
-		Color fontColor = button.getfontColor();
+		Color bgColor1 = button.getBgColor1();
+		Color bgColor2 = button.getBgColor2();
+		Color fontColor = button.getFontColor();
 
 		btnDynamic.setDefaultColors(bgColor1, bgColor2, btnDynamic.getBackground(), fontColor);
 		btnDynamic.setText(strBtnText);
@@ -1191,7 +1199,7 @@ public class MainShell {
 		logger.debug("displayPage Button Text {} Target {} Set {} UnSet {} ", strBtnText,
 				strBtnTarget, strButtonSet, strButtonUnSet);
 
-		String hotKey = button.getHotKey();
+		String hotKey = button.getHotkey();
 		if (!hotKey.equals("")) {
 			hotKeys.put(hotKey, btnDynamic);
 		}
@@ -1204,8 +1212,8 @@ public class MainShell {
 		btnDynamic.setData("Target", strBtnTarget);
 		if (isWebCamButton) {
 			WebcamButton webcamButton = (WebcamButton) button;
-			btnDynamic.setData("webcamFile", webcamButton.get_destination());
-			if (webcamButton.get_type().equals("Capture")) {
+			btnDynamic.setData("webcamFile", webcamButton.getDestination());
+			if (webcamButton.getType().equals("Capture")) {
 				btnDynamic.addSelectionListener(new WebcamCaptureListener(this));
 			}
 		} else {
@@ -1236,7 +1244,7 @@ public class MainShell {
 	public void runJscript(String function, OverRide overRide, boolean pageLoading) {
 		Page objCurrPage = guide.getChapters().get(guideSettings.getChapter()).getPages()
 				.get(guideSettings.getCurrPage());
-		String pageJavascript = objCurrPage.getjScript();
+		String pageJavascript = objCurrPage.getJScript();
 		runJavascript(function, pageJavascript, overRide, pageLoading);
 	}
 
@@ -1754,7 +1762,7 @@ public class MainShell {
 		String imgPath = comonFunctions.getMediaFullPath(strVideo, appSettings.getFileSeparator(),
 				appSettings, guide);
 
-		int repeat = video.getRepeat();
+		int repeat = Integer.parseInt(video.getRepeat());
 
 		// Play video
 		playVideo(imgPath, intStartAt, intStopAt, repeat, video.getTarget(), video.getJscript(),
@@ -1815,7 +1823,7 @@ public class MainShell {
 	}
 
 	public void addButtonUncooked(Button btn) {
-		String javascriptid = btn.getjScript();
+		String javascriptid = btn.getJScript();
 		addButton(btn, javascriptid);
 	}
 

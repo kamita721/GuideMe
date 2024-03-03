@@ -1,7 +1,6 @@
 package org.guideme.codegen.code_builder;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +10,10 @@ public class CodeBlockList extends CodeBlock{
 
 	public void addContent(CodeBlock cb) {
 		content.add(cb);
+	}
+	
+	public void addLine(String fmt, Object...args) {
+		addContent(new Line(fmt, args));
 	}
 	
 	@Override
@@ -35,6 +38,15 @@ public class CodeBlockList extends CodeBlock{
 		for(CodeBlock cb : content) {
 			ans.addAll(cb.getThrowables());
 		}	
+		return ans;
+	}
+	
+	public static CodeBlockList fromString(String code) {
+		CodeBlockList ans = new CodeBlockList();
+		for(String line : code.split("\n")) {
+			line=line.strip();
+			ans.addContent(new Line(line));
+		}
 		return ans;
 	}
 

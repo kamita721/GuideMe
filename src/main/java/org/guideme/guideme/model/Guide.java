@@ -2,11 +2,21 @@ package org.guideme.guideme.model;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
+import org.guideme.generated.model.Delay;
+import org.guideme.generated.model.Image;
+import org.guideme.generated.model.Page;
+import org.guideme.generated.model.Timer;
 import org.guideme.guideme.scripting.Jscript;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
@@ -89,9 +99,11 @@ public class Guide {
 			Map<String, Chapter> chapters = guide.getChapters();
 			Chapter chapter = new Chapter("default");
 			chapters.put("default", chapter);
-			Page page404 = new Page("GuideMe404Error", "", "", "", "", false, "", "");
+			Page page404 = new Page();
+			page404.setId("GuideMe404Error");
 			chapter.getPages().put(page404.getId(), page404);
-			Page start = new Page("start", "", "", "", "", false, "", "");
+			Page start = new Page();
+			start.setId("start");
 
 			String appDir = appSettings.getUserDir().replace("\\", "\\\\");
 			String fileName = "Welcome_" + appSettings.getLanguage() + "_"
@@ -111,7 +123,7 @@ public class Guide {
 			String strLoadScript = "function pageLoad() {";
 			strLoadScript = strLoadScript + "\toverRide.setLeftHtml(\"" + strHtml2 + "\");";
 			strLoadScript = strLoadScript + "}";
-			start.setjScript(strLoadScript);
+			start.setJScript(strLoadScript);
 			guide.globaljScript = "";
 			guide.inPrefGuide = false;
 			guide.css = "";
@@ -301,9 +313,9 @@ public class Guide {
 
 	public Calendar setDelay(Delay delay) {
 		logger.debug("displayPage Delay");
-		guide.setDelStyle(delay.getstyle());
+		guide.setDelStyle(delay.getStyle());
 		guide.setDelTarget(delay.getTarget());
-		guide.setDelayjScript(delay.getjScript());
+		guide.setDelayjScript(delay.getJscript());
 		guide.setDelayScriptVar(delay.getScriptVar());
 		int intDelSeconds = delay.getDelaySec();
 		guide.setDelStartAtOffSet(delay.getStartWith());
@@ -890,7 +902,14 @@ public class Guide {
 	 */
 	public void addTimer(String delay, String jScript, String imageId, String text, String set,
 			String unSet, String id) {
-		Timer timer = new Timer(delay, jScript, imageId, text, "", "", set, unSet, "", "", id);
+		Timer timer = new Timer();
+		timer.setDelay(delay);
+		timer.setJscript(jScript);
+		timer.setImageId(imageId);
+		timer.setText(text);
+		timer.setSet(unSet);
+		timer.setUnSet(unSet);
+		timer.setId(id);
 		Calendar timCountDown = Calendar.getInstance();
 		timCountDown.add(Calendar.SECOND, timer.getTimerSec());
 		timer.setTimerEnd(timCountDown);
@@ -911,7 +930,13 @@ public class Guide {
 	 */
 	public void addTimer(String delay, String jScript, String set, String unSet, String id,
 			String target) {
-		Timer timer = new Timer(delay, jScript, "", "", "", "", set, unSet, "", "", id, target);
+		Timer timer = new Timer();
+		timer.setDelay(delay);;
+		timer.setJscript(jScript);
+		timer.setSet(unSet);
+		timer.setUnSet(unSet);
+		timer.setId(id);
+		timer.setTarget(target);
 		Calendar timCountDown = Calendar.getInstance();
 		timCountDown.add(Calendar.SECOND, timer.getTimerSec());
 		timer.setTimerEnd(timCountDown);

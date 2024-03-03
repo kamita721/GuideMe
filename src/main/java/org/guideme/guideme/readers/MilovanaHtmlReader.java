@@ -5,10 +5,10 @@ import java.io.IOException;
 import org.apache.commons.lang.CharSetUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.generated.model.Page;
+import org.guideme.generated.model.Text;
 import org.guideme.guideme.model.Chapter;
 import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.model.Page;
-import org.guideme.guideme.model.Text;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -64,13 +64,16 @@ public class MilovanaHtmlReader {
 
 	private void addPage(Chapter chapter, Document doc, int pageNr) {
 
-		Page page = new Page(String.valueOf(pageNr));
+		Page page = new Page();
+		page.setId(String.valueOf(pageNr));
 
 		Elements elm = doc.select("#tease_content").select(".text");
 		if (elm.size() > 0) {
 			String text = elm.first().text().replace('\r', ' ').replace('\n', ' ');
 			text = CharSetUtils.squeeze(text, " ");
-			page.addText(new Text(text));
+			Text textToAdd = new Text();
+			textToAdd.setText(text);
+			page.addText(textToAdd);
 		}
 			
 		chapter.getPages().put(page.getId(), page);

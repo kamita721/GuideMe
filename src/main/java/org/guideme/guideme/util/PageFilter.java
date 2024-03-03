@@ -2,8 +2,8 @@ package org.guideme.guideme.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.generated.model.Page;
 import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.model.Page;
 
 import java.util.*;
 import java.util.regex.Matcher;

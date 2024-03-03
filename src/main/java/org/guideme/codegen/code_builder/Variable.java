@@ -14,6 +14,6 @@ public class Variable {
 	}
 	
 	public String getDecl() {
-		return "%s %s".formatted(type.getTypeBrief(), name);
+		return "%s %s".formatted(type.getTypeAbstract().getTypeBrief(), name);
 	}
 }

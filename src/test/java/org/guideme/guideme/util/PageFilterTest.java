@@ -2,8 +2,8 @@ package org.guideme.guideme.util;
 
 import static org.junit.Assert.*;
 
+import org.guideme.generated.model.Page;
 import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.model.Page;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,16 +45,22 @@ public class PageFilterTest {
 	}
 
 	private void addShowablePage(String id) {
+		Page page = new Page();
+		page.setId(id);
 		guide.getChapters().get(CHAPTER).getPages().put(
 				id,
-				new Page(id, "", "", "", "", false, "", "")
+				page
 		);
 	}
 
 	private void addUnshowablePage(String id) {
+		//TODO, does anything prevent a tease from setting a flag called "unset"?
+		Page page = new Page();
+		page.setId(id);
+		page.setIfSet("unset");
 		guide.getChapters().get(CHAPTER).getPages().put(
 				id,
-				new Page(id, "unset", "", "", "", false, "", "")
+				page
 		);
 	}
 

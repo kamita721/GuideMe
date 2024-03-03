@@ -3,6 +3,8 @@ package org.guideme.codegen.code_builder;
 public class Type {
 	private final String typeFull;
 
+	public static final Type VOID = new Type("void");
+
 	public Type(String typeFull) {
 		this.typeFull = typeFull;
 	}
@@ -12,8 +14,17 @@ public class Type {
 		return ss[ss.length - 1];
 	}
 
+	public Type getTypeAbstract() {
+		if (isType("java.util.ArrayList")) {
+			String innerType = getGenericParameter().getTypeBrief();
+			return new Type("java.util.List<%s>".formatted(innerType));
+		}
+		return this;
+	}
+
 	public String getTypeFull() {
-		return typeFull;
+		/* If the type contains a generic paramter, exclude it. */
+		return typeFull.split("<")[0];
 	}
 
 	public boolean isImplicitType() {
@@ -36,14 +47,30 @@ public class Type {
 			throw new IllegalStateException();
 		}
 		Type o = (Type) other;
-		return typeFull.equals(o.typeFull);
+		/*
+		 * I could make an arguement about type erasure here. But really I am just
+		 * abusing the fact that we only use equality for the import statements.
+		 */
+		return getTypeFull().equals(o.getTypeFull());
 	}
 
 	public int hashCode() {
-		return typeFull.hashCode();
+		return getTypeFull().hashCode();
 	}
 
 	public boolean isType(String t) {
-		return (typeFull.equals(t));
+		return (getTypeFull().equals(t));
 	}
+	
+	public Type getGenericParameter() {
+		String[] ss = typeFull.split("[<>]");
+		if (ss.length > 2 || ss.length == 0) {
+			throw new IllegalStateException();
+		}
+		if (ss.length == 1) {
+			return null;
+		}
+		return new Type(ss[1]);
+	}
+
 }

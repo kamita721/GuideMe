@@ -13,38 +13,69 @@ public class Method {
 	private final List<Variable> args = new ArrayList<>();
 	private final Set<Type> throwables = new HashSet<>();
 	private final List<CodeBlock> body = new ArrayList<>();
+	private final List<Type> imports = new ArrayList<>();
 	private String staticPhrase = "";
+	private String visibility = "public";
 
 	public Method(Type returnType, String name) {
 		this.returnType = returnType;
 		this.name = name;
 	}
+	
+	public AbstractMethod asAbstract() {
+		AbstractMethod ans = new AbstractMethod(returnType, name);
+		args.forEach(ans::addArg);
+		throwables.forEach(ans::addThrowable);
+		return ans;
+	}
 
 	public Set<Type> getAllImports() {
 		Set<Type> ans = new HashSet<>();
+		ans.addAll(imports);
 		if (returnType != null) {
 			ans.add(returnType);
 		}
 		for (Variable v : args) {
 			ans.add(v.type);
 		}
-		for(Type t : throwables) {
+		for (Type t : throwables) {
 			ans.add(t);
 		}
-		for(CodeBlock cb : body) {
+		for (CodeBlock cb : body) {
 			ans.addAll(cb.getImports());
 		}
 		ans.removeIf(Type::isImplicitType);
 		return ans;
 	}
 
+	public void addImport(Type t) {
+		if (!t.isImplicitType()) {
+			imports.add(t);
+		}
+	}
+
+	public void addImport(String t) {
+		addImport(new Type(t));
+	}
+
 	public void addCodeBlock(CodeBlock cb) {
 		body.add(cb);
 		throwables.addAll(cb.getThrowables());
 	}
+	
+	public void addThrowable(Type t) {
+		throwables.add(t);
+	}
+	public void addThrowable(String t) {
+		addThrowable(new Type(t));
+	}
 
 	public void makeStatic() {
 		staticPhrase = "static ";
+	}
+	
+	public void makePrivate() {
+		visibility = "private";
 	}
 
 	public void addArg(Variable v) {
@@ -52,7 +83,7 @@ public class Method {
 	}
 
 	public void generate(CodeBuilder builder) {
-		builder.addLine("public %s%s%s(%s) %s{", staticPhrase, getTypePhrase(), name,
+		builder.addLine("%s %s%s%s(%s) %s{", visibility, staticPhrase, getTypePhrase(), name,
 				getArgsPhrase(), getThrowsPhrase());
 
 		for (CodeBlock cb : body) {

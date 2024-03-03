@@ -2,9 +2,9 @@ package org.guideme.guideme.readers.xml_guide_reader;
 
 import javax.xml.stream.XMLStreamReader;
 
+import org.guideme.generated.model.Page;
 import org.guideme.guideme.model.Chapter;
 import org.guideme.guideme.model.Guide;
-import org.guideme.guideme.model.Page;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.ui.debug_shell.DebugShell;

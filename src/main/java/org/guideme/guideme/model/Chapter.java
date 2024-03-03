@@ -3,6 +3,8 @@ package org.guideme.guideme.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.guideme.generated.model.Page;
+
 public class Chapter {
 	private String id;
 	private Map<String, Page> pages = new HashMap<>();

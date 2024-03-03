@@ -8,7 +8,7 @@
         <attributeSet name="playable">
             <attribute name="start-at" javaName="startAt" type="java.lang.String"/>
             <attribute name="stop-at" javaName="stopAt" type="java.lang.String"/>
-            <attribute name="repeat" type="java.lang.String"/>
+            <attribute name="loops" javaName="repeat" type="java.lang.String"/>
             <attribute name="volume" type="int" default="100"/>
             <attribute javaName="jscript" name="onTriggered" type="java.lang.String"/>
             <attribute javaName="jScript" name="onclick" type="java.lang.String"/>
@@ -16,15 +16,41 @@
         <attributeSet name="flagSet">
             <attribute name="set" type="java.lang.String"/>
             <attribute name="unSet" type="java.lang.String"/>
+            <extraImport>java.util.List</extraImport>
+            <extraImplImport>org.guideme.guideme.scripting.functions.ComonFunctions</extraImplImport>
+            <extraBody><![CDATA[
+                public void setUnSet(List<String> setList);
+            ]]></extraBody>
+            <extraImplBody><![CDATA[
+                public void setUnSet(List<String> setList) {
+                    ComonFunctions.getComonFunctions().setFlags(set, setList);
+                    ComonFunctions.getComonFunctions().unsetFlags(unSet, setList);
+                }   
+            ]]></extraImplBody>
         </attributeSet>
         <attributeSet name="filterable">
             <attribute name="if-set" javaName="ifSet" type="java.lang.String"/>
             <attribute name="if-not-set" javaName="ifNotSet" type="java.lang.String"/>
             <attribute name="if-before" javaName="ifBefore" type="java.time.LocalTime"/>
             <attribute name="if-after" javaName="ifAfter" type="java.time.LocalTime"/>
+            <extraImport>java.util.List</extraImport>
+            <extraImplImport>org.guideme.guideme.scripting.functions.ComonFunctions</extraImplImport>
+            <extraBody><![CDATA[
+                public boolean canShow(List<String> setList);
+            ]]></extraBody>
+            <extraImplBody><![CDATA[
+                public boolean canShow(List<String> setList) {
+                    boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
+                    if (retVal) {
+                        retVal = ComonFunctions.getComonFunctions().canShow(setList, ifSet, ifNotSet);
+                    }
+                    return retVal;
+                }   
+            ]]></extraImplBody>
         </attributeSet>
         <attributeSet name="Audio">
             <attribute ref="id"/>
+            <attribute ref="target"/>
             <attributeSet ref="playable"/>
             <attributeSet ref="flagSet"/>
             <attributeSet ref="filterable"/>
@@ -41,12 +67,13 @@
             <attribute ref="scriptvar"/>
             <attribute name="fontName" type="java.lang.String"/>
             <attribute name="fontHeight" type="int" default="0"/>
-            <attribute name="fontColor" type="org.eclipse.swt.graphics.Color" default="comonFunctions.getSwtColor(SWT.COLOR_BLACK)"/>
-            <attribute name="bgColor1" type="org.eclipse.swt.graphics.Color" default="comonFunctions.getSwtColor(SWT.COLOR_WHITE)"/>
-            <attribute name="bgColor2" type="org.eclipse.swt.graphics.Color" default="comonFunctions.getSwtColor(SWT.COLOR_BLACK)"/>
+            <attribute name="fontColor" type="org.eclipse.swt.graphics.Color" default="ComonFunctions.getComonFunctions().getSwtColor(SWT.COLOR_BLACK)"/>
+            <attribute name="bgColor1" type="org.eclipse.swt.graphics.Color" default="ComonFunctions.getComonFunctions().getSwtColor(SWT.COLOR_WHITE)"/>
+            <attribute name="bgColor2" type="org.eclipse.swt.graphics.Color" default="ComonFunctions.getComonFunctions().getSwtColor(SWT.COLOR_BLACK)"/>
             <attribute name="sortOrder" type="int" default="1"/>
             <attribute name="disabled" type="boolean" default="false"/>
             <attribute javaName="defaultBtn" name="default" type="boolean" default="true"/>
+            <attribute ref="text"/>
         </attributeSet>
         <attributeSet name="IText">
             <attributeSet ref="filterable"/>
@@ -96,18 +123,41 @@
             </element>
         </element>
 
-        <element name="Page" callback="parseState.setPage({});\ndebugShell.addPagesCombo(parseState.getPage())">
+        <element name="Page" callback="parseState.setPage({});\ndebugShell.addPagesCombo(parseState.getPage().getId())">
             <attribute ref="id"/>
+            <attribute name="jScript" type="java.lang.String"/>
+            <attribute name="" javaName="text" type="java.util.ArrayList&lt;IText&gt;"/>
+            <attribute name="" javaName="leftText" type="java.util.ArrayList&lt;IText&gt;"/>
+            <attribute name="" javaName="button" type="java.util.ArrayList&lt;Button&gt;"/>
+            <attribute name="" javaName="globalButton" type="java.util.ArrayList&lt;GlobalButton&gt;"/>
+            <attribute name="" javaName="webcamButton" type="java.util.ArrayList&lt;WebcamButton&gt;"/>
+            <attribute name="" javaName="delay" type="java.util.ArrayList&lt;Delay&gt;"/>
+            <attribute name="" javaName="timer" type="java.util.ArrayList&lt;Timer&gt;"/>
+            <attribute name="" javaName="video" type="java.util.ArrayList&lt;Video&gt;"/>
+            <attribute name="" javaName="webcam" type="java.util.ArrayList&lt;Webcam&gt;"/>
+            <attribute name="" javaName="image" type="java.util.ArrayList&lt;Image&gt;"/>
+            <attribute name="" javaName="loadGuide" type="java.util.ArrayList&lt;LoadGuide&gt;"/>
+            <attribute name="" javaName="audio" type="java.util.ArrayList&lt;Audio&gt;"/>
+            <attribute name="" javaName="audio2" type="java.util.ArrayList&lt;Audio&gt;"/>
+            <attribute name="" javaName="metronome" type="java.util.ArrayList&lt;Metronome&gt;"/>
             <attributeSet ref="filterable"/>
             <attributeSet ref="flagSet"/>
+            <extraImport>org.guideme.guideme.readers.xml_guide_reader.TeaseHandler</extraImport>
         </element>
 
         <element name="Metronome" callback="page.addMetronome({})">
             <attributeSet ref="filterable"/>
             <attribute name="bpm" type="java.lang.String"/>
-            <attribute name="rythm" type="java.lang.String"/>
-            <attribute name="beats" javaName="resolutions" type="int" default="4"/>
+            <attribute name="rhythm" type="java.lang.String"/>
+            <attribute name="beats" javaName="resolution" type="int" default="4"/>
             <attribute name="loops" type="int" default="-1"/>
+            <extraImport>org.guideme.guideme.scripting.functions.ComonFunctions</extraImport>
+            <extraBody><![CDATA[
+                //TODO it is kinda bad that we rely on the case distinction between getbpm and getBpm
+                public int getbpm() {
+                    return ComonFunctions.getComonFunctions().getRandom(bpm);
+                }
+            ]]></extraBody>
         </element>
         
         <element name="Image" callback="page.addImage({})">
@@ -146,6 +196,11 @@
             <attribute name="style" type="java.lang.String"/>
             <attribute ref="onTriggered"/>
             <attribute ref="scriptvar"/>
+            <extraBody><![CDATA[
+                public int getDelaySec() {
+                    return ComonFunctions.getComonFunctions().getRandom(seconds);
+                }   
+            ]]></extraBody>
         </element>
 
         <element name="Timer" callback="page.addTimer({})">
@@ -154,14 +209,20 @@
             <attribute ref="id"/>
             <attribute ref="target"/>
             <attribute name="imageId" type="java.lang.String"/> 
+            <attribute name="seconds" javaName="delay" type="java.lang.String"/> 
+            <attribute name="" javaName="timerEnd" type="java.util.Calendar"/> <!-- TODO this shoudln't really be part of the model-->
             <attributeSet ref="filterable"/>
             <attributeSet ref="flagSet"/>
             <attribute ref="text"/>
+            <extraBody><![CDATA[
+                public int getTimerSec() {
+                    return ComonFunctions.getComonFunctions().getRandom(delay);
+                }   
+            ]]></extraBody>
         </element>
 
         <element name="Button" javaName="BasicButton" callback="page.addButton({})">
             <attributeSet ref="Button"/>
-            <attribute ref="text"/>
         </element>
 
         <element name="GlobalButton" callback="page.addGlobalButton({})">
@@ -185,7 +246,7 @@
             <attribute ref="text"/>
         </element>
 
-        <element name="javascript" callback="page.setjScript({}.getText())">
+        <element name="javascript" callback="page.setJScript({}.getText())">
             <attribute ref="text"/>
         </element>
 
@@ -197,7 +258,7 @@
             <attribute ref="text"/>
         </element>
 
-        <element name="Include" callback="handleInclude({}, appSettings, guide, presName, chapter, debugShell)">
+        <element name="Include" callback="XmlGuideReader.handleInclude({}, appSettings, guide, presName, chapter, debugShell)">
             <attribute name="file" type="java.lang.String"/>
         </element>
 

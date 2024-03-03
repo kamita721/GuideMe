@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
 
-import org.guideme.guideme.model.Timer;
+import org.guideme.generated.model.Timer;
 
 class ShellTimer implements Runnable {
 	/**
@@ -64,7 +64,7 @@ class ShellTimer implements Runnable {
 		mainShell.setUnsetFlagsUncooked(timer.getSet(), timer.getUnSet());
 		mainShell.setImageByUncooked(timer.getImageId());
 		mainShell.setBrwsTextUncooked(timer.getText());
-		mainShell.runJscriptUncooked(timer.getjScript(), false);
+		mainShell.runJscriptUncooked(timer.getJscript(), false);
 		mainShell.gotoTargetUncooked(timer.getTarget());
 		
 	}
