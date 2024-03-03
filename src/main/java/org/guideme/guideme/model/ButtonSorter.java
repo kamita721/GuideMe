@@ -9,10 +9,9 @@ public class ButtonSorter implements Comparator<Button> {
 
 	private int getMetaSort(Button b) {
 		if (b instanceof GlobalButton gb) {
-			switch(gb.getPlacement()) {
-			case BOTTOM:
+			if (gb.getPlacement() == GlobalButtonPlacement.BOTTOM) {
 				return 1;
-			case TOP:
+			} else {
 				return -1;
 			}
 		}
@@ -27,7 +26,7 @@ public class ButtonSorter implements Comparator<Button> {
 	public int compare(Button o1, Button o2) {
 		int sort1 = getMetaSort(o1);
 		int sort2 = getMetaSort(o2);
-		if(sort1 == sort2) {
+		if (sort1 == sort2) {
 			sort1 = getSort(o1);
 			sort2 = getSort(o2);
 		}

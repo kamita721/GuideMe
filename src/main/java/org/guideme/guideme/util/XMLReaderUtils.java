@@ -87,16 +87,17 @@ public class XMLReaderUtils {
 		return Boolean.valueOf(sAns);
 	}
 
-	public static GlobalButtonPlacement getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName,
-			GlobalButtonPlacement defaultValue) {
+	public static GlobalButtonPlacement getAttributeOrDefaultNoNS(XMLStreamReader reader,
+			String localName, GlobalButtonPlacement defaultValue) {
 		String sAns = reader.getAttributeValue(null, localName);
 		if (sAns == null || sAns.trim().isEmpty()) {
 			return defaultValue;
 		}
 		return GlobalButtonPlacement.fromString(sAns);
 	}
-	public static GlobalButtonAction getAttributeOrDefaultNoNS(XMLStreamReader reader, String localName,
-			GlobalButtonAction defaultValue) {
+
+	public static GlobalButtonAction getAttributeOrDefaultNoNS(XMLStreamReader reader,
+			String localName, GlobalButtonAction defaultValue) {
 		String sAns = reader.getAttributeValue(null, localName);
 		if (sAns == null || sAns.trim().isEmpty()) {
 			return defaultValue;
@@ -205,6 +206,7 @@ public class XMLReaderUtils {
 		}
 		return defaultValue;
 	}
+
 	public static String getStringContentOrDefault(XMLStreamReader reader, String defaultValue)
 			throws XMLStreamException {
 		reader.next();

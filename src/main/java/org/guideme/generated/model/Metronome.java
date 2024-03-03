@@ -13,37 +13,49 @@ public class Metronome implements Filterable  {
 	private String rhythm = "";
 	private int resolution = 4;
 	private String bpm = "";
-	private String ifNotSet = "";
 	private LocalTime ifAfter;
+	private String ifNotSet = "";
 
 	public Metronome(XMLStreamReader reader) {
-		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
-		this.bpm = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "bpm","");
 		this.resolution = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "beats",4);
-		this.loops = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "loops",-1);
-		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
-		this.rhythm = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "rhythm","");
-		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
+		this.bpm = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "bpm","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
+		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
+		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
+		this.loops = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "loops",-1);
+		this.rhythm = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "rhythm","");
 	}
 
 	public Metronome() {
 	}
 
-	public String getIfNotSet() {
-		return ifNotSet;
+	public int getResolution() {
+		return resolution;
 	}
 	public String getBpm() {
 		return bpm;
 	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
+	public void setResolution(int resolution) {
+		this.resolution = resolution;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	public void setRhythm(String rhythm) {
 		this.rhythm = rhythm;
 	}
-	public String getRhythm() {
-		return rhythm;
+	public int getLoops() {
+		return loops;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	public void setLoops(int loops) {
 		this.loops = loops;
@@ -51,32 +63,20 @@ public class Metronome implements Filterable  {
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public int getLoops() {
-		return loops;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public void setResolution(int resolution) {
-		this.resolution = resolution;
+	public String getRhythm() {
+		return rhythm;
 	}
 	public LocalTime getIfAfter() {
 		return ifAfter;
 	}
-	public int getResolution() {
-		return resolution;
-	}
 	public void setBpm(String bpm) {
 		this.bpm = bpm;
 	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	
 	public boolean canShow(List<String> setList) {

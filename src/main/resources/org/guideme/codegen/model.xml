@@ -69,7 +69,7 @@
             <attribute name="fontHeight" type="int" default="0"/>
             <attribute name="fontColor" type="org.eclipse.swt.graphics.Color" default="ComonFunctions.getComonFunctions().getSwtColor(SWT.COLOR_BLACK)"/>
             <attribute name="bgColor1" type="org.eclipse.swt.graphics.Color" default="ComonFunctions.getComonFunctions().getSwtColor(SWT.COLOR_WHITE)"/>
-            <attribute name="bgColor2" type="org.eclipse.swt.graphics.Color" default="ComonFunctions.getComonFunctions().getSwtColor(SWT.COLOR_BLACK)"/>
+            <attribute name="bgColor2" type="org.eclipse.swt.graphics.Color" default="this.bgColor1" sortOrder="1"/>
             <attribute name="sortOrder" type="int" default="1"/>
             <attribute name="disabled" type="boolean" default="false"/>
             <attribute javaName="defaultBtn" name="default" type="boolean" default="true"/>
@@ -227,7 +227,7 @@
 
         <element name="GlobalButton" callback="page.addGlobalButton({})">
             <attributeSet ref="Button"/>
-            <attribute name="Placement" type="org.guideme.guideme.model.GlobalButtonPlacement" default="GlobalButtonPlacement.BOTTOM"/>
+            <attribute name="placement" type="org.guideme.guideme.model.GlobalButtonPlacement" default="GlobalButtonPlacement.BOTTOM"/>
             <attribute name="action" type="org.guideme.guideme.model.GlobalButtonAction" default="GlobalButtonAction.NONE"/>
         </element>
 

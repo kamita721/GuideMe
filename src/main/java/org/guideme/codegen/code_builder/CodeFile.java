@@ -74,6 +74,10 @@ public class CodeFile {
 			imports.add(t);
 		}
 	}
+	
+	public void addImport(String t) {
+		addImport(new Type(t));
+	}
 
 	public void addImports(Collection<Type> imports) {
 		for (Type t : imports) {

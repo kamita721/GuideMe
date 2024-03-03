@@ -7,87 +7,87 @@ import javax.xml.stream.XMLStreamReader;
 import java.time.LocalTime;
 public class Delay implements FlagSet, Filterable  {
 
-	private String seconds = "";
 	private String ifSet = "";
+	private String seconds = "";
 	private String set = "";
 	private String scriptVar = "";
 	private LocalTime ifBefore;
 	private String style = "";
 	private String unSet = "";
 	private int startWith = 0;
-	private String target = "";
+	private LocalTime ifAfter;
 	private String ifNotSet = "";
 	private String jscript = "";
-	private LocalTime ifAfter;
+	private String target = "";
 
 	public Delay(XMLStreamReader reader) {
-		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
-		this.seconds = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "seconds","");
-		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
-		this.unSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "unSet","");
-		this.set = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "set","");
-		this.jscript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "onTriggered","");
-		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
-		this.scriptVar = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "scriptvar","");
-		this.startWith = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "start-with",0);
-		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
+		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
+		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
+		this.jscript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "onTriggered","");
+		this.scriptVar = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "scriptvar","");
+		this.seconds = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "seconds","");
+		this.set = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "set","");
+		this.startWith = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "start-with",0);
 		this.style = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "style","");
+		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
+		this.unSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "unSet","");
 	}
 
 	public Delay() {
 	}
 
-	public void setSet(String set) {
-		this.set = set;
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
 	}
-	public String getSet() {
-		return set;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public String getStyle() {
-		return style;
+	public String getJscript() {
+		return jscript;
 	}
 	public void setSeconds(String seconds) {
 		this.seconds = seconds;
 	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	public String getUnSet() {
+		return unSet;
 	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public String getTarget() {
-		return target;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public int getStartWith() {
-		return startWith;
-	}
-	public void setStyle(String style) {
-		this.style = style;
-	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	public String getSeconds() {
-		return seconds;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	public void setTarget(String target) {
 		this.target = target;
 	}
+	public String getStyle() {
+		return style;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public int getStartWith() {
+		return startWith;
+	}
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	public void setSet(String set) {
+		this.set = set;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public void setStyle(String style) {
+		this.style = style;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
 	public String getIfNotSet() {
 		return ifNotSet;
 	}
-	public String getJscript() {
-		return jscript;
+	public String getScriptVar() {
+		return scriptVar;
 	}
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
@@ -95,20 +95,20 @@ public class Delay implements FlagSet, Filterable  {
 	public void setStartWith(int startWith) {
 		this.startWith = startWith;
 	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public String getSeconds() {
+		return seconds;
 	}
-	public String getScriptVar() {
-		return scriptVar;
+	public String getSet() {
+		return set;
 	}
-	public String getUnSet() {
-		return unSet;
+	public String getIfSet() {
+		return ifSet;
 	}
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
 	}
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	
 	public boolean canShow(List<String> setList) {

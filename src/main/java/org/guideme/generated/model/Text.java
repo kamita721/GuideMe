@@ -12,14 +12,14 @@ public class Text implements Filterable, IText  {
 	private String ifSet = "";
 	private LocalTime ifBefore;
 	private String text = "";
-	private String ifNotSet = "";
 	private LocalTime ifAfter;
+	private String ifNotSet = "";
 
 	public Text(XMLStreamReader reader) throws XMLStreamException {
-		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
-		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
-		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
+		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
+		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.text = XmlGuideReader.processText(reader, "text","");
 	}
 
@@ -29,17 +29,8 @@ public class Text implements Filterable, IText  {
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
 	public LocalTime getIfAfter() {
 		return ifAfter;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
 	}
 	public String getIfSet() {
 		return ifSet;
@@ -47,11 +38,20 @@ public class Text implements Filterable, IText  {
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
-	public String getText() {
-		return text;
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
+	}
+	public String getText() {
+		return text;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	public void setText(String text) {
 		this.text = text;

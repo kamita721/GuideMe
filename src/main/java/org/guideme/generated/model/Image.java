@@ -10,25 +10,40 @@ public class Image implements Filterable  {
 	private String ifSet = "";
 	private LocalTime ifBefore;
 	private String id = "";
-	private String ifNotSet = "";
 	private LocalTime ifAfter;
+	private String ifNotSet = "";
 
 	public Image(XMLStreamReader reader) {
-		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
-		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
 		this.id = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "id","");
-		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
+		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
+		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 	}
 
 	public Image() {
 	}
 
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
 	public String getId() {
 		return id;
 	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public String getIfSet() {
+		return ifSet;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
 	public void setId(String id) {
 		this.id = id;
@@ -36,23 +51,8 @@ public class Image implements Filterable  {
 	public String getIfNotSet() {
 		return ifNotSet;
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
 	}
 	
 	public boolean canShow(List<String> setList) {

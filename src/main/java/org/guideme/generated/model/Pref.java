@@ -11,44 +11,44 @@ public class Pref  {
 	private String key = "";
 
 	public Pref(XMLStreamReader reader) {
-		this.screen = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "screen","");
 		this.key = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "key","");
+		this.screen = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "screen","");
+		this.sortOrder = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "sortOrder","");
 		this.type = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "type","");
 		this.value = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "value","");
-		this.sortOrder = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "sortOrder","");
 	}
 
 	public Pref() {
 	}
 
+	public void setSortOrder(String sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	public void setKey(String key) {
+		this.key = key;
+	}
+	public String getScreen() {
+		return screen;
+	}
+	public String getSortOrder() {
+		return sortOrder;
+	}
+	public String getType() {
+		return type;
+	}
 	public void setType(String type) {
 		this.type = type;
 	}
 	public void setScreen(String screen) {
 		this.screen = screen;
 	}
-	public String getKey() {
-		return key;
-	}
-	public String getType() {
-		return type;
-	}
 	public String getValue() {
 		return value;
 	}
+	public String getKey() {
+		return key;
+	}
 	public void setValue(String value) {
 		this.value = value;
-	}
-	public void setKey(String key) {
-		this.key = key;
-	}
-	public String getSortOrder() {
-		return sortOrder;
-	}
-	public String getScreen() {
-		return screen;
-	}
-	public void setSortOrder(String sortOrder) {
-		this.sortOrder = sortOrder;
 	}
 }

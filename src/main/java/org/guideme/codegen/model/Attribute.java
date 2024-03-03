@@ -26,6 +26,7 @@ public class Attribute implements Comparable<Attribute> {
 	private final Type type;
 	private final String defaultValue;
 	private final boolean isText;
+	private final int sortOrder;
 
 	private static HashMap<String, Attribute> allAttributes = new HashMap<>();
 
@@ -53,6 +54,7 @@ public class Attribute implements Comparable<Attribute> {
 		String sType = null;
 		String sDefaultValue = "";
 		String sJavaName = null;
+		int iSortOrder=0;
 		boolean bIsText = false;
 
 		for (int i = 0; i < nnm.getLength(); i++) {
@@ -75,6 +77,9 @@ public class Attribute implements Comparable<Attribute> {
 			case "textContent":
 				bIsText = Boolean.parseBoolean(attrValue);
 				break;
+			case "sortOrder":
+				iSortOrder = Integer.parseInt(attrValue);
+				break;
 			default:
 				throw new IllegalStateException("Unexpected attribtue name " + attrName);
 			}
@@ -96,6 +101,7 @@ public class Attribute implements Comparable<Attribute> {
 		defaultValue = sDefaultValue;
 		javaName = sJavaName;
 		isText = bIsText;
+		sortOrder = iSortOrder;
 
 		logger.info("Attribute {} initialized", name);
 		allAttributes.put(name, this);
@@ -108,7 +114,7 @@ public class Attribute implements Comparable<Attribute> {
 	private String getJavaNameCaps() {
 		return StringUtil.capitalizeFirstChar(javaName);
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
@@ -116,7 +122,7 @@ public class Attribute implements Comparable<Attribute> {
 	private FieldDecl getMainDecl() {
 		return new FieldDecl(new Variable(type, getJavaName()), getDefaultValue());
 	}
-	
+
 	public FieldDecl[] generateFieldDecls() {
 		List<FieldDecl> ans = new ArrayList<>();
 		ans.add(getMainDecl());
@@ -165,6 +171,9 @@ public class Attribute implements Comparable<Attribute> {
 		if (type.isType("java.lang.String")) {
 			return '"' + defaultValue + '"';
 		}
+		if (type.isType("java.util.ArrayList") && defaultValue.isBlank()) {
+			return "new ArrayList<>()";
+		}
 		if (defaultValue.isBlank()) {
 			return null;
 		}
@@ -178,8 +187,8 @@ public class Attribute implements Comparable<Attribute> {
 
 		CodeBlock ans = new Line("this.%s = %s(reader, \"%s\",%s);", getJavaName(),
 				getParseMethod(), name, getDefaultValue());
-		
-		if(getParseMethod().contains("XMLReaderUtils")) {
+
+		if (getParseMethod().contains("XMLReaderUtils")) {
 			ans.addImport(new Type("org.guideme.guideme.util.XMLReaderUtils"));
 		}
 
@@ -197,7 +206,6 @@ public class Attribute implements Comparable<Attribute> {
 			ans.addThrowable(new Type("javax.xml.stream.XMLStreamException"));
 		}
 
-
 		return ans;
 	}
 
@@ -205,10 +213,14 @@ public class Attribute implements Comparable<Attribute> {
 		cf.constructor.addCodeBlock(getConstructorFragment());
 		cf.addMethods(generateMethods());
 		cf.addFieldDecls(generateFieldDecls());
+		
+		if(getDefaultValue()!= null && getDefaultValue().contains("ArrayList")) {
+			cf.addImport("java.util.ArrayList");
+		}
 	}
 
 	public void applyToInterfaceFile(CodeFile cf) {
-		for(Method m : generateMethods()) {
+		for (Method m : generateMethods()) {
 			cf.addMethod(m.asAbstract());
 		}
 	}
@@ -226,14 +238,19 @@ public class Attribute implements Comparable<Attribute> {
 			 */
 			throw new IllegalStateException("Multiple text attributes are being compared.");
 		}
-
-		if (this.isText == o.isText) {
-			return 0;
-		}
-		if (this.isText) {
+		
+		if (this.isText && !o.isText) {
 			return 1;
 		}
-		return -1;
+		
+		if (!this.isText && o.isText) {
+			return -1;
+		}
+		
+		if(this.sortOrder != o.sortOrder) {
+			return this.sortOrder - o.sortOrder;
+		}
+		return this.name.compareTo(o.name);
 	}
 
 }

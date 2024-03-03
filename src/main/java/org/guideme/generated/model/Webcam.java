@@ -9,42 +9,42 @@ public class Webcam implements Filterable  {
 
 	private String ifSet = "";
 	private LocalTime ifBefore;
-	private String ifNotSet = "";
 	private LocalTime ifAfter;
+	private String ifNotSet = "";
 
 	public Webcam(XMLStreamReader reader) {
-		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
-		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
-		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
+		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
+		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 	}
 
 	public Webcam() {
 	}
 
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
 	}
 	public LocalTime getIfAfter() {
 		return ifAfter;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getIfNotSet() {
-		return ifNotSet;
 	}
 	
 	public boolean canShow(List<String> setList) {
