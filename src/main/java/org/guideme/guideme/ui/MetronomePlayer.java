@@ -82,6 +82,7 @@ public class MetronomePlayer implements Runnable {
 		logger.trace("MetronomePlayer Kill ");
 	}
 
+	@Override
 	public void run() {
 		logger.trace("MetronomePlayer run start ");
 		try {

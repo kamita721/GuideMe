@@ -116,6 +116,7 @@ public class MetronomeTestShell {
 	
 	// Click event code for the dynamic buttons
 	class StartButtonListener extends SelectionAdapter {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
 				logger.trace("Enter StartButtonListener");
@@ -156,6 +157,7 @@ public class MetronomeTestShell {
 
 	// Click event code for the dynamic buttons
 	class StopButtonListener extends SelectionAdapter {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
 				logger.trace("Enter StopButtonListener");

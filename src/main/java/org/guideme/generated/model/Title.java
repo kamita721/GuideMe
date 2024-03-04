@@ -22,6 +22,17 @@ public class Title  {
 		/* NOP */
 	}
 
+	public void setText(String text) {
+		this.text = text;
+	}
+	public String getText() {
+		return text;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Title");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
 	public Title(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Title")){
@@ -41,16 +52,5 @@ public class Title  {
 				break;
 			}
 		}
-	}
-	public String getText() {
-		return text;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Title");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
 	}
 }

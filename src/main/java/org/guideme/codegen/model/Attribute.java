@@ -27,6 +27,8 @@ public class Attribute implements Comparable<Attribute> {
 	private final String defaultValue;
 	private final boolean isText;
 	private final int sortOrder;
+	
+	private boolean isThroughInterface = false;
 
 	private static HashMap<String, Attribute> allAttributes = new HashMap<>();
 
@@ -123,6 +125,14 @@ public class Attribute implements Comparable<Attribute> {
 		return type;
 	}
 
+	public void setIsThroughInterface() {
+		isThroughInterface = true;
+	}
+	
+	public void setNotThroughInterface() {
+		isThroughInterface = false;
+	}
+	
 	private FieldDecl getMainDecl() {
 		return new FieldDecl(new Variable(type, getJavaName()), getDefaultValue());
 	}
@@ -158,6 +168,10 @@ public class Attribute implements Comparable<Attribute> {
 			ans.add(arrayCount);
 		}
 
+		if(isThroughInterface) {
+			ans.forEach(Method::makeOverride);
+		}
+		
 		return ans.toArray(new Method[] {});
 	}
 

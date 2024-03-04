@@ -50,29 +50,53 @@ public class Video implements FlagSet, Playable, Filterable  {
 		/* NOP */
 	}
 
-	public void setSet(String set) {
-		this.set = set;
+	@Override
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
 	}
+	@Override
+	public String getSet() {
+		return set;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public int getVolume() {
+		return volume;
+	}
+	@Override
 	public String getStopAt() {
 		return stopAt;
 	}
-	public String getId() {
-		return id;
+	@Override
+	public void setStopAt(String stopAt) {
+		this.stopAt = stopAt;
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	@Override
+	public void setVolume(int volume) {
+		this.volume = volume;
 	}
-	public String getUnSet() {
-		return unSet;
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
+	@Override
 	public void setUnSet(String unSet) {
 		this.unSet = unSet;
 	}
-	public void setId(String id) {
-		this.id = id;
+	@Override
+	public String getIfSet() {
+		return ifSet;
 	}
+	@Override
 	public void setRepeat(String repeat) {
 		this.repeat = repeat;
+	}
+	@Override
+	public void setStartAt(String startAt) {
+		this.startAt = startAt;
 	}
 	public Video(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -133,62 +157,32 @@ public class Video implements FlagSet, Playable, Filterable  {
 			}
 		}
 	}
-	public String getJscript() {
-		return jscript;
+	@Override
+	public void setSet(String set) {
+		this.set = set;
 	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	public void setStopAt(String stopAt) {
-		this.stopAt = stopAt;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public String getStartAt() {
-		return startAt;
-	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public String getRepeat() {
-		return repeat;
-	}
-	public void setStartAt(String startAt) {
-		this.startAt = startAt;
-	}
-	public int getVolume() {
-		return volume;
-	}
-	public void setVolume(int volume) {
-		this.volume = volume;
-	}
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public String getTarget() {
-		return target;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public String getId() {
+		return id;
 	}
 	public String getScriptVar() {
 		return scriptVar;
 	}
-	public String getIfSet() {
-		return ifSet;
-	}
+	@Override
 	public LocalTime getIfAfter() {
 		return ifAfter;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public void setTarget(String target) {
+		this.target = target;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Video");
@@ -208,10 +202,39 @@ public class Video implements FlagSet, Playable, Filterable  {
 		ans.setAttribute("volume",ModelConverters.toString(volume));
 		return ans;
 	}
-	public String getSet() {
-		return set;
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
+	public String getStartAt() {
+		return startAt;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	@Override
+	public String getRepeat() {
+		return repeat;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	@Override
+	public String getUnSet() {
+		return unSet;
+	}
+	@Override
+	public String getJscript() {
+		return jscript;
 	}
 	
+	@Override
 	public boolean canShow(List<String> setList) {
 		boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
 		if (retVal) {
@@ -221,6 +244,7 @@ public class Video implements FlagSet, Playable, Filterable  {
 	}
 	
 	
+	@Override
 	public void setUnSet(List<String> setList) {
 		ComonFunctions.getComonFunctions().setFlags(set, setList);
 		ComonFunctions.getComonFunctions().unsetFlags(unSet, setList);

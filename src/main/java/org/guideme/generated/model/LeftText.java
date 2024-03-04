@@ -34,41 +34,33 @@ public class LeftText implements Filterable, IText  {
 		/* NOP */
 	}
 
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("LeftText");
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
+	@Override
 	public String getIfSet() {
 		return ifSet;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
-	public String getText() {
-		return text;
-	}
+	@Override
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	@Override
+	public void setText(String text) {
+		this.text = text;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	public LeftText(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -102,10 +94,29 @@ public class LeftText implements Filterable, IText  {
 			}
 		}
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
+	public String getText() {
+		return text;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("LeftText");
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	
+	@Override
 	public boolean canShow(List<String> setList) {
 		boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
 		if (retVal) {

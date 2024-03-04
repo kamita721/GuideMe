@@ -54,6 +54,7 @@ public class Type {
 		return getTypeFull().equals(o.getTypeFull());
 	}
 
+	@Override
 	public int hashCode() {
 		return getTypeFull().hashCode();
 	}

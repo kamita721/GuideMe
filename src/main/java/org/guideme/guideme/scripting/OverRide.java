@@ -115,6 +115,7 @@ public class OverRide {
 		public String image;
 		public String hotKey;
 
+		@Override
 		public void run() {
 			BasicButton button = new BasicButton();
 			button.setTarget(target);
@@ -222,6 +223,7 @@ public class OverRide {
 		public String id;
 		public boolean defaultBtn;
 
+		@Override
 		public void run() {
 			BasicButton button = new BasicButton();
 			button.setTarget(target);
@@ -384,6 +386,7 @@ public class OverRide {
 		public String placement;
 		public GlobalButtonAction action;
 
+		@Override
 		public void run() {
 			GlobalButtonPlacement placement = this.placement.equals("top")
 					? GlobalButtonPlacement.TOP
@@ -489,6 +492,7 @@ public class OverRide {
 		public String image;
 		public String hotKey;
 
+		@Override
 		public void run() {
 			WebcamButton button = new WebcamButton();
 			button.setType(type);
@@ -609,6 +613,7 @@ public class OverRide {
 		public String id;
 		public boolean defaultBtn;
 
+		@Override
 		public void run() {
 			WebcamButton button = new WebcamButton();
 			button.setType(type);

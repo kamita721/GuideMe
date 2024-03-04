@@ -21,17 +21,6 @@ public class Include  {
 		/* NOP */
 	}
 
-	public void setFile(String file) {
-		this.file = file;
-	}
-	public String getFile() {
-		return file;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Include");
-		ans.setAttribute("file",ModelConverters.toString(file));
-		return ans;
-	}
 	public Include(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Include")){
@@ -51,5 +40,16 @@ public class Include  {
 				break;
 			}
 		}
+	}
+	public void setFile(String file) {
+		this.file = file;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Include");
+		ans.setAttribute("file",ModelConverters.toString(file));
+		return ans;
+	}
+	public String getFile() {
+		return file;
 	}
 }

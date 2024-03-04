@@ -50,50 +50,77 @@ public class Audio2 implements FlagSet, Playable, Filterable, Audio  {
 		/* NOP */
 	}
 
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Audio2");
-		ans.setAttribute("id",ModelConverters.toString(id));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("loops",ModelConverters.toString(repeat));
-		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
-		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
-		ans.setAttribute("set",ModelConverters.toString(set));
-		ans.setAttribute("start-at",ModelConverters.toString(startAt));
-		ans.setAttribute("stop-at",ModelConverters.toString(stopAt));
-		ans.setAttribute("target",ModelConverters.toString(target));
-		ans.setAttribute("unSet",ModelConverters.toString(unSet));
-		ans.setAttribute("volume",ModelConverters.toString(volume));
-		return ans;
+	@Override
+	public String getUnSet() {
+		return unSet;
 	}
-	public void setStopAt(String stopAt) {
-		this.stopAt = stopAt;
+	@Override
+	public int getVolume() {
+		return volume;
 	}
-	public void setRepeat(String repeat) {
-		this.repeat = repeat;
+	@Override
+	public void setSet(String set) {
+		this.set = set;
 	}
-	public String getRepeat() {
-		return repeat;
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
-	public void setTarget(String target) {
-		this.target = target;
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
-	public String getIfSet() {
-		return ifSet;
-	}
+	@Override
 	public void setStartAt(String startAt) {
 		this.startAt = startAt;
 	}
-	public String getScriptVar() {
-		return scriptVar;
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
+	@Override
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
+	}
+	@Override
+	public String getRepeat() {
+		return repeat;
+	}
+	@Override
+	public void setStopAt(String stopAt) {
+		this.stopAt = stopAt;
+	}
+	@Override
+	public void setVolume(int volume) {
+		this.volume = volume;
+	}
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
+	@Override
 	public void setUnSet(String unSet) {
 		this.unSet = unSet;
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	@Override
+	public String getSet() {
+		return set;
+	}
+	@Override
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	@Override
+	public String getId() {
+		return id;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
 	}
 	public Audio2(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -154,70 +181,73 @@ public class Audio2 implements FlagSet, Playable, Filterable, Audio  {
 			}
 		}
 	}
-	public String getStopAt() {
-		return stopAt;
-	}
-	public void setVolume(int volume) {
-		this.volume = volume;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setSet(String set) {
-		this.set = set;
-	}
-	public String getTarget() {
-		return target;
-	}
-	public int getVolume() {
-		return volume;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
+	@Override
 	public String getStartAt() {
 		return startAt;
 	}
+	@Override
+	public String getTarget() {
+		return target;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
+	public String getScriptVar() {
+		return scriptVar;
+	}
+	@Override
 	public LocalTime getIfAfter() {
 		return ifAfter;
 	}
-	public String getId() {
-		return id;
+	@Override
+	public void setRepeat(String repeat) {
+		this.repeat = repeat;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	public String getSet() {
-		return set;
-	}
-	public String getUnSet() {
-		return unSet;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
+	@Override
 	public String getJscript() {
 		return jscript;
 	}
+	@Override
+	public String getStopAt() {
+		return stopAt;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Audio2");
+		ans.setAttribute("id",ModelConverters.toString(id));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("loops",ModelConverters.toString(repeat));
+		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
+		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
+		ans.setAttribute("set",ModelConverters.toString(set));
+		ans.setAttribute("start-at",ModelConverters.toString(startAt));
+		ans.setAttribute("stop-at",ModelConverters.toString(stopAt));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		ans.setAttribute("unSet",ModelConverters.toString(unSet));
+		ans.setAttribute("volume",ModelConverters.toString(volume));
+		return ans;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
 	
+	@Override
 	public void setUnSet(List<String> setList) {
 		ComonFunctions.getComonFunctions().setFlags(set, setList);
 		ComonFunctions.getComonFunctions().unsetFlags(unSet, setList);
 	}
 	
 	
+	@Override
 	public boolean canShow(List<String> setList) {
 		boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
 		if (retVal) {

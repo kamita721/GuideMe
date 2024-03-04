@@ -90,7 +90,8 @@ public class UnicodeBOMInputStream extends InputStream
      * Returns a <code>String</code> representation of this <code>BOM</code>
      * value.
      */
-    public final String toString()
+    @Override
+	public final String toString()
     {
       return description;
     }
@@ -235,7 +236,8 @@ public class UnicodeBOMInputStream extends InputStream
   /**
    * {@inheritDoc}
    */
-  public int read() throws IOException
+  @Override
+public int read() throws IOException
   {
     return in.read();
   }
@@ -243,7 +245,8 @@ public class UnicodeBOMInputStream extends InputStream
   /**
    * {@inheritDoc}
    */
-  public int read(final byte b[]) throws  IOException,
+  @Override
+public int read(final byte b[]) throws  IOException,
                                           NullPointerException
   {
     return in.read(b,0,b.length);
@@ -252,7 +255,8 @@ public class UnicodeBOMInputStream extends InputStream
   /**
    * {@inheritDoc}
    */
-  public int read(final byte b[],
+  @Override
+public int read(final byte b[],
                   final int off,
                   final int len) throws IOException,
                                         NullPointerException
@@ -263,7 +267,8 @@ public class UnicodeBOMInputStream extends InputStream
   /**
    * {@inheritDoc}
    */
-  public long skip(final long n) throws IOException
+  @Override
+public long skip(final long n) throws IOException
   {
     return in.skip(n);
   }
@@ -271,7 +276,8 @@ public class UnicodeBOMInputStream extends InputStream
   /**
    * {@inheritDoc}
    */
-  public int available() throws IOException
+  @Override
+public int available() throws IOException
   {
     return in.available();
   }
@@ -279,7 +285,8 @@ public class UnicodeBOMInputStream extends InputStream
   /**
    * {@inheritDoc}
    */
-  public void close() throws IOException
+  @Override
+public void close() throws IOException
   {
     in.close();
   }
@@ -287,7 +294,8 @@ public class UnicodeBOMInputStream extends InputStream
   /**
    * {@inheritDoc}
    */
-  public synchronized void mark(final int readlimit)
+  @Override
+public synchronized void mark(final int readlimit)
   {
     in.mark(readlimit);
   }
@@ -295,7 +303,8 @@ public class UnicodeBOMInputStream extends InputStream
   /**
    * {@inheritDoc}
    */
-  public synchronized void reset() throws IOException
+  @Override
+public synchronized void reset() throws IOException
   {
     in.reset();
   }
@@ -303,7 +312,8 @@ public class UnicodeBOMInputStream extends InputStream
   /**
    * {@inheritDoc}
    */
-  public boolean markSupported() 
+  @Override
+public boolean markSupported() 
   {
     return in.markSupported();
   }

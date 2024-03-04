@@ -109,6 +109,7 @@ public class MainLogic {
 		return mainLogic;
 	}
 
+	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}

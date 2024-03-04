@@ -32,35 +32,16 @@ public class Image implements Filterable  {
 		/* NOP */
 	}
 
-	public String getId() {
-		return id;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
+	@Override
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
+	@Override
 	public LocalTime getIfBefore() {
 		return ifBefore;
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public void setId(String id) {
+		this.id = id;
 	}
 	public Image(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -94,6 +75,33 @@ public class Image implements Filterable  {
 			}
 		}
 	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public String getId() {
+		return id;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Image");
 		ans.setAttribute("id",ModelConverters.toString(id));
@@ -104,6 +112,7 @@ public class Image implements Filterable  {
 		return ans;
 	}
 	
+	@Override
 	public boolean canShow(List<String> setList) {
 		boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
 		if (retVal) {

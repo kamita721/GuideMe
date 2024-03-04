@@ -110,6 +110,7 @@ public class ComonFunctions {
 		return comonFunctions;
 	}
 
+	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
@@ -1163,6 +1164,7 @@ public class ComonFunctions {
 			this.strFilePatern = strFilePatern;
 		}
 
+		@Override
 		public boolean accept(File f) {
 			try {
 				// ignore hidden files and directories

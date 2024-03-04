@@ -81,6 +81,7 @@ public class AppSettings {
 		return appSettings;
 	}
 	
+	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}

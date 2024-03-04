@@ -113,8 +113,11 @@ public class Element {
 	private Set<Attribute> getAllAttributesRecursive() {
 		Set<Attribute> ans = new HashSet<>();
 		ans.addAll(attributes);
+		ans.forEach(Attribute::setNotThroughInterface);
 		for (AttributeSet as : attributeSets) {
-			ans.addAll(as.getAllAttributesRecursive());
+			Set<Attribute> toAdd = as.getAllAttributesRecursive();
+			toAdd.forEach(Attribute::setIsThroughInterface);
+			ans.addAll(toAdd);
 		}
 		return ans;
 	}

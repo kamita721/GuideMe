@@ -74,68 +74,13 @@ public class GlobalButton implements FlagSet, Button, Filterable  {
 		/* NOP */
 	}
 
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	@Override
+	public String getHotkey() {
+		return hotkey;
 	}
-	public GlobalButtonPlacement getPlacement() {
-		return placement;
-	}
+	@Override
 	public String getImage() {
 		return image;
-	}
-	public void setDefaultBtn(boolean defaultBtn) {
-		this.defaultBtn = defaultBtn;
-	}
-	public void setImage(String image) {
-		this.image = image;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setBgColor1(Color bgColor1) {
-		this.bgColor1 = bgColor1;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setAction(GlobalButtonAction action) {
-		this.action = action;
-	}
-	public int getFontHeight() {
-		return fontHeight;
-	}
-	public boolean getDefaultBtn() {
-		return defaultBtn;
-	}
-	public void setPlacement(GlobalButtonPlacement placement) {
-		this.placement = placement;
-	}
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	public void setJScript(String jScript) {
-		this.jScript = jScript;
-	}
-	public String getScriptVar() {
-		return scriptVar;
-	}
-	public String getJScript() {
-		return jScript;
-	}
-	public void setHotkey(String hotkey) {
-		this.hotkey = hotkey;
-	}
-	public void setBgColor2(Color bgColor2) {
-		this.bgColor2 = bgColor2;
-	}
-	public Color getFontColor() {
-		return fontColor;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("GlobalButton");
@@ -164,11 +109,106 @@ public class GlobalButton implements FlagSet, Button, Filterable  {
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
 	}
-	public String getTarget() {
-		return target;
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
-	public void setDisabled(boolean disabled) {
-		this.disabled = disabled;
+	public void setAction(GlobalButtonAction action) {
+		this.action = action;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public String getFontName() {
+		return fontName;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	@Override
+	public boolean getDisabled() {
+		return disabled;
+	}
+	public GlobalButtonAction getAction() {
+		return action;
+	}
+	@Override
+	public void setImage(String image) {
+		this.image = image;
+	}
+	@Override
+	public void setSortOrder(int sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public String getJScript() {
+		return jScript;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	@Override
+	public void setFontHeight(int fontHeight) {
+		this.fontHeight = fontHeight;
+	}
+	@Override
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	@Override
+	public boolean getDefaultBtn() {
+		return defaultBtn;
+	}
+	@Override
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	@Override
+	public void setHotkey(String hotkey) {
+		this.hotkey = hotkey;
+	}
+	@Override
+	public Color getBgColor2() {
+		return bgColor2;
+	}
+	@Override
+	public String getText() {
+		return text;
+	}
+	@Override
+	public String getSet() {
+		return set;
+	}
+	@Override
+	public void setBgColor1(Color bgColor1) {
+		this.bgColor1 = bgColor1;
+	}
+	@Override
+	public void setText(String text) {
+		this.text = text;
+	}
+	@Override
+	public void setBgColor2(Color bgColor2) {
+		this.bgColor2 = bgColor2;
+	}
+	public void setPlacement(GlobalButtonPlacement placement) {
+		this.placement = placement;
+	}
+	@Override
+	public Color getBgColor1() {
+		return bgColor1;
+	}
+	@Override
+	public void setFontName(String fontName) {
+		this.fontName = fontName;
 	}
 	public GlobalButton(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -256,82 +296,86 @@ public class GlobalButton implements FlagSet, Button, Filterable  {
 			}
 		}
 	}
-	public void setSet(String set) {
-		this.set = set;
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
-	public boolean getDisabled() {
-		return disabled;
+	public GlobalButtonPlacement getPlacement() {
+		return placement;
 	}
-	public void setId(String id) {
-		this.id = id;
+	@Override
+	public String getTarget() {
+		return target;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public String getSet() {
-		return set;
-	}
-	public Color getBgColor2() {
-		return bgColor2;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public int getSortOrder() {
-		return sortOrder;
-	}
-	public Color getBgColor1() {
-		return bgColor1;
-	}
-	public String getFontName() {
-		return fontName;
-	}
-	public String getHotkey() {
-		return hotkey;
-	}
-	public void setSortOrder(int sortOrder) {
-		this.sortOrder = sortOrder;
-	}
-	public void setFontName(String fontName) {
-		this.fontName = fontName;
-	}
-	public GlobalButtonAction getAction() {
-		return action;
-	}
+	@Override
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
-	public String getText() {
-		return text;
+	@Override
+	public String getScriptVar() {
+		return scriptVar;
 	}
+	@Override
+	public Color getFontColor() {
+		return fontColor;
+	}
+	@Override
+	public int getFontHeight() {
+		return fontHeight;
+	}
+	@Override
 	public void setScriptVar(String scriptVar) {
 		this.scriptVar = scriptVar;
 	}
-	public void setFontHeight(int fontHeight) {
-		this.fontHeight = fontHeight;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public String getUnSet() {
-		return unSet;
-	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
+	@Override
 	public void setFontColor(Color fontColor) {
 		this.fontColor = fontColor;
 	}
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
+	@Override
+	public String getUnSet() {
+		return unSet;
+	}
+	@Override
+	public void setJScript(String jScript) {
+		this.jScript = jScript;
+	}
+	@Override
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
+	public String getId() {
+		return id;
+	}
+	@Override
+	public int getSortOrder() {
+		return sortOrder;
+	}
+	@Override
+	public void setSet(String set) {
+		this.set = set;
+	}
+	@Override
+	public void setDefaultBtn(boolean defaultBtn) {
+		this.defaultBtn = defaultBtn;
+	}
 	
+	@Override
 	public void setUnSet(List<String> setList) {
 		ComonFunctions.getComonFunctions().setFlags(set, setList);
 		ComonFunctions.getComonFunctions().unsetFlags(unSet, setList);
 	}
 	
 	
+	@Override
 	public boolean canShow(List<String> setList) {
 		boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
 		if (retVal) {

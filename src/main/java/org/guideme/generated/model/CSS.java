@@ -22,16 +22,13 @@ public class CSS  {
 		/* NOP */
 	}
 
-	public void setText(String text) {
-		this.text = text;
-	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("CSS");
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
 	}
-	public String getText() {
-		return text;
+	public void setText(String text) {
+		this.text = text;
 	}
 	public CSS(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -52,5 +49,8 @@ public class CSS  {
 				break;
 			}
 		}
+	}
+	public String getText() {
+		return text;
 	}
 }

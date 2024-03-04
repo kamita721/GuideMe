@@ -16,6 +16,8 @@ public class Method {
 	private final List<Type> imports = new ArrayList<>();
 	private String staticPhrase = "";
 	private String visibility = "public";
+	
+	private boolean overrides = false;
 
 	public Method(Type returnType, String name) {
 		this.returnType = returnType;
@@ -83,6 +85,14 @@ public class Method {
 		visibility = "private";
 	}
 
+	public void makeOverride() {
+		overrides = true;
+	}
+	
+	public void makeNotOverride() {
+		overrides = false;
+	}
+	
 	public void addArg(Variable v) {
 		args.add(v);
 	}
@@ -92,6 +102,10 @@ public class Method {
 	}
 
 	public void generate(CodeBuilder builder) {
+		if(overrides) {
+			builder.addLine("@Override");
+		}
+		
 		builder.addLine("%s %s%s%s(%s) %s{", visibility, staticPhrase, getTypePhrase(), name,
 				getArgsPhrase(), getThrowsPhrase());
 

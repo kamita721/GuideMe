@@ -38,26 +38,43 @@ public class Metronome implements Filterable  {
 		/* NOP */
 	}
 
-	public int getLoops() {
-		return loops;
-	}
-	public void setLoops(int loops) {
-		this.loops = loops;
-	}
+	@Override
 	public String getIfNotSet() {
 		return ifNotSet;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setRhythm(String rhythm) {
+		this.rhythm = rhythm;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
 	}
 	public void setBpm(String bpm) {
 		this.bpm = bpm;
 	}
-	public String getBpm() {
-		return bpm;
+	public void setLoops(int loops) {
+		this.loops = loops;
 	}
 	public String getRhythm() {
 		return rhythm;
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public int getResolution() {
+		return resolution;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public void setResolution(int resolution) {
+		this.resolution = resolution;
 	}
 	public Metronome(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -100,14 +117,19 @@ public class Metronome implements Filterable  {
 			}
 		}
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public int getLoops() {
+		return loops;
 	}
-	public String getIfSet() {
-		return ifSet;
+	public String getBpm() {
+		return bpm;
 	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Metronome");
@@ -121,25 +143,12 @@ public class Metronome implements Filterable  {
 		ans.setAttribute("rhythm",ModelConverters.toString(rhythm));
 		return ans;
 	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public void setRhythm(String rhythm) {
-		this.rhythm = rhythm;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public int getResolution() {
-		return resolution;
-	}
-	public void setResolution(int resolution) {
-		this.resolution = resolution;
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
 	
+	@Override
 	public boolean canShow(List<String> setList) {
 		boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
 		if (retVal) {

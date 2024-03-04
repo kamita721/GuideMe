@@ -22,10 +22,16 @@ public class GlobalJavascript  {
 		/* NOP */
 	}
 
+	public void setText(String text) {
+		this.text = text;
+	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("GlobalJavascript");
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
+	}
+	public String getText() {
+		return text;
 	}
 	public GlobalJavascript(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -46,11 +52,5 @@ public class GlobalJavascript  {
 				break;
 			}
 		}
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	public String getText() {
-		return text;
 	}
 }

@@ -49,6 +49,7 @@ public class JscriptConsole implements Runnable {
 		this.scope = scope;
 	}
 
+	@Override
 	public void run() {
 		printHeader();
 		printPrompt();

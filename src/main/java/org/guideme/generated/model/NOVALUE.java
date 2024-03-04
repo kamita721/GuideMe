@@ -16,13 +16,13 @@ public class NOVALUE  {
 		/* NOP */
 	}
 
-	public Element asXml(Document doc) {
-		return doc.createElement("NOVALUE");
-	}
 	public NOVALUE(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("NOVALUE")){
 			logger.warn("Error reading state file. Expected element 'NOVALUE', but got '{}'", n.getNodeName());
 		}
+	}
+	public Element asXml(Document doc) {
+		return doc.createElement("NOVALUE");
 	}
 }

@@ -52,10 +52,12 @@ public class MainTab implements DebugTab {
 		tabItem.setControl(content);
 	}
 
+	@Override
 	public Composite getContent() {
 		return content;
 	}
 
+	@Override
 	public void onPageChange(Page dispPage, boolean currPage) {
 		for (Control kid : content.getChildren()) {
 			kid.dispose();

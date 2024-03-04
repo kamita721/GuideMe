@@ -46,44 +46,61 @@ public class Delay implements FlagSet, Filterable  {
 		/* NOP */
 	}
 
-	public String getSet() {
-		return set;
+	public String getScriptVar() {
+		return scriptVar;
 	}
-	public String getTarget() {
-		return target;
+	public int getStartWith() {
+		return startWith;
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public void setStyle(String style) {
+		this.style = style;
 	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
 	public void setUnSet(String unSet) {
 		this.unSet = unSet;
 	}
-	public String getJscript() {
-		return jscript;
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
+	@Override
+	public String getSet() {
+		return set;
 	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
+	public void setStartWith(int startWith) {
+		this.startWith = startWith;
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	@Override
+	public String getUnSet() {
+		return unSet;
 	}
 	public String getStyle() {
 		return style;
 	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
+	@Override
 	public LocalTime getIfBefore() {
 		return ifBefore;
 	}
-	public String getUnSet() {
-		return unSet;
+	public String getTarget() {
+		return target;
 	}
-	public String getIfSet() {
-		return ifSet;
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Delay");
@@ -101,8 +118,13 @@ public class Delay implements FlagSet, Filterable  {
 		ans.setAttribute("unSet",ModelConverters.toString(unSet));
 		return ans;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	public Delay(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -157,37 +179,28 @@ public class Delay implements FlagSet, Filterable  {
 			}
 		}
 	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	@Override
+	public void setSet(String set) {
+		this.set = set;
+	}
 	public void setSeconds(String seconds) {
 		this.seconds = seconds;
 	}
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getScriptVar() {
-		return scriptVar;
-	}
-	public void setStyle(String style) {
-		this.style = style;
-	}
-	public void setStartWith(int startWith) {
-		this.startWith = startWith;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setSet(String set) {
-		this.set = set;
+	public String getJscript() {
+		return jscript;
 	}
 	public String getSeconds() {
 		return seconds;
 	}
-	public int getStartWith() {
-		return startWith;
-	}
 	
+	@Override
 	public boolean canShow(List<String> setList) {
 		boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
 		if (retVal) {
@@ -197,6 +210,7 @@ public class Delay implements FlagSet, Filterable  {
 	}
 	
 	
+	@Override
 	public void setUnSet(List<String> setList) {
 		ComonFunctions.getComonFunctions().setFlags(set, setList);
 		ComonFunctions.getComonFunctions().unsetFlags(unSet, setList);

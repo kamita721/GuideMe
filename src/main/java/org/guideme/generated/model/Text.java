@@ -34,12 +34,6 @@ public class Text implements Filterable, IText  {
 		/* NOP */
 	}
 
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
 	public Text(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Text")){
@@ -72,15 +66,6 @@ public class Text implements Filterable, IText  {
 			}
 		}
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Text");
 		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
@@ -90,22 +75,48 @@ public class Text implements Filterable, IText  {
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
-	public String getText() {
-		return text;
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
+	@Override
 	public String getIfSet() {
 		return ifSet;
 	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
+	public String getText() {
+		return text;
+	}
+	@Override
 	public void setText(String text) {
 		this.text = text;
 	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
 	
+	@Override
 	public boolean canShow(List<String> setList) {
 		boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
 		if (retVal) {

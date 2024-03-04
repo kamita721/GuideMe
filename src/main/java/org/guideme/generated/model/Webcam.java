@@ -30,6 +30,26 @@ public class Webcam implements Filterable  {
 		/* NOP */
 	}
 
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
 	public Webcam(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Webcam")){
@@ -59,9 +79,6 @@ public class Webcam implements Filterable  {
 			}
 		}
 	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Webcam");
 		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
@@ -70,28 +87,20 @@ public class Webcam implements Filterable  {
 		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
 		return ans;
 	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
+	@Override
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
 	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
 	
+	@Override
 	public boolean canShow(List<String> setList) {
 		boolean retVal = ComonFunctions.getComonFunctions().canShowTime(ifBefore, ifAfter);
 		if (retVal) {
