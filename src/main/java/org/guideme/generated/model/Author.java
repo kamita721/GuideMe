@@ -1,10 +1,15 @@
 package org.guideme.generated.model;
 
 import javax.xml.stream.XMLStreamConstants;
+import org.w3c.dom.Element;
 import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.util.XMLReaderUtils;
 import javax.xml.stream.XMLStreamReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import javax.xml.stream.XMLStreamException;
+import org.w3c.dom.NamedNodeMap;
+import org.guideme.guideme.model.ModelConverters;
 import org.apache.logging.log4j.LogManager;
 public class Author  {
 
@@ -41,10 +46,35 @@ public class Author  {
 	public Author() {
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Author");
+		return ans;
+	}
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public Author(Node n) {
+		Logger logger = LogManager.getLogger();
+		if(!n.getNodeName().equals("Author")){
+		logger.warn("Error reading state file. Expected element 'Author', but got '{}'", n.getNodeName());
+		}
+		NamedNodeMap nnm = n.getAttributes();
+		for(int i=0; i<nnm.getLength(); i++){
+			Node child = nnm.item(i);
+			String attrName = child.getNodeName();
+			String attrValue = child.getNodeValue();
+			switch(attrName){
+				default:
+			logger.warn("Unhandled attribute '{}'", attrName);
+				break;
+			}
+		}
+		
+		
+		
+		
 	}
 }

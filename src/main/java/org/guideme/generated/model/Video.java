@@ -1,10 +1,17 @@
 package org.guideme.generated.model;
 
 import java.util.List;
+import org.w3c.dom.Element;
+import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.util.XMLReaderUtils;
 import javax.xml.stream.XMLStreamReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import java.time.LocalTime;
+import org.w3c.dom.NamedNodeMap;
+import org.guideme.guideme.model.ModelConverters;
+import org.apache.logging.log4j.LogManager;
 public class Video implements FlagSet, Playable, Filterable  {
 
 	private String stopAt = "";
@@ -44,86 +51,14 @@ public class Video implements FlagSet, Playable, Filterable  {
 	public Video() {
 	}
 
-	public int getVolume() {
-		return volume;
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
 	}
-	public void setRepeat(String repeat) {
-		this.repeat = repeat;
-	}
-	public String getStartAt() {
-		return startAt;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public String getId() {
-		return id;
-	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public String getJscript() {
-		return jscript;
-	}
-	public String getRepeat() {
-		return repeat;
-	}
-	public String getStopAt() {
-		return stopAt;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setStopAt(String stopAt) {
-		this.stopAt = stopAt;
-	}
-	public String getUnSet() {
-		return unSet;
-	}
-	public String getJScript() {
-		return jScript;
-	}
-	public void setJScript(String jScript) {
-		this.jScript = jScript;
-	}
-	public void setVolume(int volume) {
-		this.volume = volume;
-	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	public void setStartAt(String startAt) {
-		this.startAt = startAt;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public String getTarget() {
-		return target;
-	}
-	public String getSet() {
-		return set;
-	}
-	public String getScriptVar() {
-		return scriptVar;
-	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
 	}
 	public void setSet(String set) {
 		this.set = set;
@@ -131,8 +66,165 @@ public class Video implements FlagSet, Playable, Filterable  {
 	public void setJscript(String jscript) {
 		this.jscript = jscript;
 	}
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
+	public String getJScript() {
+		return jScript;
+	}
+	public String getStartAt() {
+		return startAt;
+	}
+	public void setStopAt(String stopAt) {
+		this.stopAt = stopAt;
+	}
+	public void setVolume(int volume) {
+		this.volume = volume;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public Video(Node n) {
+		Logger logger = LogManager.getLogger();
+		if(!n.getNodeName().equals("Video")){
+		logger.warn("Error reading state file. Expected element 'Video', but got '{}'", n.getNodeName());
+		}
+		NamedNodeMap nnm = n.getAttributes();
+		for(int i=0; i<nnm.getLength(); i++){
+			Node child = nnm.item(i);
+			String attrName = child.getNodeName();
+			String attrValue = child.getNodeValue();
+			switch(attrName){
+			case "set":
+				set = ModelConverters.fromString(attrValue, set);
+				break;
+			case "if-after":
+				ifAfter = ModelConverters.fromString(attrValue, ifAfter);
+				break;
+			case "start-at":
+				startAt = ModelConverters.fromString(attrValue, startAt);
+				break;
+			case "onTriggered":
+				jscript = ModelConverters.fromString(attrValue, jscript);
+				break;
+			case "onclick":
+				jScript = ModelConverters.fromString(attrValue, jScript);
+				break;
+			case "loops":
+				repeat = ModelConverters.fromString(attrValue, repeat);
+				break;
+			case "unSet":
+				unSet = ModelConverters.fromString(attrValue, unSet);
+				break;
+			case "target":
+				target = ModelConverters.fromString(attrValue, target);
+				break;
+			case "if-not-set":
+				ifNotSet = ModelConverters.fromString(attrValue, ifNotSet);
+				break;
+			case "stop-at":
+				stopAt = ModelConverters.fromString(attrValue, stopAt);
+				break;
+			case "volume":
+				volume = ModelConverters.fromString(attrValue, volume);
+				break;
+			case "if-set":
+				ifSet = ModelConverters.fromString(attrValue, ifSet);
+				break;
+			case "if-before":
+				ifBefore = ModelConverters.fromString(attrValue, ifBefore);
+				break;
+			case "scriptvar":
+				scriptVar = ModelConverters.fromString(attrValue, scriptVar);
+				break;
+			case "id":
+				id = ModelConverters.fromString(attrValue, id);
+				break;
+				default:
+			logger.warn("Unhandled attribute '{}'", attrName);
+				break;
+			}
+		}
+		
+		
+		
+		
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Video");
+		ans.setAttribute("id",ModelConverters.toString(id));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("loops",ModelConverters.toString(repeat));
+		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
+		ans.setAttribute("onclick",ModelConverters.toString(jScript));
+		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
+		ans.setAttribute("set",ModelConverters.toString(set));
+		ans.setAttribute("start-at",ModelConverters.toString(startAt));
+		ans.setAttribute("stop-at",ModelConverters.toString(stopAt));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		ans.setAttribute("unSet",ModelConverters.toString(unSet));
+		ans.setAttribute("volume",ModelConverters.toString(volume));
+		return ans;
+	}
+	public String getId() {
+		return id;
+	}
+	public String getSet() {
+		return set;
+	}
+	public int getVolume() {
+		return volume;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public String getJscript() {
+		return jscript;
+	}
+	public String getStopAt() {
+		return stopAt;
+	}
+	public String getRepeat() {
+		return repeat;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
+	public void setJScript(String jScript) {
+		this.jScript = jScript;
+	}
+	public String getScriptVar() {
+		return scriptVar;
+	}
+	public void setStartAt(String startAt) {
+		this.startAt = startAt;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setRepeat(String repeat) {
+		this.repeat = repeat;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
+	}
+	public String getUnSet() {
+		return unSet;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	
 	public boolean canShow(List<String> setList) {

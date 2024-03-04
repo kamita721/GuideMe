@@ -50,7 +50,7 @@ Introduce type safety around the cooked/uncooked distinction
 
 Check all usages of "setData()". Seems pretty stringly typed
 
-Unify Guide and GuideSettings. Currently the mismatch is causing, at a minimum, global buttons to not persist
+Unify Guide and GuideSettings. (The original problem was a lack of persistence for GlobalButtons, which has been fixed)
 
 Test override.page (e.g. find a real script that uses it; the orignal logic was wonky)
 report unrecognized attributes in a guide xml file

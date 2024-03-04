@@ -1,13 +1,20 @@
 package org.guideme.generated.model;
 
-import java.util.List;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.util.XMLReaderUtils;
+import org.guideme.guideme.model.ModelConverters;
+import java.util.List;
+import org.w3c.dom.Element;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.graphics.Color;
 import javax.xml.stream.XMLStreamReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import javax.xml.stream.XMLStreamException;
 import org.eclipse.swt.SWT;
 import java.time.LocalTime;
+import org.w3c.dom.NamedNodeMap;
+import org.apache.logging.log4j.LogManager;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 public class WebcamButton implements FlagSet, Button, Filterable  {
 
@@ -64,41 +71,53 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 	public WebcamButton() {
 	}
 
-	public boolean getDefaultBtn() {
-		return defaultBtn;
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
+	public void setTarget(String target) {
+		this.target = target;
 	}
-	public String getImage() {
-		return image;
-	}
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	public int getSortOrder() {
-		return sortOrder;
-	}
-	public void setDefaultBtn(boolean defaultBtn) {
-		this.defaultBtn = defaultBtn;
-	}
-	public void setFontName(String fontName) {
-		this.fontName = fontName;
+	public String getType() {
+		return type;
 	}
 	public void setBgColor2(Color bgColor2) {
 		this.bgColor2 = bgColor2;
 	}
-	public void setBgColor1(Color bgColor1) {
-		this.bgColor1 = bgColor1;
+	public void setJScript(String jScript) {
+		this.jScript = jScript;
 	}
-	public boolean getDisabled() {
-		return disabled;
+	public String getUnSet() {
+		return unSet;
 	}
-	public String getSet() {
-		return set;
+	public String getText() {
+		return text;
+	}
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+	public void setHotkey(String hotkey) {
+		this.hotkey = hotkey;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	public Color getBgColor1() {
 		return bgColor1;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public void setFontColor(Color fontColor) {
+		this.fontColor = fontColor;
+	}
+	public void setText(String text) {
+		this.text = text;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	public String getIfSet() {
 		return ifSet;
@@ -106,101 +125,206 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 	public String getScriptVar() {
 		return scriptVar;
 	}
-	public void setHotkey(String hotkey) {
-		this.hotkey = hotkey;
-	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public void setJScript(String jScript) {
-		this.jScript = jScript;
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
 	public LocalTime getIfAfter() {
 		return ifAfter;
 	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public void setSet(String set) {
+		this.set = set;
 	}
-	public int getFontHeight() {
-		return fontHeight;
-	}
-	public String getTarget() {
-		return target;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public String getJScript() {
-		return jScript;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
+	public void setDefaultBtn(boolean defaultBtn) {
+		this.defaultBtn = defaultBtn;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String getDestination() {
-		return destination;
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
 	}
-	public String getHotkey() {
-		return hotkey;
+	public int getSortOrder() {
+		return sortOrder;
 	}
-	public String getUnSet() {
-		return unSet;
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("WebcamButton");
+		ans.setAttribute("bgColor1",ModelConverters.toString(bgColor1));
+		ans.setAttribute("default",ModelConverters.toString(defaultBtn));
+		ans.setAttribute("disabled",ModelConverters.toString(disabled));
+		ans.setAttribute("file",ModelConverters.toString(destination));
+		ans.setAttribute("fontColor",ModelConverters.toString(fontColor));
+		ans.setAttribute("fontHeight",ModelConverters.toString(fontHeight));
+		ans.setAttribute("fontName",ModelConverters.toString(fontName));
+		ans.setAttribute("hotkey",ModelConverters.toString(hotkey));
+		ans.setAttribute("id",ModelConverters.toString(id));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("image",ModelConverters.toString(image));
+		ans.setAttribute("onclick",ModelConverters.toString(jScript));
+		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
+		ans.setAttribute("set",ModelConverters.toString(set));
+		ans.setAttribute("sortOrder",ModelConverters.toString(sortOrder));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		ans.setAttribute("type",ModelConverters.toString(type));
+		ans.setAttribute("unSet",ModelConverters.toString(unSet));
+		ans.setAttribute("bgColor2",ModelConverters.toString(bgColor2));
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
 	}
-	public Color getFontColor() {
-		return fontColor;
-	}
-	public void setFontColor(Color fontColor) {
-		this.fontColor = fontColor;
-	}
-	public void setImage(String image) {
-		this.image = image;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setDisabled(boolean disabled) {
-		this.disabled = disabled;
+	public boolean getDefaultBtn() {
+		return defaultBtn;
 	}
 	public void setSortOrder(int sortOrder) {
 		this.sortOrder = sortOrder;
 	}
-	public void setSet(String set) {
-		this.set = set;
+	public void setFontHeight(int fontHeight) {
+		this.fontHeight = fontHeight;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+	public WebcamButton(Node n) {
+		Logger logger = LogManager.getLogger();
+		if(!n.getNodeName().equals("WebcamButton")){
+		logger.warn("Error reading state file. Expected element 'WebcamButton', but got '{}'", n.getNodeName());
+		}
+		NamedNodeMap nnm = n.getAttributes();
+		for(int i=0; i<nnm.getLength(); i++){
+			Node child = nnm.item(i);
+			String attrName = child.getNodeName();
+			String attrValue = child.getNodeValue();
+			switch(attrName){
+			case "image":
+				image = ModelConverters.fromString(attrValue, image);
+				break;
+			case "set":
+				set = ModelConverters.fromString(attrValue, set);
+				break;
+			case "if-after":
+				ifAfter = ModelConverters.fromString(attrValue, ifAfter);
+				break;
+			case "onclick":
+				jScript = ModelConverters.fromString(attrValue, jScript);
+				break;
+			case "bgColor1":
+				bgColor1 = ModelConverters.fromString(attrValue, bgColor1);
+				break;
+			case "type":
+				type = ModelConverters.fromString(attrValue, type);
+				break;
+			case "bgColor2":
+				bgColor2 = ModelConverters.fromString(attrValue, bgColor2);
+				break;
+			case "unSet":
+				unSet = ModelConverters.fromString(attrValue, unSet);
+				break;
+			case "target":
+				target = ModelConverters.fromString(attrValue, target);
+				break;
+			case "if-not-set":
+				ifNotSet = ModelConverters.fromString(attrValue, ifNotSet);
+				break;
+			case "default":
+				defaultBtn = ModelConverters.fromString(attrValue, defaultBtn);
+				break;
+			case "fontName":
+				fontName = ModelConverters.fromString(attrValue, fontName);
+				break;
+			case "if-set":
+				ifSet = ModelConverters.fromString(attrValue, ifSet);
+				break;
+			case "file":
+				destination = ModelConverters.fromString(attrValue, destination);
+				break;
+			case "if-before":
+				ifBefore = ModelConverters.fromString(attrValue, ifBefore);
+				break;
+			case "fontHeight":
+				fontHeight = ModelConverters.fromString(attrValue, fontHeight);
+				break;
+			case "sortOrder":
+				sortOrder = ModelConverters.fromString(attrValue, sortOrder);
+				break;
+			case "hotkey":
+				hotkey = ModelConverters.fromString(attrValue, hotkey);
+				break;
+			case "disabled":
+				disabled = ModelConverters.fromString(attrValue, disabled);
+				break;
+			case "scriptvar":
+				scriptVar = ModelConverters.fromString(attrValue, scriptVar);
+				break;
+			case "id":
+				id = ModelConverters.fromString(attrValue, id);
+				break;
+			case "text":
+				text = ModelConverters.fromString(attrValue, text);
+				break;
+			case "fontColor":
+				fontColor = ModelConverters.fromString(attrValue, fontColor);
+				break;
+				default:
+			logger.warn("Unhandled attribute '{}'", attrName);
+				break;
+			}
+		}
+		
+		
+		
+		
+	}
+	public String getHotkey() {
+		return hotkey;
+	}
+	public void setFontName(String fontName) {
+		this.fontName = fontName;
+	}
+	public String getDestination() {
+		return destination;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public boolean getDisabled() {
+		return disabled;
 	}
 	public String getFontName() {
 		return fontName;
 	}
+	public String getJScript() {
+		return jScript;
+	}
 	public Color getBgColor2() {
 		return bgColor2;
 	}
-	public String getText() {
-		return text;
+	public String getImage() {
+		return image;
 	}
-	public void setFontHeight(int fontHeight) {
-		this.fontHeight = fontHeight;
+	public void setBgColor1(Color bgColor1) {
+		this.bgColor1 = bgColor1;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	public Color getFontColor() {
+		return fontColor;
+	}
+	public int getFontHeight() {
+		return fontHeight;
+	}
+	public String getSet() {
+		return set;
 	}
 	
 	public void setUnSet(List<String> setList) {

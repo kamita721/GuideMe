@@ -337,8 +337,11 @@ public class GuideSettings {
 			case SettingsNames.SCRIPT_PREFERENCES:
 				loadScriptPreferences(n);
 				break;
+			case SettingsNames.GLOBAL_BUTTONS:
+				loadGlobalButtons(n);
+				break;
 			default:
-				logger.warn("Unrecognized script state field {} in {}", n.getNodeName(), filename);
+				logger.warn("Unrecognized field '{}' in '{}'", n.getNodeName(), filename);
 			}
 			break;
 		case Node.COMMENT_NODE:
@@ -468,21 +471,29 @@ public class GuideSettings {
 		}
 	}
 
-
-
-	//TODO
 	private void loadGlobalButtons(Node n) {
-		
-	}
-
-	//TODO
-	private void saveGlobalButtons(Element elGlobalButtons, Document doc) {
-		for(Entry<String, GlobalButton> entry : globalButtons.entrySet()) {
-			Element elButton = comonFunctions.addElement(SettingsNames.GLOBAL_BUTTON,
-					elGlobalButtons, doc);
+		NodeList nl = n.getChildNodes();
+		for (int i = 0; i < nl.getLength(); i++) {
+			Node child = nl.item(i);
+			String nodeName = child.getNodeName();
+			if (!nodeName.equals(SettingsNames.GLOBAL_BUTTON)) {
+				logger.warn(
+						"Error reading in state file. Found element '{}' where '{}' was expected",
+						nodeName, SettingsNames.GLOBAL_BUTTON);
+				continue;
+			}
+			GlobalButton toAdd = new GlobalButton(child);
+			addGlobalButton(toAdd.getId(), toAdd);
 		}
 	}
-	
+
+	private void saveGlobalButtons(Element elGlobalButtons, Document doc) {
+		for (Entry<String, GlobalButton> entry : globalButtons.entrySet()) {
+			Element toAdd = entry.getValue().asXml(doc);
+			elGlobalButtons.appendChild(toAdd);
+		}
+	}
+
 	public void saveSettings() {
 		try {
 			logger.trace("GuideSettings saveSettings filename: {}", filename);
@@ -660,15 +671,23 @@ public class GuideSettings {
 		public static final String SCRIPT_VARIABLES = "scriptVariables";
 		public static final String SCOPE = "scope";
 		public static final String SCRIPT_PREFERENCES = "scriptPreferences";
-		public static final String GLOBAL_BUTTONS = "globalButtons";
-		public static final String GLOBAL_BUTTON = "globalButton";
-		
+		public static final String GLOBAL_BUTTONS = "GlobalButtons";
+		public static final String GLOBAL_BUTTON = "GlobalButton";
+
 	}
-	
-	private class SettingsAttributes{
+
+	private class SettingsAttributes {
 		public static final String GLOBAL_BUTTON_ID = "id";
 		public static final String GLOBAL_BUTTON_PLACEMENT = "placement";
-		
+
+	}
+
+	public void restart() {
+		setPage("start");
+		setScriptVariables(new HashMap<>());
+		setScope(null);
+		globalButtons.clear();
+		saveSettings();
 	}
 
 }

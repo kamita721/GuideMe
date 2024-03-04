@@ -1134,4 +1134,12 @@ public class Guide {
 	public Jscript getJavascriptEngine() {
 		return javascriptEngine;
 	}
+
+	public void restart() {
+		getFlags().clear();
+		getSettings().setFlags(comonFunctions.getFlags(getFlags()));
+		getSettings().restart();
+		getSettings().saveSettings();
+		
+	}
 }

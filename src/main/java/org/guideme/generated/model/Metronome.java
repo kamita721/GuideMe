@@ -1,10 +1,17 @@
 package org.guideme.generated.model;
 
 import java.util.List;
+import org.w3c.dom.Element;
+import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.util.XMLReaderUtils;
 import javax.xml.stream.XMLStreamReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import java.time.LocalTime;
+import org.w3c.dom.NamedNodeMap;
+import org.guideme.guideme.model.ModelConverters;
+import org.apache.logging.log4j.LogManager;
 public class Metronome implements Filterable  {
 
 	private String ifSet = "";
@@ -30,11 +37,77 @@ public class Metronome implements Filterable  {
 	public Metronome() {
 	}
 
-	public int getResolution() {
-		return resolution;
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public Metronome(Node n) {
+		Logger logger = LogManager.getLogger();
+		if(!n.getNodeName().equals("Metronome")){
+		logger.warn("Error reading state file. Expected element 'Metronome', but got '{}'", n.getNodeName());
+		}
+		NamedNodeMap nnm = n.getAttributes();
+		for(int i=0; i<nnm.getLength(); i++){
+			Node child = nnm.item(i);
+			String attrName = child.getNodeName();
+			String attrValue = child.getNodeValue();
+			switch(attrName){
+			case "if-not-set":
+				ifNotSet = ModelConverters.fromString(attrValue, ifNotSet);
+				break;
+			case "if-set":
+				ifSet = ModelConverters.fromString(attrValue, ifSet);
+				break;
+			case "if-before":
+				ifBefore = ModelConverters.fromString(attrValue, ifBefore);
+				break;
+			case "if-after":
+				ifAfter = ModelConverters.fromString(attrValue, ifAfter);
+				break;
+			case "beats":
+				resolution = ModelConverters.fromString(attrValue, resolution);
+				break;
+			case "loops":
+				loops = ModelConverters.fromString(attrValue, loops);
+				break;
+			case "rhythm":
+				rhythm = ModelConverters.fromString(attrValue, rhythm);
+				break;
+			case "bpm":
+				bpm = ModelConverters.fromString(attrValue, bpm);
+				break;
+				default:
+			logger.warn("Unhandled attribute '{}'", attrName);
+				break;
+			}
+		}
+		
+		
+		
+		
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	public String getBpm() {
 		return bpm;
+	}
+	public void setLoops(int loops) {
+		this.loops = loops;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Metronome");
+		ans.setAttribute("beats",ModelConverters.toString(resolution));
+		ans.setAttribute("bpm",ModelConverters.toString(bpm));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("loops",ModelConverters.toString(loops));
+		ans.setAttribute("rhythm",ModelConverters.toString(rhythm));
+		return ans;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	public void setResolution(int resolution) {
 		this.resolution = resolution;
@@ -42,23 +115,23 @@ public class Metronome implements Filterable  {
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
 	}
-	public String getIfSet() {
-		return ifSet;
+	public int getLoops() {
+		return loops;
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public void setRhythm(String rhythm) {
 		this.rhythm = rhythm;
 	}
-	public int getLoops() {
-		return loops;
+	public String getIfSet() {
+		return ifSet;
 	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public int getResolution() {
+		return resolution;
 	}
-	public void setLoops(int loops) {
-		this.loops = loops;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
@@ -66,17 +139,8 @@ public class Metronome implements Filterable  {
 	public String getRhythm() {
 		return rhythm;
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
 	public void setBpm(String bpm) {
 		this.bpm = bpm;
-	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
 	}
 	
 	public boolean canShow(List<String> setList) {

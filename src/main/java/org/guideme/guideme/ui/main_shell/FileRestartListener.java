@@ -37,13 +37,7 @@ class FileRestartListener extends SelectionAdapter {
 			// stop all activity for the current page to prevent timers
 			// jumping to a different page
 			mainShell.stopAll(false);
-			mainShell.guide.getFlags().clear();
-			mainShell.guide.getSettings().setPage("start");
-			mainShell.guide.getSettings().setFlags(mainShell.comonFunctions.getFlags(mainShell.guide.getFlags()));
-			HashMap<String, Object> scriptVariables = new HashMap<>();
-			mainShell.guide.getSettings().setScriptVariables(scriptVariables);
-			mainShell.guide.getSettings().setScope(null);
-			mainShell.guide.getSettings().saveSettings();
+			mainShell.guide.restart();
 			mainShell.guideSettings = mainShell.guide.getSettings();
 			mainShell.debugShell.clearJConsole();
 			mainShell.mainLogic.displayPage("start", false, mainShell.guide, mainShell, mainShell.appSettings, mainShell.userSettings, mainShell.guideSettings,

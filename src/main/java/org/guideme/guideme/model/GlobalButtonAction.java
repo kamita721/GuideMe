@@ -16,4 +16,17 @@ public enum GlobalButtonAction {
 			return NONE;
 		}
 	}
+
+	public static String toString(GlobalButtonAction action) {
+		switch (action) {
+		case ADD:
+			return "add";
+		case REMOVE:
+			return "remove";
+		case NONE:
+			return "none";
+		default:
+			return "none";
+		}
+	}
 }

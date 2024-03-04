@@ -14,6 +14,7 @@ import org.guideme.codegen.code_builder.CodeBlockList;
 import org.guideme.codegen.code_builder.CodeFile;
 import org.guideme.codegen.code_builder.FieldDecl;
 import org.guideme.codegen.code_builder.Line;
+import org.guideme.codegen.code_builder.Method;
 import org.guideme.codegen.code_builder.CodeFile.CodeFileType;
 import org.guideme.codegen.code_builder.StringSwitch;
 import org.guideme.codegen.code_builder.Type;
@@ -195,6 +196,75 @@ public class Element {
 
 	}
 
+	public Method generateElementSerializer() {
+		Method ans = new Method(new Type("org.w3c.dom.Element"), "asXml");
+		ans.addArg("org.w3c.dom.Document", "doc");
+		ans.addImport("org.guideme.guideme.model.ModelConverters");
+
+		ans.addLine("Element ans = doc.createElement(\"%s\");", getXmlTag());
+		for (Attribute attr : getAllAttributesRecursiveSorted()) {
+			ans.addLine("ans.setAttribute(\"%s\",ModelConverters.toString(%s));", attr.getXmlName(),
+					attr.getJavaName());
+		}
+		ans.addLine("return ans;");
+		return ans;
+	}
+
+	public Method getNodeConstructor() {
+		Method ans = new Method(null, getClassName());
+		ans.addImport("org.w3c.dom.NamedNodeMap");
+		ans.addImport("org.apache.logging.log4j.Logger");
+		ans.addImport("org.apache.logging.log4j.LogManager");
+
+		ans.addArg("org.w3c.dom.Node", "n");
+
+		ans.addLine("Logger logger = LogManager.getLogger();");
+
+		ans.addLine("if(!n.getNodeName().equals(\"%s\")){", getXmlTag());
+		ans.addLine(
+				"logger.warn(\"Error reading state file. Expected element '%s', but got '{}'\", n.getNodeName());",
+				getXmlTag());
+		ans.addLine("}");
+
+		ans.addLine("NamedNodeMap nnm = n.getAttributes();");
+		ans.addLine("for(int i=0; i<nnm.getLength(); i++){");
+		ans.addLine("Node child = nnm.item(i);");
+		ans.addLine("String attrName = child.getNodeName();");
+		ans.addLine("String attrValue = child.getNodeValue();");
+		StringSwitch switchBlock = new StringSwitch("attrName");
+
+		for (Attribute attr : getAllAttributesRecursiveSorted()) {
+			String key = attr.getXmlName();
+			CodeBlockList cb = new CodeBlockList();
+			/*
+			 * We are passing in the javaName as the default value as well. This works,
+			 * because we are in a constructor, so the default value is also the current
+			 * value.
+			 * 
+			 * We need to do this, because we rely on the type of the argument to decide
+			 * what converter function to call. In cases where the default value is null,
+			 * there is no type information if we supply the value directly.
+			 */
+			cb.addLine("%s = ModelConverters.fromString(attrValue, %s);", attr.getJavaName(),
+					attr.getJavaName());
+			switchBlock.addCase(key, cb);
+		}
+
+		CodeBlockList attributeNotFound = new CodeBlockList();
+		attributeNotFound.addLine("logger.warn(\"Unhandled attribute '{}'\", attrName);");
+		switchBlock.setDefault(attributeNotFound);
+
+		ans.addCodeBlock(switchBlock);
+
+		ans.addLine("}");
+		ans.addLine("");
+		ans.addLine("");
+		ans.addLine("");
+		ans.addLine("");
+
+		return ans;
+	}
+
 	public void generateClass(File srcRoot, String[] packageName) throws IOException {
 		CodeFile ans = new CodeFile(CodeFileType.CLASS, packageName, getClassName());
 
@@ -219,6 +289,8 @@ public class Element {
 		}
 
 		ans.constructor.addArg(new Variable("javax.xml.stream.XMLStreamReader", "reader"));
+		ans.addMethod(generateElementSerializer());
+		ans.addMethod(getNodeConstructor());
 
 		ans.generate(srcRoot);
 	}
@@ -234,7 +306,7 @@ public class Element {
 		for (String line : lines) {
 			line = line.replace("{}", "new %s(reader)".formatted(getClassName()));
 			line = line.strip();
-			if(line.isBlank()) {
+			if (line.isBlank()) {
 				continue;
 			}
 			if (!line.endsWith(";")) {

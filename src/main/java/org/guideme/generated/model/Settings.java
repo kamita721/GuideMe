@@ -1,10 +1,15 @@
 package org.guideme.generated.model;
 
 import javax.xml.stream.XMLStreamConstants;
+import org.w3c.dom.Element;
 import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.util.XMLReaderUtils;
 import javax.xml.stream.XMLStreamReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import javax.xml.stream.XMLStreamException;
+import org.w3c.dom.NamedNodeMap;
+import org.guideme.guideme.model.ModelConverters;
 import org.apache.logging.log4j.LogManager;
 public class Settings  {
 
@@ -53,28 +58,53 @@ public class Settings  {
 	public Settings() {
 	}
 
+	public void setConvertArgumentTypes(boolean convertArgumentTypes) {
+		this.convertArgumentTypes = convertArgumentTypes;
+	}
+	public boolean getAutoSetPageWhenSeen() {
+		return autoSetPageWhenSeen;
+	}
+	public void setAutoSetPageWhenSeen(boolean autoSetPageWhenSeen) {
+		this.autoSetPageWhenSeen = autoSetPageWhenSeen;
+	}
+	public boolean getPageSound() {
+		return pageSound;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Settings");
+		return ans;
+	}
+	public boolean getForceStartPage() {
+		return forceStartPage;
+	}
 	public boolean getConvertArgumentTypes() {
 		return convertArgumentTypes;
 	}
 	public void setPageSound(boolean pageSound) {
 		this.pageSound = pageSound;
 	}
-	public boolean getForceStartPage() {
-		return forceStartPage;
-	}
-	public void setConvertArgumentTypes(boolean convertArgumentTypes) {
-		this.convertArgumentTypes = convertArgumentTypes;
-	}
-	public boolean getPageSound() {
-		return pageSound;
-	}
-	public boolean getAutoSetPageWhenSeen() {
-		return autoSetPageWhenSeen;
-	}
 	public void setForceStartPage(boolean forceStartPage) {
 		this.forceStartPage = forceStartPage;
 	}
-	public void setAutoSetPageWhenSeen(boolean autoSetPageWhenSeen) {
-		this.autoSetPageWhenSeen = autoSetPageWhenSeen;
+	public Settings(Node n) {
+		Logger logger = LogManager.getLogger();
+		if(!n.getNodeName().equals("Settings")){
+		logger.warn("Error reading state file. Expected element 'Settings', but got '{}'", n.getNodeName());
+		}
+		NamedNodeMap nnm = n.getAttributes();
+		for(int i=0; i<nnm.getLength(); i++){
+			Node child = nnm.item(i);
+			String attrName = child.getNodeName();
+			String attrValue = child.getNodeValue();
+			switch(attrName){
+				default:
+			logger.warn("Unhandled attribute '{}'", attrName);
+				break;
+			}
+		}
+		
+		
+		
+		
 	}
 }

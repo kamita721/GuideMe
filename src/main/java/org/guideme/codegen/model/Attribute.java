@@ -115,6 +115,10 @@ public class Attribute implements Comparable<Attribute> {
 		return StringUtil.capitalizeFirstChar(javaName);
 	}
 
+	public String getXmlName() {
+		return name;
+	}
+	
 	public Type getType() {
 		return type;
 	}

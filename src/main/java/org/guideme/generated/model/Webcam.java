@@ -1,10 +1,17 @@
 package org.guideme.generated.model;
 
 import java.util.List;
+import org.w3c.dom.Element;
+import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.util.XMLReaderUtils;
 import javax.xml.stream.XMLStreamReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import java.time.LocalTime;
+import org.w3c.dom.NamedNodeMap;
+import org.guideme.guideme.model.ModelConverters;
+import org.apache.logging.log4j.LogManager;
 public class Webcam implements Filterable  {
 
 	private String ifSet = "";
@@ -22,29 +29,70 @@ public class Webcam implements Filterable  {
 	public Webcam() {
 	}
 
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
 	public String getIfSet() {
 		return ifSet;
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public Webcam(Node n) {
+		Logger logger = LogManager.getLogger();
+		if(!n.getNodeName().equals("Webcam")){
+		logger.warn("Error reading state file. Expected element 'Webcam', but got '{}'", n.getNodeName());
+		}
+		NamedNodeMap nnm = n.getAttributes();
+		for(int i=0; i<nnm.getLength(); i++){
+			Node child = nnm.item(i);
+			String attrName = child.getNodeName();
+			String attrValue = child.getNodeValue();
+			switch(attrName){
+			case "if-not-set":
+				ifNotSet = ModelConverters.fromString(attrValue, ifNotSet);
+				break;
+			case "if-set":
+				ifSet = ModelConverters.fromString(attrValue, ifSet);
+				break;
+			case "if-before":
+				ifBefore = ModelConverters.fromString(attrValue, ifBefore);
+				break;
+			case "if-after":
+				ifAfter = ModelConverters.fromString(attrValue, ifAfter);
+				break;
+				default:
+			logger.warn("Unhandled attribute '{}'", attrName);
+				break;
+			}
+		}
+		
+		
+		
+		
 	}
 	public String getIfNotSet() {
 		return ifNotSet;
 	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Webcam");
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		return ans;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	
 	public boolean canShow(List<String> setList) {

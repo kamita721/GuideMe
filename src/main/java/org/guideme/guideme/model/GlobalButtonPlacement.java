@@ -14,4 +14,15 @@ public enum GlobalButtonPlacement {
 			return BOTTOM;
 		}
 	}
+
+	public static String toString(GlobalButtonPlacement placement) {
+		switch (placement) {
+		case TOP:
+			return "top";
+		case BOTTOM:
+			return "bottom";
+		default:
+			return "bottom";
+		}
+	}
 }

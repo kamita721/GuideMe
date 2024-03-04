@@ -21,7 +21,7 @@ public class Method {
 		this.returnType = returnType;
 		this.name = name;
 	}
-	
+
 	public AbstractMethod asAbstract() {
 		AbstractMethod ans = new AbstractMethod(returnType, name);
 		args.forEach(ans::addArg);
@@ -62,10 +62,15 @@ public class Method {
 		body.add(cb);
 		throwables.addAll(cb.getThrowables());
 	}
-	
+
+	public void addLine(String line, Object... fmtArgs) {
+		addCodeBlock(new Line(line, fmtArgs));
+	}
+
 	public void addThrowable(Type t) {
 		throwables.add(t);
 	}
+
 	public void addThrowable(String t) {
 		addThrowable(new Type(t));
 	}
@@ -73,13 +78,17 @@ public class Method {
 	public void makeStatic() {
 		staticPhrase = "static ";
 	}
-	
+
 	public void makePrivate() {
 		visibility = "private";
 	}
 
 	public void addArg(Variable v) {
 		args.add(v);
+	}
+
+	public void addArg(String type, String name) {
+		addArg(new Variable(type, name));
 	}
 
 	public void generate(CodeBuilder builder) {
