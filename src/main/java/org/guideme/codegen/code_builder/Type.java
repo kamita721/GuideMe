@@ -28,13 +28,10 @@ public class Type {
 	}
 
 	public boolean isImplicitType() {
-		if (typeFull.startsWith("java.lang")) {
-			return true;
-		}
-		if (!typeFull.contains(".")) {
-			return true;
-		}
-		return false;
+		boolean ans = false;
+		ans |= typeFull.startsWith("java.lang");
+		ans |= !typeFull.contains(".");
+		return ans;
 	}
 
 	@Override
@@ -43,7 +40,6 @@ public class Type {
 			return true;
 		}
 		if (!(other instanceof Type)) {
-//			return false;
 			throw new IllegalStateException();
 		}
 		Type o = (Type) other;
