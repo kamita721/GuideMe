@@ -17,7 +17,6 @@ public class Video implements FlagSet, Playable, Filterable  {
 	private String stopAt = "";
 	private String set = "";
 	private LocalTime ifBefore;
-	private String jScript = "";
 	private String unSet = "";
 	private String ifNotSet = "";
 	private String jscript = "";
@@ -38,7 +37,6 @@ public class Video implements FlagSet, Playable, Filterable  {
 		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.repeat = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "loops","");
 		this.jscript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "onTriggered","");
-		this.jScript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "onclick","");
 		this.scriptVar = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "scriptvar","");
 		this.set = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "set","");
 		this.startAt = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "start-at","");
@@ -52,11 +50,29 @@ public class Video implements FlagSet, Playable, Filterable  {
 		/* NOP */
 	}
 
-	public String getRepeat() {
-		return repeat;
+	public void setSet(String set) {
+		this.set = set;
 	}
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
+	public String getStopAt() {
+		return stopAt;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public String getUnSet() {
+		return unSet;
+	}
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public void setRepeat(String repeat) {
+		this.repeat = repeat;
 	}
 	public Video(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -80,9 +96,6 @@ public class Video implements FlagSet, Playable, Filterable  {
 				break;
 			case "onTriggered":
 				jscript = ModelConverters.fromString(attrValue, jscript);
-				break;
-			case "onclick":
-				jScript = ModelConverters.fromString(attrValue, jScript);
 				break;
 			case "loops":
 				repeat = ModelConverters.fromString(attrValue, repeat);
@@ -120,86 +133,62 @@ public class Video implements FlagSet, Playable, Filterable  {
 			}
 		}
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public void setStopAt(String stopAt) {
-		this.stopAt = stopAt;
+	public String getJscript() {
+		return jscript;
 	}
 	public void setScriptVar(String scriptVar) {
 		this.scriptVar = scriptVar;
 	}
-	public String getSet() {
-		return set;
+	public void setTarget(String target) {
+		this.target = target;
 	}
-	public String getTarget() {
-		return target;
-	}
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	public int getVolume() {
-		return volume;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public String getStopAt() {
-		return stopAt;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public String getScriptVar() {
-		return scriptVar;
-	}
-	public String getUnSet() {
-		return unSet;
-	}
-	public String getJScript() {
-		return jScript;
-	}
-	public void setRepeat(String repeat) {
-		this.repeat = repeat;
+	public void setStopAt(String stopAt) {
+		this.stopAt = stopAt;
 	}
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
-	public String getJscript() {
-		return jscript;
-	}
-	public void setSet(String set) {
-		this.set = set;
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	public String getStartAt() {
 		return startAt;
 	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
 	public String getIfNotSet() {
 		return ifNotSet;
 	}
-	public String getId() {
-		return id;
+	public String getRepeat() {
+		return repeat;
 	}
-	public void setJScript(String jScript) {
-		this.jScript = jScript;
+	public void setStartAt(String startAt) {
+		this.startAt = startAt;
 	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public void setId(String id) {
-		this.id = id;
+	public int getVolume() {
+		return volume;
 	}
 	public void setVolume(int volume) {
 		this.volume = volume;
 	}
-	public void setStartAt(String startAt) {
-		this.startAt = startAt;
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public String getScriptVar() {
+		return scriptVar;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Video");
@@ -210,7 +199,6 @@ public class Video implements FlagSet, Playable, Filterable  {
 		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
 		ans.setAttribute("loops",ModelConverters.toString(repeat));
 		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
-		ans.setAttribute("onclick",ModelConverters.toString(jScript));
 		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
 		ans.setAttribute("set",ModelConverters.toString(set));
 		ans.setAttribute("start-at",ModelConverters.toString(startAt));
@@ -220,8 +208,8 @@ public class Video implements FlagSet, Playable, Filterable  {
 		ans.setAttribute("volume",ModelConverters.toString(volume));
 		return ans;
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public String getSet() {
+		return set;
 	}
 	
 	public boolean canShow(List<String> setList) {

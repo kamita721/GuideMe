@@ -22,6 +22,9 @@ public class MediaDirectory  {
 		/* NOP */
 	}
 
+	public void setText(String text) {
+		this.text = text;
+	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("MediaDirectory");
 		ans.setAttribute("text",ModelConverters.toString(text));
@@ -49,8 +52,5 @@ public class MediaDirectory  {
 				break;
 			}
 		}
-	}
-	public void setText(String text) {
-		this.text = text;
 	}
 }

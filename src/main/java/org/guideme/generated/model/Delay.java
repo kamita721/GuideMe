@@ -46,56 +46,63 @@ public class Delay implements FlagSet, Filterable  {
 		/* NOP */
 	}
 
+	public String getSet() {
+		return set;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	public String getJscript() {
+		return jscript;
+	}
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
 	}
 	public void setScriptVar(String scriptVar) {
 		this.scriptVar = scriptVar;
 	}
-	public String getUnSet() {
-		return unSet;
-	}
-	public String getSet() {
-		return set;
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	public String getStyle() {
 		return style;
 	}
+	public void setTarget(String target) {
+		this.target = target;
+	}
 	public LocalTime getIfBefore() {
 		return ifBefore;
 	}
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
+	public String getUnSet() {
+		return unSet;
 	}
-	public String getSeconds() {
-		return seconds;
+	public String getIfSet() {
+		return ifSet;
 	}
-	public void setStartWith(int startWith) {
-		this.startWith = startWith;
-	}
-	public void setSeconds(String seconds) {
-		this.seconds = seconds;
-	}
-	public void setSet(String set) {
-		this.set = set;
-	}
-	public int getStartWith() {
-		return startWith;
-	}
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Delay");
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
+		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
+		ans.setAttribute("seconds",ModelConverters.toString(seconds));
+		ans.setAttribute("set",ModelConverters.toString(set));
+		ans.setAttribute("start-with",ModelConverters.toString(startWith));
+		ans.setAttribute("style",ModelConverters.toString(style));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		ans.setAttribute("unSet",ModelConverters.toString(unSet));
+		return ans;
 	}
 	public String getIfNotSet() {
 		return ifNotSet;
-	}
-	public void setStyle(String style) {
-		this.style = style;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public void setTarget(String target) {
-		this.target = target;
 	}
 	public Delay(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -150,42 +157,35 @@ public class Delay implements FlagSet, Filterable  {
 			}
 		}
 	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Delay");
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
-		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
-		ans.setAttribute("seconds",ModelConverters.toString(seconds));
-		ans.setAttribute("set",ModelConverters.toString(set));
-		ans.setAttribute("start-with",ModelConverters.toString(startWith));
-		ans.setAttribute("style",ModelConverters.toString(style));
-		ans.setAttribute("target",ModelConverters.toString(target));
-		ans.setAttribute("unSet",ModelConverters.toString(unSet));
-		return ans;
+	public void setSeconds(String seconds) {
+		this.seconds = seconds;
 	}
-	public String getTarget() {
-		return target;
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
 	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	public String getScriptVar() {
 		return scriptVar;
 	}
-	public String getJscript() {
-		return jscript;
+	public void setStyle(String style) {
+		this.style = style;
 	}
-	public String getIfSet() {
-		return ifSet;
+	public void setStartWith(int startWith) {
+		this.startWith = startWith;
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public void setSet(String set) {
+		this.set = set;
+	}
+	public String getSeconds() {
+		return seconds;
+	}
+	public int getStartWith() {
+		return startWith;
 	}
 	
 	public boolean canShow(List<String> setList) {

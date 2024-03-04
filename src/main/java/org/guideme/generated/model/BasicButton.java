@@ -68,23 +68,132 @@ public class BasicButton implements FlagSet, Button, Filterable  {
 		/* NOP */
 	}
 
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public Color getFontColor() {
+		return fontColor;
 	}
-	public String getTarget() {
-		return target;
+	public void setSet(String set) {
+		this.set = set;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Button");
+		ans.setAttribute("bgColor1",ModelConverters.toString(bgColor1));
+		ans.setAttribute("default",ModelConverters.toString(defaultBtn));
+		ans.setAttribute("disabled",ModelConverters.toString(disabled));
+		ans.setAttribute("fontColor",ModelConverters.toString(fontColor));
+		ans.setAttribute("fontHeight",ModelConverters.toString(fontHeight));
+		ans.setAttribute("fontName",ModelConverters.toString(fontName));
+		ans.setAttribute("hotkey",ModelConverters.toString(hotkey));
+		ans.setAttribute("id",ModelConverters.toString(id));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("image",ModelConverters.toString(image));
+		ans.setAttribute("onclick",ModelConverters.toString(jScript));
+		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
+		ans.setAttribute("set",ModelConverters.toString(set));
+		ans.setAttribute("sortOrder",ModelConverters.toString(sortOrder));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		ans.setAttribute("unSet",ModelConverters.toString(unSet));
+		ans.setAttribute("bgColor2",ModelConverters.toString(bgColor2));
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	public void setHotkey(String hotkey) {
+		this.hotkey = hotkey;
+	}
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
 	}
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
 	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
+	public void setFontName(String fontName) {
+		this.fontName = fontName;
+	}
+	public String getText() {
+		return text;
+	}
+	public Color getBgColor1() {
+		return bgColor1;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	public void setDefaultBtn(boolean defaultBtn) {
 		this.defaultBtn = defaultBtn;
 	}
+	public void setFontColor(Color fontColor) {
+		this.fontColor = fontColor;
+	}
+	public String getFontName() {
+		return fontName;
+	}
+	public String getHotkey() {
+		return hotkey;
+	}
+	public void setBgColor1(Color bgColor1) {
+		this.bgColor1 = bgColor1;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public String getJScript() {
+		return jScript;
+	}
+	public void setSortOrder(int sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public boolean getDefaultBtn() {
+		return defaultBtn;
+	}
+	public void setBgColor2(Color bgColor2) {
+		this.bgColor2 = bgColor2;
+	}
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public int getFontHeight() {
+		return fontHeight;
+	}
+	public void setJScript(String jScript) {
+		this.jScript = jScript;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
+	public void setText(String text) {
+		this.text = text;
+	}
 	public int getSortOrder() {
 		return sortOrder;
+	}
+	public Color getBgColor2() {
+		return bgColor2;
 	}
 	public BasicButton(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -166,138 +275,29 @@ public class BasicButton implements FlagSet, Button, Filterable  {
 			}
 		}
 	}
-	public void setFontColor(Color fontColor) {
-		this.fontColor = fontColor;
+	public String getScriptVar() {
+		return scriptVar;
 	}
-	public int getFontHeight() {
-		return fontHeight;
-	}
-	public void setFontHeight(int fontHeight) {
-		this.fontHeight = fontHeight;
-	}
-	public Color getFontColor() {
-		return fontColor;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	public void setBgColor2(Color bgColor2) {
-		this.bgColor2 = bgColor2;
-	}
-	public String getUnSet() {
-		return unSet;
-	}
-	public boolean getDefaultBtn() {
-		return defaultBtn;
-	}
-	public boolean getDisabled() {
-		return disabled;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Button");
-		ans.setAttribute("bgColor1",ModelConverters.toString(bgColor1));
-		ans.setAttribute("default",ModelConverters.toString(defaultBtn));
-		ans.setAttribute("disabled",ModelConverters.toString(disabled));
-		ans.setAttribute("fontColor",ModelConverters.toString(fontColor));
-		ans.setAttribute("fontHeight",ModelConverters.toString(fontHeight));
-		ans.setAttribute("fontName",ModelConverters.toString(fontName));
-		ans.setAttribute("hotkey",ModelConverters.toString(hotkey));
-		ans.setAttribute("id",ModelConverters.toString(id));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("image",ModelConverters.toString(image));
-		ans.setAttribute("onclick",ModelConverters.toString(jScript));
-		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
-		ans.setAttribute("set",ModelConverters.toString(set));
-		ans.setAttribute("sortOrder",ModelConverters.toString(sortOrder));
-		ans.setAttribute("target",ModelConverters.toString(target));
-		ans.setAttribute("unSet",ModelConverters.toString(unSet));
-		ans.setAttribute("bgColor2",ModelConverters.toString(bgColor2));
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public void setImage(String image) {
-		this.image = image;
-	}
-	public String getFontName() {
-		return fontName;
-	}
-	public void setSet(String set) {
-		this.set = set;
-	}
-	public void setJScript(String jScript) {
-		this.jScript = jScript;
-	}
-	public void setHotkey(String hotkey) {
-		this.hotkey = hotkey;
-	}
-	public Color getBgColor1() {
-		return bgColor1;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public String getHotkey() {
-		return hotkey;
-	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setSortOrder(int sortOrder) {
-		this.sortOrder = sortOrder;
-	}
-	public String getImage() {
-		return image;
+	public String getTarget() {
+		return target;
 	}
 	public String getSet() {
 		return set;
 	}
-	public void setTarget(String target) {
-		this.target = target;
+	public String getImage() {
+		return image;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
+	public void setFontHeight(int fontHeight) {
+		this.fontHeight = fontHeight;
 	}
-	public String getText() {
-		return text;
+	public boolean getDisabled() {
+		return disabled;
 	}
-	public String getJScript() {
-		return jScript;
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public Color getBgColor2() {
-		return bgColor2;
-	}
-	public void setBgColor1(Color bgColor1) {
-		this.bgColor1 = bgColor1;
-	}
-	public void setFontName(String fontName) {
-		this.fontName = fontName;
-	}
-	public String getScriptVar() {
-		return scriptVar;
+	public String getUnSet() {
+		return unSet;
 	}
 	
 	public void setUnSet(List<String> setList) {

@@ -21,9 +21,6 @@ public class Tease  {
 		/* NOP */
 	}
 
-	public String getMinimumVersion() {
-		return minimumVersion;
-	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Tease");
 		ans.setAttribute("minimumVersion",ModelConverters.toString(minimumVersion));
@@ -51,5 +48,8 @@ public class Tease  {
 	}
 	public void setMinimumVersion(String minimumVersion) {
 		this.minimumVersion = minimumVersion;
+	}
+	public String getMinimumVersion() {
+		return minimumVersion;
 	}
 }

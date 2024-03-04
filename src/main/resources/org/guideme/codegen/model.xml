@@ -11,7 +11,6 @@
             <attribute name="loops" javaName="repeat" type="java.lang.String"/>
             <attribute name="volume" type="int" default="100"/>
             <attribute javaName="jscript" name="onTriggered" type="java.lang.String"/>
-            <attribute javaName="jScript" name="onclick" type="java.lang.String"/>
         </attributeSet>
         <attributeSet name="flagSet">
             <attribute name="set" type="java.lang.String"/>
@@ -61,7 +60,7 @@
             <attribute ref="id"/>
             <attributeSet ref="flagSet"/>
             <attributeSet ref="filterable"/>
-            <attribute ref="onclick"/>
+            <attribute javaName="jScript" name="onclick" type="java.lang.String"/>
             <attribute ref="image"/>
             <attribute name="hotkey" type="java.lang.String"/>
             <attribute ref="scriptvar"/>

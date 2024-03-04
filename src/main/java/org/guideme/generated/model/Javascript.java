@@ -22,17 +22,6 @@ public class Javascript  {
 		/* NOP */
 	}
 
-	public void setText(String text) {
-		this.text = text;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("javascript");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
-	}
-	public String getText() {
-		return text;
-	}
 	public Javascript(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("javascript")){
@@ -52,5 +41,16 @@ public class Javascript  {
 				break;
 			}
 		}
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("javascript");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	public String getText() {
+		return text;
+	}
+	public void setText(String text) {
+		this.text = text;
 	}
 }

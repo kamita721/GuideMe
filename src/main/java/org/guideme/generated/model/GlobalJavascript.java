@@ -27,9 +27,6 @@ public class GlobalJavascript  {
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
 	}
-	public void setText(String text) {
-		this.text = text;
-	}
 	public GlobalJavascript(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("GlobalJavascript")){
@@ -49,6 +46,9 @@ public class GlobalJavascript  {
 				break;
 			}
 		}
+	}
+	public void setText(String text) {
+		this.text = text;
 	}
 	public String getText() {
 		return text;

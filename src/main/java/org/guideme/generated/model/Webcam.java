@@ -30,29 +30,6 @@ public class Webcam implements Filterable  {
 		/* NOP */
 	}
 
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Webcam");
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		return ans;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
 	public Webcam(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Webcam")){
@@ -85,11 +62,34 @@ public class Webcam implements Filterable  {
 	public LocalTime getIfBefore() {
 		return ifBefore;
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Webcam");
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		return ans;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public String getIfSet() {
 		return ifSet;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	
 	public boolean canShow(List<String> setList) {

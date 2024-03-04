@@ -32,20 +32,35 @@ public class Image implements Filterable  {
 		/* NOP */
 	}
 
+	public String getId() {
+		return id;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
 	public LocalTime getIfBefore() {
 		return ifBefore;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	public Image(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -78,21 +93,6 @@ public class Image implements Filterable  {
 				break;
 			}
 		}
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getIfSet() {
-		return ifSet;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Image");

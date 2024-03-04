@@ -34,29 +34,11 @@ public class Text implements Filterable, IText  {
 		/* NOP */
 	}
 
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Text");
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
 	}
 	public Text(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -90,20 +72,38 @@ public class Text implements Filterable, IText  {
 			}
 		}
 	}
-	public void setText(String text) {
-		this.text = text;
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Text");
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
 	}
 	public String getIfNotSet() {
 		return ifNotSet;
 	}
+	public String getText() {
+		return text;
+	}
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
 	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	public String getIfSet() {
+		return ifSet;
 	}
-	public String getText() {
-		return text;
+	public void setText(String text) {
+		this.text = text;
 	}
 	
 	public boolean canShow(List<String> setList) {

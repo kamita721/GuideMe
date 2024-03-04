@@ -232,19 +232,22 @@ public class SquareButton extends Canvas {
 		}
 		return colorRegistry.get(colorString);
 	}
-
+	
+	@SuppressWarnings("unused")
 	protected void setNormalColor(Event e) {
 		setMouseEventColor(backgroundColor, backgroundColor2, borderColor, fontColor);
 	}
-
+	
+	@SuppressWarnings("unused")
 	protected void setHoverColor(Event e) {
 		setMouseEventColor(hoverColor, hoverColor2, hoverBorderColor, hoverFontColor);
 	}
-
+	
+	@SuppressWarnings("unused")
 	protected void setClickedColor(Event e) {
 		setMouseEventColor(clickedColor, clickedColor2, clickedBorderColor, clickedFontColor);
 	}
-
+	
 	protected void focusIn(Event e) {
 		isFocused = true;
 		setSelectedColor(e);
@@ -281,28 +284,29 @@ public class SquareButton extends Canvas {
 	}
 
 	protected void onTraverse(Event e) {
-		{
-			switch (e.detail) {
-			case SWT.TRAVERSE_ESCAPE:
-			case SWT.TRAVERSE_RETURN:
-			case SWT.TRAVERSE_TAB_NEXT:
-			case SWT.TRAVERSE_TAB_PREVIOUS:
-			case SWT.TRAVERSE_PAGE_NEXT:
-			case SWT.TRAVERSE_PAGE_PREVIOUS:
-				e.doit = true;
-				break;
-			default:
-				break;
-			}
+		switch (e.detail) {
+		case SWT.TRAVERSE_ESCAPE:
+		case SWT.TRAVERSE_RETURN:
+		case SWT.TRAVERSE_TAB_NEXT:
+		case SWT.TRAVERSE_TAB_PREVIOUS:
+		case SWT.TRAVERSE_PAGE_NEXT:
+		case SWT.TRAVERSE_PAGE_PREVIOUS:
+			e.doit = true;
+			break;
+		default:
+			break;
 		}
 	}
 
+	@SuppressWarnings("unused")
 	protected void setInactiveColor(Event e) {
 		setMouseEventColor(inactiveColor, inactiveColor2, inactiveBorderColor, inactiveFontColor);
 	}
 
+	@SuppressWarnings("unused")
 	protected void setSelectedColor(Event e) {
 		setMouseEventColor(selectedColor, selectedColor2, selectedBorderColor, selectedFontColor);
+
 	}
 
 	protected void setMouseEventColor(Color bgColor1, Color bgColor2, Color bdrColor,
@@ -498,7 +502,8 @@ public class SquareButton extends Canvas {
 			return new Point(lastWidth, lastHeight);
 		}
 
-		int width = 0, height = 0;
+		int width = 0;
+		int height = 0;
 		if (image != null) {
 			Rectangle bounds = image.getBounds();
 			width = bounds.width + imagePadding;
@@ -568,6 +573,7 @@ public class SquareButton extends Canvas {
 	 * then button image and text. So if the background image has transparency, the
 	 * background color will show through the transparency.
 	 */
+	@Override
 	public void setBackgroundImage(Image backgroundImage) {
 		this.backgroundImage = backgroundImage;
 		redraw();

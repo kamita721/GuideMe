@@ -34,17 +34,41 @@ public class LeftText implements Filterable, IText  {
 		/* NOP */
 	}
 
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("LeftText");
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public void setText(String text) {
+		this.text = text;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public String getText() {
+		return text;
+	}
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
 	}
 	public LeftText(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -78,32 +102,8 @@ public class LeftText implements Filterable, IText  {
 			}
 		}
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public String getText() {
-		return text;
-	}
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("LeftText");
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
 	}
 	
 	public boolean canShow(List<String> setList) {

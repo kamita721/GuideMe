@@ -40,11 +40,14 @@ public class LoadGuide implements Filterable  {
 		/* NOP */
 	}
 
-	public String getGuidePath() {
-		return guidePath;
+	public String getIfSet() {
+		return ifSet;
 	}
-	public String getTarget() {
-		return target;
+	public String getReturnTarget() {
+		return returnTarget;
+	}
+	public void setGuidePath(String guidePath) {
+		this.guidePath = guidePath;
 	}
 	public LoadGuide(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -90,44 +93,47 @@ public class LoadGuide implements Filterable  {
 			}
 		}
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public void setPostScript(String postScript) {
-		this.postScript = postScript;
-	}
-	public String getReturnTarget() {
-		return returnTarget;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setReturnTarget(String returnTarget) {
-		this.returnTarget = returnTarget;
-	}
 	public void setTarget(String target) {
 		this.target = target;
+	}
+	public String getTarget() {
+		return target;
 	}
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	public void setPostScript(String postScript) {
+		this.postScript = postScript;
+	}
+	public void setReturnTarget(String returnTarget) {
+		this.returnTarget = returnTarget;
+	}
+	public String getGuidePath() {
+		return guidePath;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public void setPreScript(String preScript) {
 		this.preScript = preScript;
 	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
 	public LocalTime getIfBefore() {
 		return ifBefore;
 	}
-	public void setGuidePath(String guidePath) {
-		this.guidePath = guidePath;
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public String getPreScript() {
+		return preScript;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("LoadGuide");
@@ -144,12 +150,6 @@ public class LoadGuide implements Filterable  {
 	}
 	public String getPostScript() {
 		return postScript;
-	}
-	public String getPreScript() {
-		return preScript;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
 	}
 	
 	public boolean canShow(List<String> setList) {

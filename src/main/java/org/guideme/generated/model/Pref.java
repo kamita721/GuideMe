@@ -29,8 +29,26 @@ public class Pref  {
 		/* NOP */
 	}
 
-	public String getScreen() {
-		return screen;
+	public String getSortOrder() {
+		return sortOrder;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public String getKey() {
+		return key;
+	}
+	public void setKey(String key) {
+		this.key = key;
+	}
+	public void setScreen(String screen) {
+		this.screen = screen;
+	}
+	public void setSortOrder(String sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	public String getType() {
+		return type;
 	}
 	public Pref(Node n) {
 		Logger logger = LogManager.getLogger();
@@ -64,6 +82,9 @@ public class Pref  {
 			}
 		}
 	}
+	public String getScreen() {
+		return screen;
+	}
 	public void setType(String type) {
 		this.type = type;
 	}
@@ -76,28 +97,7 @@ public class Pref  {
 		ans.setAttribute("value",ModelConverters.toString(value));
 		return ans;
 	}
-	public void setKey(String key) {
-		this.key = key;
-	}
-	public void setScreen(String screen) {
-		this.screen = screen;
-	}
-	public String getSortOrder() {
-		return sortOrder;
-	}
-	public void setValue(String value) {
-		this.value = value;
-	}
-	public String getKey() {
-		return key;
-	}
-	public void setSortOrder(String sortOrder) {
-		this.sortOrder = sortOrder;
-	}
 	public String getValue() {
 		return value;
-	}
-	public String getType() {
-		return type;
 	}
 }

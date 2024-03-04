@@ -21,6 +21,9 @@ public class Include  {
 		/* NOP */
 	}
 
+	public void setFile(String file) {
+		this.file = file;
+	}
 	public String getFile() {
 		return file;
 	}
@@ -28,9 +31,6 @@ public class Include  {
 		Element ans = doc.createElement("Include");
 		ans.setAttribute("file",ModelConverters.toString(file));
 		return ans;
-	}
-	public void setFile(String file) {
-		this.file = file;
 	}
 	public Include(Node n) {
 		Logger logger = LogManager.getLogger();
