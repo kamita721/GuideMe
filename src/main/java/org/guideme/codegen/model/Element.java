@@ -199,9 +199,17 @@ public class Element {
 	public Method generateElementSerializer() {
 		Method ans = new Method(new Type("org.w3c.dom.Element"), "asXml");
 		ans.addArg("org.w3c.dom.Document", "doc");
-		ans.addImport("org.guideme.guideme.model.ModelConverters");
+
+		Attribute[] attrs = getAllAttributesRecursiveSorted();
+		if (attrs.length == 0) {
+			ans.addLine("return doc.createElement(\"%s\");", getXmlTag());
+			return ans;
+		}
 
 		ans.addLine("Element ans = doc.createElement(\"%s\");", getXmlTag());
+
+		ans.addImport("org.guideme.guideme.model.ModelConverters");
+
 		for (Attribute attr : getAllAttributesRecursiveSorted()) {
 			ans.addLine("ans.setAttribute(\"%s\",ModelConverters.toString(%s));", attr.getXmlName(),
 					attr.getJavaName());
@@ -212,7 +220,6 @@ public class Element {
 
 	public Method getNodeConstructor() {
 		Method ans = new Method(null, getClassName());
-		ans.addImport("org.w3c.dom.NamedNodeMap");
 		ans.addImport("org.apache.logging.log4j.Logger");
 		ans.addImport("org.apache.logging.log4j.LogManager");
 
@@ -225,6 +232,12 @@ public class Element {
 				"logger.warn(\"Error reading state file. Expected element '%s', but got '{}'\", n.getNodeName());",
 				getXmlTag());
 		ans.addLine("}");
+
+		Attribute[] attrs = getAllAttributesRecursiveSorted();
+		if (attrs.length == 0) {
+			return ans;
+		}
+		ans.addImport("org.w3c.dom.NamedNodeMap");
 
 		ans.addLine("NamedNodeMap nnm = n.getAttributes();");
 		ans.addLine("for(int i=0; i<nnm.getLength(); i++){");
@@ -257,10 +270,6 @@ public class Element {
 		ans.addCodeBlock(switchBlock);
 
 		ans.addLine("}");
-		ans.addLine("");
-		ans.addLine("");
-		ans.addLine("");
-		ans.addLine("");
 
 		return ans;
 	}
@@ -289,8 +298,15 @@ public class Element {
 		}
 
 		ans.constructor.addArg(new Variable("javax.xml.stream.XMLStreamReader", "reader"));
-		ans.addMethod(generateElementSerializer());
-		ans.addMethod(getNodeConstructor());
+
+		/*
+		 * No deep reason for this. We simply have not implemented the Node
+		 * (de)serialization for subelements because nothing needs it.
+		 */
+		if (elements.isEmpty()) {
+			ans.addMethod(generateElementSerializer());
+			ans.addMethod(getNodeConstructor());
+		}
 
 		ans.generate(srcRoot);
 	}

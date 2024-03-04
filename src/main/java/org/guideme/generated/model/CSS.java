@@ -19,15 +19,21 @@ public class CSS  {
 	}
 
 	public CSS() {
+		/* NOP */
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public String getText() {
+		return text;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("CSS");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
 	}
 	public CSS(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("CSS")){
-		logger.warn("Error reading state file. Expected element 'CSS', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'CSS', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -39,21 +45,12 @@ public class CSS  {
 				text = ModelConverters.fromString(attrValue, text);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
-	public String getText() {
-		return text;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("CSS");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
+	public void setText(String text) {
+		this.text = text;
 	}
 }

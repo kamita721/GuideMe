@@ -26,6 +26,7 @@ public class Pref  {
 	}
 
 	public Pref() {
+		/* NOP */
 	}
 
 	public String getScreen() {
@@ -34,7 +35,7 @@ public class Pref  {
 	public Pref(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("pref")){
-		logger.warn("Error reading state file. Expected element 'pref', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'pref', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -58,14 +59,10 @@ public class Pref  {
 				key = ModelConverters.fromString(attrValue, key);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
 	public void setType(String type) {
 		this.type = type;

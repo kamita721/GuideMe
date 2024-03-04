@@ -43,27 +43,64 @@ public class Delay implements FlagSet, Filterable  {
 	}
 
 	public Delay() {
+		/* NOP */
 	}
 
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
 	}
-	public String getStyle() {
-		return style;
-	}
-	public String getScriptVar() {
-		return scriptVar;
+	public String getUnSet() {
+		return unSet;
 	}
 	public String getSet() {
 		return set;
 	}
+	public String getStyle() {
+		return style;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
+	}
+	public String getSeconds() {
+		return seconds;
+	}
+	public void setStartWith(int startWith) {
+		this.startWith = startWith;
+	}
+	public void setSeconds(String seconds) {
+		this.seconds = seconds;
+	}
+	public void setSet(String set) {
+		this.set = set;
+	}
+	public int getStartWith() {
+		return startWith;
+	}
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public void setStyle(String style) {
+		this.style = style;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setTarget(String target) {
+		this.target = target;
+	}
 	public Delay(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Delay")){
-		logger.warn("Error reading state file. Expected element 'Delay', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'Delay', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -108,68 +145,10 @@ public class Delay implements FlagSet, Filterable  {
 				target = ModelConverters.fromString(attrValue, target);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public String getJscript() {
-		return jscript;
-	}
-	public void setSeconds(String seconds) {
-		this.seconds = seconds;
-	}
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
-	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	public String getSeconds() {
-		return seconds;
-	}
-	public void setStyle(String style) {
-		this.style = style;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public String getUnSet() {
-		return unSet;
-	}
-	public void setSet(String set) {
-		this.set = set;
-	}
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	public void setStartWith(int startWith) {
-		this.startWith = startWith;
-	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	public String getTarget() {
-		return target;
-	}
-	public int getStartWith() {
-		return startWith;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Delay");
@@ -187,8 +166,26 @@ public class Delay implements FlagSet, Filterable  {
 		ans.setAttribute("unSet",ModelConverters.toString(unSet));
 		return ans;
 	}
+	public String getTarget() {
+		return target;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	public String getScriptVar() {
+		return scriptVar;
+	}
+	public String getJscript() {
+		return jscript;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	
 	public boolean canShow(List<String> setList) {

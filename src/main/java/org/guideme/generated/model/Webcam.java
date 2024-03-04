@@ -27,18 +27,36 @@ public class Webcam implements Filterable  {
 	}
 
 	public Webcam() {
+		/* NOP */
 	}
 
-	public String getIfSet() {
-		return ifSet;
-	}
 	public LocalTime getIfAfter() {
 		return ifAfter;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Webcam");
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		return ans;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	public Webcam(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Webcam")){
-		logger.warn("Error reading state file. Expected element 'Webcam', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'Webcam', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -59,40 +77,19 @@ public class Webcam implements Filterable  {
 				ifAfter = ModelConverters.fromString(attrValue, ifAfter);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Webcam");
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		return ans;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public String getIfSet() {
+		return ifSet;
 	}
 	
 	public boolean canShow(List<String> setList) {

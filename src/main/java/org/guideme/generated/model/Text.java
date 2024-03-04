@@ -31,13 +31,20 @@ public class Text implements Filterable, IText  {
 	}
 
 	public Text() {
+		/* NOP */
 	}
 
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
-	public void setText(String text) {
-		this.text = text;
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Text");
@@ -48,16 +55,13 @@ public class Text implements Filterable, IText  {
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
 	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public String getText() {
-		return text;
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public Text(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Text")){
-		logger.warn("Error reading state file. Expected element 'Text', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'Text', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -81,32 +85,25 @@ public class Text implements Filterable, IText  {
 				text = ModelConverters.fromString(attrValue, text);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
-	public String getIfSet() {
-		return ifSet;
+	public void setText(String text) {
+		this.text = text;
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
-	public String getIfNotSet() {
-		return ifNotSet;
+	public String getText() {
+		return text;
 	}
 	
 	public boolean canShow(List<String> setList) {

@@ -35,15 +35,28 @@ public class Metronome implements Filterable  {
 	}
 
 	public Metronome() {
+		/* NOP */
 	}
 
+	public String getIfSet() {
+		return ifSet;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
 	public LocalTime getIfBefore() {
 		return ifBefore;
+	}
+	public void setResolution(int resolution) {
+		this.resolution = resolution;
+	}
+	public int getResolution() {
+		return resolution;
 	}
 	public Metronome(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Metronome")){
-		logger.warn("Error reading state file. Expected element 'Metronome', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'Metronome', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -76,23 +89,19 @@ public class Metronome implements Filterable  {
 				bpm = ModelConverters.fromString(attrValue, bpm);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public int getLoops() {
+		return loops;
 	}
-	public String getBpm() {
-		return bpm;
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
-	public void setLoops(int loops) {
-		this.loops = loops;
+	public void setRhythm(String rhythm) {
+		this.rhythm = rhythm;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Metronome");
@@ -106,41 +115,29 @@ public class Metronome implements Filterable  {
 		ans.setAttribute("rhythm",ModelConverters.toString(rhythm));
 		return ans;
 	}
+	public String getBpm() {
+		return bpm;
+	}
 	public String getIfNotSet() {
 		return ifNotSet;
 	}
-	public void setResolution(int resolution) {
-		this.resolution = resolution;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public int getLoops() {
-		return loops;
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public void setRhythm(String rhythm) {
-		this.rhythm = rhythm;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public int getResolution() {
-		return resolution;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	public void setBpm(String bpm) {
+		this.bpm = bpm;
 	}
 	public String getRhythm() {
 		return rhythm;
 	}
-	public void setBpm(String bpm) {
-		this.bpm = bpm;
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setLoops(int loops) {
+		this.loops = loops;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	
 	public boolean canShow(List<String> setList) {

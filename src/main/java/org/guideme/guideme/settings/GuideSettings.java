@@ -676,12 +676,6 @@ public class GuideSettings {
 
 	}
 
-	private class SettingsAttributes {
-		public static final String GLOBAL_BUTTON_ID = "id";
-		public static final String GLOBAL_BUTTON_PLACEMENT = "placement";
-
-	}
-
 	public void restart() {
 		setPage("start");
 		setScriptVariables(new HashMap<>());

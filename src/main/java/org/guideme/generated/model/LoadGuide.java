@@ -37,31 +37,19 @@ public class LoadGuide implements Filterable  {
 	}
 
 	public LoadGuide() {
+		/* NOP */
 	}
 
-	public String getPreScript() {
-		return preScript;
+	public String getGuidePath() {
+		return guidePath;
 	}
-	public void setReturnTarget(String returnTarget) {
-		this.returnTarget = returnTarget;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("LoadGuide");
-		ans.setAttribute("guidePath",ModelConverters.toString(guidePath));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("postScript",ModelConverters.toString(postScript));
-		ans.setAttribute("preScript",ModelConverters.toString(preScript));
-		ans.setAttribute("return-target",ModelConverters.toString(returnTarget));
-		ans.setAttribute("target",ModelConverters.toString(target));
-		return ans;
+	public String getTarget() {
+		return target;
 	}
 	public LoadGuide(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("LoadGuide")){
-		logger.warn("Error reading state file. Expected element 'LoadGuide', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'LoadGuide', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -97,62 +85,71 @@ public class LoadGuide implements Filterable  {
 				target = ModelConverters.fromString(attrValue, target);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
-	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public String getPostScript() {
-		return postScript;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public void setPostScript(String postScript) {
-		this.postScript = postScript;
-	}
-	public void setPreScript(String preScript) {
-		this.preScript = preScript;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setGuidePath(String guidePath) {
-		this.guidePath = guidePath;
-	}
-	public String getTarget() {
-		return target;
-	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getGuidePath() {
-		return guidePath;
-	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	public String getReturnTarget() {
-		return returnTarget;
 	}
 	public String getIfNotSet() {
 		return ifNotSet;
 	}
+	public void setPostScript(String postScript) {
+		this.postScript = postScript;
+	}
+	public String getReturnTarget() {
+		return returnTarget;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
 	public String getIfSet() {
 		return ifSet;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	public void setReturnTarget(String returnTarget) {
+		this.returnTarget = returnTarget;
+	}
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public void setPreScript(String preScript) {
+		this.preScript = preScript;
+	}
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public void setGuidePath(String guidePath) {
+		this.guidePath = guidePath;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("LoadGuide");
+		ans.setAttribute("guidePath",ModelConverters.toString(guidePath));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("postScript",ModelConverters.toString(postScript));
+		ans.setAttribute("preScript",ModelConverters.toString(preScript));
+		ans.setAttribute("return-target",ModelConverters.toString(returnTarget));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		return ans;
+	}
+	public String getPostScript() {
+		return postScript;
+	}
+	public String getPreScript() {
+		return preScript;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	
 	public boolean canShow(List<String> setList) {

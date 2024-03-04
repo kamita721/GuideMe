@@ -19,20 +19,21 @@ public class GlobalJavascript  {
 	}
 
 	public GlobalJavascript() {
+		/* NOP */
 	}
 
-	public String getText() {
-		return text;
-	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("GlobalJavascript");
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
 	}
+	public void setText(String text) {
+		this.text = text;
+	}
 	public GlobalJavascript(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("GlobalJavascript")){
-		logger.warn("Error reading state file. Expected element 'GlobalJavascript', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'GlobalJavascript', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -44,16 +45,12 @@ public class GlobalJavascript  {
 				text = ModelConverters.fromString(attrValue, text);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
-	public void setText(String text) {
-		this.text = text;
+	public String getText() {
+		return text;
 	}
 }

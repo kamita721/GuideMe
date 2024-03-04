@@ -9,7 +9,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.graphics.Color;
-import org.guideme.generated.model.Webcam;
 
 public class ModelConverters {
 	static Logger logger = LogManager.getLogger();
@@ -150,7 +149,7 @@ public class ModelConverters {
 	public static String toString(List<?> list) {
 		throw new NotImplementedException();
 	}
-	public static List<Webcam> fromString(String attrValue, List<?> list) {
+	public static<T> List<T> fromString(String attrValue, List<T> list) {
 		throw new NotImplementedException();
 	}
 

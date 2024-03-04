@@ -18,11 +18,9 @@ public class Include  {
 	}
 
 	public Include() {
+		/* NOP */
 	}
 
-	public void setFile(String file) {
-		this.file = file;
-	}
 	public String getFile() {
 		return file;
 	}
@@ -31,10 +29,13 @@ public class Include  {
 		ans.setAttribute("file",ModelConverters.toString(file));
 		return ans;
 	}
+	public void setFile(String file) {
+		this.file = file;
+	}
 	public Include(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Include")){
-		logger.warn("Error reading state file. Expected element 'Include', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'Include', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -46,13 +47,9 @@ public class Include  {
 				file = ModelConverters.fromString(attrValue, file);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
 }

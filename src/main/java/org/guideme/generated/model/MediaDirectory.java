@@ -19,15 +19,21 @@ public class MediaDirectory  {
 	}
 
 	public MediaDirectory() {
+		/* NOP */
 	}
 
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("MediaDirectory");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
 	public String getText() {
 		return text;
 	}
 	public MediaDirectory(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("MediaDirectory")){
-		logger.warn("Error reading state file. Expected element 'MediaDirectory', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'MediaDirectory', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -39,21 +45,12 @@ public class MediaDirectory  {
 				text = ModelConverters.fromString(attrValue, text);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
 	public void setText(String text) {
 		this.text = text;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("MediaDirectory");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
 	}
 }

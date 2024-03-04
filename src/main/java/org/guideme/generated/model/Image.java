@@ -29,18 +29,28 @@ public class Image implements Filterable  {
 	}
 
 	public Image() {
+		/* NOP */
 	}
 
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	public Image(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Image")){
-		logger.warn("Error reading state file. Expected element 'Image', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'Image', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -64,23 +74,25 @@ public class Image implements Filterable  {
 				id = ModelConverters.fromString(attrValue, id);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public String getId() {
 		return id;
 	}
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public String getIfSet() {
+		return ifSet;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Image");
@@ -90,21 +102,6 @@ public class Image implements Filterable  {
 		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
 		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
 		return ans;
-	}
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public String getIfSet() {
-		return ifSet;
 	}
 	
 	public boolean canShow(List<String> setList) {

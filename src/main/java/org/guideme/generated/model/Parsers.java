@@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 public class Parsers  {
 
 	private Parsers() {
+		/* NOP */
 	}
 
 	public static void parseElement(ParserState parseState) throws XMLStreamException,IOException {
@@ -115,7 +116,7 @@ public class Parsers  {
 		case "NOVALUE":
 			break;
 			default:
-	logger.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
+			logger.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
 			XMLReaderUtils.getStringContentUntilElementEnd(reader);
 			break;
 		}

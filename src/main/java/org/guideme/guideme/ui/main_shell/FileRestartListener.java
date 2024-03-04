@@ -1,7 +1,5 @@
 package org.guideme.guideme.ui.main_shell;
 
-import java.util.HashMap;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;

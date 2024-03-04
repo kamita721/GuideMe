@@ -19,6 +19,7 @@ public class Title  {
 	}
 
 	public Title() {
+		/* NOP */
 	}
 
 	public void setText(String text) {
@@ -35,7 +36,7 @@ public class Title  {
 	public Title(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Title")){
-		logger.warn("Error reading state file. Expected element 'Title', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'Title', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -47,13 +48,9 @@ public class Title  {
 				text = ModelConverters.fromString(attrValue, text);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
 	}
 }

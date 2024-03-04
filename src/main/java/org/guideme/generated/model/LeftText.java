@@ -31,18 +31,25 @@ public class LeftText implements Filterable, IText  {
 	}
 
 	public LeftText() {
+		/* NOP */
 	}
 
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public LeftText(Node n) {
 		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("LeftText")){
-		logger.warn("Error reading state file. Expected element 'LeftText', but got '{}'", n.getNodeName());
+			logger.warn("Error reading state file. Expected element 'LeftText', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -66,23 +73,28 @@ public class LeftText implements Filterable, IText  {
 				text = ModelConverters.fromString(attrValue, text);
 				break;
 				default:
-			logger.warn("Unhandled attribute '{}'", attrName);
+				logger.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}
-		
-		
-		
-		
+	}
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public String getIfSet() {
+		return ifSet;
+	}
+	public String getText() {
+		return text;
 	}
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public void setText(String text) {
+		this.text = text;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("LeftText");
@@ -92,21 +104,6 @@ public class LeftText implements Filterable, IText  {
 		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
-	}
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public String getText() {
-		return text;
-	}
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setText(String text) {
-		this.text = text;
 	}
 	
 	public boolean canShow(List<String> setList) {

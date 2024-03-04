@@ -98,6 +98,10 @@ public class Method {
 		for (CodeBlock cb : body) {
 			cb.generate(builder);
 		}
+		
+		if(body.isEmpty()) {
+			builder.addLine("/* NOP */");
+		}
 
 		builder.addLine("}");
 	}
