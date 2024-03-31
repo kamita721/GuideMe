@@ -31,9 +31,6 @@ public class GlobalJavascript  {
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
 	}
-	public String getText() {
-		return text;
-	}
 	public GlobalJavascript(Node n) {
 		if(!n.getNodeName().equals("GlobalJavascript")){
 			LOGGER.warn("Error reading state file. Expected element 'GlobalJavascript', but got '{}'", n.getNodeName());
@@ -49,5 +46,8 @@ public class GlobalJavascript  {
 				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
+	}
+	public String getText() {
+		return text;
 	}
 }

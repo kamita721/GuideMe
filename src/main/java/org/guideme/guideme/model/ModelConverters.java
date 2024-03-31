@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.graphics.Color;
 
 public class ModelConverters {
-	static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private ModelConverters() {
 

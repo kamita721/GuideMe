@@ -22,6 +22,12 @@ public class Include  {
 		/* NOP */
 	}
 
+	public String getFile() {
+		return file;
+	}
+	public void setFile(String file) {
+		this.file = file;
+	}
 	public Include(Node n) {
 		if(!n.getNodeName().equals("Include")){
 			LOGGER.warn("Error reading state file. Expected element 'Include', but got '{}'", n.getNodeName());
@@ -38,15 +44,9 @@ public class Include  {
 			}
 		}
 	}
-	public void setFile(String file) {
-		this.file = file;
-	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Include");
 		ans.setAttribute("file",ModelConverters.toString(file));
 		return ans;
-	}
-	public String getFile() {
-		return file;
 	}
 }

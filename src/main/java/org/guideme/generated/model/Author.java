@@ -9,9 +9,9 @@ import org.apache.logging.log4j.LogManager;
 public class Author  {
 
 	private String name = "";
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public Author(XMLStreamReader reader) throws XMLStreamException {
-		final Logger LOGGER = LogManager.getLogger();
 		int depth = 1;
 		while (depth > 0) {
 			int eventType = reader.next();

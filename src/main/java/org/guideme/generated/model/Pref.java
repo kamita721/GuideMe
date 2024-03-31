@@ -19,19 +19,52 @@ public class Pref  {
 	private String key = "";
 
 	public Pref(XMLStreamReader reader) {
-		this.key = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "key","");
-		this.type = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "type","");
-		this.screen = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "screen","");
-		this.value = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "value","");
 		this.sortOrder = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "sortOrder","");
+		this.screen = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "screen","");
+		this.type = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "type","");
+		this.value = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "value","");
+		this.key = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "key","");
 	}
 
 	public Pref() {
 		/* NOP */
 	}
 
+	public void setSortOrder(String sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	public String getKey() {
+		return key;
+	}
+	public String getScreen() {
+		return screen;
+	}
+	public String getSortOrder() {
+		return sortOrder;
+	}
 	public String getType() {
 		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public void setKey(String key) {
+		this.key = key;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("pref");
+		ans.setAttribute("sortOrder",ModelConverters.toString(sortOrder));
+		ans.setAttribute("screen",ModelConverters.toString(screen));
+		ans.setAttribute("type",ModelConverters.toString(type));
+		ans.setAttribute("value",ModelConverters.toString(value));
+		ans.setAttribute("key",ModelConverters.toString(key));
+		return ans;
+	}
+	public String getValue() {
+		return value;
 	}
 	public Pref(Node n) {
 		if(!n.getNodeName().equals("pref")){
@@ -64,40 +97,7 @@ public class Pref  {
 			}
 		}
 	}
-	public void setValue(String value) {
-		this.value = value;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("pref");
-		ans.setAttribute("key",ModelConverters.toString(key));
-		ans.setAttribute("type",ModelConverters.toString(type));
-		ans.setAttribute("screen",ModelConverters.toString(screen));
-		ans.setAttribute("value",ModelConverters.toString(value));
-		ans.setAttribute("sortOrder",ModelConverters.toString(sortOrder));
-		return ans;
-	}
-	public void setKey(String key) {
-		this.key = key;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	public String getScreen() {
-		return screen;
-	}
-	public void setSortOrder(String sortOrder) {
-		this.sortOrder = sortOrder;
-	}
-	public String getKey() {
-		return key;
-	}
 	public void setScreen(String screen) {
 		this.screen = screen;
-	}
-	public String getSortOrder() {
-		return sortOrder;
-	}
-	public String getValue() {
-		return value;
 	}
 }

@@ -17,40 +17,20 @@ public class Webcam implements Filterable  {
 	private String ifSet = "";
 	private LocalTime ifBefore;
 	private static final Logger LOGGER = LogManager.getLogger();
-	private LocalTime ifAfter;
 	private String ifNotSet = "";
+	private LocalTime ifAfter;
 
 	public Webcam(XMLStreamReader reader) {
-		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
 		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
 		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
 	}
 
 	public Webcam() {
 		/* NOP */
 	}
 
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
 	public Webcam(Node n) {
 		if(!n.getNodeName().equals("Webcam")){
 			LOGGER.warn("Error reading state file. Expected element 'Webcam', but got '{}'", n.getNodeName());
@@ -79,25 +59,45 @@ public class Webcam implements Filterable  {
 			}
 		}
 	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Webcam");
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		return ans;
-	}
 	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	@Override
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
 	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Webcam");
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		return ans;
 	}
 	
 	@Override

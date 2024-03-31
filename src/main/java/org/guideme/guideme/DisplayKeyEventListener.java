@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.guideme.guideme.ui.main_shell.MainShell;
 
 public class DisplayKeyEventListener implements Listener {
-	private Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private MainShell mainShell;
 
 	public void setMainShell(MainShell mainShell) {

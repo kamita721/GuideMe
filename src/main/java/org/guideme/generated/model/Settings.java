@@ -10,11 +10,11 @@ public class Settings  {
 
 	private boolean convertArgumentTypes = false;
 	private boolean pageSound = true;
+	private static final Logger LOGGER = LogManager.getLogger();
 	private boolean forceStartPage = false;
 	private boolean autoSetPageWhenSeen = true;
 
 	public Settings(XMLStreamReader reader) throws XMLStreamException {
-		final Logger LOGGER = LogManager.getLogger();
 		int depth = 1;
 		while (depth > 0) {
 			int eventType = reader.next();
@@ -54,28 +54,28 @@ public class Settings  {
 		/* NOP */
 	}
 
+	public void setForceStartPage(boolean forceStartPage) {
+		this.forceStartPage = forceStartPage;
+	}
 	public boolean getPageSound() {
 		return pageSound;
 	}
 	public void setPageSound(boolean pageSound) {
 		this.pageSound = pageSound;
 	}
+	public boolean getConvertArgumentTypes() {
+		return convertArgumentTypes;
+	}
 	public void setAutoSetPageWhenSeen(boolean autoSetPageWhenSeen) {
 		this.autoSetPageWhenSeen = autoSetPageWhenSeen;
+	}
+	public void setConvertArgumentTypes(boolean convertArgumentTypes) {
+		this.convertArgumentTypes = convertArgumentTypes;
 	}
 	public boolean getForceStartPage() {
 		return forceStartPage;
 	}
-	public boolean getConvertArgumentTypes() {
-		return convertArgumentTypes;
-	}
 	public boolean getAutoSetPageWhenSeen() {
 		return autoSetPageWhenSeen;
-	}
-	public void setForceStartPage(boolean forceStartPage) {
-		this.forceStartPage = forceStartPage;
-	}
-	public void setConvertArgumentTypes(boolean convertArgumentTypes) {
-		this.convertArgumentTypes = convertArgumentTypes;
 	}
 }

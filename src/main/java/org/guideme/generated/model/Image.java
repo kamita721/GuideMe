@@ -18,31 +18,63 @@ public class Image implements Filterable  {
 	private LocalTime ifBefore;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private String id = "";
-	private LocalTime ifAfter;
 	private String ifNotSet = "";
+	private LocalTime ifAfter;
 
 	public Image(XMLStreamReader reader) {
-		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
 		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
-		this.id = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "id","");
 		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
+		this.id = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "id","");
 	}
 
 	public Image() {
 		/* NOP */
 	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
 	@Override
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Image");
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("id",ModelConverters.toString(id));
+		return ans;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	public String getId() {
 		return id;
 	}
 	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public Image(Node n) {
 		if(!n.getNodeName().equals("Image")){
@@ -76,40 +108,8 @@ public class Image implements Filterable  {
 		}
 	}
 	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	@Override
 	public LocalTime getIfBefore() {
 		return ifBefore;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Image");
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("id",ModelConverters.toString(id));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		return ans;
 	}
 	
 	@Override

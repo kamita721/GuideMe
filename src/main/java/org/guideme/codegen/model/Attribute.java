@@ -272,5 +272,12 @@ public class Attribute implements Comparable<Attribute>{
 		
 		return ans;
 	}
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
+	
 
 }

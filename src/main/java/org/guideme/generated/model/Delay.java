@@ -18,8 +18,8 @@ public class Delay implements FlagSet, Filterable  {
 	private LocalTime ifBefore;
 	private String unSet = "";
 	private String ifNotSet = "";
-	private String target = "";
 	private String jscript = "";
+	private String target = "";
 	private String seconds = "";
 	private String ifSet = "";
 	private String scriptVar = "";
@@ -29,103 +29,30 @@ public class Delay implements FlagSet, Filterable  {
 	private LocalTime ifAfter;
 
 	public Delay(XMLStreamReader reader) {
-		this.scriptVar = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "scriptvar","");
-		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
-		this.set = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "set","");
-		this.seconds = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "seconds","");
 		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
-		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
-		this.jscript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "onTriggered","");
+		this.seconds = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "seconds","");
 		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
-		this.style = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "style","");
 		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
-		this.unSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "unSet","");
+		this.set = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "set","");
+		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
+		this.jscript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "onTriggered","");
+		this.style = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "style","");
+		this.scriptVar = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "scriptvar","");
 		this.startWith = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "start-with",0);
+		this.unSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "unSet","");
+		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
 	}
 
 	public Delay() {
 		/* NOP */
 	}
 
-	public String getTarget() {
-		return target;
-	}
-	public String getStyle() {
-		return style;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	@Override
-	public String getSet() {
-		return set;
-	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	public void setStartWith(int startWith) {
-		this.startWith = startWith;
-	}
-	public void setSeconds(String seconds) {
-		this.seconds = seconds;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setStyle(String style) {
-		this.style = style;
-	}
-	public int getStartWith() {
-		return startWith;
-	}
-	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public String getSeconds() {
+		return seconds;
 	}
 	@Override
 	public String getUnSet() {
 		return unSet;
-	}
-	public String getScriptVar() {
-		return scriptVar;
-	}
-	@Override
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Delay");
-		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("set",ModelConverters.toString(set));
-		ans.setAttribute("seconds",ModelConverters.toString(seconds));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("target",ModelConverters.toString(target));
-		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("style",ModelConverters.toString(style));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("unSet",ModelConverters.toString(unSet));
-		ans.setAttribute("start-with",ModelConverters.toString(startWith));
-		return ans;
-	}
-	@Override
-	public void setSet(String set) {
-		this.set = set;
-	}
-	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
 	}
 	public Delay(Node n) {
 		if(!n.getNodeName().equals("Delay")){
@@ -146,11 +73,11 @@ public class Delay implements FlagSet, Filterable  {
 			case "if-set":
 				ifSet = ModelConverters.fromString(attrValue, ifSet);
 				break;
-			case "set":
-				set = ModelConverters.fromString(attrValue, set);
-				break;
 			case "if-before":
 				ifBefore = ModelConverters.fromString(attrValue, ifBefore);
+				break;
+			case "set":
+				set = ModelConverters.fromString(attrValue, set);
 				break;
 			case "if-after":
 				ifAfter = ModelConverters.fromString(attrValue, ifAfter);
@@ -158,17 +85,17 @@ public class Delay implements FlagSet, Filterable  {
 			case "onTriggered":
 				jscript = ModelConverters.fromString(attrValue, jscript);
 				break;
-			case "scriptvar":
-				scriptVar = ModelConverters.fromString(attrValue, scriptVar);
-				break;
 			case "style":
 				style = ModelConverters.fromString(attrValue, style);
 				break;
-			case "unSet":
-				unSet = ModelConverters.fromString(attrValue, unSet);
+			case "scriptvar":
+				scriptVar = ModelConverters.fromString(attrValue, scriptVar);
 				break;
 			case "start-with":
 				startWith = ModelConverters.fromString(attrValue, startWith);
+				break;
+			case "unSet":
+				unSet = ModelConverters.fromString(attrValue, unSet);
 				break;
 			case "target":
 				target = ModelConverters.fromString(attrValue, target);
@@ -179,25 +106,98 @@ public class Delay implements FlagSet, Filterable  {
 			}
 		}
 	}
-	public String getSeconds() {
-		return seconds;
+	public String getJscript() {
+		return jscript;
 	}
 	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	public void setJscript(String jscript) {
 		this.jscript = jscript;
+	}
+	public String getScriptVar() {
+		return scriptVar;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Delay");
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("seconds",ModelConverters.toString(seconds));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("set",ModelConverters.toString(set));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
+		ans.setAttribute("style",ModelConverters.toString(style));
+		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
+		ans.setAttribute("start-with",ModelConverters.toString(startWith));
+		ans.setAttribute("unSet",ModelConverters.toString(unSet));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		return ans;
 	}
 	public void setTarget(String target) {
 		this.target = target;
 	}
 	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public void setStyle(String style) {
+		this.style = style;
+	}
+	public void setSeconds(String seconds) {
+		this.seconds = seconds;
+	}
+	@Override
 	public String getIfNotSet() {
 		return ifNotSet;
 	}
-	public String getJscript() {
-		return jscript;
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public String getSet() {
+		return set;
+	}
+	@Override
+	public void setSet(String set) {
+		this.set = set;
+	}
+	public String getStyle() {
+		return style;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	public int getStartWith() {
+		return startWith;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setStartWith(int startWith) {
+		this.startWith = startWith;
 	}
 	
 	@Override

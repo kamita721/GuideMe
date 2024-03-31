@@ -31,6 +31,9 @@ public class MediaDirectory  {
 	public String getText() {
 		return text;
 	}
+	public void setText(String text) {
+		this.text = text;
+	}
 	public MediaDirectory(Node n) {
 		if(!n.getNodeName().equals("MediaDirectory")){
 			LOGGER.warn("Error reading state file. Expected element 'MediaDirectory', but got '{}'", n.getNodeName());
@@ -46,8 +49,5 @@ public class MediaDirectory  {
 				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
-	}
-	public void setText(String text) {
-		this.text = text;
 	}
 }

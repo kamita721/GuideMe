@@ -9,7 +9,7 @@ public class ErrorManager {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 	
-	synchronized public static ErrorManager getInstance() {
+	public synchronized static ErrorManager getInstance() {
 		if (instance == null) {
 			instance = new ErrorManager();
 		}

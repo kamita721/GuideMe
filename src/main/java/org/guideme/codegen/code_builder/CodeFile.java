@@ -29,7 +29,7 @@ public class CodeFile {
 
 	public CodeFile(CodeFileType type, String[] packageName, String fileName) {
 		this.type = type;
-		this.packageName = packageName;
+		this.packageName = packageName.clone();
 		this.fileName = fileName;
 		this.constructor = new Method(null, fileName);
 		this.defaultConstructor = new Method(null, fileName);

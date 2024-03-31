@@ -138,6 +138,7 @@ public class Element {
 	}
 
 	private void generateSubelementHandler(CodeFile cf) {
+		cf.addFieldDecl(FieldDecl.loggerDecl());
 
 		CodeBlockList toAdd = new CodeBlockList();
 		toAdd.addImport("javax.xml.stream.XMLStreamConstants");
@@ -146,9 +147,7 @@ public class Element {
 
 		toAdd.addThrowable("javax.xml.stream.XMLStreamException");
 
-		toAdd.addContent(
-				Line.getFinalAssignment(new Variable("org.apache.logging.log4j.Logger", "LOGGER"),
-						"LogManager.getLogger()"));
+		
 
 		toAdd.addLine("int depth = 1;");
 		toAdd.addLine("while (depth > 0) {");
@@ -307,10 +306,7 @@ public class Element {
 		if (elements.isEmpty()) {
 			ans.addMethod(generateElementSerializer());
 			ans.addMethod(getNodeConstructor());
-			FieldDecl toAdd = new FieldDecl(
-					new Variable("org.apache.logging.log4j.Logger", "LOGGER"),
-					"LogManager.getLogger()").makeFinal().makeStatic();
-			ans.addFieldDecl(toAdd);
+			ans.addFieldDecl(FieldDecl.loggerDecl());
 		}
 
 		ans.generate(srcRoot);

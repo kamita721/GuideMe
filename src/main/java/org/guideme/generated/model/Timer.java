@@ -22,9 +22,9 @@ public class Timer implements FlagSet, Filterable  {
 	private LocalTime ifBefore;
 	private Calendar timerEnd;
 	private String unSet = "";
-	private String ifNotSet = "";
-	private String target = "";
 	private String jscript = "";
+	private String target = "";
+	private String ifNotSet = "";
 	private String ifSet = "";
 	private String delay = "";
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -33,18 +33,18 @@ public class Timer implements FlagSet, Filterable  {
 	private LocalTime ifAfter;
 
 	public Timer(XMLStreamReader reader) throws XMLStreamException {
-		this.delay = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "seconds","");
-		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
 		this.imageId = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "imageId","");
 		this.set = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "set","");
-		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
-		this.id = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "id","");
-		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
-		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
-		this.text = XmlGuideReader.processText(reader, "text","");
+		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
 		this.jscript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "onTriggered","");
-		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
 		this.unSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "unSet","");
+		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
+		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
+		this.delay = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "seconds","");
+		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
+		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.id = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "id","");
+		this.text = XmlGuideReader.processText(reader, "text","");
 	}
 
 	public Timer() {
@@ -54,48 +54,77 @@ public class Timer implements FlagSet, Filterable  {
 	public void setTarget(String target) {
 		this.target = target;
 	}
-	public String getText() {
-		return text;
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public String getId() {
+		return id;
 	}
 	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
-	public void setTimerEnd(Calendar timerEnd) {
-		this.timerEnd = timerEnd;
+	@Override
+	public String getSet() {
+		return set;
 	}
-	public void setImageId(String imageId) {
-		this.imageId = imageId;
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Timer");
+		ans.setAttribute("",ModelConverters.toString(timerEnd));
+		ans.setAttribute("imageId",ModelConverters.toString(imageId));
+		ans.setAttribute("set",ModelConverters.toString(set));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
+		ans.setAttribute("unSet",ModelConverters.toString(unSet));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("seconds",ModelConverters.toString(delay));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("id",ModelConverters.toString(id));
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	@Override
+	public String getUnSet() {
+		return unSet;
+	}
+	public String getImageId() {
+		return imageId;
+	}
+	public void setDelay(String delay) {
+		this.delay = delay;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	public void setText(String text) {
 		this.text = text;
 	}
+	public void setTimerEnd(Calendar timerEnd) {
+		this.timerEnd = timerEnd;
+	}
 	@Override
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
-	public String getJscript() {
-		return jscript;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Timer");
-		ans.setAttribute("seconds",ModelConverters.toString(delay));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("imageId",ModelConverters.toString(imageId));
-		ans.setAttribute("set",ModelConverters.toString(set));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("id",ModelConverters.toString(id));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("target",ModelConverters.toString(target));
-		ans.setAttribute("",ModelConverters.toString(timerEnd));
-		ans.setAttribute("text",ModelConverters.toString(text));
-		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("unSet",ModelConverters.toString(unSet));
-		return ans;
+	@Override
+	public void setSet(String set) {
+		this.set = set;
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	public void setImageId(String imageId) {
+		this.imageId = imageId;
+	}
+	public String getText() {
+		return text;
+	}
+	public String getTarget() {
+		return target;
 	}
 	public Timer(Node n) {
 		if(!n.getNodeName().equals("Timer")){
@@ -152,27 +181,15 @@ public class Timer implements FlagSet, Filterable  {
 			}
 		}
 	}
+	public String getJscript() {
+		return jscript;
+	}
 	@Override
 	public LocalTime getIfAfter() {
 		return ifAfter;
 	}
 	public void setJscript(String jscript) {
 		this.jscript = jscript;
-	}
-	@Override
-	public String getSet() {
-		return set;
-	}
-	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	public void setDelay(String delay) {
-		this.delay = delay;
 	}
 	@Override
 	public String getIfSet() {
@@ -185,33 +202,16 @@ public class Timer implements FlagSet, Filterable  {
 		return timerEnd;
 	}
 	@Override
-	public String getUnSet() {
-		return unSet;
-	}
-	public String getTarget() {
-		return target;
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
 	}
 	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public String getId() {
-		return id;
-	}
-	@Override
-	public void setSet(String set) {
-		this.set = set;
-	}
-	public String getImageId() {
-		return imageId;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	
 	@Override

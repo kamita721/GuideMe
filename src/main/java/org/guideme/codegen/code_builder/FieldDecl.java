@@ -75,5 +75,11 @@ public class FieldDecl {
 		ans.addCodeBlock(new Line("this.%s = %s;", getName(), getName()));
 		return ans;
 	}
+	
+	public static FieldDecl loggerDecl() {
+		return new FieldDecl(
+				new Variable("org.apache.logging.log4j.Logger", "LOGGER"),
+				"LogManager.getLogger()").makeFinal().makeStatic();
+	}
 
 }
