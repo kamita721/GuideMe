@@ -9,7 +9,7 @@ public class UserErrorManager {
 	private UserErrorManager() {
 	}
 
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static void log(String message, Location location) {
 		// TODO make an easy way for the user to view these errors

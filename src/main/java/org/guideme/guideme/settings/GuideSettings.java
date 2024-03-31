@@ -56,7 +56,7 @@ public class GuideSettings {
 	private boolean forceStartPage;
 	private boolean globalScriptLogged;
 	private boolean convertArgumentTypes;
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private Scriptable scope;
 	private Scriptable globalScope;

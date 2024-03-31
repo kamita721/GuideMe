@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 public class Include  {
 
 	private String file = "";
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public Include(XMLStreamReader reader) {
 		this.file = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "file","");
@@ -22,7 +23,6 @@ public class Include  {
 	}
 
 	public Include(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Include")){
 			LOGGER.warn("Error reading state file. Expected element 'Include', but got '{}'", n.getNodeName());
 		}

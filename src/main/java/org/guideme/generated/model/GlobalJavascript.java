@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 public class GlobalJavascript  {
 
+	private static final Logger LOGGER = LogManager.getLogger();
 	private String text = "";
 
 	public GlobalJavascript(XMLStreamReader reader) throws XMLStreamException {
@@ -34,7 +35,6 @@ public class GlobalJavascript  {
 		return text;
 	}
 	public GlobalJavascript(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("GlobalJavascript")){
 			LOGGER.warn("Error reading state file. Expected element 'GlobalJavascript', but got '{}'", n.getNodeName());
 		}

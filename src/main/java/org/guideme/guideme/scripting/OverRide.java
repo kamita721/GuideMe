@@ -57,7 +57,7 @@ public class OverRide {
 	/** @exclude */
 	private String leftCss = "";
 
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	
 	/** @exclude */
 	public synchronized void clear() {
@@ -81,7 +81,7 @@ public class OverRide {
 		leftCss = "";
 	}
 
-	private int parseSortOrder(String sOrder) {
+	private static int parseSortOrder(String sOrder) {
 		try {
 			return Integer.parseInt(sOrder);
 		} catch (NumberFormatException e) {

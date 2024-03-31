@@ -14,55 +14,54 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 public class MilovanaHtmlReader {
-	private static Logger log = LogManager.getLogger();
-	
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public Guide loadFromUrl(String url) {
 		try {
 			Document doc = Jsoup.connect(url).get();
 			Guide guide = createFromDocument(doc);
-			
+
 			int pageNr = 1;
-			
-			while (!doc.select("#continue").isEmpty())
-			{
-				String nextPage = "http://www.milovana.com/" + doc.select("#continue").first().attr("href");
+
+			while (!doc.select("#continue").isEmpty()) {
+				String nextPage = "http://www.milovana.com/"
+						+ doc.select("#continue").first().attr("href");
 				pageNr += 1;
-				
+
 				doc = Jsoup.connect(nextPage).get();
-				addPage(guide.getChapters().get("chapter-1"), doc, pageNr);
+				addPage(guide.getChapter("chapter-1"), doc, pageNr);
 			}
-			
+
 			return guide;
 		} catch (IOException err) {
-			log.error(err);
+			LOGGER.error(err);
 			return null;
 		}
 	}
-	
+
 	private Guide createFromDocument(Document doc) {
 		Guide guide = Guide.getGuide();
-		
+
 		readGeneralInformation(guide, doc);
 		Chapter chapter = createChapter(guide);
-		
+
 		addPage(chapter, doc, 1);
-		
+
 		return guide;
 	}
-	
+
 	@SuppressWarnings("unused")
 	private void readGeneralInformation(Guide guide, Document doc) {
 		// TODO
 	}
-	
-	private Chapter createChapter(Guide guide) {
+
+	private static Chapter createChapter(Guide guide) {
 		Chapter chapter = new Chapter("chapter-1");
-		guide.getChapters().put(chapter.getId(), chapter);
+		guide.addChapter(chapter);
 		return chapter;
 	}
-	
 
-	private void addPage(Chapter chapter, Document doc, int pageNr) {
+	private static void addPage(Chapter chapter, Document doc, int pageNr) {
 
 		Page page = new Page();
 		page.setId(String.valueOf(pageNr));
@@ -75,8 +74,8 @@ public class MilovanaHtmlReader {
 			textToAdd.setText(text);
 			page.addText(textToAdd);
 		}
-			
-		chapter.getPages().put(page.getId(), page);
+
+		chapter.addPage(page);
 	}
-		
+
 }

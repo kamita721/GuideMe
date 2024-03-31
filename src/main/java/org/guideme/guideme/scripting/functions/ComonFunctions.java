@@ -86,7 +86,7 @@ public class ComonFunctions {
 	 * 
 	 */
 	private SecureRandom mRandom = new SecureRandom();
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private XPathFactory factory = XPathFactory.newInstance();
 	private XPath xpath = factory.newXPath();
 	private static final String VERSION = "0.4.5";

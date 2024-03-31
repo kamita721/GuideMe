@@ -7,7 +7,7 @@ import org.guideme.generated.model.Button;
 
 public class ButtonSorter implements Comparator<Button> {
 
-	private int getMetaSort(Button b) {
+	private static int getMetaSort(Button b) {
 		if (b instanceof GlobalButton gb) {
 			if (gb.getPlacement() == GlobalButtonPlacement.BOTTOM) {
 				return 1;
@@ -18,7 +18,7 @@ public class ButtonSorter implements Comparator<Button> {
 		return 0;
 	}
 
-	private int getSort(Button b) {
+	private static int getSort(Button b) {
 		return b.getSortOrder();
 	}
 

@@ -26,11 +26,11 @@ public abstract class CodeBlock {
 	}
 
 	public Set<Type> getImports() {
-		return imports;
+		return new HashSet<>(imports);
 	}
 
 	public Set<Type> getThrowables() {
-		return throwables;
+		return new HashSet<>(throwables);
 	}
 
 }

@@ -38,7 +38,7 @@ public class CompositeVideoSurface extends VideoSurface {
      *
      * @return long Composite ID
      */
-    private long getCompositeHandle(Composite composite) {
+    private static long getCompositeHandle(Composite composite) {
         try {
             Class<?> objectClass = composite.getClass();
             for (Field field : objectClass.getFields()) {

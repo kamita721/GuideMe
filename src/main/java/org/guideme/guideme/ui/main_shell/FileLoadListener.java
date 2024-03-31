@@ -1,11 +1,15 @@
 package org.guideme.guideme.ui.main_shell;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.FileDialog;
 
 class FileLoadListener extends SelectionAdapter {
+	private static final Logger LOGGER = LogManager.getLogger();
+	
 	/**
 	 * 
 	 */
@@ -21,7 +25,7 @@ class FileLoadListener extends SelectionAdapter {
 	// File Load from the menu
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		MainShell.LOGGER.trace("Enter Menu Load");
+		LOGGER.trace("Enter Menu Load");
 		// display a dialog to ask for a guide file to play
 		FileDialog dialog = new FileDialog(this.mainShell.shell, SWT.OPEN);
 		// TODO Need to change this here to implement the new html
@@ -49,7 +53,7 @@ class FileLoadListener extends SelectionAdapter {
 			mainShell.debugShell.clearJConsole();
 		}
 
-		MainShell.LOGGER.trace("Exit Menu Load");
+		LOGGER.trace("Exit Menu Load");
 		super.widgetSelected(e);
 	}
 

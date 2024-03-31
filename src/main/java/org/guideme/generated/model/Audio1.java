@@ -13,38 +13,38 @@ import org.w3c.dom.NamedNodeMap;
 import org.guideme.guideme.model.ModelConverters;
 import org.apache.logging.log4j.LogManager;
 public class Audio1 implements FlagSet, Playable, Filterable, Audio  {
-	private static final Logger LOGGER = LogManager.getLogger();
 
 	private String stopAt = "";
 	private String set = "";
 	private LocalTime ifBefore;
 	private String unSet = "";
 	private String ifNotSet = "";
-	private String jscript = "";
 	private String target = "";
+	private String jscript = "";
 	private int volume = 100;
 	private String ifSet = "";
 	private String repeat = "";
 	private String scriptVar = "";
+	private static final Logger LOGGER = LogManager.getLogger();
 	private String id = "";
 	private String startAt = "";
 	private LocalTime ifAfter;
 
 	public Audio1(XMLStreamReader reader) {
-		this.id = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "id","");
+		this.scriptVar = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "scriptvar","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
-		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.set = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "set","");
 		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
+		this.id = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "id","");
 		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.repeat = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "loops","");
-		this.jscript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "onTriggered","");
-		this.scriptVar = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "scriptvar","");
-		this.set = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "set","");
 		this.startAt = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "start-at","");
 		this.stopAt = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "stop-at","");
-		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
-		this.unSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "unSet","");
 		this.volume = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "volume",100);
+		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
+		this.jscript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "onTriggered","");
+		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.unSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "unSet","");
 	}
 
 	public Audio1() {
@@ -52,48 +52,40 @@ public class Audio1 implements FlagSet, Playable, Filterable, Audio  {
 	}
 
 	@Override
+	public void setStartAt(String startAt) {
+		this.startAt = startAt;
+	}
+	@Override
+	public int getVolume() {
+		return volume;
+	}
+	@Override
 	public void setScriptVar(String scriptVar) {
 		this.scriptVar = scriptVar;
+	}
+	@Override
+	public void setRepeat(String repeat) {
+		this.repeat = repeat;
 	}
 	@Override
 	public String getStartAt() {
 		return startAt;
 	}
 	@Override
-	public void setId(String id) {
-		this.id = id;
-	}
-	@Override
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	@Override
 	public String getScriptVar() {
 		return scriptVar;
 	}
 	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	@Override
-	public String getId() {
-		return id;
-	}
-	@Override
 	public LocalTime getIfAfter() {
 		return ifAfter;
 	}
 	@Override
-	public String getUnSet() {
-		return unSet;
-	}
-	@Override
-	public void setStopAt(String stopAt) {
-		this.stopAt = stopAt;
-	}
-	@Override
-	public void setRepeat(String repeat) {
-		this.repeat = repeat;
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	@Override
 	public void setTarget(String target) {
@@ -104,16 +96,24 @@ public class Audio1 implements FlagSet, Playable, Filterable, Audio  {
 		this.ifSet = ifSet;
 	}
 	@Override
-	public String getIfSet() {
-		return ifSet;
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
+	}
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
+	@Override
+	public String getId() {
+		return id;
 	}
 	@Override
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
 	}
 	@Override
-	public String getStopAt() {
-		return stopAt;
+	public String getTarget() {
+		return target;
 	}
 	public Audio1(Node n) {
 		if(!n.getNodeName().equals("Audio")){
@@ -174,70 +174,70 @@ public class Audio1 implements FlagSet, Playable, Filterable, Audio  {
 		}
 	}
 	@Override
-	public String getRepeat() {
-		return repeat;
+	public String getIfSet() {
+		return ifSet;
 	}
 	@Override
-	public String getTarget() {
-		return target;
-	}
-	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	@Override
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Audio");
-		ans.setAttribute("id",ModelConverters.toString(id));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("loops",ModelConverters.toString(repeat));
-		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
-		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
-		ans.setAttribute("set",ModelConverters.toString(set));
-		ans.setAttribute("start-at",ModelConverters.toString(startAt));
-		ans.setAttribute("stop-at",ModelConverters.toString(stopAt));
-		ans.setAttribute("target",ModelConverters.toString(target));
-		ans.setAttribute("unSet",ModelConverters.toString(unSet));
-		ans.setAttribute("volume",ModelConverters.toString(volume));
-		return ans;
-	}
-	@Override
-	public int getVolume() {
-		return volume;
+	public String getJscript() {
+		return jscript;
 	}
 	@Override
 	public String getSet() {
 		return set;
 	}
 	@Override
-	public void setStartAt(String startAt) {
-		this.startAt = startAt;
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public void setSet(String set) {
+		this.set = set;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Audio");
+		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("set",ModelConverters.toString(set));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("id",ModelConverters.toString(id));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("loops",ModelConverters.toString(repeat));
+		ans.setAttribute("start-at",ModelConverters.toString(startAt));
+		ans.setAttribute("stop-at",ModelConverters.toString(stopAt));
+		ans.setAttribute("volume",ModelConverters.toString(volume));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("unSet",ModelConverters.toString(unSet));
+		return ans;
+	}
+	@Override
+	public String getUnSet() {
+		return unSet;
+	}
+	@Override
+	public String getStopAt() {
+		return stopAt;
 	}
 	@Override
 	public void setVolume(int volume) {
 		this.volume = volume;
 	}
 	@Override
-	public void setSet(String set) {
-		this.set = set;
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	@Override
+	public void setStopAt(String stopAt) {
+		this.stopAt = stopAt;
 	}
 	@Override
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
 	@Override
-	public String getJscript() {
-		return jscript;
+	public String getRepeat() {
+		return repeat;
 	}
 	
 	@Override

@@ -18,7 +18,7 @@ import org.guideme.guideme.util.StringUtil;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-public class Attribute {
+public class Attribute implements Comparable<Attribute>{
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final String name;
@@ -26,6 +26,7 @@ public class Attribute {
 	private final Type type;
 	private final String defaultValue;
 	private final boolean isText;
+	private final int sortOrder;
 	
 	private boolean isThroughInterface = false;
 
@@ -55,8 +56,8 @@ public class Attribute {
 		String sType = null;
 		String sDefaultValue = "";
 		String sJavaName = null;
-		int iSortOrder=0;
 		boolean bIsText = false;
+		int iSortOrder = 0;
 
 		for (int i = 0; i < nnm.getLength(); i++) {
 			Node n = nnm.item(i);
@@ -240,6 +241,36 @@ public class Attribute {
 		for (Method m : generateMethods()) {
 			cf.addMethod(m.asAbstract());
 		}
+	}
+
+	@Override
+	public int compareTo(Attribute o) {
+		return o.sortOrder - this.sortOrder;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other == null) {
+			return false;
+		}
+		if(other == this) {
+			return true;
+		}
+		if(other.getClass() != this.getClass()) {
+			return false;
+		}
+		
+		boolean ans = true;
+		Attribute o = (Attribute) other;
+		ans &= o.name.equals(name);
+		ans &= o.javaName.equals(javaName);
+		ans &= o.type.equals(type);
+		ans &= o.defaultValue.equals(defaultValue);
+		ans &= o.isText == isText;
+		ans &= o.sortOrder == sortOrder;
+		ans &= o.isThroughInterface == isThroughInterface;
+		
+		return ans;
 	}
 
 }

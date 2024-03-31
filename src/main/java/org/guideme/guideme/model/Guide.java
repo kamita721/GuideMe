@@ -48,7 +48,7 @@ public class Guide {
 	/** @exclude */
 	private String delTarget; // target for currently running delay
 	/** @exclude */
-	//TODO, does this need to be part of GuideSettings?
+	// TODO, does this need to be part of GuideSettings?
 	private List<String> flags = new ArrayList<>(); // current flags
 	/** @exclude */
 	private boolean autoSetPage;
@@ -78,7 +78,7 @@ public class Guide {
 	/** @exclude */
 	private boolean inPrefGuide;
 	/** @exclude */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	/** @exclude */
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	/** @exclude */
@@ -96,12 +96,11 @@ public class Guide {
 		if (guide == null) {
 			AppSettings appSettings = AppSettings.getAppSettings();
 			guide = new Guide();
-			Map<String, Chapter> chapters = guide.getChapters();
 			Chapter chapter = new Chapter("default");
-			chapters.put("default", chapter);
+			guide.addChapter(chapter);
 			Page page404 = new Page();
 			page404.setId("GuideMe404Error");
-			chapter.getPages().put(page404.getId(), page404);
+			chapter.addPage(page404);
 			Page start = new Page();
 			start.setId("start");
 
@@ -129,18 +128,12 @@ public class Guide {
 			guide.css = "";
 			guide.autoSetPage = false;
 			guide.title = "";
-			chapter.getPages().put(start.getId(), start);
+			chapter.addPage(start);
 			guide.setMediaDirectory(appSettings.getUserDir() + appSettings.getFileSeparator()
 					+ "userSettings" + appSettings.getFileSeparator());
 			guide.javascriptEngine = new Jscript(guide);
 		}
 		return guide;
-	}
-
-	/** @exclude */
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
 	}
 
 	/** @exclude */
@@ -174,11 +167,6 @@ public class Guide {
 	/** @exclude */
 	public void setAuthorName(String authorName) {
 		this.authorName = authorName;
-	}
-
-	/** @exclude */
-	public Collection<String> getKeywords() {
-		return keywords;
 	}
 
 	/** @exclude */
@@ -247,16 +235,18 @@ public class Guide {
 		this.thumbnail = thumbnail;
 	}
 
-	/** @exclude */
-	public Map<String, Chapter> getChapters() {
-		return chapters;
+	public Chapter getChapter(String chapterID) {
+		return chapters.get(chapterID);
 	}
-
-	/** @exclude */
-	public void setChapters(Map<String, Chapter> chapters) {
-		this.chapters = chapters;
+	
+	public Collection<Chapter> getChapterCollection() {
+		return chapters.values();
 	}
-
+	
+	public void addChapter(Chapter toAdd) {
+		chapters.put(toAdd.getId(), toAdd);
+	}
+	
 	/**
 	 * Gets the media directory of the guide
 	 * 
@@ -331,7 +321,7 @@ public class Guide {
 		calCountDown.add(Calendar.SECOND, intDelSeconds);
 		return calCountDown;
 	}
-	
+
 	/** @exclude */
 	public String getDelaySet() {
 		return delaySet;
@@ -371,26 +361,22 @@ public class Guide {
 	/** @exclude */
 	public void reset(String id) {
 		LOGGER.trace("Guide reset id: {}", id);
-		try {
-			this.id = id;
-			settings = new GuideSettings(id);
-			mediaDirectory = "";
-			delStyle = "";
-			delTarget = "";
-			flags = new ArrayList<>();
-			autoSetPage = true;
-			delaySet = "";
-			delayUnSet = "";
-			title = "";
-			chapters = new HashMap<>();
-			delStartAtOffSet = 0;
-			jScript = "";
-			css = "";
-			inPrefGuide = false;
-			globaljScript = "";
-		} catch (Exception e) {
-			LOGGER.error("Guide reset " + e.getLocalizedMessage(), e);
-		}
+		this.id = id;
+		settings = new GuideSettings(id);
+		mediaDirectory = "";
+		delStyle = "";
+		delTarget = "";
+		flags = new ArrayList<>();
+		autoSetPage = true;
+		delaySet = "";
+		delayUnSet = "";
+		title = "";
+		chapters = new HashMap<>();
+		delStartAtOffSet = 0;
+		jScript = "";
+		css = "";
+		inPrefGuide = false;
+		globaljScript = "";
 	}
 
 	/** @exclude */
@@ -998,11 +984,8 @@ public class Guide {
 
 	/** @exclude */
 	public boolean pageExists(String chapter, String page) {
-		try {
-			return chapters.get(chapter).getPages().containsKey(page);
-		} catch (Exception ex) {
-			return false;
-		}
+		return chapters.get(chapter).hasPage(page);
+
 	}
 
 	/**
@@ -1026,12 +1009,8 @@ public class Guide {
 	public String fixPath(String pathIn) {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		String pathOut;
-		try {
-			pathOut = comonFunctions.fixSeparator(pathIn, appSettings.getFileSeparator());
-		} catch (Exception ex) {
-			pathOut = pathIn;
-			LOGGER.error("Guide.fixPath: " + ex.getLocalizedMessage(), ex);
-		}
+		pathOut = comonFunctions.fixSeparator(pathIn, appSettings.getFileSeparator());
+
 		LOGGER.debug("Guide.fixPath: pathIn={} return={}", pathIn, pathOut);
 		return pathOut;
 	}
@@ -1140,6 +1119,6 @@ public class Guide {
 		getSettings().setFlags(comonFunctions.getFlags(getFlags()));
 		getSettings().restart();
 		getSettings().saveSettings();
-		
+
 	}
 }

@@ -44,7 +44,6 @@ public class TeaseHandler {
 			toAdd.setTarget(nextPage);
 			toAdd.setText("Continue");
 			pageVersionNotMet.addButton(toAdd);
-			chapter.getPages().put(pageVersionNotMet.getId(), pageVersionNotMet);
 
 			Text textToAdd = new Text();
 			textToAdd.setText("<p><h1>App Version Not Supported</h1>"
@@ -52,7 +51,9 @@ public class TeaseHandler {
 					+ " but you're running " + currentVersionString + "."
 					+ "<br/>Please consider updating or this tease may not function as designed.</p>");
 
-			chapter.getPages().get(pageVersionNotMet.getId()).addLeftText(textToAdd);
+			pageVersionNotMet.addLeftText(textToAdd);
+			
+			chapter.addPage(pageVersionNotMet);
 			guideSettings.setPage(pageVersionNotMet.getId());
 		}
 	}

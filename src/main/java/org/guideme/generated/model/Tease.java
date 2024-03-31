@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 public class Tease  {
 
 	private String minimumVersion = "";
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public Tease(XMLStreamReader reader) {
 		this.minimumVersion = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "minimumVersion","");
@@ -30,7 +31,6 @@ public class Tease  {
 		return ans;
 	}
 	public Tease(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Tease")){
 			LOGGER.warn("Error reading state file. Expected element 'Tease', but got '{}'", n.getNodeName());
 		}

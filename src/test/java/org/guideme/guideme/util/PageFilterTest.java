@@ -20,10 +20,10 @@ public class PageFilterTest {
 		addUnshowablePage("unshowable");
 
 		for (int i = 1; i <= 10; i++) {
-			addShowablePage("page"+i);
+			addShowablePage("page" + i);
 		}
 		for (int i = 11; i <= 20; i++) {
-			addUnshowablePage("page"+i);
+			addUnshowablePage("page" + i);
 		}
 
 		addShowablePage("low-p-1");
@@ -47,21 +47,15 @@ public class PageFilterTest {
 	private void addShowablePage(String id) {
 		Page page = new Page();
 		page.setId(id);
-		guide.getChapters().get(CHAPTER).getPages().put(
-				id,
-				page
-		);
+		guide.getChapter(CHAPTER).addPage(page);
 	}
 
 	private void addUnshowablePage(String id) {
-		//TODO, does anything prevent a tease from setting a flag called "unset"?
+		// TODO, does anything prevent a tease from setting a flag called "unset"?
 		Page page = new Page();
 		page.setId(id);
 		page.setIfSet("unset");
-		guide.getChapters().get(CHAPTER).getPages().put(
-				id,
-				page
-		);
+		guide.getChapter(CHAPTER).addPage(page);
 	}
 
 	@Test
@@ -104,7 +98,8 @@ public class PageFilterTest {
 
 	@Test
 	public void testMultipleRangeFilters() {
-		assertEquals(6, pageFilter.getAllMatchingPages("mult-(1..2)-(1..3)", guide, CHAPTER).size());
+		assertEquals(6,
+				pageFilter.getAllMatchingPages("mult-(1..2)-(1..3)", guide, CHAPTER).size());
 	}
 
 	@Test
@@ -127,7 +122,8 @@ public class PageFilterTest {
 
 	@Test
 	public void testRegexFilter() {
-		assertEquals(4, pageFilter.getAllMatchingPages("regex:(low|med)-p-\\d", guide, CHAPTER).size());
+		assertEquals(4,
+				pageFilter.getAllMatchingPages("regex:(low|med)-p-\\d", guide, CHAPTER).size());
 	}
 
 	@Test

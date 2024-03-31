@@ -54,15 +54,6 @@ public class HtmlGuideWriterReaderTest {
 	}
 
 	@Test
-	public void keywords() {
-		originalGuide.setKeywords("A", "B", "C");
-
-		Guide guide = reader.loadFromString(writer.write(originalGuide));
-
-		assertEquals(originalGuide.getKeywordsString(), guide.getKeywordsString());
-	}
-
-	@Test
 	public void originalUrl() {
 		originalGuide.setOriginalUrl("http://url.to/original");
 
@@ -100,13 +91,13 @@ public class HtmlGuideWriterReaderTest {
 
 	@Test
 	public void chapters() {
-		originalGuide.getChapters().put("c-1", new Chapter("c-1"));
-		originalGuide.getChapters().put("c-2", new Chapter("c-2"));
+		originalGuide.addChapter(new Chapter("c-1"));
+		originalGuide.addChapter(new Chapter("c-2"));
 
 		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
-		assertNotNull(guide.getChapters().get("c-1"));
-		assertNotNull(guide.getChapters().get("c-2"));
+		assertNotNull(guide.getChapter("c-1"));
+		assertNotNull(guide.getChapter("c-2"));
 	}
 
 	@Test
@@ -116,13 +107,14 @@ public class HtmlGuideWriterReaderTest {
 		p1.setId("start");
 		Page p2 = new Page();
 		p2.setId("p-2");
-		first.getPages().put("start", p1);
-		first.getPages().put("p-2", p2);
-		originalGuide.getChapters().put("first", first);
+
+		first.addPage(p1);
+		first.addPage(p2);
+		originalGuide.addChapter(first);
 
 		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
-		assertEquals(2, guide.getChapters().get("c-1").getPages().size());
+		assertEquals(2, guide.getChapter("c-1").getPageCount());
 	}
 
 }

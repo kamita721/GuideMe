@@ -36,11 +36,14 @@ public class Type {
 
 	@Override
 	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		}
 		if (other == this) {
 			return true;
 		}
-		if (!(other instanceof Type)) {
-			throw new IllegalStateException();
+		if (other.getClass() != this.getClass()) {
+			return false;
 		}
 		Type o = (Type) other;
 		/*
@@ -58,7 +61,7 @@ public class Type {
 	public boolean isType(String t) {
 		return (getTypeFull().equals(t));
 	}
-	
+
 	public Type getGenericParameter() {
 		String[] ss = typeFull.split("[<>]");
 		if (ss.length > 2 || ss.length == 0) {

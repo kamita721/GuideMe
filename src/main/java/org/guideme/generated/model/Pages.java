@@ -8,6 +8,8 @@ import org.w3c.dom.Node;
 import org.apache.logging.log4j.LogManager;
 public class Pages  {
 
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public Pages(XMLStreamReader reader) {
 		/* NOP */
 	}
@@ -20,7 +22,6 @@ public class Pages  {
 		return doc.createElement("Pages");
 	}
 	public Pages(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Pages")){
 			LOGGER.warn("Error reading state file. Expected element 'Pages', but got '{}'", n.getNodeName());
 		}

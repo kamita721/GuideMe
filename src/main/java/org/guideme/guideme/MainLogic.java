@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -51,6 +52,7 @@ import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.debug_shell.DebugShell;
 import org.guideme.guideme.ui.main_shell.MainShell;
+import org.guideme.guideme.util.ErrorManager;
 import org.guideme.guideme.util.PageFilter;
 import org.guideme.guideme.util.XMLReaderUtils;
 import org.mozilla.javascript.Context;
@@ -64,7 +66,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class MainLogic {
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static MainLogic mainLogic;
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private OverRide overRide = new OverRide();
@@ -87,31 +89,12 @@ public class MainLogic {
 	}
 
 	public static synchronized MainLogic getMainLogic() {
-		URL songPath;
 		if (mainLogic == null) {
 			mainLogic = new MainLogic();
-			songPath = MainLogic.class.getResource("/tick.wav");
-			LOGGER.info("MainLogic getMainLogic songPath {}", songPath);
-			AudioInputStream audioIn;
-			try {
-				audioIn = AudioSystem.getAudioInputStream(songPath);
-				AudioFormat format = audioIn.getFormat();
-				song = AudioSystem.getClip();
-				DataLine.Info info = new DataLine.Info(Clip.class, format);
-				song = (Clip) AudioSystem.getLine(info);
-				song.open(audioIn);
-				loadGlobalScriptVariables();
-			} catch (IllegalArgumentException | UnsupportedAudioFileException | IOException
-					| LineUnavailableException | NullPointerException e) {
-				LOGGER.error("audio clip Exception ", e);
-			}
+			playTick();
+			loadGlobalScriptVariables();
 		}
 		return mainLogic;
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
 	}
 
 	// display page without a chapter
@@ -143,7 +126,7 @@ public class MainLogic {
 		// handle random page
 		strPageId = pageFilter.getSingleMatchingPage(pageId, guide, chapterName);
 		// get the page to display
-		objCurrPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
+		objCurrPage = guide.getChapter(chapterName).getPage(strPageId);
 		if (objCurrPage == null) {
 			objCurrPage = generate404Page(guide, chapterName, strPageId);
 			strPageId = objCurrPage.getId();
@@ -248,6 +231,7 @@ public class MainLogic {
 		} else if (!overRide.getLeftHtml().isBlank()) {
 			mainShell.setLeftPaneHtmlUncooked(overRide.getLeftHtml());
 		}
+
 		if (objVideo != null) {
 			mainShell.playVideoUncooked(objVideo);
 		} else if (objWebcam != null) {
@@ -259,7 +243,6 @@ public class MainLogic {
 				processLeftText(objCurrPage, appSettings, guide, mainShell, userSettings);
 			}
 		} else {
-			// TODO guard on getWebCamFound() ?
 			mainShell.clearImage();
 		}
 
@@ -269,7 +252,6 @@ public class MainLogic {
 		// Buttons
 		processButtons(objCurrPage, appSettings, guide, mainShell, objDelay, debugShell);
 
-		// TODO why clear lblRight?
 		mainShell.setLblRight("");
 
 		if (objDelay == null) {
@@ -286,8 +268,8 @@ public class MainLogic {
 		}
 	}
 
-	private Page generate404Page(Guide guide, String chapterName, String strPageId) {
-		Page objCurrPage = guide.getChapters().get(chapterName).getPages().get("GuideMe404Error");
+	private static Page generate404Page(Guide guide, String chapterName, String strPageId) {
+		Page objCurrPage = guide.getChapter(chapterName).getPage("GuideMe404Error");
 		String strText = "<div><p><h1>Oops it looks like page " + strPageId
 				+ " does not exist</h1></p>";
 		strText = strText + "<p>Please contact the Author to let them know the issue</p></div>";
@@ -390,30 +372,25 @@ public class MainLogic {
 			MainShell mainShell, UserSettings userSettings) {
 		// Replace any string pref in the HTML with the user preference
 		// they are encoded #prefName#
-		try {
-			StringBuilder displayTextBuilder = new StringBuilder();
-			for (IText objText : objCurrPage.getTexts()) {
-				if (objText.canShow(guide.getFlags())) {
-					displayTextBuilder.append(objText.getText());
-				}
-
+		StringBuilder displayTextBuilder = new StringBuilder();
+		for (IText objText : objCurrPage.getTexts()) {
+			if (objText.canShow(guide.getFlags())) {
+				displayTextBuilder.append(objText.getText());
 			}
-			String displayText = displayTextBuilder.toString();
 
-			// Media Directory
-			String mediaPath;
-			mediaPath = comonFunctions.getMediaFullPath("", appSettings.getFileSeparator(),
-					appSettings, guide);
-			displayText = displayText.replace(MEDIA_PATH_PLACEHOLDER, mediaPath);
-
-			displayText = comonFunctions.substituteTextVars(displayText, guide.getSettings(),
-					userSettings);
-
-			mainShell.setLeftPaneText(displayText, overRide.getRightCss());
-		} catch (Exception e) {
-			LOGGER.error("displayPage BrwsText Exception " + e.getLocalizedMessage(), e);
-			mainShell.setLeftPaneText("", "");
 		}
+		String displayText = displayTextBuilder.toString();
+
+		// Media Directory
+		String mediaPath;
+		mediaPath = comonFunctions.getMediaFullPath("", appSettings.getFileSeparator(), appSettings,
+				guide);
+		displayText = displayText.replace(MEDIA_PATH_PLACEHOLDER, mediaPath);
+
+		displayText = comonFunctions.substituteTextVars(displayText, guide.getSettings(),
+				userSettings);
+
+		mainShell.setLeftPaneText(displayText, overRide.getRightCss());
 
 	}
 
@@ -423,40 +400,35 @@ public class MainLogic {
 
 		// Replace any string pref in the HTML with the user preference
 		// they are encoded #prefName#
-		try {
-			String displayText = "";
-			if (overRide.getHtml().equals("") && overRide.getRightHtml().equals("")) {
-				StringBuilder displayTextBuilder = new StringBuilder();
-				for (IText objText : objCurrPage.getTexts()) {
-					if (objText.canShow(guide.getFlags())) {
-						displayTextBuilder.append(objText.getText());
-					}
-				}
-				displayText = displayTextBuilder.toString();
-			} else {
-				if (!overRide.getHtml().equals("")) {
-					displayText = overRide.getHtml();
-					overRide.setHtml("");
+		String displayText = "";
+		if (overRide.getHtml().equals("") && overRide.getRightHtml().equals("")) {
+			StringBuilder displayTextBuilder = new StringBuilder();
+			for (IText objText : objCurrPage.getTexts()) {
+				if (objText.canShow(guide.getFlags())) {
+					displayTextBuilder.append(objText.getText());
 				}
 			}
-
-			// Media Directory
-			String mediaPath;
-			mediaPath = comonFunctions.getMediaFullPath("", appSettings.getFileSeparator(),
-					appSettings, guide);
-			displayText = displayText.replace("\\MediaDir\\", mediaPath);
-
-			if (overRide.getRightHtml().equals("")) {
-				displayText = comonFunctions.substituteTextVars(displayText, guideSettings,
-						userSettings);
-				mainShell.setBrwsText(displayText, overRide.getRightCss());
-			} else {
-				mainShell.setRightHtml(comonFunctions.substituteTextVars(overRide.getRightHtml(),
-						guideSettings, userSettings));
+			displayText = displayTextBuilder.toString();
+		} else {
+			if (!overRide.getHtml().equals("")) {
+				displayText = overRide.getHtml();
+				overRide.setHtml("");
 			}
-		} catch (Exception e) {
-			LOGGER.error("displayPage BrwsText Exception " + e.getLocalizedMessage(), e);
-			mainShell.setBrwsText("", "");
+		}
+
+		// Media Directory
+		String mediaPath;
+		mediaPath = comonFunctions.getMediaFullPath("", appSettings.getFileSeparator(), appSettings,
+				guide);
+		displayText = displayText.replace("\\MediaDir\\", mediaPath);
+
+		if (overRide.getRightHtml().equals("")) {
+			displayText = comonFunctions.substituteTextVars(displayText, guideSettings,
+					userSettings);
+			mainShell.setBrwsText(displayText, overRide.getRightCss());
+		} else {
+			mainShell.setRightHtml(comonFunctions.substituteTextVars(overRide.getRightHtml(),
+					guideSettings, userSettings));
 		}
 
 	}
@@ -594,7 +566,8 @@ public class MainLogic {
 					guide, appSettings, debugShell);
 		} catch (XMLStreamException | IOException e) {
 			LOGGER.error("Error loading new guide {}", objLoadGuide.getGuidePath(), e);
-			// TODO, this should go to an error page.
+			ErrorManager.getInstance().recordError(e,
+					"Error loading new guide " + objLoadGuide.getGuidePath());
 			return objCurrPage;
 		}
 		GuideSettings guideSettings = guide.getSettings();
@@ -616,7 +589,7 @@ public class MainLogic {
 			strPageId = guideSettings.getCurrPage();
 		}
 		// get the page to display
-		objCurrPage = guide.getChapters().get(chapterName).getPages().get(strPageId);
+		objCurrPage = guide.getChapter(chapterName).getPage(strPageId);
 		if (objCurrPage == null) {
 			objCurrPage = generate404Page(guide, chapterName, strPageId);
 			strPageId = objCurrPage.getId();
@@ -635,7 +608,7 @@ public class MainLogic {
 		return objCurrPage;
 	}
 
-	private static void loadGlobalScriptVariables() throws IOException {
+	private static void loadGlobalScriptVariables() {
 		// globalScriptVariables
 		String dataDirectory;
 		AppSettings appSettings = AppSettings.getAppSettings();
@@ -770,11 +743,27 @@ public class MainLogic {
 			LOGGER.trace("MainLogic saveSettings save file: {}", filename);
 			StreamResult result = new StreamResult(new File(filename));
 			transformer.transform(source, result);
-
-		} catch (Exception ex) {
-			LOGGER.error(ex.getLocalizedMessage(), ex);
+		} catch (ParserConfigurationException | SAXException | IOException
+				| TransformerException e) {
+			ErrorManager.getInstance().recordError(e, "Error saving global variables");
 		} finally {
 			Context.exit();
+		}
+	}
+
+	private static void playTick() {
+		try {
+			URL songPath = MainLogic.class.getResource("/tick.wav");
+			LOGGER.info("MainLogic getMainLogic songPath {}", songPath);
+			AudioInputStream audioIn;
+			audioIn = AudioSystem.getAudioInputStream(songPath);
+			AudioFormat format = audioIn.getFormat();
+			song = AudioSystem.getClip();
+			DataLine.Info info = new DataLine.Info(Clip.class, format);
+			song = (Clip) AudioSystem.getLine(info);
+			song.open(audioIn);
+		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+			ErrorManager.getInstance().recordError(e, "Error playing tick.wav");
 		}
 	}
 

@@ -43,7 +43,7 @@ public class DebugShell {
 	private ComonFunctions comonFuctions;
 	private Shell shell = null;
 	private Display myDisplay;
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private Combo pagesCombo;
 	private Guide guide;
 	private Text txtText;
@@ -272,13 +272,7 @@ public class DebugShell {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			try {
-				String strPage;
-				strPage = pagesCombo.getItem(pagesCombo.getSelectionIndex());
-				mainShell.displayPage(strPage);
-			} catch (Exception ex) {
-				LOGGER.error(ex.getLocalizedMessage(), ex);
-			}
+			mainShell.displayPage(pagesCombo.getItem(pagesCombo.getSelectionIndex()));
 		}
 
 	}
@@ -287,44 +281,39 @@ public class DebugShell {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			try {
-				String flags = comonFuctions.getFlags(guide.getFlags());
-				Map<String, Object> scriptVars = guide.getSettings().getScriptVariables();
+			String flags = comonFuctions.getFlags(guide.getFlags());
+			Map<String, Object> scriptVars = guide.getSettings().getScriptVariables();
 
-				Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
+			Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
 
-				if (txtVarKey.getText().equals("Flags")) {
-					List<String> flagsarray = new ArrayList<>();
-					comonFuctions.setFlags(txtVarValue.getText(), flagsarray);
-					guide.setFlags(flagsarray);
-					flags = comonFuctions.getFlags(guide.getFlags());
-				} else {
-					scriptVars.put(txtVarKey.getText(), txtVarValue.getText());
-					guide.getSettings().setScriptVariables(scriptVars);
-					scriptVars = guide.getSettings().getScriptVariables();
-				}
-				varTable.removeAll();
+			if (txtVarKey.getText().equals("Flags")) {
+				List<String> flagsarray = new ArrayList<>();
+				comonFuctions.setFlags(txtVarValue.getText(), flagsarray);
+				guide.setFlags(flagsarray);
+				flags = comonFuctions.getFlags(guide.getFlags());
+			} else {
+				scriptVars.put(txtVarKey.getText(), txtVarValue.getText());
+				guide.getSettings().setScriptVariables(scriptVars);
+				scriptVars = guide.getSettings().getScriptVariables();
+			}
+			varTable.removeAll();
 
-				TableItem item = new TableItem(varTable, SWT.NONE);
+			TableItem item = new TableItem(varTable, SWT.NONE);
+			item.setBackground(color);
+			item.setText(0, "Flags");
+			item.setText(1, flags);
+
+			for (Entry<String, Object> entry : scriptVars.entrySet()) {
+				String key = entry.getKey();
+				String value = entry.getValue().toString();
+				item = new TableItem(varTable, SWT.NONE);
 				item.setBackground(color);
-				item.setText(0, "Flags");
-				item.setText(1, flags);
+				item.setText(0, key);
+				item.setText(1, value);
+			}
 
-				for (Entry<String, Object> entry : scriptVars.entrySet()) {
-					String key = entry.getKey();
-					String value = entry.getValue().toString();
-					item = new TableItem(varTable, SWT.NONE);
-					item.setBackground(color);
-					item.setText(0, key);
-					item.setText(1, value);
-				}
-
-				for (int i = 0; i < 2; i++) {
-					varTable.getColumn(i).pack();
-				}
-
-			} catch (Exception ex) {
-				LOGGER.error(ex.getLocalizedMessage(), ex);
+			for (int i = 0; i < 2; i++) {
+				varTable.getColumn(i).pack();
 			}
 		}
 
@@ -334,13 +323,7 @@ public class DebugShell {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			try {
-				String strPage;
-				strPage = guide.getSettings().getCurrPage();
-				setPage(strPage, true);
-			} catch (Exception ex) {
-				LOGGER.error(ex.getLocalizedMessage(), ex);
-			}
+			setPage(guide.getSettings().getCurrPage(), true);
 		}
 
 	}
@@ -349,31 +332,17 @@ public class DebugShell {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			try {
-				String strPage;
-				strPage = pagesCombo.getItem(pagesCombo.getSelectionIndex());
-				setPage(strPage, false);
-			} catch (Exception ex) {
-				LOGGER.error(ex.getLocalizedMessage(), ex);
-			}
+			setPage(pagesCombo.getItem(pagesCombo.getSelectionIndex()), false);
 		}
 
 	}
 
 	public void clearPagesCombo() {
-		try {
-			this.pagesCombo.removeAll();
-		} catch (Exception ex) {
-			LOGGER.error(ex.getLocalizedMessage(), ex);
-		}
+		this.pagesCombo.removeAll();
 	}
 
 	public void addPagesCombo(String page) {
-		try {
-			this.pagesCombo.add(page);
-		} catch (Exception ex) {
-			LOGGER.error(ex.getLocalizedMessage(), ex);
-		}
+		this.pagesCombo.add(page);
 	}
 
 	public void setPage(String page, boolean currPage) {
@@ -382,13 +351,13 @@ public class DebugShell {
 			int currPageIndex = this.pagesCombo.indexOf(page);
 			this.pagesCombo.select(currPageIndex);
 		}
-		dispPage = guide.getChapters().get("default").getPages().get(page);
+		dispPage = guide.getChapter("default").getPage(page);
 		StringBuilder txtBuilder = new StringBuilder();
-		for(IText objText : dispPage.getTexts()) {
+		for (IText objText : dispPage.getTexts()) {
 			if (objText.canShow(guide.getFlags())) {
 				txtBuilder.append(objText.getText());
 			}
-			
+
 		}
 		txtText.setText(txtBuilder.toString());
 
@@ -411,7 +380,7 @@ public class DebugShell {
 		if (chapter == null) {
 			return;
 		}
-		for (Page page : chapter.getPages().values()) {
+		for (Page page : chapter.getPageCollection()) {
 			addPagesCombo(page.getId());
 		}
 		setPage(guide.getCurrPage(), true);
@@ -434,53 +403,46 @@ public class DebugShell {
 	}
 
 	public void refreshVars() {
-		try {
-			Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
-			Map<String, Object> treeMap = new TreeMap<>(guide.getSettings().getScriptVariables());
-			String flags = comonFuctions.getFlags(guide.getFlags());
+		Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
+		Map<String, Object> treeMap = new TreeMap<>(guide.getSettings().getScriptVariables());
+		String flags = comonFuctions.getFlags(guide.getFlags());
 
-			varTable.removeAll();
+		varTable.removeAll();
 
-			TableItem item = new TableItem(varTable, SWT.NONE);
+		TableItem item = new TableItem(varTable, SWT.NONE);
+		item.setBackground(color);
+		item.setText(0, "Flags");
+		item.setText(1, flags);
+
+		for (Entry<String, Object> entry : treeMap.entrySet()) {
+			String key = entry.getKey();
+			String value;
+			Object objVal = entry.getValue();
+			if (objVal != null) {
+				value = comonFunctions.getVarAsString(objVal);
+			} else {
+				value = "null";
+			}
+			item = new TableItem(varTable, SWT.NONE);
 			item.setBackground(color);
-			item.setText(0, "Flags");
-			item.setText(1, flags);
-
-			for (Entry<String, Object> entry : treeMap.entrySet()) {
-				String key = entry.getKey();
-				String value;
-				Object objVal = entry.getValue();
-				if (objVal != null) {
-					value = comonFunctions.getVarAsString(objVal);
-				} else {
-					value = "null";
-				}
-				item = new TableItem(varTable, SWT.NONE);
-				item.setBackground(color);
-				item.setText(0, key);
-				item.setText(1, value);
-			}
-
-			for (int i = 0; i < 2; i++) {
-				varTable.getColumn(i).pack();
-			}
-			tabFolder.layout();
-			tabFolder.pack();
-			tabFolder.update();
-			shell.layout();
-			varScrlComp.setMinSize(varComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		} catch (Exception ex) {
-			LOGGER.error(ex.getLocalizedMessage(), ex);
+			item.setText(0, key);
+			item.setText(1, value);
 		}
+
+		for (int i = 0; i < 2; i++) {
+			varTable.getColumn(i).pack();
+		}
+		tabFolder.layout();
+		tabFolder.pack();
+		tabFolder.update();
+		shell.layout();
+		varScrlComp.setMinSize(varComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+
 	}
 
 	public void closeShell() {
-		try {
-			keepShellOpen = false;
-			shell.close();
-		} catch (Exception ex) {
-			LOGGER.error("close shell " + ex.getLocalizedMessage(), ex);
-		}
+		keepShellOpen = false;
+		shell.close();
 	}
 
 	public void showDebug() {
@@ -505,9 +467,9 @@ public class DebugShell {
 	}
 
 	public void addOverrideButtons(List<Button> button) {
-		for(Button b : button) {
+		for (Button b : button) {
 			addOverrideButton(b);
 		}
-		
+
 	}
 }

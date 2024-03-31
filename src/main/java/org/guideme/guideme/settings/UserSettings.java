@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 
 public class UserSettings {
 	private String userSettingsLocation = "";
-	private Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private HashMap<String, String> userStringPrefs = new HashMap<>();
 	private HashMap<String, String> userStringDesc = new HashMap<>();
 	private LinkedHashSet<String> userStringKeys = new LinkedHashSet<>();
@@ -120,10 +120,8 @@ public class UserSettings {
 
 			}
 
-		} catch (ParserConfigurationException pce) {
-			LOGGER.error(pce.getLocalizedMessage());
-		} catch (SAXException | IOException e) {
-			LOGGER.error(e.getLocalizedMessage());
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			LOGGER.error(e);
 		}
 		saveUserSettings();
 	}
@@ -291,8 +289,8 @@ public class UserSettings {
 			StreamResult result = new StreamResult(new File(userSettingsLocation));
 			transformer.transform(source, result);
 
-		} catch (TransformerException | ParserConfigurationException | SAXException | IOException ex) {
-			LOGGER.error(ex.getLocalizedMessage());
+		} catch (TransformerException | ParserConfigurationException | SAXException | IOException e) {
+			LOGGER.error(e);
 		}
 	}
 

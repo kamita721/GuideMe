@@ -8,6 +8,8 @@ import org.w3c.dom.Node;
 import org.apache.logging.log4j.LogManager;
 public class NOVALUE  {
 
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public NOVALUE(XMLStreamReader reader) {
 		/* NOP */
 	}
@@ -17,7 +19,6 @@ public class NOVALUE  {
 	}
 
 	public NOVALUE(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("NOVALUE")){
 			LOGGER.warn("Error reading state file. Expected element 'NOVALUE', but got '{}'", n.getNodeName());
 		}

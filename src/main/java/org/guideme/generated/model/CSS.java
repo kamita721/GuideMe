@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 public class CSS  {
 
+	private static final Logger LOGGER = LogManager.getLogger();
 	private String text = "";
 
 	public CSS(XMLStreamReader reader) throws XMLStreamException {
@@ -31,7 +32,6 @@ public class CSS  {
 		this.text = text;
 	}
 	public CSS(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("CSS")){
 			LOGGER.warn("Error reading state file. Expected element 'CSS', but got '{}'", n.getNodeName());
 		}

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 public class MediaDirectory  {
 
+	private static final Logger LOGGER = LogManager.getLogger();
 	private String text = "";
 
 	public MediaDirectory(XMLStreamReader reader) throws XMLStreamException {
@@ -31,7 +32,6 @@ public class MediaDirectory  {
 		return text;
 	}
 	public MediaDirectory(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("MediaDirectory")){
 			LOGGER.warn("Error reading state file. Expected element 'MediaDirectory', but got '{}'", n.getNodeName());
 		}

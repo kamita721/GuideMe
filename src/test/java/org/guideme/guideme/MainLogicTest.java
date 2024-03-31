@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -65,12 +64,8 @@ public class MainLogicTest {
 			debugShell = DebugShell.getDebugShell(); 
 			XmlGuideReader.loadXML(dataDirectory + guideFileName, guide, appSettings, debugShell);
 			guideSettings = guide.getSettings();
-			Set<String> chapters = guide.getChapters().keySet();
-			for (String chapterId : chapters) {
-				Chapter chapter = guide.getChapters().get(chapterId);
-				Set<String> pages = chapter.getPages().keySet();
-				for (String pageId : pages) {
-					Page page = chapter.getPages().get(pageId);
+			for (Chapter chapter : guide.getChapterCollection()) {
+				for (Page page : chapter.getPageCollection()) {
 					mainLogic.displayPage(chapter.getId(), page.getId(), false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);		
 				}
 			}
@@ -94,12 +89,8 @@ public class MainLogicTest {
 					guide.reset(file.getName().substring(0, file.getName().length() - 4));
 					XmlGuideReader.loadXML(file.getAbsolutePath(), guide, appSettings, debugShell);
 					guideSettings = guide.getSettings();
-					Set<String> chapters = guide.getChapters().keySet();
-					for (String chapterId : chapters) {
-						Chapter chapter = guide.getChapters().get(chapterId);
-						Set<String> pages = chapter.getPages().keySet();
-						for (String pageId : pages) {
-							Page page = chapter.getPages().get(pageId);
+					for (Chapter chapter : guide.getChapterCollection()) {
+						for (Page page : chapter.getPageCollection()) {
 							mainLogic.displayPage(chapter.getId(), page.getId(), false, guide, mainShell, appSettings, userSettings, guideSettings, debugShell);		
 						}
 					}

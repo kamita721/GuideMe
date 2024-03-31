@@ -6,6 +6,8 @@ public class FieldDecl {
 
 	private final Variable variable;
 	private final String initializer;
+	private boolean isStatic = false;
+	private boolean isFinal = false;
 
 	public FieldDecl(Variable variable, String initializer) {
 		this.variable = variable;
@@ -20,6 +22,16 @@ public class FieldDecl {
 		return variable.type;
 	}
 
+	public FieldDecl makeStatic() {
+		isStatic = true;
+		return this;
+	}
+
+	public FieldDecl makeFinal() {
+		isFinal = true;
+		return this;
+	}
+
 	private String getInitializerPhrase() {
 		if (initializer == null) {
 			return "";
@@ -27,14 +39,30 @@ public class FieldDecl {
 		return " = %s".formatted(initializer);
 	}
 
+	private String getModifierPhrase() {
+		StringBuilder ans = new StringBuilder();
+		ans.append("private");
+
+		if (isStatic) {
+			ans.append(" static");
+		}
+
+		if (isFinal) {
+			ans.append(" final");
+		}
+
+		return ans.toString();
+	}
+
 	public void generate(CodeBuilder builder) {
-		builder.addLine("private %s%s;", variable.getDecl(), getInitializerPhrase());
+		builder.addLine("%s %s%s;", getModifierPhrase(), variable.getDecl(),
+				getInitializerPhrase());
 	}
 
 	public Method getter() {
 		String name = "get" + StringUtil.capitalizeFirstChar(getName());
-		if(getType().isType("java.util.ArrayList")) {
-			name = name +"s";
+		if (getType().isType("java.util.ArrayList")) {
+			name = name + "s";
 		}
 		Method ans = new Method(getType().getTypeAbstract(), name);
 		ans.addCodeBlock(new Line("return %s;", getName()));

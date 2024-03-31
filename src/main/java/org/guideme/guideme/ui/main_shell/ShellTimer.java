@@ -5,9 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.guideme.generated.model.Timer;
 
 class ShellTimer implements Runnable {
+	private static final Logger LOGGER = LogManager.getLogger();
 	/**
 	 * 
 	 */
@@ -27,7 +30,7 @@ class ShellTimer implements Runnable {
 	@Override
 	public void run() {
 		if (mainShell.pauseRequested) {
-			MainShell.LOGGER.debug("pausing timers");
+			LOGGER.debug("pausing timers");
 			mainShell.pauseAll();
 			return;
 		}
@@ -60,7 +63,7 @@ class ShellTimer implements Runnable {
 	}
 
 	private void onTimerTrigger(Timer timer) {
-		MainShell.LOGGER.debug("Timer: " + timer.getId() + " Triggered");
+		LOGGER.debug("Timer: " + timer.getId() + " Triggered");
 		mainShell.setUnsetFlagsUncooked(timer.getSet(), timer.getUnSet());
 		mainShell.setImageByUncooked(timer.getImageId());
 		mainShell.setBrwsTextUncooked(timer.getText());
@@ -122,7 +125,7 @@ class ShellTimer implements Runnable {
 
 	}
 
-	private String formatTimeLeft(long delta) {
+	private static String formatTimeLeft(long delta) {
 		int intSeconds = (int) ((delta / 1000) + 1);
 		int intMinutes = intSeconds / 60;
 		intSeconds = intSeconds - (intMinutes * 60);

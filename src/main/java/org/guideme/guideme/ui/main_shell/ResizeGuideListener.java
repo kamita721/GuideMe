@@ -1,11 +1,14 @@
 package org.guideme.guideme.ui.main_shell;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.FileDialog;
 
 class ResizeGuideListener extends SelectionAdapter {
+	private static final Logger LOGGER = LogManager.getLogger();
 	/**
 	 * 
 	 */
@@ -21,7 +24,7 @@ class ResizeGuideListener extends SelectionAdapter {
 	// File CompressGuide from the menu
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		MainShell.LOGGER.trace("Enter Menu CompressGuide");
+		LOGGER.trace("Enter Menu CompressGuide");
 		// display a dialog to ask for a guide file to play
 		FileDialog dialog = new FileDialog(this.mainShell.shell, SWT.OPEN);
 		String[] filterNames = new String[] { "XML Files" };
@@ -41,7 +44,7 @@ class ResizeGuideListener extends SelectionAdapter {
 			// populate the guide object
 			this.mainShell.comonFunctions.resizeGuideImages(strFileToLoad, mainShell.imageManager);
 		}
-		MainShell.LOGGER.trace("Exit Menu CompressGuide");
+		LOGGER.trace("Exit Menu CompressGuide");
 		super.widgetSelected(e);
 	}
 

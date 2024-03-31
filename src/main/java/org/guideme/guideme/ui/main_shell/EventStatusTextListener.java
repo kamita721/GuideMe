@@ -1,5 +1,7 @@
 package org.guideme.guideme.ui.main_shell;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.browser.StatusTextEvent;
 import org.eclipse.swt.browser.StatusTextListener;
 
@@ -16,6 +18,8 @@ import org.eclipse.swt.browser.StatusTextListener;
 // To prevent this, use varying text in the filler, such as the time or a
 // counter to the command string.
 class EventStatusTextListener implements StatusTextListener {
+	private static final Logger LOGGER = LogManager.getLogger();
+	
 	/**
 	 * 
 	 */
@@ -37,7 +41,7 @@ class EventStatusTextListener implements StatusTextListener {
 			if (eventArgs[0].equals("ButtonClick") && eventArgs.length > 5) {
 				mainShell.procStatusText = event.text;
 
-				MainShell.LOGGER.trace("Enter StatusTextListener");
+				LOGGER.trace("Enter StatusTextListener");
 				String strTag;
 				strTag = eventArgs[1];// Set
 				if (!strTag.equals("")) {
@@ -56,7 +60,7 @@ class EventStatusTextListener implements StatusTextListener {
 					mainShell.mainLogic.displayPage(strTag, false, mainShell.guide, mainShell, mainShell.appSettings,
 							mainShell.userSettings, mainShell.guideSettings, mainShell.debugShell);
 
-				MainShell.LOGGER.trace("Exit StatusTextListener");
+				LOGGER.trace("Exit StatusTextListener");
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import javax.imageio.ImageIO;
@@ -31,7 +32,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 public class ImageManager {
 	private static final int CACHE_SIZE = 128;
 
-	static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	Device device;
 	Point preferedSize;
@@ -43,7 +44,8 @@ public class ImageManager {
 
 	public ImageManager(Device device) {
 		this.device = device;
-		this.fullsizeCache = Caffeine.newBuilder().maximumSize(CACHE_SIZE).buildAsync(this::loadImageDataFromFile);
+		this.fullsizeCache = Caffeine.newBuilder().maximumSize(CACHE_SIZE)
+				.buildAsync(this::loadImageDataFromFile);
 
 		this.largestImageDimension = getLargestImageSize();
 	}
@@ -72,7 +74,7 @@ public class ImageManager {
 	}
 
 	public void prefetch(String path) {
-		if(path == null) {
+		if (path == null) {
 			return;
 		}
 		fullsizeCache.get(path);
@@ -84,33 +86,37 @@ public class ImageManager {
 	public void scaleImageOnDisk(File imageFile) {
 		String extension = FilenameUtils.getExtension(imageFile.getPath());
 		if (extension.equals("jpg") || extension.equals("bmp")) {
+
+			ImageData imgData = new ImageData(imageFile.toString());
+			Point scaledDimensions = getImageScaledDimensions(imgData, largestImageDimension);
+			if (scaledDimensions == null) {
+				LOGGER.error("Error downscaling image file {}", imageFile);
+				return;
+			}
+			if (scaledDimensions.x >= imgData.width || scaledDimensions.y >= imgData.height) {
+				return;
+			}
+
+			BufferedImage img = null;
+			ImageIO.setUseCache(false);
+
 			try {
-				ImageData imgData = new ImageData(imageFile.toString());
-				Point scaledDimensions = getImageScaledDimensions(imgData, largestImageDimension);
-				if(scaledDimensions == null) {
-					LOGGER.error("Error downscaling image file {}", imageFile);
-					return;
-				}
-				if(scaledDimensions.x >= imgData.width || scaledDimensions.y >= imgData.height) {
-					return;
-				}
-				
-				BufferedImage img = null;
-				ImageIO.setUseCache(false);
 				img = ImageIO.read(new File(imageFile.getAbsolutePath()));
 
 				if (img.getColorModel().hasAlpha()) {
-					BufferedImage convertedImg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
+					BufferedImage convertedImg = new BufferedImage(img.getWidth(), img.getHeight(),
+							BufferedImage.TYPE_INT_RGB);
 					convertedImg.getGraphics().drawImage(img, 0, 0, null);
 					img = convertedImg;
 				}
-				BufferedImage imageNew = Scalr.resize(img, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_EXACT, scaledDimensions.x,
-						scaledDimensions.y, Scalr.OP_ANTIALIAS);
+				BufferedImage imageNew = Scalr.resize(img, Scalr.Method.ULTRA_QUALITY,
+						Scalr.Mode.FIT_EXACT, scaledDimensions.x, scaledDimensions.y,
+						Scalr.OP_ANTIALIAS);
 				ImageIO.write(imageNew, extension, imageFile);
-
-			} catch (Exception ex6) {
-				LOGGER.error("Process Image error " + ex6.getLocalizedMessage(), ex6);
+			} catch (IOException e) {
+				ErrorManager.getInstance().recordError(e, "Error scaling image file " + imageFile);
 			}
+
 		}
 
 	}
@@ -134,15 +140,15 @@ public class ImageManager {
 		return currentImage;
 	}
 
-	private ImageData scaleImageData(ImageData raw, Point maxSize) {
+	private static ImageData scaleImageData(ImageData raw, Point maxSize) {
 		Point scaledDimensions = getImageScaledDimensions(raw, maxSize);
-		if(scaledDimensions == null) {
+		if (scaledDimensions == null) {
 			return null;
 		}
 		return raw.scaledTo(scaledDimensions.x, scaledDimensions.y);
 	}
-	
-	private Point getImageScaledDimensions(ImageData img, Point maxSize) {
+
+	private static Point getImageScaledDimensions(ImageData img, Point maxSize) {
 		if (img == null) {
 			return null;
 		}
@@ -155,7 +161,7 @@ public class ImageManager {
 		return new Point((int) (img.width * factor), (int) (img.height * factor));
 	}
 
-	private Point getLargestImageSize() {
+	private static Point getLargestImageSize() {
 		Rectangle virtualBounds = new Rectangle();
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();

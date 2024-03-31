@@ -482,7 +482,7 @@ public class SquareButton extends Canvas {
 		}
 	}
 
-	private int drawClippedImage(GC gc, Image image, int x, int y, Rectangle rect) {
+	private static int drawClippedImage(GC gc, Image image, int x, int y, Rectangle rect) {
 		if (image != null) {
 			Rectangle imgBounds = image.getBounds();
 			int width = Math.min(imgBounds.width - x, rect.width);

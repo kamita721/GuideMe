@@ -1,5 +1,7 @@
 package org.guideme.guideme.ui.main_shell;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
@@ -7,6 +9,7 @@ import org.eclipse.swt.widgets.Listener;
 
 // hotkey stuff here
 class ShellKeyEventListener implements Listener {
+	private static final Logger LOGGER = LogManager.getLogger();
 	/**
 	 * 
 	 */
@@ -25,7 +28,7 @@ class ShellKeyEventListener implements Listener {
 			return;
 		}
 
-		MainShell.LOGGER.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation, event.stateMask);
+		LOGGER.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation, event.stateMask);
 		if (event.keyCode == 13
 				&& (event.widget.getClass().toString().equals("class org.eclipse.swt.browser.Browser"))) {
 			event.doit = false;

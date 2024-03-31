@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.events.SelectionEvent;
 
 class WebcamCaptureListener extends DynamicButtonListner {
-	private Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final MainShell mainShell;
 
@@ -23,7 +23,7 @@ class WebcamCaptureListener extends DynamicButtonListner {
 	@Override
 	public void widgetSelected(SelectionEvent event) {
 
-		MainShell.LOGGER.trace("Enter WebcamCaptureListener");
+		LOGGER.trace("Enter WebcamCaptureListener");
 		String strFile;
 		com.snapps.swt.SquareButton btnClicked;
 		btnClicked = (com.snapps.swt.SquareButton) event.widget;
@@ -43,6 +43,6 @@ class WebcamCaptureListener extends DynamicButtonListner {
 
 		super.widgetSelected(event);
 
-		MainShell.LOGGER.trace("Exit WebcamCaptureListener");
+		LOGGER.trace("Exit WebcamCaptureListener");
 	}
 }

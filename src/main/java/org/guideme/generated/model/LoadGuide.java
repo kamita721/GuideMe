@@ -18,6 +18,7 @@ public class LoadGuide implements Filterable  {
 	private String preScript = "";
 	private String postScript = "";
 	private LocalTime ifBefore;
+	private static final Logger LOGGER = LogManager.getLogger();
 	private String guidePath = "";
 	private String returnTarget = "";
 	private LocalTime ifAfter;
@@ -26,14 +27,14 @@ public class LoadGuide implements Filterable  {
 
 	public LoadGuide(XMLStreamReader reader) {
 		this.guidePath = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "guidePath","");
+		this.preScript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "preScript","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
-		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.returnTarget = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "return-target","");
 		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
+		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
 		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.postScript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "postScript","");
-		this.preScript = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "preScript","");
-		this.returnTarget = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "return-target","");
-		this.target = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "target","");
+		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
 	}
 
 	public LoadGuide() {
@@ -41,44 +42,43 @@ public class LoadGuide implements Filterable  {
 	}
 
 	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
-	public String getPostScript() {
-		return postScript;
+	public String getTarget() {
+		return target;
 	}
-	public void setReturnTarget(String returnTarget) {
-		this.returnTarget = returnTarget;
+	public void setPostScript(String postScript) {
+		this.postScript = postScript;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("LoadGuide");
 		ans.setAttribute("guidePath",ModelConverters.toString(guidePath));
+		ans.setAttribute("preScript",ModelConverters.toString(preScript));
 		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("return-target",ModelConverters.toString(returnTarget));
 		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("target",ModelConverters.toString(target));
 		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
 		ans.setAttribute("postScript",ModelConverters.toString(postScript));
-		ans.setAttribute("preScript",ModelConverters.toString(preScript));
-		ans.setAttribute("return-target",ModelConverters.toString(returnTarget));
-		ans.setAttribute("target",ModelConverters.toString(target));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
 		return ans;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
 	}
 	public void setPreScript(String preScript) {
 		this.preScript = preScript;
 	}
-	public String getPreScript() {
-		return preScript;
-	}
-	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
+	public void setReturnTarget(String returnTarget) {
+		this.returnTarget = returnTarget;
 	}
 	public LoadGuide(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("LoadGuide")){
 			LOGGER.warn("Error reading state file. Expected element 'LoadGuide', but got '{}'", n.getNodeName());
 		}
@@ -121,43 +121,43 @@ public class LoadGuide implements Filterable  {
 			}
 		}
 	}
-	public void setPostScript(String postScript) {
-		this.postScript = postScript;
-	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public void setGuidePath(String guidePath) {
-		this.guidePath = guidePath;
-	}
 	public void setTarget(String target) {
 		this.target = target;
 	}
-	public String getGuidePath() {
-		return guidePath;
-	}
 	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
+	public void setGuidePath(String guidePath) {
+		this.guidePath = guidePath;
 	}
 	@Override
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
-	public String getReturnTarget() {
-		return returnTarget;
+	public String getGuidePath() {
+		return guidePath;
 	}
-	public String getTarget() {
-		return target;
+	public String getPreScript() {
+		return preScript;
 	}
 	@Override
 	public String getIfNotSet() {
 		return ifNotSet;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	public String getPostScript() {
+		return postScript;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public String getReturnTarget() {
+		return returnTarget;
 	}
 	
 	@Override

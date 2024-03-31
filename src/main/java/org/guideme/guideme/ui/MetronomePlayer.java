@@ -30,7 +30,7 @@ public class MetronomePlayer implements Runnable {
 	private volatile boolean restart = false;
 
 	private Sequencer sequencer;
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private boolean isPlaying = true;
 	private boolean isPaused = false;
 

@@ -1,8 +1,11 @@
 package org.guideme.guideme.ui.main_shell;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.ui.SwtEmbeddedMediaPlayer;
 
 class VideoStop implements Runnable {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private SwtEmbeddedMediaPlayer mediaPlayer;
 	private boolean shellClosing;
 
@@ -13,16 +16,13 @@ class VideoStop implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			if (mediaPlayer != null && mediaPlayer.status().isPlaying()) {
-				MainShell.LOGGER.debug("MainShell VideoStop run: Stopping media player {}", mediaPlayer.media().info().mrl());
-				mediaPlayer.controls().pause();
-				if (shellClosing) {
-					mediaPlayer.release();
-				}
+		if (mediaPlayer != null && mediaPlayer.status().isPlaying()) {
+			LOGGER.debug(() -> "MainShell VideoStop run: Stopping media player "
+					+ mediaPlayer.media().info().mrl());
+			mediaPlayer.controls().pause();
+			if (shellClosing) {
+				mediaPlayer.release();
 			}
-		} catch (Exception e) {
-			MainShell.LOGGER.error(" MainShell VideoStop run: " + e.getLocalizedMessage(), e);
 		}
 	}
 

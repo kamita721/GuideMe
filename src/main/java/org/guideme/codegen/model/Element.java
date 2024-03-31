@@ -25,7 +25,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class Element {
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final String name;
 	private final String javaName;
@@ -228,8 +228,6 @@ public class Element {
 
 		ans.addArg("org.w3c.dom.Node", "n");
 
-		ans.addLine("Logger LOGGER = LogManager.getLogger();");
-
 		ans.addLine("if(!n.getNodeName().equals(\"%s\")){", getXmlTag());
 		ans.addLine(
 				"LOGGER.warn(\"Error reading state file. Expected element '%s', but got '{}'\", n.getNodeName());",
@@ -309,6 +307,10 @@ public class Element {
 		if (elements.isEmpty()) {
 			ans.addMethod(generateElementSerializer());
 			ans.addMethod(getNodeConstructor());
+			FieldDecl toAdd = new FieldDecl(
+					new Variable("org.apache.logging.log4j.Logger", "LOGGER"),
+					"LogManager.getLogger()").makeFinal().makeStatic();
+			ans.addFieldDecl(toAdd);
 		}
 
 		ans.generate(srcRoot);

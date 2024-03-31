@@ -40,9 +40,11 @@ import org.eclipse.swt.widgets.Shell;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.swing.JRootPane;
+import javax.xml.stream.XMLStreamException;
 
 import org.guideme.generated.model.Audio;
 import org.guideme.generated.model.Button;
@@ -64,6 +66,7 @@ import org.guideme.guideme.ui.CompositeVideoSurface;
 import org.guideme.guideme.ui.MetronomePlayer;
 import org.guideme.guideme.ui.SwtEmbeddedMediaPlayer;
 import org.guideme.guideme.ui.debug_shell.DebugShell;
+import org.guideme.guideme.util.ErrorManager;
 import org.guideme.guideme.util.ImageManager;
 import org.mozilla.javascript.ContextFactory;
 
@@ -84,7 +87,7 @@ public class MainShell {
 	 * Main screen and UI thread. exposes methods that allow other components to
 	 * update the screen components and play video and music
 	 */
-	static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	AppSettings appSettings;
 	String strGuidePath;
@@ -345,7 +348,7 @@ public class MainShell {
 			loadGuide(appSettings.getDataDirectory() + appSettings.getComandLineGuide());
 		}
 		displayPage(guideSettings.getCurrPage());
-		Chapter chapter = guide.getChapters().get("default");
+		Chapter chapter = guide.getChapter("default");
 		debugShell.loadChapter(chapter);
 		return shell;
 	}
@@ -758,11 +761,7 @@ public class MainShell {
 			// loop round until the window is closed
 			while (!shell.isDisposed()) {
 				if (appSettings.isMonitorChanging()) {
-					try {
-						shell.close();
-					} catch (Exception ex) {
-						LOGGER.error("Main shell close " + ex.getLocalizedMessage(), ex);
-					}
+					shell.close();
 				}
 				if (!display.readAndDispatch()) {
 					display.sleep();
@@ -774,25 +773,27 @@ public class MainShell {
 	// Load the tease
 	public void loadGuide(String fileToLoad) {
 		LOGGER.trace("Loading Guide {}", fileToLoad);
+		debugShell.clearPagesCombo();
+
+		String strPage;
 		try {
-			debugShell.clearPagesCombo();
-		} catch (Exception ex) {
-			LOGGER.error("Clear debug pages " + ex.getLocalizedMessage(), ex);
+			strPage = XmlGuideReader.loadXML(fileToLoad, guide, appSettings, debugShell);
+		} catch (XMLStreamException | IOException e) {
+			ErrorManager.getInstance().recordError(e, "Error loading Guide " + fileToLoad);
+			// TODO, revert to intro page; or roll back all loading.
+			return;
 		}
-		try {
-			String strPage = XmlGuideReader.loadXML(fileToLoad, guide, appSettings, debugShell);
-			guideSettings = guide.getSettings();
-			if (guide.getCss().equals("")) {
-				style = defaultStyle;
-			} else {
-				style = guide.getCss();
-			}
-			// display the first page
-			mainLogic.displayPage(strPage, false, guide, this, appSettings, userSettings,
-					guideSettings, debugShell);
-		} catch (Exception ex) {
-			LOGGER.error("Load Guide " + ex.getLocalizedMessage(), ex);
+
+		guideSettings = guide.getSettings();
+		if (guide.getCss().equals("")) {
+			style = defaultStyle;
+		} else {
+			style = guide.getCss();
 		}
+		// display the first page
+		mainLogic.displayPage(strPage, false, guide, this, appSettings, userSettings, guideSettings,
+				debugShell);
+
 	}
 
 	static HashMap<String, Integer> getNewDimentions(double imageRatio, int labelHeight,
@@ -891,46 +892,36 @@ public class MainShell {
 	}
 
 	public void setleftPaneHtml(String leftHtml) {
-		try {
-			LOGGER.trace("setleftPaneHtml: {}", leftHtml);
-			imgOverRide = true;
-			leftPaneBrowser.setText(leftHtml, true);
-			setLeftPaneVisibleElement(leftPaneBrowser);
-		} catch (Exception ex) {
-			LOGGER.error("setleftPaneHtml error " + ex.getLocalizedMessage(), ex);
-		}
-
+		LOGGER.trace("setleftPaneHtml: {}", leftHtml);
+		imgOverRide = true;
+		leftPaneBrowser.setText(leftHtml, true);
+		setLeftPaneVisibleElement(leftPaneBrowser);
 	}
 
 	public boolean showWebcam() {
 		// displays the webcam in the area to the left of the screen
 		if (appSettings.getWebcamOn()) {
-			try {
-				webcam = Webcam.getDefault();
+			webcam = Webcam.getDefault();
 
-				if (webcam != null) {
-					setLeftPaneText("", "");
-					setLeftPaneVisibleElement(webcamPanel);
+			if (webcam != null) {
+				setLeftPaneText("", "");
+				setLeftPaneVisibleElement(webcamPanel);
 
-					Dimension[] dimensions = webcam.getViewSizes();
-					Dimension size = dimensions[dimensions.length - 1];
-					webcam.setViewSize(size);
-					panel = new WebcamPanel(webcam, size, false);
-					panel.setMirrored(true);
-					webcamRoot.getContentPane().add(panel);
-					panel.start();
-					leftFrame.layout(true);
-					webcamRoot.validate();
-					webcamVisible = true;
-					LOGGER.debug("MainShell playVideo: ShowWebcam");
+				Dimension[] dimensions = webcam.getViewSizes();
+				Dimension size = dimensions[dimensions.length - 1];
+				webcam.setViewSize(size);
+				panel = new WebcamPanel(webcam, size, false);
+				panel.setMirrored(true);
+				webcamRoot.getContentPane().add(panel);
+				panel.start();
+				leftFrame.layout(true);
+				webcamRoot.validate();
+				webcamVisible = true;
+				LOGGER.debug("MainShell playVideo: ShowWebcam");
 
-				} else {
-					setLeftPaneText("No Webcam detected", "");
-					Webcam.getDiscoveryService().stop();
-				}
-
-			} catch (Exception e) {
-				LOGGER.error("showWebcam " + e.getLocalizedMessage(), e);
+			} else {
+				setLeftPaneText("No Webcam detected", "");
+				Webcam.getDiscoveryService().stop();
 			}
 		}
 		return webcam != null;
@@ -944,32 +935,28 @@ public class MainShell {
 		// starts the video using a non UI thread so VLC can't hang the
 		// application
 		if (appSettings.getVideoOn()) {
-			try {
-				setLeftPaneText("", "");
-				setLeftPaneVisibleElement(mediaPanel);
-				leftFrame.layout(true);
-				videoLoops = loops;
-				videoTarget = target;
-				videoStartAt = startAt;
-				videoStopAt = stopAt;
-				videoJscript = jscript;
-				videoScriptVar = scriptVar;
-				videoPlay = true;
-				String mrlVideo = "file:///" + video;
-				LOGGER.debug("MainShell playVideo: {} videoLoops: {} videoTarget: videoPlay: {}",
-						mrlVideo, videoLoops, videoTarget, videoPlay);
-				VideoPlay videoPlayer = new VideoPlay(this);
-				videoPlayer.setVideoPlay(mediaPlayer, mrlVideo, volume);
-				threadVideoPlayer = new Thread(videoPlayer, "videoPlay");
-				threadVideoPlayer.setName("videoPlayThread");
-				if (deferStart) {
-					hasVideoDeferred = true;
-				} else {
-					threadVideoPlayer.start();
-					videoPlayed = true;
-				}
-			} catch (Exception e) {
-				LOGGER.error("playVideo " + e.getLocalizedMessage(), e);
+			setLeftPaneText("", "");
+			setLeftPaneVisibleElement(mediaPanel);
+			leftFrame.layout(true);
+			videoLoops = loops;
+			videoTarget = target;
+			videoStartAt = startAt;
+			videoStopAt = stopAt;
+			videoJscript = jscript;
+			videoScriptVar = scriptVar;
+			videoPlay = true;
+			String mrlVideo = "file:///" + video;
+			LOGGER.debug("MainShell playVideo: {} videoLoops: {} videoTarget: videoPlay: {}",
+					mrlVideo, videoLoops, videoTarget, videoPlay);
+			VideoPlay videoPlayer = new VideoPlay(this);
+			videoPlayer.setVideoPlay(mediaPlayer, mrlVideo, volume);
+			threadVideoPlayer = new Thread(videoPlayer, "videoPlay");
+			threadVideoPlayer.setName("videoPlayThread");
+			if (deferStart) {
+				hasVideoDeferred = true;
+			} else {
+				threadVideoPlayer.start();
+				videoPlayed = true;
 			}
 		}
 	}
@@ -982,46 +969,38 @@ public class MainShell {
 	public void playAudio(String audio, int startAt, int stopAt, int loops, String target,
 			String jscript, String scriptVar, int volume, boolean deferStart) {
 		// run audio on another thread
-		try {
-			if (audioPlayer != null) {
-				audioPlayer.audioStop();
-				LOGGER.trace("playAudio audioStop");
-			}
-			String outputDevice = appSettings.getAudioOneDevice();
-			audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, this, jscript,
-					scriptVar, outputDevice, volume);
-			threadAudioPlayer = new Thread(audioPlayer, "audioPlayer");
-			threadAudioPlayer.setName("threadAudioPlayer");
-			if (deferStart) {
-				hasAudioDeferred = true;
-			} else {
-				threadAudioPlayer.start();
-			}
-		} catch (Exception e) {
-			LOGGER.error("playAudio " + e.getLocalizedMessage(), e);
+		if (audioPlayer != null) {
+			audioPlayer.audioStop();
+			LOGGER.trace("playAudio audioStop");
+		}
+		String outputDevice = appSettings.getAudioOneDevice();
+		audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, this, jscript,
+				scriptVar, outputDevice, volume);
+		threadAudioPlayer = new Thread(audioPlayer, "audioPlayer");
+		threadAudioPlayer.setName("threadAudioPlayer");
+		if (deferStart) {
+			hasAudioDeferred = true;
+		} else {
+			threadAudioPlayer.start();
 		}
 	}
 
 	public void playAudio2(String audio, int startAt, int stopAt, int loops, String target,
 			String jscript, String scriptVar, int volume, boolean deferStart) {
 		// run audio on another thread
-		try {
-			if (audioPlayer2 != null) {
-				audioPlayer2.audioStop();
-				LOGGER.trace("playAudio2 audioStop");
-			}
-			String outputDevice = appSettings.getAudioTwoDevice();
-			audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, this, jscript,
-					scriptVar, outputDevice, volume);
-			threadAudioPlayer2 = new Thread(audioPlayer2, "audioPlayer");
-			threadAudioPlayer2.setName("threadAudioPlayer2");
-			if (deferStart) {
-				hasAudio2Deferred = true;
-			} else {
-				threadAudioPlayer2.start();
-			}
-		} catch (Exception e) {
-			LOGGER.error("playAudio2 " + e.getLocalizedMessage(), e);
+		if (audioPlayer2 != null) {
+			audioPlayer2.audioStop();
+			LOGGER.trace("playAudio2 audioStop");
+		}
+		String outputDevice = appSettings.getAudioTwoDevice();
+		audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, this, jscript,
+				scriptVar, outputDevice, volume);
+		threadAudioPlayer2 = new Thread(audioPlayer2, "audioPlayer");
+		threadAudioPlayer2.setName("threadAudioPlayer2");
+		if (deferStart) {
+			hasAudio2Deferred = true;
+		} else {
+			threadAudioPlayer2.start();
 		}
 	}
 
@@ -1048,37 +1027,22 @@ public class MainShell {
 			overRideStyle = style;
 		}
 		String strHTML;
-		try {
-			strHTML = rightHTML.replace("DefaultStyle", overRideStyle);
-			strHTML = strHTML.replace("BodyContent", brwsText);
-			this.brwsText.setText(strHTML);
-			if (appSettings.isToclipboard()) {
-				// copy text to clip board for use in TTS
-				String htmlString = brwsText.replaceAll("\\<[^>]*\\>", " ");
-				StringSelection stringSelection = new StringSelection(htmlString);
-				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				clipboard.setContents(stringSelection, stringSelection);
-
-			}
-		} catch (Exception e1) {
-			LOGGER.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
-			strHTML = rightHTML.replace("DefaultStyle", overRideStyle);
-			strHTML = strHTML.replace("BodyContent", "");
-			this.brwsText.setText(strHTML);
+		strHTML = rightHTML.replace("DefaultStyle", overRideStyle);
+		strHTML = strHTML.replace("BodyContent", brwsText);
+		this.brwsText.setText(strHTML);
+		if (appSettings.isToclipboard()) {
+			// copy text to clip board for use in TTS
+			String htmlString = brwsText.replaceAll("\\<[^>]*\\>", " ");
+			StringSelection stringSelection = new StringSelection(htmlString);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(stringSelection, stringSelection);
 		}
 	}
 
 	public void setRightHtml(String strHTML) {
 		// set HTML to be displayed in the browser control to the left of the
 		// screen
-		try {
-			this.brwsText.setText(strHTML);
-		} catch (Exception e1) {
-			LOGGER.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
-			strHTML = rightHTML.replace("DefaultStyle", style);
-			strHTML = strHTML.replace("BodyContent", "");
-			this.brwsText.setText(strHTML);
-		}
+		this.brwsText.setText(strHTML);
 	}
 
 	public void setLeftPaneText(String brwsText, String overRideStyle) {
@@ -1102,30 +1066,20 @@ public class MainShell {
 	public void setLeftHtml(String strHTML) {
 
 		// set HTML to be displayed in the browser control to the left of the screen
-		try {
-			this.leftPaneBrowser.setText(strHTML);
-		} catch (Exception e1) {
-			LOGGER.error("setLeftHtml Text Exception " + e1.getLocalizedMessage(), e1);
-			strHTML = leftHTML.replace("DefaultStyle", style);
-			strHTML = strHTML.replace("BodyContent", "");
-			this.leftPaneBrowser.setText(strHTML);
-		}
+		this.leftPaneBrowser.setText(strHTML);
+
 		setLeftPaneVisibleElement(leftPaneBrowser);
 
 	}
 
 	public void removeButtons() {
 		// remove all the buttons displayed for the previous page
-		try {
-			for (Control kid : btnComp.getChildren()) {
-				Image bkgrndImage = kid.getBackgroundImage();
-				if (bkgrndImage != null) {
-					bkgrndImage.dispose();
-				}
-				kid.dispose();
+		for (Control kid : btnComp.getChildren()) {
+			Image bkgrndImage = kid.getBackgroundImage();
+			if (bkgrndImage != null) {
+				bkgrndImage.dispose();
 			}
-		} catch (Exception e) {
-			LOGGER.error("removeButtons " + e.getLocalizedMessage(), e);
+			kid.dispose();
 		}
 	}
 
@@ -1133,31 +1087,28 @@ public class MainShell {
 		// add a delay button
 		// used when debug is on to simulate the delay without actually waiting
 		// for it
-		try {
-			delayButton = new com.snapps.swt.SquareButton(btnComp, SWT.PUSH);
-			delayButton.setFont(buttonFont);
-			delayButton.setText("Delay");
+		delayButton = new com.snapps.swt.SquareButton(btnComp, SWT.PUSH);
+		delayButton.setFont(buttonFont);
+		delayButton.setText("Delay");
 
-			// record any button set / unset
-			if (!guide.getDelaySet().equals("")) {
-				delayButton.setData("Set", guide.getDelaySet());
-			} else {
-				delayButton.setData("Set", "");
-			}
-			if (!guide.getDelayUnSet().equals("")) {
-				delayButton.setData("UnSet", guide.getDelayUnSet());
-			} else {
-				delayButton.setData("UnSet", "");
-			}
-			delayButton.setData("Target", guide.getDelTarget());
-			delayButton.setData("scriptVar", guide.getDelayScriptVar());
-			delayButton.setData("javascript", guide.getDelayjScript());
-			delayButton.addSelectionListener(new DynamicButtonListner(this));
-
-			delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
-		} catch (Exception e) {
-			LOGGER.error("addDelayButton " + e.getLocalizedMessage(), e);
+		// record any button set / unset
+		if (!guide.getDelaySet().equals("")) {
+			delayButton.setData("Set", guide.getDelaySet());
+		} else {
+			delayButton.setData("Set", "");
 		}
+		if (!guide.getDelayUnSet().equals("")) {
+			delayButton.setData("UnSet", guide.getDelayUnSet());
+		} else {
+			delayButton.setData("UnSet", "");
+		}
+		delayButton.setData("Target", guide.getDelTarget());
+		delayButton.setData("scriptVar", guide.getDelayScriptVar());
+		delayButton.setData("javascript", guide.getDelayjScript());
+		delayButton.addSelectionListener(new DynamicButtonListner(this));
+
+		delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
+
 	}
 
 	public void addButton(Button button, String javascript) {
@@ -1242,8 +1193,8 @@ public class MainShell {
 
 	// run the javascript function passed
 	public void runJscript(String function, OverRide overRide, boolean pageLoading) {
-		Page objCurrPage = guide.getChapters().get(guideSettings.getChapter()).getPages()
-				.get(guideSettings.getCurrPage());
+		Page objCurrPage = guide.getChapter(guideSettings.getChapter())
+				.getPage(guideSettings.getCurrPage());
 		String pageJavascript = objCurrPage.getJScript();
 		runJavascript(function, pageJavascript, overRide, pageLoading);
 	}
@@ -1346,40 +1297,28 @@ public class MainShell {
 	}
 
 	public void enableButton(String id) {
-		try {
-			com.snapps.swt.SquareButton button;
-			button = buttons.get(id);
-			if (button != null) {
-				button.setEnabled(true);
-			}
-		} catch (Exception ex) {
-			LOGGER.error(" enable Button " + ex.getLocalizedMessage(), ex);
+		com.snapps.swt.SquareButton button;
+		button = buttons.get(id);
+		if (button != null) {
+			button.setEnabled(true);
 		}
 	}
 
 	public void changeButton(String id, boolean enable, String text, String target) {
-		try {
-			com.snapps.swt.SquareButton button;
-			button = buttons.get(id);
-			if (button != null) {
-				button.setEnabled(enable);
-				button.setText(text);
-				button.setData("Target", target);
-			}
-		} catch (Exception ex) {
-			LOGGER.error(" change Button " + ex.getLocalizedMessage(), ex);
+		com.snapps.swt.SquareButton button;
+		button = buttons.get(id);
+		if (button != null) {
+			button.setEnabled(enable);
+			button.setText(text);
+			button.setData("Target", target);
 		}
 	}
 
 	public void disableButton(String id) {
-		try {
-			com.snapps.swt.SquareButton button;
-			button = buttons.get(id);
-			if (button != null) {
-				button.setEnabled(false);
-			}
-		} catch (Exception ex) {
-			LOGGER.error(" disable Button " + ex.getLocalizedMessage(), ex);
+		com.snapps.swt.SquareButton button;
+		button = buttons.get(id);
+		if (button != null) {
+			button.setEnabled(false);
 		}
 	}
 
@@ -1427,35 +1366,26 @@ public class MainShell {
 
 	public void stopVideo(boolean shellClosing) {
 		if (appSettings.getVideoOn() && mediaPlayer.media().info() != null) {
-			try {
-				videoLoops = 0;
-				videoTarget = "";
-				videoPlay = false;
-				LOGGER.debug(() -> "MainShell stopVideo " + mediaPlayer.media().info().mrl());
-				if (mediaPlayer.media().info().mrl() != null && videoPlayed) {
-					VideoStop videoStop = new VideoStop();
-					videoStop.setMediaPlayer(mediaPlayer, shellClosing);
-					Thread videoStopThread = new Thread(videoStop, "videoStop");
-					videoStopThread.setName("videoStopThread");
-					setLeftPaneVisibleElement(leftPaneBrowser);
-					threadVideoPlayer = null;
-					videoStopThread.start();
-
-				}
-			} catch (Exception e) {
-				LOGGER.error(" stopVideo " + e.getLocalizedMessage(), e);
+			videoLoops = 0;
+			videoTarget = "";
+			videoPlay = false;
+			LOGGER.debug(() -> "MainShell stopVideo " + mediaPlayer.media().info().mrl());
+			if (mediaPlayer.media().info().mrl() != null && videoPlayed) {
+				VideoStop videoStop = new VideoStop();
+				videoStop.setMediaPlayer(mediaPlayer, shellClosing);
+				Thread videoStopThread = new Thread(videoStop, "videoStop");
+				videoStopThread.setName("videoStopThread");
+				setLeftPaneVisibleElement(leftPaneBrowser);
+				threadVideoPlayer = null;
+				videoStopThread.start();
 			}
 		}
 	}
 
 	public void stopDelay() {
-		try {
-			calCountDown = null;
-			if (!lblTimer.isDisposed()) {
-				lblTimer.setText("");
-			}
-		} catch (Exception ex) {
-			LOGGER.error(" stopDelay " + ex.getLocalizedMessage(), ex);
+		calCountDown = null;
+		if (!lblTimer.isDisposed()) {
+			lblTimer.setText("");
 		}
 	}
 
@@ -1512,46 +1442,14 @@ public class MainShell {
 	}
 
 	public void stopAll(boolean shellClosing) {
-		try {
-			hotKeys = new HashMap<>();
-		} catch (Exception ex) {
-			LOGGER.error(" stophotKeys " + ex.getLocalizedMessage(), ex);
-		}
-		try {
-			buttons = new HashMap<>();
-		} catch (Exception ex) {
-			LOGGER.error(" stopbuttons " + ex.getLocalizedMessage(), ex);
-		}
-		try {
-			stopDelay();
-		} catch (Exception ex) {
-			LOGGER.error(" stopDelay " + ex.getLocalizedMessage(), ex);
-		}
-		try {
-			stopMetronome();
-		} catch (Exception ex) {
-			LOGGER.error(" stopMetronome " + ex.getLocalizedMessage(), ex);
-		}
-		try {
-			stopAudio();
-		} catch (Exception ex) {
-			LOGGER.error(" stopAudio " + ex.getLocalizedMessage(), ex);
-		}
-		try {
-			stopVideo(shellClosing);
-		} catch (Exception ex) {
-			LOGGER.error(" stopVideo " + ex.getLocalizedMessage(), ex);
-		}
-		try {
-			stopWebcam();
-		} catch (Exception ex) {
-			LOGGER.error(" stopWebcam " + ex.getLocalizedMessage(), ex);
-		}
-		try {
-			timerReset();
-		} catch (Exception ex) {
-			LOGGER.error(" timerReset " + ex.getLocalizedMessage(), ex);
-		}
+		hotKeys = new HashMap<>();
+		buttons = new HashMap<>();
+		stopDelay();
+		stopMetronome();
+		stopAudio();
+		stopVideo(shellClosing);
+		stopWebcam();
+		timerReset();
 	}
 
 	public void setStyle(String style) {

@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -31,7 +30,7 @@ import org.guideme.guideme.ui.debug_shell.DebugShell;
 import org.guideme.guideme.util.XMLReaderUtils;
 
 public class XmlGuideReader {
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
 	private XmlGuideReader() {
@@ -46,9 +45,8 @@ public class XmlGuideReader {
 		int intPos2 = xmlFileName.lastIndexOf(".xml");
 		String presName = xmlFileName.substring(intPos + 1, intPos2);
 		guide.reset(presName);
-		Map<String, Chapter> chapters = guide.getChapters();
 		Chapter chapter = new Chapter("default");
-		chapters.put("default", chapter);
+		guide.addChapter(chapter);
 		guideSettings = guide.getSettings();
 		guideSettings.setPageSound(true);
 
@@ -76,7 +74,7 @@ public class XmlGuideReader {
 
 		Page page404 = new Page();
 		page404.setId("GuideMe404Error");
-		chapter.getPages().put(page404.getId(), page404);
+		chapter.addPage(page404);
 
 		XMLStreamReader reader = null;
 
@@ -100,7 +98,7 @@ public class XmlGuideReader {
 		dummyPage.setId("dummyPage");
 		Text toAdd = new Text();
 		toAdd.setText("If you are reading this, something went horribly wrong.");
-		
+
 		dummyPage.addText(toAdd);
 
 		Page page = dummyPage;
@@ -119,8 +117,8 @@ public class XmlGuideReader {
 				break;
 			case XMLStreamConstants.END_ELEMENT:
 				if (reader.getName().getLocalPart().equals("Page")) {
-					chapter = guide.getChapters().get("default");
-					chapter.getPages().put(page.getId(), page);
+					chapter = guide.getChapter("default");
+					chapter.addPage(page);
 					page = dummyPage;
 				}
 				break;
@@ -238,8 +236,7 @@ public class XmlGuideReader {
 		}
 
 		// Handle wild cards
-		incFileName = comonFunctions.fixSeparator(incl.getFile(),
-				fileSeparator);
+		incFileName = comonFunctions.fixSeparator(incl.getFile(), fileSeparator);
 		if (incFileName.toLowerCase().endsWith("*.js")) {
 			ArrayList<String> filesList = new ArrayList<>();
 			try (DirectoryStream<Path> dirStream = Files

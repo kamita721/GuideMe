@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 public class Javascript  {
 
+	private static final Logger LOGGER = LogManager.getLogger();
 	private String text = "";
 
 	public Javascript(XMLStreamReader reader) throws XMLStreamException {
@@ -28,7 +29,6 @@ public class Javascript  {
 		return ans;
 	}
 	public Javascript(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("javascript")){
 			LOGGER.warn("Error reading state file. Expected element 'javascript', but got '{}'", n.getNodeName());
 		}

@@ -7,6 +7,7 @@ import java.io.PrintStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.guideme.util.ErrorManager;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.EcmaError;
@@ -37,7 +38,7 @@ public class JscriptConsole implements Runnable {
 
 	private boolean shutdown = false;
 
-	private Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public JscriptConsole(Main debugger, ContextFactory cntxFact, Scriptable scope) {
 		this.cmdAccumulator = new StringBuilder();
@@ -60,7 +61,7 @@ public class JscriptConsole implements Runnable {
 			} catch (IOException e) {
 				stderr.print("An unexpected error occured.");
 				e.printStackTrace(stderr);
-				e.printStackTrace();
+				ErrorManager.getInstance().recordError(e, "Unexpected error in JSCriptConsole prompt");
 				break;
 			}
 			cmdAccumulator.append(str);
@@ -75,7 +76,6 @@ public class JscriptConsole implements Runnable {
 	private void printHeader() {
 		stdout.print("Javascript console:\n");
 		stdout.print("Type \"debugger\" to inspect the global scope.");
-		// TODO, print usage info.
 	}
 
 	private void printPrompt() {
@@ -84,12 +84,13 @@ public class JscriptConsole implements Runnable {
 	}
 
 	private void exec(String str) {
-		str = str.strip();
+		final String toEval = str.strip();
 		try (Context cntx = cntxFact.enterContext()) {
-			Object ans = cntx.evaluateString(scope, str, "console", 0, null);
+			Object ans = cntx.evaluateString(scope, toEval, "console", 0, null);
 			stdout.print(ans.toString());
 		} catch (EcmaError e) {
 			stderr.print(e.getMessage());
+			LOGGER.error(() -> "Error evaluate javascript from console: " + toEval, e);
 		} catch (Exception e) {
 			stderr.print("Internal error: " + e.getMessage());
 			LOGGER.warn("Internal error while evaluating console javascript: {}", str, e);

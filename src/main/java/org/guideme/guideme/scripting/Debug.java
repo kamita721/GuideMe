@@ -8,7 +8,7 @@ import org.apache.logging.log4j.MarkerManager;
 public class Debug {
 	private final Jscript parent;
 
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Marker JSCRIPT_MARKER = MarkerManager.getMarker("JSCRIPT");
 	
 	public Debug(Jscript parent) {

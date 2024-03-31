@@ -18,19 +18,20 @@ public class Metronome implements Filterable  {
 	private String bpmString = "";
 	private int loops = -1;
 	private LocalTime ifBefore;
+	private static final Logger LOGGER = LogManager.getLogger();
 	private String rhythm = "";
 	private int resolution = 4;
 	private LocalTime ifAfter;
 	private String ifNotSet = "";
 
 	public Metronome(XMLStreamReader reader) {
-		this.resolution = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "beats",4);
-		this.bpmString = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "bpmString","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
-		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
-		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
-		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
 		this.loops = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "loops",-1);
+		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
+		this.resolution = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "beats",4);
+		this.ifSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-set","");
+		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
+		this.bpmString = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "bpmString","");
 		this.rhythm = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "rhythm","");
 	}
 
@@ -39,45 +40,45 @@ public class Metronome implements Filterable  {
 	}
 
 	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
 	public String getIfNotSet() {
 		return ifNotSet;
-	}
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
 	}
 	public void setRhythm(String rhythm) {
 		this.rhythm = rhythm;
 	}
 	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setBpmString(String bpmString) {
-		this.bpmString = bpmString;
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	public void setLoops(int loops) {
 		this.loops = loops;
 	}
+	public void setBpmString(String bpmString) {
+		this.bpmString = bpmString;
+	}
 	public String getRhythm() {
 		return rhythm;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public int getResolution() {
 		return resolution;
 	}
 	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public void setResolution(int resolution) {
-		this.resolution = resolution;
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
 	public Metronome(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Metronome")){
 			LOGGER.warn("Error reading state file. Expected element 'Metronome', but got '{}'", n.getNodeName());
 		}
@@ -102,11 +103,11 @@ public class Metronome implements Filterable  {
 			case "bpmString":
 				bpmString = ModelConverters.fromString(attrValue, bpmString);
 				break;
-			case "beats":
-				resolution = ModelConverters.fromString(attrValue, resolution);
-				break;
 			case "loops":
 				loops = ModelConverters.fromString(attrValue, loops);
+				break;
+			case "beats":
+				resolution = ModelConverters.fromString(attrValue, resolution);
 				break;
 			case "rhythm":
 				rhythm = ModelConverters.fromString(attrValue, rhythm);
@@ -117,35 +118,34 @@ public class Metronome implements Filterable  {
 			}
 		}
 	}
-	public int getLoops() {
-		return loops;
-	}
 	public String getBpmString() {
 		return bpmString;
 	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public int getLoops() {
+		return loops;
 	}
 	@Override
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
+	public void setResolution(int resolution) {
+		this.resolution = resolution;
+	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Metronome");
-		ans.setAttribute("beats",ModelConverters.toString(resolution));
-		ans.setAttribute("bpmString",ModelConverters.toString(bpmString));
 		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
 		ans.setAttribute("loops",ModelConverters.toString(loops));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("beats",ModelConverters.toString(resolution));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("bpmString",ModelConverters.toString(bpmString));
 		ans.setAttribute("rhythm",ModelConverters.toString(rhythm));
 		return ans;
 	}
 	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	
 	@Override

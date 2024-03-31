@@ -6,7 +6,7 @@ import org.guideme.generated.model.Pref;
 import org.guideme.guideme.settings.GuideSettings;
 
 public class PrefHandler {
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	
 	private PrefHandler() {
 	}

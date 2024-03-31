@@ -15,7 +15,7 @@ import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
 public class AudioPlayer implements Runnable {
 	// Class to play audio on a separate thread
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private MediaListener mediaListener = new MediaListener();
 	private MediaPlayer mediaPlayer;
 	private boolean isPlaying = true;
@@ -28,8 +28,9 @@ public class AudioPlayer implements Runnable {
 	private int volume;
 	private ArrayList<String> vlcArgs;
 
-	public AudioPlayer(String audioFile, int startAt, int stopAt, int loops, String target, MainShell mainShell,
-			String jscript, String scriptVar, String outputDevice, int volume) {
+	public AudioPlayer(String audioFile, int startAt, int stopAt, int loops, String target,
+			MainShell mainShell, String jscript, String scriptVar, String outputDevice,
+			int volume) {
 		// function to allow us to pass stuff to the new thread
 		int mediaVolume = AppSettings.getAppSettings().getMusicVolume();
 		volume = Math.min(Math.max(volume, 0), 100); // Bound between 0 and 100
@@ -56,9 +57,9 @@ public class AudioPlayer implements Runnable {
 
 	public void audioStop() {
 		// stop the audio
-		if (mediaPlayer != null &&  (mediaPlayer.status().isPlaying())) {
-				mediaPlayer.controls().stop();
-			
+		if (mediaPlayer != null && (mediaPlayer.status().isPlaying())) {
+			mediaPlayer.controls().stop();
+
 		}
 		synchronized (this) {
 			isPlaying = false;
@@ -105,8 +106,6 @@ public class AudioPlayer implements Runnable {
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-		} catch (Exception e) {
-			LOGGER.error("AudioPlayer run ", e);
 		}
 		if (mediaPlayer != null) {
 			if (mediaPlayer.status().isPlaying()) {

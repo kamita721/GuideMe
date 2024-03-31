@@ -47,7 +47,7 @@ import org.guideme.guideme.ui.main_shell.MainShell;
 public class LibraryShell {
 	private Shell shell = null;
 	private Display myDisplay;
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private Font controlFont;
 	private MainShell myMainShell;
 	private int pageSize = 100;
@@ -76,115 +76,111 @@ public class LibraryShell {
 
 	public Shell createShell(Display display, AppSettings pappSettings, MainShell mainShell) {
 		LOGGER.trace("Enter createShell");
-		try {
-			ResourceBundle displayText = pappSettings.getDisplayText();
-			sortByTitle = displayText.getString("FileLibrarySortTitle");
-			sortByAuthor = displayText.getString("FileLibrarySortAuthor");
-			sortByDate = displayText.getString("FileLibrarySortDate");
-			searchByContent = displayText.getString("FileLibrarySearchByContent");
-			searchByTitle = displayText.getString("FileLibrarySearchByTitle");
+		ResourceBundle displayText = pappSettings.getDisplayText();
+		sortByTitle = displayText.getString("FileLibrarySortTitle");
+		sortByAuthor = displayText.getString("FileLibrarySortAuthor");
+		sortByDate = displayText.getString("FileLibrarySortDate");
+		searchByContent = displayText.getString("FileLibrarySearchByContent");
+		searchByTitle = displayText.getString("FileLibrarySearchByTitle");
 
-			comonFunctions = ComonFunctions.getComonFunctions();
-			appSettings = pappSettings;
+		comonFunctions = ComonFunctions.getComonFunctions();
+		appSettings = pappSettings;
 
-			myDisplay = display;
-			myMainShell = mainShell;
+		myDisplay = display;
+		myMainShell = mainShell;
 
-			shell = new Shell(myDisplay, SWT.APPLICATION_MODAL + SWT.CLOSE);
+		shell = new Shell(myDisplay, SWT.APPLICATION_MODAL + SWT.CLOSE);
 
-			shell.setText(displayText.getString("FileLibraryTitle"));
-			FormLayout layout = new FormLayout();
-			shell.setLayout(layout);
-			Font sysFont = display.getSystemFont();
-			FontData[] fD = sysFont.getFontData();
-			fD[0].setHeight(appSettings.getFontSize());
-			controlFont = new Font(display, fD);
+		shell.setText(displayText.getString("FileLibraryTitle"));
+		FormLayout layout = new FormLayout();
+		shell.setLayout(layout);
+		Font sysFont = display.getSystemFont();
+		FontData[] fD = sysFont.getFontData();
+		fD[0].setHeight(appSettings.getFontSize());
+		controlFont = new Font(display, fD);
 
-			toolBar = new Composite(shell, SWT.NONE);
-			FormData tbFormData = new FormData();
-			tbFormData.top = new FormAttachment(0, 5);
-			tbFormData.left = new FormAttachment(0, 5);
-			tbFormData.right = new FormAttachment(100, -5);
-			toolBar.setLayoutData(tbFormData);
-			toolBar.setLayout(new RowLayout());
+		toolBar = new Composite(shell, SWT.NONE);
+		FormData tbFormData = new FormData();
+		tbFormData.top = new FormAttachment(0, 5);
+		tbFormData.left = new FormAttachment(0, 5);
+		tbFormData.right = new FormAttachment(100, -5);
+		toolBar.setLayoutData(tbFormData);
+		toolBar.setLayout(new RowLayout());
 
-			SquareButton btnGuide = new SquareButton(toolBar, SWT.PUSH);
-			btnGuide.setText(displayText.getString("FileLibraryButtonPrev"));
-			btnGuide.setFont(controlFont);
-			btnGuide.addSelectionListener(new PrevButtonListener());
+		SquareButton btnGuide = new SquareButton(toolBar, SWT.PUSH);
+		btnGuide.setText(displayText.getString("FileLibraryButtonPrev"));
+		btnGuide.setFont(controlFont);
+		btnGuide.addSelectionListener(new PrevButtonListener());
 
-			btnGuide = new SquareButton(toolBar, SWT.PUSH);
-			btnGuide.setText(displayText.getString("FileLibraryButtonNext"));
-			btnGuide.setFont(controlFont);
-			btnGuide.addSelectionListener(new NextButtonListener());
+		btnGuide = new SquareButton(toolBar, SWT.PUSH);
+		btnGuide.setText(displayText.getString("FileLibraryButtonNext"));
+		btnGuide.setFont(controlFont);
+		btnGuide.addSelectionListener(new NextButtonListener());
 
-			paging = new Label(toolBar, SWT.NULL);
-			paging.setFont(controlFont);
+		paging = new Label(toolBar, SWT.NULL);
+		paging.setFont(controlFont);
 
-			sortFilter = new Combo(toolBar, SWT.READ_ONLY);
-			sortFilter.setFont(controlFont);
-			String[] sortTtems = { sortByTitle, sortByAuthor, sortByDate };
-			sortFilter.setItems(sortTtems);
-			sortFilter.select(0);
-			sortFilter.addSelectionListener(new SortListener());
+		sortFilter = new Combo(toolBar, SWT.READ_ONLY);
+		sortFilter.setFont(controlFont);
+		String[] sortTtems = { sortByTitle, sortByAuthor, sortByDate };
+		sortFilter.setItems(sortTtems);
+		sortFilter.select(0);
+		sortFilter.addSelectionListener(new SortListener());
 
-			searchText = new Text(toolBar, SWT.SINGLE);
-			GC gc = new GC(shell);
-			gc.setFont(controlFont);
-			FontMetrics fm = gc.getFontMetrics();
-			int pixelWidth = (display.getPrimaryMonitor().getClientArea().width - 420) / 2;
-			buttonCharacters = pixelWidth / gc.getCharWidth('A');
-			RowData seachData = new RowData();
-			seachData.height = fm.getHeight();
-			seachData.width = gc.getCharWidth('A') * 15;
-			searchText.setLayoutData(seachData);
-			searchText.setData(searchBoxName);
-			gc.dispose();
+		searchText = new Text(toolBar, SWT.SINGLE);
+		GC gc = new GC(shell);
+		gc.setFont(controlFont);
+		FontMetrics fm = gc.getFontMetrics();
+		int pixelWidth = (display.getPrimaryMonitor().getClientArea().width - 420) / 2;
+		buttonCharacters = pixelWidth / gc.getCharWidth('A');
+		RowData seachData = new RowData();
+		seachData.height = fm.getHeight();
+		seachData.width = gc.getCharWidth('A') * 15;
+		searchText.setLayoutData(seachData);
+		searchText.setData(searchBoxName);
+		gc.dispose();
 
-			SquareButton btnSearch = new SquareButton(toolBar, SWT.PUSH);
-			btnSearch.setText(displayText.getString("FileLibraryButtonGo"));
-			btnSearch.setFont(controlFont);
-			btnSearch.addSelectionListener(new SearchButtonListener());
+		SquareButton btnSearch = new SquareButton(toolBar, SWT.PUSH);
+		btnSearch.setText(displayText.getString("FileLibraryButtonGo"));
+		btnSearch.setFont(controlFont);
+		btnSearch.addSelectionListener(new SearchButtonListener());
 
-			searchFilter = new Combo(toolBar, SWT.READ_ONLY);
-			searchFilter.setFont(controlFont);
-			String[] searchItems = { searchByContent, searchByTitle };
-			searchFilter.setItems(searchItems);
-			searchFilter.select(0);
+		searchFilter = new Combo(toolBar, SWT.READ_ONLY);
+		searchFilter.setFont(controlFont);
+		String[] searchItems = { searchByContent, searchByTitle };
+		searchFilter.setItems(searchItems);
+		searchFilter.select(0);
 
-			btnGuide = new SquareButton(toolBar, SWT.PUSH);
-			btnGuide.setText(displayText.getString("FileLibraryButtonRandom"));
-			btnGuide.setFont(controlFont);
-			btnGuide.addSelectionListener(new RandomButtonListener());
+		btnGuide = new SquareButton(toolBar, SWT.PUSH);
+		btnGuide.setText(displayText.getString("FileLibraryButtonRandom"));
+		btnGuide.setFont(controlFont);
+		btnGuide.addSelectionListener(new RandomButtonListener());
 
-			SquareButton btnDir = new SquareButton(toolBar, SWT.PUSH);
-			btnDir.setText(displayText.getString("FileLibraryButtonFolder"));
-			btnDir.setFont(controlFont);
-			btnDir.addSelectionListener(new FolderButtonListener());
+		SquareButton btnDir = new SquareButton(toolBar, SWT.PUSH);
+		btnDir.setText(displayText.getString("FileLibraryButtonFolder"));
+		btnDir.setFont(controlFont);
+		btnDir.addSelectionListener(new FolderButtonListener());
 
-			sc = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.BORDER);
-			FormData scFormData = new FormData();
-			scFormData.top = new FormAttachment(toolBar, 5);
-			scFormData.left = new FormAttachment(0, 5);
-			scFormData.right = new FormAttachment(100, -5);
-			scFormData.bottom = new FormAttachment(100, -5);
-			sc.setLayoutData(scFormData);
+		sc = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.BORDER);
+		FormData scFormData = new FormData();
+		scFormData.top = new FormAttachment(toolBar, 5);
+		scFormData.left = new FormAttachment(0, 5);
+		scFormData.right = new FormAttachment(100, -5);
+		scFormData.bottom = new FormAttachment(100, -5);
+		sc.setLayoutData(scFormData);
 
-			composite = new Composite(sc, SWT.NONE);
-			composite.setLayout(new FormLayout());
+		composite = new Composite(sc, SWT.NONE);
+		composite.setLayout(new FormLayout());
 
-			originalGuides = comonFunctions.listGuides();
-			guides = originalGuides;
-			setPageSize();
-			sortTitle();
-			shell.setMaximized(true);
-			ShellKeyEventListener keyListener = new ShellKeyEventListener();
-			myDisplay.addFilter(SWT.KeyDown, keyListener);
-			shell.addShellListener(new ShellCloseListener());
-			showGuides();
-		} catch (Exception ex) {
-			LOGGER.error(ex.getLocalizedMessage());
-		}
+		originalGuides = comonFunctions.listGuides();
+		guides = originalGuides;
+		setPageSize();
+		sortTitle();
+		shell.setMaximized(true);
+		ShellKeyEventListener keyListener = new ShellKeyEventListener();
+		myDisplay.addFilter(SWT.KeyDown, keyListener);
+		shell.addShellListener(new ShellCloseListener());
+		showGuides();
 		LOGGER.trace("Exit createShell");
 		return shell;
 	}
@@ -193,63 +189,61 @@ public class LibraryShell {
 	class ShellKeyEventListener implements Listener {
 		@Override
 		public void handleEvent(Event event) {
-			try {
-				if (event.display.getActiveShell().getText().equals(shell.getText())) {
-					LOGGER.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation, event.stateMask);
-					if (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR) {
-						search();
-					}
-					if ((event.stateMask & SWT.ALT) == SWT.ALT) {
-						switch (event.character) {
-						case 'n':
-						case 'N':
-							nextPage();
-							break;
-						case 'p':
-						case 'P':
-							previousPage();
-							break;
-						case 't':
-						case 'T':
-							sortFilter.select(0);
-							sortTitle();
-							break;
-						case 'a':
-						case 'A':
-							sortFilter.select(1);
-							sortAuthor();
-							break;
-						case 'd':
-						case 'D':
-							sortFilter.select(2);
-							sortDate();
-							break;
-						case 'r':
-						case 'R':
-							randomGuide();
-							break;
-						default:
-							break;
-						}
+			if (event.display.getActiveShell().getText().equals(shell.getText())) {
+				LOGGER.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation,
+						event.stateMask);
+				if (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR) {
+					search();
+				}
+				if ((event.stateMask & SWT.ALT) == SWT.ALT) {
+					switch (event.character) {
+					case 'n':
+					case 'N':
+						nextPage();
+						break;
+					case 'p':
+					case 'P':
+						previousPage();
+						break;
+					case 't':
+					case 'T':
+						sortFilter.select(0);
+						sortTitle();
+						break;
+					case 'a':
+					case 'A':
+						sortFilter.select(1);
+						sortAuthor();
+						break;
+					case 'd':
+					case 'D':
+						sortFilter.select(2);
+						sortDate();
+						break;
+					case 'r':
+					case 'R':
+						randomGuide();
+						break;
+					default:
+						break;
 					}
 				}
-
-			} catch (Exception ex) {
-				LOGGER.error(" hot key " + ex.getLocalizedMessage(), ex);
 			}
 		}
 	}
 
 	private void sortAuthor() {
 		Comparator<Library> comparator = Comparator.comparing(guide -> guide.author.toLowerCase());
-		comparator = comparator.thenComparing(Comparator.comparing(guide -> guide.title.toLowerCase()));
+		comparator = comparator
+				.thenComparing(Comparator.comparing(guide -> guide.title.toLowerCase()));
 		guides.sort(comparator);
 		showGuides();
 	}
 
 	private void sortTitle() {
 		Comparator<Library> comparator = Comparator.comparing(guide -> guide.title.toLowerCase());
-		comparator = comparator.thenComparing(Comparator.comparing(guide -> guide.author.toLowerCase()));
+		comparator = comparator
+				.thenComparing(Comparator.comparing(guide -> guide.author.toLowerCase()));
 		guides.sort(comparator);
 		showGuides();
 	}
@@ -285,46 +279,42 @@ public class LibraryShell {
 		paging.setText("" + (currentStart + 1) + " to " + (end) + " of " + guides.size());
 		toolBar.pack(true);
 		for (int i = currentStart; i < pageEnd; i++) {
-			try {
-				int guidePosition = i;
-				if ((guidePosition) >= guides.size()) {
-					guidePosition = guidePosition - guides.size() - 1;
-				}
-				Library guide = guides.get(guidePosition);
-				SquareButton btnGuide = new SquareButton(composite, SWT.PUSH);
-				String title = comonFunctions.splitButtonText(guide.title, buttonCharacters);
-				if (guide.author.length() > 0) {
-					btnGuide.setText(title + "\n(" + guide.author + ")");
-				} else {
-					btnGuide.setText(title);
-				}
-				btnGuide.setFont(controlFont);
-
-				Image thumb = new Image(myDisplay, guide.image);
-				thumbs.add(thumb);
-				Image croppedThumb = comonFunctions.cropImageWidth(thumb, 200);
-				thumbs.add(croppedThumb);
-				btnGuide.setImage(croppedThumb);
-				FormData btnGuideFormData = new FormData();
-
-				if (i % 2 == 0) {
-					btnGuideFormData.top = new FormAttachment(lastLeftButton, 5);
-					btnGuideFormData.left = new FormAttachment(0, 5);
-					btnGuideFormData.right = new FormAttachment(50, -5);
-					lastLeftButton = btnGuide;
-				} else {
-					btnGuideFormData.top = new FormAttachment(lastRightButton, 5);
-					btnGuideFormData.left = new FormAttachment(50, 5);
-					btnGuideFormData.right = new FormAttachment(100, -5);
-					lastRightButton = btnGuide;
-				}
-				btnGuide.setLayoutData(btnGuideFormData);
-				btnGuide.addSelectionListener(new GuideButtonListener());
-				btnGuide.setData("Guide", guide.file);
-				btnGuide.setData("Author", guide.author);
-			} catch (Exception ex) {
-				LOGGER.error(" showGuides " + ex.getLocalizedMessage());
+			int guidePosition = i;
+			if ((guidePosition) >= guides.size()) {
+				guidePosition = guidePosition - guides.size() - 1;
 			}
+			Library guide = guides.get(guidePosition);
+			SquareButton btnGuide = new SquareButton(composite, SWT.PUSH);
+			String title = comonFunctions.splitButtonText(guide.title, buttonCharacters);
+			if (guide.author.length() > 0) {
+				btnGuide.setText(title + "\n(" + guide.author + ")");
+			} else {
+				btnGuide.setText(title);
+			}
+			btnGuide.setFont(controlFont);
+
+			Image thumb = new Image(myDisplay, guide.image);
+			thumbs.add(thumb);
+			Image croppedThumb = comonFunctions.cropImageWidth(thumb, 200);
+			thumbs.add(croppedThumb);
+			btnGuide.setImage(croppedThumb);
+			FormData btnGuideFormData = new FormData();
+
+			if (i % 2 == 0) {
+				btnGuideFormData.top = new FormAttachment(lastLeftButton, 5);
+				btnGuideFormData.left = new FormAttachment(0, 5);
+				btnGuideFormData.right = new FormAttachment(50, -5);
+				lastLeftButton = btnGuide;
+			} else {
+				btnGuideFormData.top = new FormAttachment(lastRightButton, 5);
+				btnGuideFormData.left = new FormAttachment(50, 5);
+				btnGuideFormData.right = new FormAttachment(100, -5);
+				lastRightButton = btnGuide;
+			}
+			btnGuide.setLayoutData(btnGuideFormData);
+			btnGuide.addSelectionListener(new GuideButtonListener());
+			btnGuide.setData("Guide", guide.file);
+			btnGuide.setData("Author", guide.author);
 		}
 		sc.setContent(composite);
 		sc.setExpandHorizontal(true);
@@ -456,50 +446,42 @@ public class LibraryShell {
 	}
 
 	private void search() {
-		try {
-			String selected = searchFilter.getText();
+		String selected = searchFilter.getText();
 
-			guides = new ArrayList<>();
-			for (Library guide : originalGuides) {
-				if (selected.equals(searchByTitle)
-						&& (comonFunctions.searchText(searchText.getText(), guide.author + guide.title))) {
-					guides.add(guide);
+		guides = new ArrayList<>();
+		for (Library guide : originalGuides) {
+			if (selected.equals(searchByTitle) && (comonFunctions.searchText(searchText.getText(),
+					guide.author + guide.title))) {
+				guides.add(guide);
 
-				}
-				if (selected.equals(searchByContent)
-						&& (comonFunctions.searchGuide(searchText.getText(), guide.file))) {
-					guides.add(guide);
-
-				}
 			}
-			setPageSize();
-			showGuides();
-		} catch (Exception ex) {
-			LOGGER.error(" SearchButtonListener " + ex.getLocalizedMessage());
+			if (selected.equals(searchByContent)
+					&& (comonFunctions.searchGuide(searchText.getText(), guide.file))) {
+				guides.add(guide);
+
+			}
 		}
+		setPageSize();
+		showGuides();
 	}
 
 	class FolderButtonListener extends SelectionAdapter {
 
 		@Override
 		public void widgetSelected(SelectionEvent event) {
-			try {
-				String folder = appSettings.getDataDirectory();
-				DirectoryDialog dirDialog = new DirectoryDialog(shell);
-				dirDialog.setFilterPath(folder);
-				dirDialog.setMessage("Select a Folder to scan");
-				folder = dirDialog.open();
-				if (folder != null) {
-					appSettings.setDataDirectory(folder);
-					appSettings.saveSettings();
-					originalGuides = comonFunctions.listGuides();
-					guides = originalGuides;
-					setPageSize();
-					sortGuides();
-					showGuides();
-				}
-			} catch (Exception ex) {
-				LOGGER.error(" FolderButtonListener " + ex.getLocalizedMessage());
+			String folder = appSettings.getDataDirectory();
+			DirectoryDialog dirDialog = new DirectoryDialog(shell);
+			dirDialog.setFilterPath(folder);
+			dirDialog.setMessage("Select a Folder to scan");
+			folder = dirDialog.open();
+			if (folder != null) {
+				appSettings.setDataDirectory(folder);
+				appSettings.saveSettings();
+				originalGuides = comonFunctions.listGuides();
+				guides = originalGuides;
+				setPageSize();
+				sortGuides();
+				showGuides();
 			}
 			LOGGER.trace("Exit FolderButtonListener");
 		}
@@ -510,12 +492,8 @@ public class LibraryShell {
 		// Clean up stuff when the application closes
 		@Override
 		public void shellClosed(ShellEvent e) {
-			try {
-				disposeThumbs();
-				controlFont.dispose();
-			} catch (Exception ex) {
-				LOGGER.error("shellCloseListen ", ex);
-			}
+			disposeThumbs();
+			controlFont.dispose();
 			super.shellClosed(e);
 		}
 	}

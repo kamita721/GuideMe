@@ -25,7 +25,7 @@ import org.mozilla.javascript.Context;
 
 public class Jscript {
 	private Guide guide;
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Marker JSCRIPT_MARKER = MarkerManager.getMarker("JSCRIPT");
 	private boolean running;
 	private final Main dbg;

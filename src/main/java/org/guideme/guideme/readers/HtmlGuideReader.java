@@ -13,14 +13,14 @@ import org.guideme.generated.model.Page;
 import org.guideme.guideme.model.*;
 
 public class HtmlGuideReader {
-	private static Logger log = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	
 	public Guide loadFromFile(File file) {
 		try {
 			Document doc = Jsoup.parse(file, "UTF-8", "");
 			return createFromDocument(doc);
 		} catch (IOException err) {
-			log.error(err);
+			LOGGER.error(err);
 			return null;
 		}
 	}
@@ -30,7 +30,7 @@ public class HtmlGuideReader {
 		return createFromDocument(doc);
 	}
 	
-	private Guide createFromDocument(Document doc) {
+	private static Guide createFromDocument(Document doc) {
 		Guide guide = Guide.getGuide();
 		
 		readGeneralInformation(guide, doc);
@@ -39,7 +39,7 @@ public class HtmlGuideReader {
 		return guide;
 	}
 	
-	private void readGeneralInformation(Guide guide, Document doc) {
+	private static void readGeneralInformation(Guide guide, Document doc) {
 		guide.setTitle(doc.select("head title").text());
 		guide.setAuthorName(doc.select("head meta[name=author]").attr("content"));
 		guide.setKeywordsString(doc.select("head meta[name=keywords]").attr("content"));
@@ -58,7 +58,7 @@ public class HtmlGuideReader {
 		}
 	}
 
-	private void readChapters(Guide guide, Document doc) {
+	private static void readChapters(Guide guide, Document doc) {
 		Elements articles = doc.select("body article");
 		for (int i = 0; i < articles.size(); i++) {
 			Element article = articles.get(i);
@@ -66,11 +66,11 @@ public class HtmlGuideReader {
 			
 			readPages(chapter, article);
 			
-			guide.getChapters().put(articles.attr("id"), chapter);
+			guide.addChapter(chapter);
 		}
 	}
 	
-	private void readPages(Chapter chapter, Element articleElement) {
+	private static void readPages(Chapter chapter, Element articleElement) {
 		Elements sections = articleElement.select("section");
 		for (int i = 0; i < sections.size(); i++) {
 			Element section = sections.get(i);
@@ -79,7 +79,7 @@ public class HtmlGuideReader {
 			Page page = new Page();
 			page.setId(section.attr("id"));
 			
-			chapter.getPages().put(section.attr("id"), page);
+			chapter.addPage(page);
 		}
 		
 	}

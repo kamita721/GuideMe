@@ -25,7 +25,7 @@ public class XMLReaderUtils {
 	private XMLReaderUtils() {
 	}
 
-	private static Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
 	public static DocumentBuilderFactory getDocumentBuilderFactory() {

@@ -1,5 +1,6 @@
 package org.guideme.guideme.model;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +14,24 @@ public class Chapter {
 		this.id = id;
 	}
 	
-	public Map<String, Page> getPages() {
-		return pages;
+	public Collection<Page> getPageCollection(){
+		return pages.values();
 	}
-
-	public void setPages(Map<String, Page> pages) {
-		this.pages = pages;
+	
+	public Page getPage(String pageName) {
+		return pages.get(pageName);
+	}
+	
+	public int getPageCount() {
+		return pages.size();
+	}
+	
+	public boolean hasPage(String pageName) {
+		return pages.containsKey(pageName);
+	}
+	
+	public void addPage(Page toAdd) {
+		pages.put(toAdd.getId(), toAdd);
 	}
 
 	public String getId() {

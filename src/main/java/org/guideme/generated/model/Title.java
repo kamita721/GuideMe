@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
 public class Title  {
 
+	private static final Logger LOGGER = LogManager.getLogger();
 	private String text = "";
 
 	public Title(XMLStreamReader reader) throws XMLStreamException {
@@ -34,7 +35,6 @@ public class Title  {
 		return ans;
 	}
 	public Title(Node n) {
-		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Title")){
 			LOGGER.warn("Error reading state file. Expected element 'Title', but got '{}'", n.getNodeName());
 		}
