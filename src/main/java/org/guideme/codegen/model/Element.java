@@ -25,7 +25,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class Element {
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 
 	private final String name;
 	private final String javaName;
@@ -107,7 +107,7 @@ public class Element {
 		javaName = sJavaName;
 		callback = sCallback;
 
-		logger.info("Element {} initialized", name);
+		LOGGER.info("Element {} initialized", name);
 	}
 
 	private Set<Attribute> getAllAttributesRecursive() {
@@ -147,7 +147,7 @@ public class Element {
 		toAdd.addThrowable("javax.xml.stream.XMLStreamException");
 
 		toAdd.addContent(
-				Line.getFinalAssignment(new Variable("org.apache.logging.log4j.Logger", "logger"),
+				Line.getFinalAssignment(new Variable("org.apache.logging.log4j.Logger", "LOGGER"),
 						"LogManager.getLogger()"));
 
 		toAdd.addLine("int depth = 1;");
@@ -179,7 +179,7 @@ public class Element {
 
 		CodeBlockList tagNotFoundHandler = new CodeBlockList();
 		tagNotFoundHandler.addContent(new Line(
-				"logger.warn(\"Unhandled tag '{}' at location \\n{}\", tagName, reader.getLocation());"));
+				"LOGGER.warn(\"Unhandled tag '{}' at location \\n{}\", tagName, reader.getLocation());"));
 		tagNotFoundHandler
 				.addContent(new Line("XMLReaderUtils.getStringContentUntilElementEnd(reader);"));
 		switchBlock.setDefault(tagNotFoundHandler);
@@ -228,11 +228,11 @@ public class Element {
 
 		ans.addArg("org.w3c.dom.Node", "n");
 
-		ans.addLine("Logger logger = LogManager.getLogger();");
+		ans.addLine("Logger LOGGER = LogManager.getLogger();");
 
 		ans.addLine("if(!n.getNodeName().equals(\"%s\")){", getXmlTag());
 		ans.addLine(
-				"logger.warn(\"Error reading state file. Expected element '%s', but got '{}'\", n.getNodeName());",
+				"LOGGER.warn(\"Error reading state file. Expected element '%s', but got '{}'\", n.getNodeName());",
 				getXmlTag());
 		ans.addLine("}");
 
@@ -267,7 +267,7 @@ public class Element {
 		}
 
 		CodeBlockList attributeNotFound = new CodeBlockList();
-		attributeNotFound.addLine("logger.warn(\"Unhandled attribute '{}'\", attrName);");
+		attributeNotFound.addLine("LOGGER.warn(\"Unhandled attribute '{}'\", attrName);");
 		switchBlock.setDefault(attributeNotFound);
 
 		ans.addCodeBlock(switchBlock);

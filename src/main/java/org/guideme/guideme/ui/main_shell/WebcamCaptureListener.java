@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.events.SelectionEvent;
 
 class WebcamCaptureListener extends DynamicButtonListner {
-	private Logger logger = LogManager.getLogger();
+	private Logger LOGGER = LogManager.getLogger();
 
 	private final MainShell mainShell;
 
@@ -23,7 +23,7 @@ class WebcamCaptureListener extends DynamicButtonListner {
 	@Override
 	public void widgetSelected(SelectionEvent event) {
 
-		MainShell.logger.trace("Enter WebcamCaptureListener");
+		MainShell.LOGGER.trace("Enter WebcamCaptureListener");
 		String strFile;
 		com.snapps.swt.SquareButton btnClicked;
 		btnClicked = (com.snapps.swt.SquareButton) event.widget;
@@ -38,11 +38,11 @@ class WebcamCaptureListener extends DynamicButtonListner {
 		try {
 			ImageIO.write(image, "JPG", new File(strFile));
 		} catch (IOException e) {
-			logger.warn("Unable to save webcam image", e);
+			LOGGER.warn("Unable to save webcam image", e);
 		}
 
 		super.widgetSelected(event);
 
-		MainShell.logger.trace("Exit WebcamCaptureListener");
+		MainShell.LOGGER.trace("Exit WebcamCaptureListener");
 	}
 }

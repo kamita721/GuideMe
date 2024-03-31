@@ -182,9 +182,9 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 		this.fontHeight = fontHeight;
 	}
 	public WebcamButton(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("WebcamButton")){
-			logger.warn("Error reading state file. Expected element 'WebcamButton', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'WebcamButton', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -262,7 +262,7 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 				fontColor = ModelConverters.fromString(attrValue, fontColor);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

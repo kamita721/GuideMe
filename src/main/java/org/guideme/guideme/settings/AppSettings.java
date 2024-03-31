@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.guideme.guideme.util.ErrorManager;
 
 public class AppSettings {
-	private Logger logger = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private int fontSize = 20;
 	private int htmlFontSize = 20;
 	private int timerFontSize = 20;
@@ -87,11 +87,6 @@ public class AppSettings {
 		return appSettings;
 	}
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
-
 	private void loadAppSettings() throws IOException {
 		Properties properties = java.lang.System.getProperties();
 		userDir = String.valueOf(properties.get("user.dir"));
@@ -100,11 +95,11 @@ public class AppSettings {
 		fileSeparator = String.valueOf(properties.get("file.separator"));
 		settingsLocation = "data" + fileSeparator + "settings.properties";
 		tempDir = "data" + fileSeparator;
-		logger.debug("AppSettings userDir: {}", userDir);
-		logger.debug("AppSettings userHome: {}", userHome);
-		logger.debug("AppSettings userName: {}", userName);
-		logger.debug("AppSettings fileSeparator: {}", fileSeparator);
-		logger.debug("AppSettings settingsLocation: {}", settingsLocation);
+		LOGGER.debug("AppSettings userDir: {}", userDir);
+		LOGGER.debug("AppSettings userHome: {}", userHome);
+		LOGGER.debug("AppSettings userName: {}", userName);
+		LOGGER.debug("AppSettings fileSeparator: {}", fileSeparator);
+		LOGGER.debug("AppSettings settingsLocation: {}", settingsLocation);
 
 		appSettingsProperties.loadFromXML(new FileInputStream(settingsLocation));
 
@@ -264,68 +259,67 @@ public class AppSettings {
 	}
 
 	public int[] getSash1Weights() {
-		return sash1Weights;
+		return sash1Weights.clone();
 	}
 
 	public void setSash1Weights(int[] sash1Weights) {
-		this.sash1Weights = sash1Weights;
+		this.sash1Weights = sash1Weights.clone();
 	}
 
 	public int[] getSash2Weights() {
-		return sash2Weights;
+		return sash2Weights.clone();
 	}
 
 	public void setSash2Weights(int[] sash2Weights) {
-		this.sash2Weights = sash2Weights;
+		this.sash2Weights = sash2Weights.clone();
 	}
 
 	public void saveSettings() {
-		try {
-			appSettingsProperties.setProperty("FontSize", String.valueOf(fontSize));
-			appSettingsProperties.setProperty("HtmlFontSize", String.valueOf(htmlFontSize));
-			appSettingsProperties.setProperty("timerFontSize", String.valueOf(timerFontSize));
-			appSettingsProperties.setProperty("buttonFontSize", String.valueOf(buttonFontSize));
-			appSettingsProperties.setProperty("midiInstrument", String.valueOf(midiInstrument));
-			appSettingsProperties.setProperty("midiVolume", String.valueOf(midiVolume));
-			appSettingsProperties.setProperty("musicVolume", String.valueOf(musicVolume));
-			appSettingsProperties.setProperty("videoVolume", String.valueOf(videoVolume));
-			appSettingsProperties.setProperty("Debug", String.valueOf(debug));
-			appSettingsProperties.setProperty("showDelayBtn", String.valueOf(showDelayBtn));
-			appSettingsProperties.setProperty("JsDebug", String.valueOf(jsDebug));
-			appSettingsProperties.setProperty("jsDebugHeight", String.valueOf(jsDebugHeight));
-			appSettingsProperties.setProperty("jsDebugWidth", String.valueOf(jsDebugWidth));
-			appSettingsProperties.setProperty("Video", String.valueOf(video));
-			appSettingsProperties.setProperty("Webcam", String.valueOf(webcam));
-			appSettingsProperties.setProperty("mainMonitor", String.valueOf(mainMonitor));
-			appSettingsProperties.setProperty("fullScreen", String.valueOf(fullScreen));
-			appSettingsProperties.setProperty("multiMonitor", String.valueOf(multiMonitor));
-			appSettingsProperties.setProperty("clock", String.valueOf(clock));
-			appSettingsProperties.setProperty("metronome", String.valueOf(metronome));
-			appSettingsProperties.setProperty("pageSound", String.valueOf(pageSound));
-			appSettingsProperties.setProperty("toclipboard", String.valueOf(toclipboard));
-			appSettingsProperties.setProperty("DataDirectory", dataDirectory);
-			appSettingsProperties.setProperty("stateInDataDir", String.valueOf(stateInDataDir));
-			appSettingsProperties.setProperty("sash1Weights0", String.valueOf(sash1Weights[0]));
-			appSettingsProperties.setProperty("sash1Weights1", String.valueOf(sash1Weights[1]));
-			appSettingsProperties.setProperty("sash2Weights0", String.valueOf(sash2Weights[0]));
-			appSettingsProperties.setProperty("sash2Weights1", String.valueOf(sash2Weights[1]));
-			appSettingsProperties.setProperty("sash2Weights2", String.valueOf(sash2Weights[2]));
-			appSettingsProperties.setProperty("maxImageScale", String.valueOf(maxImageScale));
-			appSettingsProperties.setProperty("hideMenu", String.valueOf(hideMenu));
-			appSettingsProperties.setProperty("thumbnailSize", String.valueOf(thumbnailSize));
-			appSettingsProperties.setProperty("imgOffset", String.valueOf(imgOffset));
-			appSettingsProperties.setProperty("country", country);
-			appSettingsProperties.setProperty("language", language);
-			appSettingsProperties.setProperty("videoDevice", videoDevice);
-			appSettingsProperties.setProperty("audioOneDevice", audioOneDevice);
-			appSettingsProperties.setProperty("audioTwoDevice", audioTwoDevice);
-			appSettingsProperties.setProperty("fileActionConfirmations",
-					String.valueOf(fileActionConfirmations));
-			try (OutputStream os = new FileOutputStream(settingsLocation)) {
-				appSettingsProperties.storeToXML(os, null);
-			}
-		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+		appSettingsProperties.setProperty("FontSize", String.valueOf(fontSize));
+		appSettingsProperties.setProperty("HtmlFontSize", String.valueOf(htmlFontSize));
+		appSettingsProperties.setProperty("timerFontSize", String.valueOf(timerFontSize));
+		appSettingsProperties.setProperty("buttonFontSize", String.valueOf(buttonFontSize));
+		appSettingsProperties.setProperty("midiInstrument", String.valueOf(midiInstrument));
+		appSettingsProperties.setProperty("midiVolume", String.valueOf(midiVolume));
+		appSettingsProperties.setProperty("musicVolume", String.valueOf(musicVolume));
+		appSettingsProperties.setProperty("videoVolume", String.valueOf(videoVolume));
+		appSettingsProperties.setProperty("Debug", String.valueOf(debug));
+		appSettingsProperties.setProperty("showDelayBtn", String.valueOf(showDelayBtn));
+		appSettingsProperties.setProperty("JsDebug", String.valueOf(jsDebug));
+		appSettingsProperties.setProperty("jsDebugHeight", String.valueOf(jsDebugHeight));
+		appSettingsProperties.setProperty("jsDebugWidth", String.valueOf(jsDebugWidth));
+		appSettingsProperties.setProperty("Video", String.valueOf(video));
+		appSettingsProperties.setProperty("Webcam", String.valueOf(webcam));
+		appSettingsProperties.setProperty("mainMonitor", String.valueOf(mainMonitor));
+		appSettingsProperties.setProperty("fullScreen", String.valueOf(fullScreen));
+		appSettingsProperties.setProperty("multiMonitor", String.valueOf(multiMonitor));
+		appSettingsProperties.setProperty("clock", String.valueOf(clock));
+		appSettingsProperties.setProperty("metronome", String.valueOf(metronome));
+		appSettingsProperties.setProperty("pageSound", String.valueOf(pageSound));
+		appSettingsProperties.setProperty("toclipboard", String.valueOf(toclipboard));
+		appSettingsProperties.setProperty("DataDirectory", dataDirectory);
+		appSettingsProperties.setProperty("stateInDataDir", String.valueOf(stateInDataDir));
+		appSettingsProperties.setProperty("sash1Weights0", String.valueOf(sash1Weights[0]));
+		appSettingsProperties.setProperty("sash1Weights1", String.valueOf(sash1Weights[1]));
+		appSettingsProperties.setProperty("sash2Weights0", String.valueOf(sash2Weights[0]));
+		appSettingsProperties.setProperty("sash2Weights1", String.valueOf(sash2Weights[1]));
+		appSettingsProperties.setProperty("sash2Weights2", String.valueOf(sash2Weights[2]));
+		appSettingsProperties.setProperty("maxImageScale", String.valueOf(maxImageScale));
+		appSettingsProperties.setProperty("hideMenu", String.valueOf(hideMenu));
+		appSettingsProperties.setProperty("thumbnailSize", String.valueOf(thumbnailSize));
+		appSettingsProperties.setProperty("imgOffset", String.valueOf(imgOffset));
+		appSettingsProperties.setProperty("country", country);
+		appSettingsProperties.setProperty("language", language);
+		appSettingsProperties.setProperty("videoDevice", videoDevice);
+		appSettingsProperties.setProperty("audioOneDevice", audioOneDevice);
+		appSettingsProperties.setProperty("audioTwoDevice", audioTwoDevice);
+		appSettingsProperties.setProperty("fileActionConfirmations",
+				String.valueOf(fileActionConfirmations));
+
+		try (OutputStream os = new FileOutputStream(settingsLocation)) {
+			appSettingsProperties.storeToXML(os, null);
+		} catch (IOException e) {
+			ErrorManager.getInstance().recordError(e, "Error saving application settings");
 		}
 	}
 

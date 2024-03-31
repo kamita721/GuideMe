@@ -26,7 +26,7 @@ class VideoPlay implements Runnable {
 		@Override
 		public void run() {
 			try {
-				MainShell.logger.debug("MainShell VideoPlay new Thread {}", video);
+				MainShell.LOGGER.debug("MainShell VideoPlay new Thread {}", video);
 
 				mediaPlayer.audio().setVolume(volume);
 				// TODO this setting seems to have disappeared
@@ -44,7 +44,7 @@ class VideoPlay implements Runnable {
 					// run on the main UI thread
 				}
 			} catch (Exception e) {
-				MainShell.logger.error("VideoPlay run " + e.getLocalizedMessage(), e);
+				MainShell.LOGGER.error("VideoPlay run " + e.getLocalizedMessage(), e);
 			}
 		}
 

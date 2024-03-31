@@ -25,7 +25,7 @@ class ShellKeyEventListener implements Listener {
 			return;
 		}
 
-		MainShell.logger.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation, event.stateMask);
+		MainShell.LOGGER.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation, event.stateMask);
 		if (event.keyCode == 13
 				&& (event.widget.getClass().toString().equals("class org.eclipse.swt.browser.Browser"))) {
 			event.doit = false;

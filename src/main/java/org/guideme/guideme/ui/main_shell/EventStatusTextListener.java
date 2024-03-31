@@ -37,7 +37,7 @@ class EventStatusTextListener implements StatusTextListener {
 			if (eventArgs[0].equals("ButtonClick") && eventArgs.length > 5) {
 				mainShell.procStatusText = event.text;
 
-				MainShell.logger.trace("Enter StatusTextListener");
+				MainShell.LOGGER.trace("Enter StatusTextListener");
 				String strTag;
 				strTag = eventArgs[1];// Set
 				if (!strTag.equals("")) {
@@ -56,7 +56,7 @@ class EventStatusTextListener implements StatusTextListener {
 					mainShell.mainLogic.displayPage(strTag, false, mainShell.guide, mainShell, mainShell.appSettings,
 							mainShell.userSettings, mainShell.guideSettings, mainShell.debugShell);
 
-				MainShell.logger.trace("Exit StatusTextListener");
+				MainShell.LOGGER.trace("Exit StatusTextListener");
 			}
 		}
 	}

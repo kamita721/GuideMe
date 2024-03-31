@@ -31,7 +31,7 @@ import org.guideme.guideme.ui.debug_shell.DebugShell;
 import org.guideme.guideme.util.XMLReaderUtils;
 
 public class XmlGuideReader {
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
 	private XmlGuideReader() {
@@ -71,7 +71,7 @@ public class XmlGuideReader {
 
 	private static void parseFile(String xmlFileName, Guide guide, String presName, Chapter chapter,
 			AppSettings appSettings, DebugShell debugShell) throws XMLStreamException, IOException {
-		logger.info("parseFile: {}", xmlFileName);
+		LOGGER.info("parseFile: {}", xmlFileName);
 		GuideSettings guideSettings = guide.getSettings();
 
 		Page page404 = new Page();
@@ -127,13 +127,13 @@ public class XmlGuideReader {
 			case XMLStreamConstants.CHARACTERS:
 				String text = reader.getText();
 				if (!text.isBlank()) {
-					logger.warn("Unhandled text in guide at \n{}", reader.getLocation());
+					LOGGER.warn("Unhandled text in guide at \n{}", reader.getLocation());
 				}
 				break;
 			case XMLStreamConstants.COMMENT:
 				break;
 			default:
-				logger.warn("Unandled event type '{}' while parsing guide XML.", eventType);
+				LOGGER.warn("Unandled event type '{}' while parsing guide XML.", eventType);
 			}
 		}
 	}
@@ -204,7 +204,7 @@ public class XmlGuideReader {
 				text.append(reader.getText());
 				break;
 			default:
-				logger.warn("Unhandled event type {} while parsing guide XML.", eventType2);
+				LOGGER.warn("Unhandled event type {} while parsing guide XML.", eventType2);
 			}
 			if (finished) {
 				break;
@@ -266,7 +266,7 @@ public class XmlGuideReader {
 				parseFile(incFileName, guide, presName, chapter, appSettings, debugShell);
 			}
 		}
-		logger.trace("loadXML {} include {}", presName, incFileName);
+		LOGGER.trace("loadXML {} include {}", presName, incFileName);
 
 	}
 

@@ -15,9 +15,9 @@ class VideoRelease implements Runnable {
 			mediaPlayerThread.controls().stop();
 			mediaPlayerThread.release();
 			mediaPlayerFactoryThread.release();
-			MainShell.logger.trace("VideoRelease Exit");
+			MainShell.LOGGER.trace("VideoRelease Exit");
 		} catch (Exception ex) {
-			MainShell.logger.error("Video release " + ex.getLocalizedMessage(), ex);
+			MainShell.LOGGER.error("Video release " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -26,7 +26,7 @@ class VideoRelease implements Runnable {
 			mediaPlayerFactoryThread = mediaPlayerFactory;
 			mediaPlayerThread = mediaPlayer;
 		} catch (Exception ex) {
-			MainShell.logger.error("Video release " + ex.getLocalizedMessage(), ex);
+			MainShell.LOGGER.error("Video release " + ex.getLocalizedMessage(), ex);
 		}
 	}
 

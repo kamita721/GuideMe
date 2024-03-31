@@ -31,7 +31,7 @@ class FileRestartListener extends SelectionAdapter {
 				return;
 		}
 		try {
-			MainShell.logger.trace("Enter Menu Restart");
+			MainShell.LOGGER.trace("Enter Menu Restart");
 			// stop all activity for the current page to prevent timers
 			// jumping to a different page
 			mainShell.stopAll(false);
@@ -41,9 +41,9 @@ class FileRestartListener extends SelectionAdapter {
 			mainShell.mainLogic.displayPage("start", false, mainShell.guide, mainShell, mainShell.appSettings, mainShell.userSettings, mainShell.guideSettings,
 					mainShell.debugShell);
 		} catch (Exception ex) {
-			MainShell.logger.error("Restart error " + ex.getLocalizedMessage(), ex);
+			MainShell.LOGGER.error("Restart error " + ex.getLocalizedMessage(), ex);
 		}
-		MainShell.logger.trace("Exit Menu Restart");
+		MainShell.LOGGER.trace("Exit Menu Restart");
 		super.widgetSelected(e);
 	}
 

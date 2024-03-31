@@ -44,9 +44,9 @@ public class Image implements Filterable  {
 		this.id = id;
 	}
 	public Image(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Image")){
-			logger.warn("Error reading state file. Expected element 'Image', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Image', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -70,7 +70,7 @@ public class Image implements Filterable  {
 				id = ModelConverters.fromString(attrValue, id);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

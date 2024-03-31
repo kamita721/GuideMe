@@ -22,9 +22,9 @@ public class Include  {
 	}
 
 	public Include(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Include")){
-			logger.warn("Error reading state file. Expected element 'Include', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Include', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -34,7 +34,7 @@ public class Include  {
 			if(attrName.equals("file")){
 				file = ModelConverters.fromString(attrValue, file);
 			} else {
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
 	}

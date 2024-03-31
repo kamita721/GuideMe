@@ -35,9 +35,9 @@ public class Text implements Filterable, IText  {
 	}
 
 	public Text(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Text")){
-			logger.warn("Error reading state file. Expected element 'Text', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Text', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -61,7 +61,7 @@ public class Text implements Filterable, IText  {
 				text = ModelConverters.fromString(attrValue, text);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

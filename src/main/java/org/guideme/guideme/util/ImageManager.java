@@ -31,7 +31,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 public class ImageManager {
 	private static final int CACHE_SIZE = 128;
 
-	static Logger logger = LogManager.getLogger();
+	static Logger LOGGER = LogManager.getLogger();
 
 	Device device;
 	Point preferedSize;
@@ -62,7 +62,7 @@ public class ImageManager {
 		try {
 			imageLabel.setImage(getImage());
 		} catch (ExecutionException e) {
-			logger.error("Error loading image: " + currentImagePath, e);
+			LOGGER.error("Error loading image: " + currentImagePath, e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
@@ -88,7 +88,7 @@ public class ImageManager {
 				ImageData imgData = new ImageData(imageFile.toString());
 				Point scaledDimensions = getImageScaledDimensions(imgData, largestImageDimension);
 				if(scaledDimensions == null) {
-					logger.error("Error downscaling image file {}", imageFile);
+					LOGGER.error("Error downscaling image file {}", imageFile);
 					return;
 				}
 				if(scaledDimensions.x >= imgData.width || scaledDimensions.y >= imgData.height) {
@@ -109,7 +109,7 @@ public class ImageManager {
 				ImageIO.write(imageNew, extension, imageFile);
 
 			} catch (Exception ex6) {
-				logger.error("Process Image error " + ex6.getLocalizedMessage(), ex6);
+				LOGGER.error("Process Image error " + ex6.getLocalizedMessage(), ex6);
 			}
 		}
 

@@ -19,7 +19,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class AttributeSet {
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private ArrayList<Attribute> attributes = new ArrayList<>();
 	private ArrayList<AttributeSet> subsets = new ArrayList<>();
@@ -112,7 +112,7 @@ public class AttributeSet {
 		}
 		name = sName;
 
-		logger.info("AttributeSet {} initialized", name);
+		LOGGER.info("AttributeSet {} initialized", name);
 		allAttributeSets.put(name, this);
 	}
 

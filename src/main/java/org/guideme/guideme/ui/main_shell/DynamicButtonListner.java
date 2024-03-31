@@ -24,7 +24,7 @@ class DynamicButtonListner extends SelectionAdapter {
 		}
 		try {
 
-			MainShell.logger.trace("Enter DynamicButtonListner");
+			MainShell.LOGGER.trace("Enter DynamicButtonListner");
 			String strTag;
 			com.snapps.swt.SquareButton btnClicked = (com.snapps.swt.SquareButton) event.widget;
 			strTag = (String) btnClicked.getData("Set");
@@ -45,8 +45,8 @@ class DynamicButtonListner extends SelectionAdapter {
 						mainShell.debugShell);
 			}
 		} catch (Exception ex) {
-			MainShell.logger.error(" DynamicButtonListner " + ex.getLocalizedMessage(), ex);
+			MainShell.LOGGER.error(" DynamicButtonListner " + ex.getLocalizedMessage(), ex);
 		}
-		MainShell.logger.trace("Exit DynamicButtonListner");
+		MainShell.LOGGER.trace("Exit DynamicButtonListner");
 	}
 }

@@ -45,7 +45,7 @@ public class Parsers {
 				"parseState"));
 
 		ans.addCodeBlock(
-				Line.getFinalAssignment(new Variable("org.apache.logging.log4j.Logger", "logger"),
+				Line.getFinalAssignment(new Variable("org.apache.logging.log4j.Logger", "LOGGER"),
 						"LogManager.getLogger()"));
 
 		ans.addCodeBlock(
@@ -78,7 +78,7 @@ public class Parsers {
 		}
 		CodeBlockList tagNotFoundHandler = new CodeBlockList();
 		tagNotFoundHandler.addContent(new Line(
-				"logger.warn(\"Unhandled tag '{}' at location \\n{}\", tagName, reader.getLocation());"));
+				"LOGGER.warn(\"Unhandled tag '{}' at location \\n{}\", tagName, reader.getLocation());"));
 		tagNotFoundHandler
 				.addContent(new Line("XMLReaderUtils.getStringContentUntilElementEnd(reader);"));
 		mainSwitch.setDefault(tagNotFoundHandler);

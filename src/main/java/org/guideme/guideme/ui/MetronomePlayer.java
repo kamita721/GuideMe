@@ -30,13 +30,13 @@ public class MetronomePlayer implements Runnable {
 	private volatile boolean restart = false;
 
 	private Sequencer sequencer;
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private boolean isPlaying = true;
 	private boolean isPaused = false;
 
 	public void metronomeStart(int metronomeBPM, int instrument, int loops, int resolution,
 			String rhythm, int volume) {
-		logger.trace("MetronomePlayer Start ");
+		LOGGER.trace("MetronomePlayer Start ");
 		this.metronomeBPM = metronomeBPM;
 		this.instrument = instrument;
 		this.loops = loops;
@@ -52,7 +52,7 @@ public class MetronomePlayer implements Runnable {
 		if (sequencer != null && sequencer.isRunning()) {
 			sequencer.stop();
 		}
-		logger.trace("MetronomePlayer Stop ");
+		LOGGER.trace("MetronomePlayer Stop ");
 	}
 
 	public boolean isPaused() {
@@ -64,7 +64,7 @@ public class MetronomePlayer implements Runnable {
 			sequencer.stop();
 			isPaused = true;
 		}
-		logger.trace("MetronomePlayer Pause");
+		LOGGER.trace("MetronomePlayer Pause");
 	}
 
 	public void metronomeResume() {
@@ -72,19 +72,19 @@ public class MetronomePlayer implements Runnable {
 			sequencer.start();
 			isPaused = false;
 		}
-		logger.trace("MetronomePlayer Resume");
+		LOGGER.trace("MetronomePlayer Resume");
 	}
 
 	public void metronomeKill() {
 		// Kill the thread when we don't need it
 		sequencer.stop();
 		isPlaying = false;
-		logger.trace("MetronomePlayer Kill ");
+		LOGGER.trace("MetronomePlayer Kill ");
 	}
 
 	@Override
 	public void run() {
-		logger.trace("MetronomePlayer run start ");
+		LOGGER.trace("MetronomePlayer run start ");
 		try {
 			sequencer = MidiSystem.getSequencer();
 			if (!sequencer.isOpen()) {
@@ -96,7 +96,7 @@ public class MetronomePlayer implements Runnable {
 			int channel = 9; // Percussion track
 			while (isPlaying) {
 				if (restart) {
-					logger.trace("MetronomePlayer restart ");
+					LOGGER.trace("MetronomePlayer restart ");
 					restart = false;
 					sequencer.stop();
 					if (sequence != null) {
@@ -161,7 +161,7 @@ public class MetronomePlayer implements Runnable {
 
 					// if we have a number of loops do some additional processing
 					if (loops != 0) {
-						logger.debug("MetronomePlayer loops {}", loops);
+						LOGGER.debug("MetronomePlayer loops {}", loops);
 						if (loops > 0) {
 							sequencer.setLoopCount(loops);
 						} else {
@@ -176,17 +176,17 @@ public class MetronomePlayer implements Runnable {
 				}
 				Thread.sleep(10);
 			}
-			logger.trace("MetronomePlayer while Exit ");
+			LOGGER.trace("MetronomePlayer while Exit ");
 			if (sequencer.isRunning()) {
 				sequencer.stop();
 			}
 			sequencer.close();
 		} catch (InvalidMidiDataException | MidiUnavailableException e) {
-			logger.error("MetronomePlayer run ", e);
+			LOGGER.error("MetronomePlayer run ", e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
-		logger.trace("MetronomePlayer Exit ");
+		LOGGER.trace("MetronomePlayer Exit ");
 	}
 
 }

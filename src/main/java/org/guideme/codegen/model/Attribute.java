@@ -18,15 +18,14 @@ import org.guideme.guideme.util.StringUtil;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-public class Attribute implements Comparable<Attribute> {
-	private static Logger logger = LogManager.getLogger();
+public class Attribute {
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final String name;
 	private final String javaName;
 	private final Type type;
 	private final String defaultValue;
 	private final boolean isText;
-	private final int sortOrder;
 	
 	private boolean isThroughInterface = false;
 
@@ -105,7 +104,7 @@ public class Attribute implements Comparable<Attribute> {
 		isText = bIsText;
 		sortOrder = iSortOrder;
 
-		logger.info("Attribute {} initialized", name);
+		LOGGER.info("Attribute {} initialized", name);
 		allAttributes.put(name, this);
 	}
 
@@ -241,34 +240,6 @@ public class Attribute implements Comparable<Attribute> {
 		for (Method m : generateMethods()) {
 			cf.addMethod(m.asAbstract());
 		}
-	}
-
-	@Override
-	public int compareTo(Attribute o) {
-		/*
-		 * Because of the way the stream parser works, we need text attributes to be at
-		 * the end.
-		 */
-		if (this.isText && o.isText) {
-			/*
-			 * This will only happen if we try putting 2 text attributes on the same
-			 * element. Since this does not actually work, we take this oppurtunity to bail.
-			 */
-			throw new IllegalStateException("Multiple text attributes are being compared.");
-		}
-		
-		if (this.isText && !o.isText) {
-			return 1;
-		}
-		
-		if (!this.isText && o.isText) {
-			return -1;
-		}
-		
-		if(this.sortOrder != o.sortOrder) {
-			return this.sortOrder - o.sortOrder;
-		}
-		return this.name.compareTo(o.name);
 	}
 
 }

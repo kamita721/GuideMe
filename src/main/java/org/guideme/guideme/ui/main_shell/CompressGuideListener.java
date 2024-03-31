@@ -21,7 +21,7 @@ class CompressGuideListener extends SelectionAdapter {
 	// File CompressGuide from the menu
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		MainShell.logger.trace("Enter Menu CompressGuide");
+		MainShell.LOGGER.trace("Enter Menu CompressGuide");
 		// display a dialog to ask for a guide file to play
 		FileDialog dialog = new FileDialog(this.mainShell.shell, SWT.OPEN);
 		String[] filterNames = new String[] { "XML Files" };
@@ -41,7 +41,7 @@ class CompressGuideListener extends SelectionAdapter {
 			// populate the guide object
 			this.mainShell.comonFunctions.compressGuide(strFileToLoad);
 		}
-		MainShell.logger.trace("Exit Menu CompressGuide");
+		MainShell.LOGGER.trace("Exit Menu CompressGuide");
 		super.widgetSelected(e);
 	}
 

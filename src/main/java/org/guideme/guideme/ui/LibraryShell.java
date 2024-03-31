@@ -47,7 +47,7 @@ import org.guideme.guideme.ui.main_shell.MainShell;
 public class LibraryShell {
 	private Shell shell = null;
 	private Display myDisplay;
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private Font controlFont;
 	private MainShell myMainShell;
 	private int pageSize = 100;
@@ -75,7 +75,7 @@ public class LibraryShell {
 	private ArrayList<Image> thumbs = new ArrayList<>();
 
 	public Shell createShell(Display display, AppSettings pappSettings, MainShell mainShell) {
-		logger.trace("Enter createShell");
+		LOGGER.trace("Enter createShell");
 		try {
 			ResourceBundle displayText = pappSettings.getDisplayText();
 			sortByTitle = displayText.getString("FileLibrarySortTitle");
@@ -183,9 +183,9 @@ public class LibraryShell {
 			shell.addShellListener(new ShellCloseListener());
 			showGuides();
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage());
+			LOGGER.error(ex.getLocalizedMessage());
 		}
-		logger.trace("Exit createShell");
+		LOGGER.trace("Exit createShell");
 		return shell;
 	}
 
@@ -195,7 +195,7 @@ public class LibraryShell {
 		public void handleEvent(Event event) {
 			try {
 				if (event.display.getActiveShell().getText().equals(shell.getText())) {
-					logger.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation, event.stateMask);
+					LOGGER.trace("{}|{}|{}|{}", event.character, event.keyCode, event.keyLocation, event.stateMask);
 					if (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR) {
 						search();
 					}
@@ -235,7 +235,7 @@ public class LibraryShell {
 				}
 
 			} catch (Exception ex) {
-				logger.error(" hot key " + ex.getLocalizedMessage(), ex);
+				LOGGER.error(" hot key " + ex.getLocalizedMessage(), ex);
 			}
 		}
 	}
@@ -323,7 +323,7 @@ public class LibraryShell {
 				btnGuide.setData("Guide", guide.file);
 				btnGuide.setData("Author", guide.author);
 			} catch (Exception ex) {
-				logger.error(" showGuides " + ex.getLocalizedMessage());
+				LOGGER.error(" showGuides " + ex.getLocalizedMessage());
 			}
 		}
 		sc.setContent(composite);
@@ -405,7 +405,7 @@ public class LibraryShell {
 		public void widgetSelected(SelectionEvent event) {
 			if ((int) event.data == 1) {
 				String guideFile = (String) event.widget.getData("Guide");
-				logger.trace("Guide File: {}", guideFile);
+				LOGGER.trace("Guide File: {}", guideFile);
 				myMainShell.loadGuide(guideFile);
 				shell.close();
 			} else {
@@ -415,7 +415,7 @@ public class LibraryShell {
 					try {
 						Desktop.getDesktop().browse(new URI(author));
 					} catch (IOException | URISyntaxException e) {
-						logger.error("Error loading author URI '{}'", author, e);
+						LOGGER.error("Error loading author URI '{}'", author, e);
 					}
 				}
 			}
@@ -475,7 +475,7 @@ public class LibraryShell {
 			setPageSize();
 			showGuides();
 		} catch (Exception ex) {
-			logger.error(" SearchButtonListener " + ex.getLocalizedMessage());
+			LOGGER.error(" SearchButtonListener " + ex.getLocalizedMessage());
 		}
 	}
 
@@ -499,9 +499,9 @@ public class LibraryShell {
 					showGuides();
 				}
 			} catch (Exception ex) {
-				logger.error(" FolderButtonListener " + ex.getLocalizedMessage());
+				LOGGER.error(" FolderButtonListener " + ex.getLocalizedMessage());
 			}
-			logger.trace("Exit FolderButtonListener");
+			LOGGER.trace("Exit FolderButtonListener");
 		}
 
 	}
@@ -514,7 +514,7 @@ public class LibraryShell {
 				disposeThumbs();
 				controlFont.dispose();
 			} catch (Exception ex) {
-				logger.error("shellCloseListen ", ex);
+				LOGGER.error("shellCloseListen ", ex);
 			}
 			super.shellClosed(e);
 		}

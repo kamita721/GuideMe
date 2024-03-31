@@ -37,7 +37,7 @@ public class JscriptConsole implements Runnable {
 
 	private boolean shutdown = false;
 
-	private Logger logger = LogManager.getLogger();
+	private Logger LOGGER = LogManager.getLogger();
 
 	public JscriptConsole(Main debugger, ContextFactory cntxFact, Scriptable scope) {
 		this.cmdAccumulator = new StringBuilder();
@@ -92,7 +92,7 @@ public class JscriptConsole implements Runnable {
 			stderr.print(e.getMessage());
 		} catch (Exception e) {
 			stderr.print("Internal error: " + e.getMessage());
-			logger.warn("Internal error while evaluating console javascript: {}", str, e);
+			LOGGER.warn("Internal error while evaluating console javascript: {}", str, e);
 		} finally {
 			printPrompt();
 		}

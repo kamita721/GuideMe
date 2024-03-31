@@ -15,7 +15,7 @@ import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
 public class AudioPlayer implements Runnable {
 	// Class to play audio on a separate thread
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private MediaListener mediaListener = new MediaListener();
 	private MediaPlayer mediaPlayer;
 	private boolean isPlaying = true;
@@ -70,14 +70,14 @@ public class AudioPlayer implements Runnable {
 		if (mediaPlayer != null && mediaPlayer.status().isPlaying()) {
 			mediaPlayer.controls().pause();
 		}
-		logger.trace("AudioPlayer Pause");
+		LOGGER.trace("AudioPlayer Pause");
 	}
 
 	public void audioResume() {
 		if (mediaPlayer != null && mediaPlayer.status().isPlayable()) {
 			mediaPlayer.controls().play();
 		}
-		logger.trace("AudioPlayer Resume");
+		LOGGER.trace("AudioPlayer Resume");
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class AudioPlayer implements Runnable {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		} catch (Exception e) {
-			logger.error("AudioPlayer run ", e);
+			LOGGER.error("AudioPlayer run ", e);
 		}
 		if (mediaPlayer != null) {
 			if (mediaPlayer.status().isPlaying()) {
@@ -127,7 +127,7 @@ public class AudioPlayer implements Runnable {
 		@Override
 		public void stopped(MediaPlayer mediaPlayer) {
 			super.stopped(mediaPlayer);
-			logger.debug("Stopped ");
+			LOGGER.debug("Stopped ");
 			Display display = Display.getDefault();
 			// listener to handle displaying a new page when the audio ends
 			if (isPlaying) {

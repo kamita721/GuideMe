@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class PageFilter {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final Random random;
     private final Pattern rangePattern = Pattern.compile("\\((\\d+)\\.\\.(\\d+)\\)");
@@ -24,19 +24,19 @@ public class PageFilter {
     public List<String> getAllMatchingPages(String target, Guide guide, String chapter) {
         boolean usingAbsoluteMatch = false;
         Stream<Map.Entry<String, Page>> pageStream = guide.getChapters().get(chapter).getPages().entrySet().stream();
-        logger.debug("filtering {}", target);
+        LOGGER.debug("filtering {}", target);
 
         if (target.startsWith("regex:")) { // Handle a regex target
-            logger.debug("using regex filters");
+            LOGGER.debug("using regex filters");
             pageStream = filterRegex(target.substring(6), pageStream);
         } else if (rangePattern.asPredicate().test(target)) { // Filter ranges
-            logger.debug("using range filters");
+            LOGGER.debug("using range filters");
             pageStream = filterRanges(target, pageStream);
         } else if (target.contains("*")) { // Filter wildcards
-            logger.debug("using wildcard filters");
+            LOGGER.debug("using wildcard filters");
             pageStream = filterRegex(convertWildcardsToRegex(target), pageStream);
         } else { // Absolute match
-            logger.debug("using absolute match");
+            LOGGER.debug("using absolute match");
             usingAbsoluteMatch = true;
             pageStream = pageStream.filter(m -> m.getKey().equals(target));
         }
@@ -48,7 +48,7 @@ public class PageFilter {
 
         // Return list of page IDs
         List<String> results = pageStream.map(Map.Entry::getKey).toList();
-        logger.debug("filtered to {} possibilities", results.size());
+        LOGGER.debug("filtered to {} possibilities", results.size());
         return results;
     }
 
@@ -56,18 +56,18 @@ public class PageFilter {
         List<String> possibilities = getAllMatchingPages(target, guide, chapter);
 
         if (possibilities.isEmpty()) {
-            logger.warn("empty collection, returning null");
+            LOGGER.warn("empty collection, returning null");
             return null;
         }
 
         if (possibilities.size() == 1) {
             String chosenPage = possibilities.get(0);
-            logger.debug("returning only item in page list: {}", chosenPage);
+            LOGGER.debug("returning only item in page list: {}", chosenPage);
             return chosenPage;
         }
 
         String chosenPage = possibilities.get(random.nextInt(possibilities.size()));
-        logger.debug("choosing {} from {} possibilities", chosenPage, possibilities.size());
+        LOGGER.debug("choosing {} from {} possibilities", chosenPage, possibilities.size());
 
         return chosenPage;
     }
@@ -78,16 +78,16 @@ public class PageFilter {
             pattern = Pattern.compile(regex);
             return pageStream.filter(m -> pattern.matcher(m.getKey()).matches());
         } catch (Exception e) {
-            logger.error("failed to compile regex for pattern {}", regex);
+            LOGGER.error("failed to compile regex for pattern {}", regex);
             return pageStream.filter(m -> false); // Apply a filter that will fail everything
         }
     }
 
     private Stream<Map.Entry<String, Page>> filterRanges(String target, Stream<Map.Entry<String, Page>> pageStream) {
-        logger.debug("processing ranges on {}", target);
+        LOGGER.debug("processing ranges on {}", target);
 
         HashSet<String> matchList = convertRangeToList(target,new HashSet<>());
-        logger.debug("ranges expanded to {} possibilities", matchList.size());
+        LOGGER.debug("ranges expanded to {} possibilities", matchList.size());
 
         return pageStream.filter(m -> matchList.contains(m.getKey()));
     }
@@ -97,7 +97,7 @@ public class PageFilter {
 
         if (matcher.find()) {
             String rangeString = matcher.group(0);
-            logger.debug("iterating range {} on {}", rangeString, target);
+            LOGGER.debug("iterating range {} on {}", rangeString, target);
 
             int start = Integer.parseInt(matcher.group(1));
             int end = Integer.parseInt(matcher.group(2));

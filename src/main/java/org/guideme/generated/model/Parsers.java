@@ -24,7 +24,7 @@ public class Parsers  {
 	}
 
 	public static void parseElement(ParserState parseState) throws XMLStreamException,IOException {
-		final Logger logger = LogManager.getLogger();
+		final Logger LOGGER = LogManager.getLogger();
 		final XMLStreamReader reader = parseState.getReader();
 		final Chapter chapter = parseState.getChapter();
 		final GuideSettings guideSettings = parseState.getGuideSettings();
@@ -116,7 +116,7 @@ public class Parsers  {
 		case "NOVALUE":
 			break;
 			default:
-			logger.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
+			LOGGER.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
 			XMLReaderUtils.getStringContentUntilElementEnd(reader);
 			break;
 		}

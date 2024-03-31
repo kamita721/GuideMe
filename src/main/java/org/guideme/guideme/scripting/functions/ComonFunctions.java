@@ -86,7 +86,7 @@ public class ComonFunctions {
 	 * 
 	 */
 	private SecureRandom mRandom = new SecureRandom();
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private XPathFactory factory = XPathFactory.newInstance();
 	private XPath xpath = factory.newXPath();
 	private static final String VERSION = "0.4.5";
@@ -147,7 +147,7 @@ public class ComonFunctions {
 				icanShow = false;
 			}
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 		return icanShow;
 	}
@@ -185,7 +185,7 @@ public class ComonFunctions {
 				}
 			}
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 		return icanShow;
 	}
@@ -235,7 +235,7 @@ public class ComonFunctions {
 				blnReturn = setList.contains(condition);
 			}
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+			LOGGER.error(e.getLocalizedMessage(), e);
 		}
 
 		return blnReturn;
@@ -278,7 +278,7 @@ public class ComonFunctions {
 				blnReturn = !setList.contains(condition);
 			}
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+			LOGGER.error(e.getLocalizedMessage(), e);
 		}
 
 		return blnReturn;
@@ -297,7 +297,7 @@ public class ComonFunctions {
 				}
 			}
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+			LOGGER.error(e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -312,7 +312,7 @@ public class ComonFunctions {
 			}
 
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+			LOGGER.error(e.getLocalizedMessage(), e);
 		}
 		return strFlags.toString();
 	}
@@ -329,7 +329,7 @@ public class ComonFunctions {
 				}
 			}
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+			LOGGER.error(e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -369,7 +369,7 @@ public class ComonFunctions {
 		} catch (NumberFormatException en) {
 			intRandom = 0;
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+			LOGGER.error(e.getLocalizedMessage(), e);
 		}
 
 		return intRandom;
@@ -407,7 +407,7 @@ public class ComonFunctions {
 				}
 			}
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+			LOGGER.error(e.getLocalizedMessage(), e);
 		}
 		return intTime;
 	}
@@ -421,7 +421,7 @@ public class ComonFunctions {
 			}
 			return elToSet;
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 			return null;
 		}
 	}
@@ -438,7 +438,7 @@ public class ComonFunctions {
 			}
 			return elToSet;
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 			return null;
 		}
 	}
@@ -451,7 +451,7 @@ public class ComonFunctions {
 			parentNode.appendChild(elToSet);
 			return elToSet;
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 			return null;
 		}
 	}
@@ -471,7 +471,7 @@ public class ComonFunctions {
 			byte[] encoded = Files.readAllBytes(Paths.get(path));
 			returnVal = encoding.decode(ByteBuffer.wrap(encoded)).toString();
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 		return returnVal;
 	}
@@ -496,7 +496,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = fixSeparator(fileName, fileSeparator);
-		logger.debug("CommonFunctions fileExists getMediaFullPath {} ", media);
+		LOGGER.debug("CommonFunctions fileExists getMediaFullPath {} ", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -534,7 +534,7 @@ public class ComonFunctions {
 			encodeSet = StandardCharsets.UTF_16LE;
 			break;
 		default:
-			logger.warn("Unrecognized character encoding '{}', falling back to UTF-8", encoding);
+			LOGGER.warn("Unrecognized character encoding '{}', falling back to UTF-8", encoding);
 			encodeSet = StandardCharsets.UTF_8;
 			break;
 
@@ -544,7 +544,7 @@ public class ComonFunctions {
 		try {
 			fileToReturn = readFile(fileName, encodeSet);
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 
 		return fileToReturn;
@@ -611,7 +611,7 @@ public class ComonFunctions {
 			List<String> stringList = Files.readAllLines(filePath, encodeSet);
 			retrn = stringList.toArray(new String[] {});
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 		return retrn;
 	}
@@ -640,7 +640,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = fixSeparator(fileName, fileSeparator);
-		logger.debug("CommonFunctions fileExists getMediaFullPath {}", media);
+		LOGGER.debug("CommonFunctions fileExists getMediaFullPath {}", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -661,7 +661,7 @@ public class ComonFunctions {
 				new OutputStreamWriter(new FileOutputStream(fileName), encoding))) {
 			out.write(contents);
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 
 	}
@@ -686,7 +686,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = fixSeparator(fileName, fileSeparator);
-		logger.debug("CommonFunctions fileExists getMediaFullPath {}", media);
+		LOGGER.debug("CommonFunctions fileExists getMediaFullPath {}", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -709,7 +709,7 @@ public class ComonFunctions {
 				out.write(line + "\r\n");
 			}
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -750,7 +750,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = fixSeparator(fileName, fileSeparator);
-		logger.debug("CommonFunctions fileExists getMediaFullPath {}", media);
+		LOGGER.debug("CommonFunctions fileExists getMediaFullPath {}", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -776,7 +776,7 @@ public class ComonFunctions {
 				fileexists = true;
 			}
 		}
-		logger.debug("ComonFunctions FileExists check {} {}", fileName, fileexists);
+		LOGGER.debug("ComonFunctions FileExists check {} {}", fileName, fileexists);
 		return fileexists;
 	}
 
@@ -828,7 +828,7 @@ public class ComonFunctions {
 				returnVal.append(objPassed);
 			}
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		} finally {
 			Context.exit();
 		}
@@ -857,7 +857,7 @@ public class ComonFunctions {
 
 		String media = fixSeparator(folderName, fileSeparator);
 		folderName = dataDirectory + fileSeparator + media;
-		logger.debug("CommonFunctions ListSubFolders full Path {}", folderName);
+		LOGGER.debug("CommonFunctions ListSubFolders full Path {}", folderName);
 		File file = new File(folderName);
 		String[] directories = file.list((current, name) -> new File(current, name).isDirectory());
 
@@ -885,7 +885,7 @@ public class ComonFunctions {
 		}
 
 		folders = builder.toString();
-		logger.debug("CommonFunctions ListSubFolders returned {}", folders);
+		LOGGER.debug("CommonFunctions ListSubFolders returned {}", folders);
 		return folders;
 
 	}
@@ -908,7 +908,7 @@ public class ComonFunctions {
 
 		String media = fixSeparator(folderName, fileSeparator);
 		folderName = dataDirectory + fileSeparator + media;
-		logger.debug("CommonFunctions ListFiles full Path {}", folderName);
+		LOGGER.debug("CommonFunctions ListFiles full Path {}", folderName);
 		File file = new File(folderName);
 		String[] filesList = file.list(new FilenameFilter() {
 			@Override
@@ -927,7 +927,7 @@ public class ComonFunctions {
 		}
 
 		files = builder.toString();
-		logger.debug("CommonFunctions ListFiles returned {}", files);
+		LOGGER.debug("CommonFunctions ListFiles returned {}", files);
 		return files;
 
 	}
@@ -951,11 +951,11 @@ public class ComonFunctions {
 			try {
 				Files.createDirectories(thumbsDir);
 			} catch (IOException ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
+				LOGGER.error(ex.getLocalizedMessage(), ex);
 			}
 		}
 
-		logger.debug("CommonFunctions ListGuides {}", dataDirectory);
+		LOGGER.debug("CommonFunctions ListGuides {}", dataDirectory);
 		File file = new File(dataDirectory);
 		String[] filesList = file
 				.list((current, name) -> new File(current, name).isFile() && name.endsWith(".xml"));
@@ -1063,7 +1063,7 @@ public class ComonFunctions {
 						addGuide = true;
 					}
 				} catch (Exception ex) {
-					logger.error("ListGuides:" + errorFile + " " + ex.getLocalizedMessage(), ex);
+					LOGGER.error("ListGuides:" + errorFile + " " + ex.getLocalizedMessage(), ex);
 				}
 			} else {
 				image = tumbFileName;
@@ -1083,7 +1083,7 @@ public class ComonFunctions {
 			}
 		}
 
-		logger.debug(() -> "CommonFunctions ListGuides returned " + getVarAsString(filesList));
+		LOGGER.debug(() -> "CommonFunctions ListGuides returned " + getVarAsString(filesList));
 		return guides;
 
 	}
@@ -1092,7 +1092,7 @@ public class ComonFunctions {
 		try (BufferedWriter out = new BufferedWriter(new FileWriter(fileName))) {
 			out.write(contents); // Replace with the string
 		} catch (IOException ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 
 	}
@@ -1133,7 +1133,7 @@ public class ComonFunctions {
 			File[] children = f.listFiles(wildCardfilter);
 			// return a random image
 			int intFile = comonFunctions.getRandom(0, (children.length - 1));
-			logger.debug("displayPage Random Media Index {}", intFile);
+			LOGGER.debug("displayPage Random Media Index {}", intFile);
 			if (strSubDir.equals("")) {
 				if (fullPath) {
 					mediaFound = dataDirectory + fileSeparator + children[intFile].getName();
@@ -1148,7 +1148,7 @@ public class ComonFunctions {
 					mediaFound = strSubDir + fileSeparator + children[intFile].getName();
 				}
 			}
-			logger.debug("GetRandomFile Random Media Chosen {}", mediaFound);
+			LOGGER.debug("GetRandomFile Random Media Chosen {}", mediaFound);
 		}
 		return mediaFound;
 
@@ -1169,7 +1169,7 @@ public class ComonFunctions {
 			try {
 				// ignore hidden files and directories
 				if (f.isHidden() || f.isDirectory() || f.getName().equalsIgnoreCase("thumbs.db")) {
-					logger.debug(() -> "WildCardFileFilter No Match {}" + f.getName());
+					LOGGER.debug(() -> "WildCardFileFilter No Match {}" + f.getName());
 					return false;
 				}
 				// convert the regular patern to regex
@@ -1180,14 +1180,14 @@ public class ComonFunctions {
 				strPattern = strPattern.replace("*", ".*");
 				// test for a match
 				if (!text.matches(strPattern)) {
-					logger.debug("WildCardFileFilter No Match {}", strFile);
+					LOGGER.debug("WildCardFileFilter No Match {}", strFile);
 					return false;
 				}
 
-				logger.debug("WildCardFileFilter Match {}", strFile);
+				LOGGER.debug("WildCardFileFilter Match {}", strFile);
 				return true;
 			} catch (Exception e) {
-				logger.error("WildCardFileFilter.accept Exception ", e);
+				LOGGER.error("WildCardFileFilter.accept Exception ", e);
 				return false;
 			}
 		}
@@ -1332,7 +1332,7 @@ public class ComonFunctions {
 		dataDirectory = dataDirectory + fileSeparator + mediaDirectory;
 
 		String media = comonFunctions.fixSeparator(mediaFile, fileSeparator);
-		logger.debug("displayPage getMediaFullPath {}", media);
+		LOGGER.debug("displayPage getMediaFullPath {}", media);
 		int intSubDir = media.lastIndexOf(fileSeparator);
 		String strSubDir;
 		if (intSubDir > -1) {
@@ -1353,7 +1353,7 @@ public class ComonFunctions {
 			} else {
 				mediaFound = dataDirectory + fileSeparator + strSubDir + fileSeparator + media;
 			}
-			logger.debug("displayPage Non Random Media {}", mediaFound);
+			LOGGER.debug("displayPage Non Random Media {}", mediaFound);
 		}
 
 		return mediaFound;
@@ -1373,7 +1373,7 @@ public class ComonFunctions {
 					retString = retString.replace("<span>" + s + "</span>", varValue);
 				}
 			} catch (Exception e) {
-				logger.error("displayPage BrwsText ScriptVariables Exception " + s + " "
+				LOGGER.error("displayPage BrwsText ScriptVariables Exception " + s + " "
 						+ e.getLocalizedMessage(), e);
 			}
 		}
@@ -1394,7 +1394,7 @@ public class ComonFunctions {
 					retString = retString.replace("<span>" + s + "</span>", numberRet);
 				}
 			} catch (Exception e) {
-				logger.error("displayPage BrwsText String Guide Preferences Exception " + s + " "
+				LOGGER.error("displayPage BrwsText String Guide Preferences Exception " + s + " "
 						+ e.getLocalizedMessage(), e);
 			}
 		}
@@ -1405,7 +1405,7 @@ public class ComonFunctions {
 			try {
 				retString = retString.replace("<span>" + s + "</span>", userSettings.getPref(s));
 			} catch (Exception e) {
-				logger.error("displayPage BrwsText String User Preferences Exception " + s + " "
+				LOGGER.error("displayPage BrwsText String User Preferences Exception " + s + " "
 						+ e.getLocalizedMessage(), e);
 			}
 		}
@@ -1417,7 +1417,7 @@ public class ComonFunctions {
 				retString = retString.replace("<span>" + s + "</span>",
 						formatNumPref(userSettings.getPrefNumber(s)));
 			} catch (Exception e) {
-				logger.error("displayPage BrwsText Number User Preferences Exception " + s + " "
+				LOGGER.error("displayPage BrwsText Number User Preferences Exception " + s + " "
 						+ e.getLocalizedMessage(), e);
 			}
 		}
@@ -1442,11 +1442,11 @@ public class ComonFunctions {
 						guidesettings.setScriptVar(parts[0], parts[1]);
 					}
 				} catch (Exception e) {
-					logger.error("scriptVar can't set " + var + " " + e.getLocalizedMessage(), e);
+					LOGGER.error("scriptVar can't set " + var + " " + e.getLocalizedMessage(), e);
 				}
 			}
 		} catch (Exception ex) {
-			logger.error("scriptVar processSrciptVars " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("scriptVar processSrciptVars " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -1456,7 +1456,7 @@ public class ComonFunctions {
 			String file = readFile(path, StandardCharsets.UTF_8);
 			found = searchText(searchText, file);
 		} catch (Exception ex) {
-			logger.error("searchGuide " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("searchGuide " + ex.getLocalizedMessage(), ex);
 		}
 		return found;
 	}
@@ -1490,7 +1490,7 @@ public class ComonFunctions {
 			}
 			found = include && !exclude;
 		} catch (Exception ex) {
-			logger.error("searchText " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("searchText " + ex.getLocalizedMessage(), ex);
 		}
 		return found;
 	}
@@ -1511,7 +1511,7 @@ public class ComonFunctions {
 					0, 0, width, height);
 			gc.dispose();
 		} catch (Exception ex) {
-			logger.error("cropImageWidth " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("cropImageWidth " + ex.getLocalizedMessage(), ex);
 		}
 		return newImage;
 	}
@@ -1542,7 +1542,7 @@ public class ComonFunctions {
 				}
 			}
 		} catch (Exception ex) {
-			logger.error("splitButtonText " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("splitButtonText " + ex.getLocalizedMessage(), ex);
 		}
 		return splitText.toString();
 	}
@@ -1566,7 +1566,7 @@ public class ComonFunctions {
 			compressedFile.addFile(guideFile, zipParam);
 			compressedFile.addFolder(mediaFolder, zipParam);
 		} catch (ZipException e) {
-			logger.error("CompressGuide " + e.getLocalizedMessage(), e);
+			LOGGER.error("CompressGuide " + e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -1580,7 +1580,7 @@ public class ComonFunctions {
 			}
 			zipFile.extractAll(appSettings.getDataDirectory());
 		} catch (ZipException e) {
-			logger.error("UnCompressGuide " + e.getLocalizedMessage(), e);
+			LOGGER.error("UnCompressGuide " + e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -1621,7 +1621,7 @@ public class ComonFunctions {
 				streamReader.next();
 			}
 		} catch (Exception e) {
-			logger.error("GetMediaDirFromGuide " + e.getLocalizedMessage(), e);
+			LOGGER.error("GetMediaDirFromGuide " + e.getLocalizedMessage(), e);
 		}
 		return media;
 	}
@@ -1751,28 +1751,28 @@ public class ComonFunctions {
 
 			switch (strType) {
 			case "Scope":
-				logger.trace("GuideSettings getSavedObject scope");
+				LOGGER.trace("GuideSettings getSavedObject scope");
 				decodedBytes = Base64.decodeBase64(attribute.getBytes());
 				try (ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
 						ScriptableInputStream sis = new ScriptableInputStream(bis, scope)) {
 					return sis.readObject();
 				}
 			case "org.mozilla.javascript.NativeArray":
-				logger.trace("GuideSettings getSavedObject NativeArray");
+				LOGGER.trace("GuideSettings getSavedObject NativeArray");
 				decodedBytes = Base64.decodeBase64(attribute.getBytes());
 				try (ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
 						ScriptableInputStream sis = new ScriptableInputStream(bis, scope)) {
 					return ScriptValueConverter.wrapValue(scope, sis.readObject());
 				}
 			case "org.mozilla.javascript.NativeObject":
-				logger.trace("GuideSettings getSavedObject NativeObject");
+				LOGGER.trace("GuideSettings getSavedObject NativeObject");
 				decodedBytes = Base64.decodeBase64(attribute.getBytes());
 				try (ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
 						ScriptableInputStream sis = new ScriptableInputStream(bis, scope)) {
 					return sis.readObject();
 				}
 			case "org.mozilla.javascript.NativeDate":
-				logger.trace("GuideSettings getSavedObject NativeDate");
+				LOGGER.trace("GuideSettings getSavedObject NativeDate");
 				decodedBytes = Base64.decodeBase64(attribute.getBytes());
 				try (ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
 						ScriptableInputStream sis = new ScriptableInputStream(bis, scope)) {
@@ -1780,11 +1780,11 @@ public class ComonFunctions {
 				}
 
 			case "java.lang.Double":
-				logger.trace("GuideSettings getSavedObject Double");
+				LOGGER.trace("GuideSettings getSavedObject Double");
 				Double restoredDouble = Double.parseDouble(attribute);
 				return restoredDouble;
 			case "java.lang.Boolean":
-				logger.trace("GuideSettings getSavedObject Boolean");
+				LOGGER.trace("GuideSettings getSavedObject Boolean");
 				Boolean restoredBoolean = Boolean.parseBoolean(attribute);
 				return restoredBoolean;
 			default:
@@ -1792,7 +1792,7 @@ public class ComonFunctions {
 			}
 
 		} catch (IOException | ClassNotFoundException e) {
-			logger.warn("Error getting saved object of type {}: '{}'", strType, attribute, e);
+			LOGGER.warn("Error getting saved object of type {}: '{}'", strType, attribute, e);
 			return null;
 		}
 	}
@@ -1812,7 +1812,7 @@ public class ComonFunctions {
 					cntx.getWrapFactory().setJavaPrimitiveWrap(false);
 					String fromApacheBytes = "";
 					if (strType.equals("Scope")) {
-						logger.trace("GuideSettings createSaveObject Scope");
+						LOGGER.trace("GuideSettings createSaveObject Scope");
 						Scriptable saveScope = (Scriptable) value;
 						ByteArrayOutputStream bos = new ByteArrayOutputStream();
 						ScriptableOutputStream os = new ScriptableOutputStream(bos, scope);
@@ -1823,7 +1823,7 @@ public class ComonFunctions {
 						os.close();
 					}
 					if (strType.equals("org.mozilla.javascript.NativeArray")) {
-						logger.trace("GuideSettings createSaveObject NativeArray");
+						LOGGER.trace("GuideSettings createSaveObject NativeArray");
 						NativeArray nativeValue = (NativeArray) value;
 						Scriptable localScope = nativeValue.getParentScope();
 						ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -1835,7 +1835,7 @@ public class ComonFunctions {
 						os.close();
 					}
 					if (strType.equals("org.mozilla.javascript.NativeObject")) {
-						logger.trace("GuideSettings createSaveObject NativeObject");
+						LOGGER.trace("GuideSettings createSaveObject NativeObject");
 						NativeObject nativeValue = (NativeObject) value;
 						Scriptable localScope = nativeValue.getParentScope();
 						String type = localScope.getClass().getName();
@@ -1852,7 +1852,7 @@ public class ComonFunctions {
 						os.close();
 					}
 					if (strType.equals("org.mozilla.javascript.NativeDate")) {
-						logger.trace("GuideSettings createSaveObject NativeDate");
+						LOGGER.trace("GuideSettings createSaveObject NativeDate");
 						NativeDate nativeValue = (NativeDate) value;
 						Scriptable localScope = nativeValue.getParentScope();
 						ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -1865,7 +1865,7 @@ public class ComonFunctions {
 					}
 					returnVal = fromApacheBytes;
 				} catch (Exception ex) {
-					logger.error(ex.getLocalizedMessage(), ex);
+					LOGGER.error(ex.getLocalizedMessage(), ex);
 					returnVal = "ignore";
 				}
 				Context.exit();

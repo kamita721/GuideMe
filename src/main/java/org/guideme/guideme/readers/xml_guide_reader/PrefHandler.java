@@ -6,7 +6,7 @@ import org.guideme.generated.model.Pref;
 import org.guideme.guideme.settings.GuideSettings;
 
 public class PrefHandler {
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	
 	private PrefHandler() {
 	}
@@ -23,7 +23,7 @@ public class PrefHandler {
 		try {
 			sortOrder = Integer.parseInt(order);
 		} catch (NumberFormatException ex) {
-			logger.warn("Malformed sortOrder '{}' in pref field of guide xml.", order);
+			LOGGER.warn("Malformed sortOrder '{}' in pref field of guide xml.", order);
 			sortOrder = 0;
 		}
 		if (!guideSettings.keyExists(key, type)) {

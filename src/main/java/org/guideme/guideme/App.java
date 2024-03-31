@@ -25,14 +25,14 @@ public class App {
 	 * This is where it all starts from main will create and display the first shell
 	 * (window)
 	 */
-	private static final Logger logger = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static void main(String[] args) throws IOException {
 
 		System.setProperty("org.eclipse.swt.browser.IEVersion", "11000");
 
-		logger.trace("Enter main");
-		logger.error("GuideMe Version - " + ComonFunctions.getVersion());
+		LOGGER.trace("Enter main");
+		LOGGER.error("GuideMe Version - " + ComonFunctions.getVersion());
 		// Sleak will help diagnose SWT memory leaks
 		// if you set this to true you will get an additional window
 		// that allows you to track resources that are created and not destroyed
@@ -57,7 +57,7 @@ public class App {
 				try {
 					java.nio.file.Files.delete(toDelete);
 				} catch (IOException e) {
-					logger.error("Failed to delete file: " + toDelete, e);
+					LOGGER.error("Failed to delete file: " + toDelete, e);
 				}
 			});
 		}
@@ -78,7 +78,7 @@ public class App {
 				String value = String.valueOf(properties.get(key));
 				// write out at error level even though it is a debug message
 				// so we can turn it on, on a users machine
-				logger.error("{} - {}", key, value);
+				LOGGER.error("{} - {}", key, value);
 			}
 		}
 
@@ -97,15 +97,15 @@ public class App {
 
 		NativeDiscovery nativeDiscovery = new NativeDiscovery();
 		boolean vlcFound = nativeDiscovery.discover();
-		logger.trace("test for vlc: {}", vlcFound);
+		LOGGER.trace("test for vlc: {}", vlcFound);
 
 		appSettings.setMonitorChanging(false);
-		logger.trace("create main shell");
+		LOGGER.trace("create main shell");
 		MainShell mainShell = new MainShell();
 		keylistener.setMainShell(mainShell);
 		mainShell.run(display);
 		display.dispose();
 
-		logger.trace("Exit main");
+		LOGGER.trace("Exit main");
 	}
 }

@@ -217,9 +217,9 @@ public class Page implements FlagSet, Filterable  {
 		return ifNotSet;
 	}
 	public Page(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Page")){
-			logger.warn("Error reading state file. Expected element 'Page', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Page', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -255,7 +255,7 @@ public class Page implements FlagSet, Filterable  {
 				unSet = ModelConverters.fromString(attrValue, unSet);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

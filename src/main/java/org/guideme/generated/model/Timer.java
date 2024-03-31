@@ -100,9 +100,9 @@ public class Timer implements FlagSet, Filterable  {
 		this.ifSet = ifSet;
 	}
 	public Timer(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Timer")){
-			logger.warn("Error reading state file. Expected element 'Timer', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Timer', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -150,7 +150,7 @@ public class Timer implements FlagSet, Filterable  {
 				text = ModelConverters.fromString(attrValue, text);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

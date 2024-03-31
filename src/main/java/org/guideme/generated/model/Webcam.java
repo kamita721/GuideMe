@@ -51,9 +51,9 @@ public class Webcam implements Filterable  {
 		this.ifAfter = ifAfter;
 	}
 	public Webcam(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Webcam")){
-			logger.warn("Error reading state file. Expected element 'Webcam', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Webcam', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -74,7 +74,7 @@ public class Webcam implements Filterable  {
 				ifAfter = ModelConverters.fromString(attrValue, ifAfter);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

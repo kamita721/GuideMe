@@ -43,7 +43,7 @@ public class DebugShell {
 	private ComonFunctions comonFuctions;
 	private Shell shell = null;
 	private Display myDisplay;
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private Combo pagesCombo;
 	private Guide guide;
 	private Text txtText;
@@ -74,7 +74,7 @@ public class DebugShell {
 	}
 
 	public void createShell(final Display display, MainShell mainshell) {
-		logger.trace("Enter createShell");
+		LOGGER.trace("Enter createShell");
 		keepShellOpen = true;
 		comonFuctions = ComonFunctions.getComonFunctions();
 		AppSettings appSettings = AppSettings.getAppSettings();
@@ -252,7 +252,7 @@ public class DebugShell {
 		shell.layout();
 		shell.open();
 		shell.setVisible(false);
-		logger.trace("Exit createShell");
+		LOGGER.trace("Exit createShell");
 	}
 
 	class VarTableListener extends SelectionAdapter {
@@ -277,7 +277,7 @@ public class DebugShell {
 				strPage = pagesCombo.getItem(pagesCombo.getSelectionIndex());
 				mainShell.displayPage(strPage);
 			} catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
+				LOGGER.error(ex.getLocalizedMessage(), ex);
 			}
 		}
 
@@ -324,7 +324,7 @@ public class DebugShell {
 				}
 
 			} catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
+				LOGGER.error(ex.getLocalizedMessage(), ex);
 			}
 		}
 
@@ -339,7 +339,7 @@ public class DebugShell {
 				strPage = guide.getSettings().getCurrPage();
 				setPage(strPage, true);
 			} catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
+				LOGGER.error(ex.getLocalizedMessage(), ex);
 			}
 		}
 
@@ -354,7 +354,7 @@ public class DebugShell {
 				strPage = pagesCombo.getItem(pagesCombo.getSelectionIndex());
 				setPage(strPage, false);
 			} catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
+				LOGGER.error(ex.getLocalizedMessage(), ex);
 			}
 		}
 
@@ -364,7 +364,7 @@ public class DebugShell {
 		try {
 			this.pagesCombo.removeAll();
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -372,7 +372,7 @@ public class DebugShell {
 		try {
 			this.pagesCombo.add(page);
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -470,7 +470,7 @@ public class DebugShell {
 			shell.layout();
 			varScrlComp.setMinSize(varComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -479,7 +479,7 @@ public class DebugShell {
 			keepShellOpen = false;
 			shell.close();
 		} catch (Exception ex) {
-			logger.error("close shell " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("close shell " + ex.getLocalizedMessage(), ex);
 		}
 	}
 

@@ -22,7 +22,7 @@ class FileLibraryListener extends SelectionAdapter {
 	@Override
 	public void widgetSelected(SelectionEvent e) {
 		try {
-			MainShell.logger.trace("Enter FileLibraryListener");
+			MainShell.LOGGER.trace("Enter FileLibraryListener");
 			// Display a modal shell for the guide specific preferences
 			Shell libShell = new LibraryShell().createShell(mainShell.myDisplay, mainShell.appSettings, mainShell);
 			libShell.open();
@@ -31,7 +31,7 @@ class FileLibraryListener extends SelectionAdapter {
 					mainShell.myDisplay.sleep();
 			}
 		} catch (Exception ex) {
-			MainShell.logger.error(" FileLibraryListener " + ex.getLocalizedMessage());
+			MainShell.LOGGER.error(" FileLibraryListener " + ex.getLocalizedMessage());
 			mainShell.inPrefShell = false;
 		}
 		super.widgetSelected(e);

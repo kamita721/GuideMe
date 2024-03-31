@@ -21,7 +21,7 @@ class FileLoadListener extends SelectionAdapter {
 	// File Load from the menu
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		MainShell.logger.trace("Enter Menu Load");
+		MainShell.LOGGER.trace("Enter Menu Load");
 		// display a dialog to ask for a guide file to play
 		FileDialog dialog = new FileDialog(this.mainShell.shell, SWT.OPEN);
 		// TODO Need to change this here to implement the new html
@@ -49,7 +49,7 @@ class FileLoadListener extends SelectionAdapter {
 			mainShell.debugShell.clearJConsole();
 		}
 
-		MainShell.logger.trace("Exit Menu Load");
+		MainShell.LOGGER.trace("Exit Menu Load");
 		super.widgetSelected(e);
 	}
 

@@ -127,9 +127,9 @@ public class Delay implements FlagSet, Filterable  {
 		this.ifBefore = ifBefore;
 	}
 	public Delay(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Delay")){
-			logger.warn("Error reading state file. Expected element 'Delay', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Delay', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -174,7 +174,7 @@ public class Delay implements FlagSet, Filterable  {
 				target = ModelConverters.fromString(attrValue, target);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

@@ -22,7 +22,7 @@ class MediaListener extends MediaPlayerEventAdapter {
 	@Override
 	public void finished(MediaPlayer mediaPlayer) {
 		// TODO, this should be displaying what media finished
-		MainShell.logger.debug(() -> "MediaListener finished " + mediaPlayer.media().info().mrl());
+		MainShell.LOGGER.debug(() -> "MediaListener finished " + mediaPlayer.media().info().mrl());
 		super.finished(mediaPlayer);
 		try {
 			if (!mainShell.videoTarget.equals("")) {
@@ -32,7 +32,7 @@ class MediaListener extends MediaPlayerEventAdapter {
 					mainShell.webcamPanel.setVisible(false);
 					mainShell.leftPaneBrowser.setVisible(true);
 					mainShell.leftFrame.layout(true);
-					MainShell.logger.debug("MediaListener Video Run: " + mainShell.videoJscript
+					MainShell.LOGGER.debug("MediaListener Video Run: " + mainShell.videoJscript
 							+ " videoTarget: " + mainShell.videoTarget);
 					mainShell.runJscript(mainShell.videoJscript, false);
 					mainShell.displayPage(mainShell.videoTarget);
@@ -42,13 +42,13 @@ class MediaListener extends MediaPlayerEventAdapter {
 					mainShell.guideSettings);
 
 		} catch (Exception ex) {
-			MainShell.logger.error(" MediaListener finished " + ex.getLocalizedMessage(), ex);
+			MainShell.LOGGER.error(" MediaListener finished " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
 	@Override
 	public void error(MediaPlayer mediaPlayer) {
-		MainShell.logger.error("MediaPlayer error ");
+		MainShell.LOGGER.error("MediaPlayer error ");
 		super.error(mediaPlayer);
 	}
 }

@@ -78,9 +78,9 @@ public class LoadGuide implements Filterable  {
 		this.ifNotSet = ifNotSet;
 	}
 	public LoadGuide(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("LoadGuide")){
-			logger.warn("Error reading state file. Expected element 'LoadGuide', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'LoadGuide', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -116,7 +116,7 @@ public class LoadGuide implements Filterable  {
 				target = ModelConverters.fromString(attrValue, target);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

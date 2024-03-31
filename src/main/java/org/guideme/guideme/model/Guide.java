@@ -78,7 +78,7 @@ public class Guide {
 	/** @exclude */
 	private boolean inPrefGuide;
 	/** @exclude */
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	/** @exclude */
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	/** @exclude */
@@ -312,7 +312,7 @@ public class Guide {
 	}
 
 	public Calendar setDelay(Delay delay) {
-		logger.debug("displayPage Delay");
+		LOGGER.debug("displayPage Delay");
 		guide.setDelStyle(delay.getStyle());
 		guide.setDelTarget(delay.getTarget());
 		guide.setDelayjScript(delay.getJscript());
@@ -324,7 +324,7 @@ public class Guide {
 		// record any delay set / unset
 		guide.setDelaySet(delay.getSet());
 		guide.setDelayUnSet(delay.getUnSet());
-		logger.debug("Guide.setDelay: Delay Seconds {} Style {} Target {} Set {} UnSet {}",
+		LOGGER.debug("Guide.setDelay: Delay Seconds {} Style {} Target {} Set {} UnSet {}",
 				intDelSeconds, guide.getDelStyle(), guide.getDelTarget(), guide.getDelaySet(),
 				guide.getDelayUnSet());
 		Calendar calCountDown = Calendar.getInstance();
@@ -370,7 +370,7 @@ public class Guide {
 	// we are loading a new xml so clear old settings
 	/** @exclude */
 	public void reset(String id) {
-		logger.trace("Guide reset id: {}", id);
+		LOGGER.trace("Guide reset id: {}", id);
 		try {
 			this.id = id;
 			settings = new GuideSettings(id);
@@ -389,7 +389,7 @@ public class Guide {
 			inPrefGuide = false;
 			globaljScript = "";
 		} catch (Exception e) {
-			logger.error("Guide reset " + e.getLocalizedMessage(), e);
+			LOGGER.error("Guide reset " + e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -1030,9 +1030,9 @@ public class Guide {
 			pathOut = comonFunctions.fixSeparator(pathIn, appSettings.getFileSeparator());
 		} catch (Exception ex) {
 			pathOut = pathIn;
-			logger.error("Guide.fixPath: " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("Guide.fixPath: " + ex.getLocalizedMessage(), ex);
 		}
-		logger.debug("Guide.fixPath: pathIn={} return={}", pathIn, pathOut);
+		LOGGER.debug("Guide.fixPath: pathIn={} return={}", pathIn, pathOut);
 		return pathOut;
 	}
 

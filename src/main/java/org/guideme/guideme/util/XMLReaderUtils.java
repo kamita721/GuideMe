@@ -25,7 +25,7 @@ public class XMLReaderUtils {
 	private XMLReaderUtils() {
 	}
 
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 
 	public static DocumentBuilderFactory getDocumentBuilderFactory() {
@@ -73,7 +73,7 @@ public class XMLReaderUtils {
 		try {
 			return Integer.parseInt(sAns);
 		} catch (NumberFormatException e) {
-			logger.warn("Error parsing int '{}' from xml", sAns, e);
+			LOGGER.warn("Error parsing int '{}' from xml", sAns, e);
 		}
 		return defaultValue;
 	}
@@ -127,7 +127,7 @@ public class XMLReaderUtils {
 		try {
 			return LocalTime.parse(sAns);
 		} catch (DateTimeException e) {
-			logger.warn("Error parsing time '{}' from xml", sAns, e);
+			LOGGER.warn("Error parsing time '{}' from xml", sAns, e);
 		}
 		return defaultValue;
 	}

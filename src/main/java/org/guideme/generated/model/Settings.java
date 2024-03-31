@@ -14,7 +14,7 @@ public class Settings  {
 	private boolean autoSetPageWhenSeen = true;
 
 	public Settings(XMLStreamReader reader) throws XMLStreamException {
-		final Logger logger = LogManager.getLogger();
+		final Logger LOGGER = LogManager.getLogger();
 		int depth = 1;
 		while (depth > 0) {
 			int eventType = reader.next();
@@ -35,7 +35,7 @@ public class Settings  {
 					autoSetPageWhenSeen = XMLReaderUtils.getStringContentOrDefault(reader, true);
 					break;
 					default:
-					logger.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
+					LOGGER.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
 					XMLReaderUtils.getStringContentUntilElementEnd(reader);
 					break;
 				}

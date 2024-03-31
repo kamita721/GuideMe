@@ -21,7 +21,7 @@ class UnCompressGuideListener extends SelectionAdapter {
 	// File UnCompressGuide from the menu
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		MainShell.logger.trace("Enter Menu UnCompressGuide");
+		MainShell.LOGGER.trace("Enter Menu UnCompressGuide");
 		// display a dialog to ask for a guide file to play
 		FileDialog dialog = new FileDialog(this.mainShell.shell, SWT.OPEN);
 		String[] filterNames = new String[] { "ZIP Files" };
@@ -43,7 +43,7 @@ class UnCompressGuideListener extends SelectionAdapter {
 			this.mainShell.comonFunctions.unCompressGuide(strFileToLoad);
 		}
 
-		MainShell.logger.trace("Exit Menu UnCompressGuide");
+		MainShell.LOGGER.trace("Exit Menu UnCompressGuide");
 		super.widgetSelected(e);
 	}
 

@@ -211,9 +211,9 @@ public class GlobalButton implements FlagSet, Button, Filterable  {
 		this.fontName = fontName;
 	}
 	public GlobalButton(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("GlobalButton")){
-			logger.warn("Error reading state file. Expected element 'GlobalButton', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'GlobalButton', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -291,7 +291,7 @@ public class GlobalButton implements FlagSet, Button, Filterable  {
 				fontColor = ModelConverters.fromString(attrValue, fontColor);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

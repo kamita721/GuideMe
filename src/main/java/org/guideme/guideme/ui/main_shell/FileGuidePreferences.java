@@ -22,7 +22,7 @@ class FileGuidePreferences extends SelectionAdapter {
 	@Override
 	public void widgetSelected(SelectionEvent e) {
 		try {
-			MainShell.logger.trace("Enter FileGuidePreferences");
+			MainShell.LOGGER.trace("Enter FileGuidePreferences");
 			// Display a modal shell for the guide specific preferences
 			this.mainShell.guideSettings = this.mainShell.guide.getSettings();
 			this.mainShell.inPrefShell = true;
@@ -34,7 +34,7 @@ class FileGuidePreferences extends SelectionAdapter {
 			}
 			this.mainShell.inPrefShell = false;
 		} catch (Exception ex) {
-			MainShell.logger.error(" FileGuidePreferences " + ex.getLocalizedMessage());
+			MainShell.LOGGER.error(" FileGuidePreferences " + ex.getLocalizedMessage());
 			this.mainShell.inPrefShell = false;
 		}
 		super.widgetSelected(e);

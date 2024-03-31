@@ -15,14 +15,14 @@ class VideoStop implements Runnable {
 	public void run() {
 		try {
 			if (mediaPlayer != null && mediaPlayer.status().isPlaying()) {
-				MainShell.logger.debug("MainShell VideoStop run: Stopping media player {}", mediaPlayer.media().info().mrl());
+				MainShell.LOGGER.debug("MainShell VideoStop run: Stopping media player {}", mediaPlayer.media().info().mrl());
 				mediaPlayer.controls().pause();
 				if (shellClosing) {
 					mediaPlayer.release();
 				}
 			}
 		} catch (Exception e) {
-			MainShell.logger.error(" MainShell VideoStop run: " + e.getLocalizedMessage(), e);
+			MainShell.LOGGER.error(" MainShell VideoStop run: " + e.getLocalizedMessage(), e);
 		}
 	}
 

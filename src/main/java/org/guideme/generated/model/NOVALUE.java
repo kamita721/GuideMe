@@ -17,9 +17,9 @@ public class NOVALUE  {
 	}
 
 	public NOVALUE(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("NOVALUE")){
-			logger.warn("Error reading state file. Expected element 'NOVALUE', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'NOVALUE', but got '{}'", n.getNodeName());
 		}
 	}
 	public Element asXml(Document doc) {

@@ -30,9 +30,9 @@ public class Tease  {
 		return ans;
 	}
 	public Tease(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Tease")){
-			logger.warn("Error reading state file. Expected element 'Tease', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Tease', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -42,7 +42,7 @@ public class Tease  {
 			if(attrName.equals("minimumVersion")){
 				minimumVersion = ModelConverters.fromString(attrValue, minimumVersion);
 			} else {
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
 	}

@@ -25,7 +25,7 @@ import org.mozilla.javascript.Context;
 
 public class Jscript {
 	private Guide guide;
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private static final Marker JSCRIPT_MARKER = MarkerManager.getMarker("JSCRIPT");
 	private boolean running;
 	private final Main dbg;
@@ -159,13 +159,13 @@ public class Jscript {
 	public void run(UserSettings userSettings, AppSettings appSettings, boolean inPrefGuide,
 			OverRide overRide, String javaScriptText, String javaFunction, boolean pageloading) {
 
-		logger.trace(JSCRIPT_MARKER, "Chapter: {}", guide.getSettings().getChapter());
-		logger.debug(JSCRIPT_MARKER, "Page: {}", guide.getSettings().getCurrPage());
-		logger.debug(JSCRIPT_MARKER, "javaFunction: {}", javaFunction);
-		logger.debug(JSCRIPT_MARKER, "pageloading: {}", pageloading);
-		logger.trace(JSCRIPT_MARKER, "javaScriptText: {}", javaScriptText);
+		LOGGER.trace(JSCRIPT_MARKER, "Chapter: {}", guide.getSettings().getChapter());
+		LOGGER.debug(JSCRIPT_MARKER, "Page: {}", guide.getSettings().getCurrPage());
+		LOGGER.debug(JSCRIPT_MARKER, "javaFunction: {}", javaFunction);
+		LOGGER.debug(JSCRIPT_MARKER, "pageloading: {}", pageloading);
+		LOGGER.trace(JSCRIPT_MARKER, "javaScriptText: {}", javaScriptText);
 		if (!guide.getSettings().isGlobalScriptLogged()) {
-			logger.trace(JSCRIPT_MARKER, "globalJavaScriptText: " + guide.getGlobaljScript());
+			LOGGER.trace(JSCRIPT_MARKER, "globalJavaScriptText: " + guide.getGlobaljScript());
 			guide.getSettings().setGlobalScriptLogged(true);
 		}
 		ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
@@ -229,8 +229,8 @@ public class Jscript {
 		ScriptableObject.putProperty(scope, "guide", guide);
 		// Deprecated should use guide now
 		ScriptableObject.putProperty(scope, "guideSettings", guide.getSettings());
-		logger.debug(JSCRIPT_MARKER, "Starting ScriptVariables: {}", scriptVars);
-		logger.debug(JSCRIPT_MARKER, "Starting Flags {{}}", guide.getSettings().getFlags());
+		LOGGER.debug(JSCRIPT_MARKER, "Starting ScriptVariables: {}", scriptVars);
+		LOGGER.debug(JSCRIPT_MARKER, "Starting Flags {{}}", guide.getSettings().getFlags());
 
 		if (pageloading) {
 			ScriptableObject.putProperty(globalScope, "overRide", overRide);
@@ -263,31 +263,31 @@ public class Jscript {
 				AstRoot rootNode = factory.parse(javaFunctionFull, null, 0);
 				SimpleNodeVisitor nodeVisitor = new SimpleNodeVisitor();
 				rootNode.visit(nodeVisitor);
-				logger.info("AstParseForArguments: {}", nodeVisitor.getArgs().toString());
+				LOGGER.info("AstParseForArguments: {}", nodeVisitor.getArgs().toString());
 				args = nodeVisitor.getArgs().toArray();
 
 				fct.call(cntx, scope, scope, args);
 			} else {
-				logger.error(JSCRIPT_MARKER, " Couldn't find function {}", javaFunction);
+				LOGGER.error(JSCRIPT_MARKER, " Couldn't find function {}", javaFunction);
 				guide.updateJConsole("Couldn't find function " + javaFunction);
 			}
 		} catch (EvaluatorException ex) {
 			/*
 			 * TODO, we need much better tracability on where the error came from.
 			 */
-			logger.error(JSCRIPT_MARKER,
+			LOGGER.error(JSCRIPT_MARKER,
 					"JavaScriptError line " + ex.lineNumber() + " column " + ex.columnNumber()
 							+ " Source " + ex.lineSource() + " error " + ex.getLocalizedMessage());
 			guide.updateJConsole(
 					"JavaScriptError line " + ex.lineNumber() + " column " + ex.columnNumber()
 							+ " Source " + ex.lineSource() + " error " + ex.getLocalizedMessage());
 		} catch (Exception ex) {
-			logger.error(JSCRIPT_MARKER, " FileRunScript " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(JSCRIPT_MARKER, " FileRunScript " + ex.getLocalizedMessage(), ex);
 			guide.updateJConsole("FileRunScript " + ex.getLocalizedMessage());
-			logger.error(" FileRunScript " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" FileRunScript " + ex.getLocalizedMessage(), ex);
 		}
-		logger.debug(JSCRIPT_MARKER, "Ending ScriptVariables: {}", scriptVars);
-		logger.debug(JSCRIPT_MARKER, "Ending Flags {" + guide.getSettings().getFlags() + "}");
+		LOGGER.debug(JSCRIPT_MARKER, "Ending ScriptVariables: {}", scriptVars);
+		LOGGER.debug(JSCRIPT_MARKER, "Ending Flags {" + guide.getSettings().getFlags() + "}");
 		Context.exit();
 
 		guide.getSettings().setFlags(comonFunctions.getFlags(guide.getFlags()));

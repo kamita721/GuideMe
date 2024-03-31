@@ -36,7 +36,7 @@ import com.snapps.swt.SquareButton;
 public class GuidePreferenceShell {
 	private Shell shell = null;
 	private GuideSettings myGuideSettings;
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private Font controlFont;
 	private HashMap<String, FormData> appFormdata = new HashMap<>();
 	private HashMap<String, Control> appWidgets = new HashMap<>();
@@ -47,7 +47,7 @@ public class GuidePreferenceShell {
 
 	public Shell createShell(final Display display, GuideSettings guideSettings, AppSettings appSettings) {
   Display myDisplay;
-		logger.trace("Enter createShell");
+		LOGGER.trace("Enter createShell");
 		try {
 			Control tmpWidget;
 			Control tmpWidget2;
@@ -142,9 +142,9 @@ public class GuidePreferenceShell {
 			
 		}
 		catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage());
+			LOGGER.error(ex.getLocalizedMessage());
 		}
-		logger.trace("Exit createShell");
+		LOGGER.trace("Exit createShell");
 		return shell;
 	}
 	
@@ -179,7 +179,7 @@ public class GuidePreferenceShell {
 		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
-				logger.trace("Enter SaveButtonListner");
+				LOGGER.trace("Enter SaveButtonListner");
 				Text txtTmp;
 				Button btnTmp;
 
@@ -206,9 +206,9 @@ public class GuidePreferenceShell {
 				shell.close();
 			}
 			catch (Exception ex) {
-				logger.error(" SaveButtonListner " + ex.getLocalizedMessage());
+				LOGGER.error(" SaveButtonListner " + ex.getLocalizedMessage());
 			}
-			logger.trace("Exit SaveButtonListner");
+			LOGGER.trace("Exit SaveButtonListner");
 		}
 	}
 
@@ -217,13 +217,13 @@ public class GuidePreferenceShell {
 		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
-				logger.trace("Enter CancelButtonListener");
+				LOGGER.trace("Enter CancelButtonListener");
 				shell.close();
 			}
 			catch (Exception ex) {
-				logger.error(" CancelButtonListener " + ex.getLocalizedMessage());
+				LOGGER.error(" CancelButtonListener " + ex.getLocalizedMessage());
 			}
-			logger.trace("Exit CancelButtonListener");
+			LOGGER.trace("Exit CancelButtonListener");
 		}
 	}
 
@@ -300,7 +300,7 @@ public class GuidePreferenceShell {
 				controlFont.dispose();
 			}
 			catch (Exception ex) {
-				logger.error("shellCloseListen ", ex);
+				LOGGER.error("shellCloseListen ", ex);
 			}
 			super.shellClosed(e);
 		}

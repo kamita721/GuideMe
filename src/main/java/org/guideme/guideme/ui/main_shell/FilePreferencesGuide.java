@@ -23,7 +23,7 @@ class FilePreferencesGuide extends SelectionAdapter {
 	@Override
 	public void widgetSelected(SelectionEvent e) {
 		try {
-			MainShell.logger.trace("Enter Preferences Guide Load");
+			MainShell.LOGGER.trace("Enter Preferences Guide Load");
 			// special guide for user preferences
 			// this loads automatically from the application directory with
 			// a hard coded name.
@@ -55,9 +55,9 @@ class FilePreferencesGuide extends SelectionAdapter {
 			mainShell.mainLogic.displayPage("start", false, mainShell.guide, mainShell, mainShell.appSettings, mainShell.userSettings, mainShell.guideSettings,
 					mainShell.debugShell);
 		} catch (Exception ex3) {
-			MainShell.logger.error("Load Image error " + ex3.getLocalizedMessage(), ex3);
+			MainShell.LOGGER.error("Load Image error " + ex3.getLocalizedMessage(), ex3);
 		}
-		MainShell.logger.trace("Exit Preferences Guide Load");
+		MainShell.LOGGER.trace("Exit Preferences Guide Load");
 		super.widgetSelected(e);
 	}
 

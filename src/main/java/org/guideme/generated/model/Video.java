@@ -99,9 +99,9 @@ public class Video implements FlagSet, Playable, Filterable  {
 		this.startAt = startAt;
 	}
 	public Video(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("Video")){
-			logger.warn("Error reading state file. Expected element 'Video', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Video', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -152,7 +152,7 @@ public class Video implements FlagSet, Playable, Filterable  {
 				id = ModelConverters.fromString(attrValue, id);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

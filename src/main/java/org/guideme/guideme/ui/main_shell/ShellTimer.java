@@ -27,7 +27,7 @@ class ShellTimer implements Runnable {
 	@Override
 	public void run() {
 		if (mainShell.pauseRequested) {
-			MainShell.logger.debug("pausing timers");
+			MainShell.LOGGER.debug("pausing timers");
 			mainShell.pauseAll();
 			return;
 		}
@@ -60,7 +60,7 @@ class ShellTimer implements Runnable {
 	}
 
 	private void onTimerTrigger(Timer timer) {
-		MainShell.logger.debug("Timer: " + timer.getId() + " Triggered");
+		MainShell.LOGGER.debug("Timer: " + timer.getId() + " Triggered");
 		mainShell.setUnsetFlagsUncooked(timer.getSet(), timer.getUnSet());
 		mainShell.setImageByUncooked(timer.getImageId());
 		mainShell.setBrwsTextUncooked(timer.getText());

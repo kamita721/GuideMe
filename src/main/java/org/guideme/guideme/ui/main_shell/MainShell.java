@@ -84,7 +84,7 @@ public class MainShell {
 	 * Main screen and UI thread. exposes methods that allow other components to
 	 * update the screen components and play video and music
 	 */
-	static Logger logger = LogManager.getLogger();
+	static Logger LOGGER = LogManager.getLogger();
 
 	AppSettings appSettings;
 	String strGuidePath;
@@ -191,7 +191,7 @@ public class MainShell {
 
 		strGuidePath = appSettings.getDataDirectory();
 
-		logger.trace("Get userSettings");
+		LOGGER.trace("Get userSettings");
 
 		userSettings = UserSettings.getUserSettings();
 
@@ -263,7 +263,7 @@ public class MainShell {
 		shell.pack();
 
 		if (appSettings.getVideoOn()) {
-			logger.trace("Video Enter");
+			LOGGER.trace("Video Enter");
 			libvlc_instance_t instance = LibVlc.libvlc_new(0, null);
 
 			mediaPlayer = new SwtEmbeddedMediaPlayer(instance);
@@ -275,7 +275,7 @@ public class MainShell {
 			if (videoOutputDevice != null && !videoOutputDevice.isBlank()) {
 				mediaPlayer.audio().setOutputDevice(null, appSettings.getVideoDevice());
 			}
-			logger.trace("Video Exit");
+			LOGGER.trace("Video Exit");
 		}
 
 		if (appSettings.getWebcamOn()) {
@@ -340,7 +340,7 @@ public class MainShell {
 		threadMetronome.setName("threadMetronome");
 		threadMetronome.start();
 
-		logger.trace("Exit createShell");
+		LOGGER.trace("Exit createShell");
 		if (!appSettings.getComandLineGuide().equals("")) {
 			loadGuide(appSettings.getDataDirectory() + appSettings.getComandLineGuide());
 		}
@@ -651,19 +651,19 @@ public class MainShell {
 		}
 
 		if (!userDeviceVideoAvailable) {
-			logger.info("User selected Video device not available. Resetting to default");
+			LOGGER.info("User selected Video device not available. Resetting to default");
 			MenuItem videoDefault = videoSubMenu.getItem(0);
 			videoDefault.setSelection(true);
 			appSettings.setVideoDevice(videoDefault.getData("device-id").toString());
 		}
 		if (!userDeviceOneAvailable) {
-			logger.info("User selected Audio device not available. Resetting to default");
+			LOGGER.info("User selected Audio device not available. Resetting to default");
 			MenuItem oneDefault = audioOneSubMenu.getItem(0);
 			oneDefault.setSelection(true);
 			appSettings.setAudioOneDevice(oneDefault.getData("device-id").toString());
 		}
 		if (!userDeviceTwoAvailable) {
-			logger.info("User selected Audio2 device not available. Resetting to default");
+			LOGGER.info("User selected Audio2 device not available. Resetting to default");
 			MenuItem twoDefault = audioTwoSubMenu.getItem(0);
 			twoDefault.setSelection(true);
 			appSettings.setAudioTwoDevice(twoDefault.getData("device-id").toString());
@@ -740,9 +740,9 @@ public class MainShell {
 
 	public void run(Display display) {
 		do {
-			logger.trace("create shell");
+			LOGGER.trace("create shell");
 			shell = createShell(display);
-			logger.trace("open shell");
+			LOGGER.trace("open shell");
 			shell.open();
 			if (getMultiMonitor()) {
 				getShell2().open();
@@ -761,7 +761,7 @@ public class MainShell {
 					try {
 						shell.close();
 					} catch (Exception ex) {
-						logger.error("Main shell close " + ex.getLocalizedMessage(), ex);
+						LOGGER.error("Main shell close " + ex.getLocalizedMessage(), ex);
 					}
 				}
 				if (!display.readAndDispatch()) {
@@ -773,11 +773,11 @@ public class MainShell {
 
 	// Load the tease
 	public void loadGuide(String fileToLoad) {
-		logger.trace("Loading Guide {}", fileToLoad);
+		LOGGER.trace("Loading Guide {}", fileToLoad);
 		try {
 			debugShell.clearPagesCombo();
 		} catch (Exception ex) {
-			logger.error("Clear debug pages " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("Clear debug pages " + ex.getLocalizedMessage(), ex);
 		}
 		try {
 			String strPage = XmlGuideReader.loadXML(fileToLoad, guide, appSettings, debugShell);
@@ -791,7 +791,7 @@ public class MainShell {
 			mainLogic.displayPage(strPage, false, guide, this, appSettings, userSettings,
 					guideSettings, debugShell);
 		} catch (Exception ex) {
-			logger.error("Load Guide " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("Load Guide " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -803,27 +803,27 @@ public class MainShell {
 		int newWidth;
 		if (((labelHeight > maxHeight) && (labelWidth > maxWidth)) && maxScale) {
 			if (dblScreenRatio > imageRatio) {
-				logger.trace("Scale Choice: 1.1");
+				LOGGER.trace("Scale Choice: 1.1");
 				newHeight = (int) (((maxWidth) * imageRatio) * imgOffSet);
 				newWidth = (int) ((maxWidth) * imgOffSet);
-				logger.trace("New GT Dimentions: H: {} W: {}", newHeight, newWidth);
+				LOGGER.trace("New GT Dimentions: H: {} W: {}", newHeight, newWidth);
 			} else {
-				logger.trace("Scale Choice: 1.2");
+				LOGGER.trace("Scale Choice: 1.2");
 				newHeight = (int) ((maxHeight) * imgOffSet);
 				newWidth = (int) (((maxHeight) / imageRatio) * imgOffSet);
-				logger.trace("New LT Dimentions: H: {} W: {}", newHeight, newWidth);
+				LOGGER.trace("New LT Dimentions: H: {} W: {}", newHeight, newWidth);
 			}
 		} else {
 			if (dblScreenRatio > imageRatio) {
-				logger.trace("Scale Choice: 2.1");
+				LOGGER.trace("Scale Choice: 2.1");
 				newHeight = (int) ((labelWidth * imageRatio) * imgOffSet);
 				newWidth = (int) (labelWidth * imgOffSet);
-				logger.trace("New GT Dimentions: H: {} W: {}", newHeight, newWidth);
+				LOGGER.trace("New GT Dimentions: H: {} W: {}", newHeight, newWidth);
 			} else {
-				logger.trace("Scale Choice: 2.2");
+				LOGGER.trace("Scale Choice: 2.2");
 				newHeight = (int) (labelHeight * imgOffSet);
 				newWidth = (int) ((labelHeight / imageRatio) * imgOffSet);
-				logger.trace("New LT Dimentions: H: {} W: {}", newHeight, newWidth);
+				LOGGER.trace("New LT Dimentions: H: {} W: {}", newHeight, newWidth);
 			}
 		}
 		returnValue.put("newHeight", newHeight);
@@ -860,7 +860,7 @@ public class MainShell {
 	}
 
 	public void setImage(String imgPath) {
-		logger.trace("setImage: {}", imgPath);
+		LOGGER.trace("setImage: {}", imgPath);
 		imgOverRide = false;
 		imageManager.setCurrentImagePath(imgPath);
 		imageManager.updateImageLabel(imageLabel);
@@ -869,7 +869,7 @@ public class MainShell {
 	}
 
 	public void setLeftPaneVisibleElement(Control c) {
-		logger.trace(() -> "setLeftPaneVisible( " + c + " name = " + c.getData("name") + ")");
+		LOGGER.trace(() -> "setLeftPaneVisible( " + c + " name = " + c.getData("name") + ")");
 		Control[] elements = new Control[] { mediaPanel, webcamPanel, leftPaneBrowser, imageLabel };
 		boolean found = false;
 		for (Control e : elements) {
@@ -881,7 +881,7 @@ public class MainShell {
 			}
 		}
 		if (!found) {
-			logger.error("Invalid left pane element: {}", c);
+			LOGGER.error("Invalid left pane element: {}", c);
 		}
 		leftFrame.layout(true);
 	}
@@ -892,12 +892,12 @@ public class MainShell {
 
 	public void setleftPaneHtml(String leftHtml) {
 		try {
-			logger.trace("setleftPaneHtml: {}", leftHtml);
+			LOGGER.trace("setleftPaneHtml: {}", leftHtml);
 			imgOverRide = true;
 			leftPaneBrowser.setText(leftHtml, true);
 			setLeftPaneVisibleElement(leftPaneBrowser);
 		} catch (Exception ex) {
-			logger.error("setleftPaneHtml error " + ex.getLocalizedMessage(), ex);
+			LOGGER.error("setleftPaneHtml error " + ex.getLocalizedMessage(), ex);
 		}
 
 	}
@@ -922,7 +922,7 @@ public class MainShell {
 					leftFrame.layout(true);
 					webcamRoot.validate();
 					webcamVisible = true;
-					logger.debug("MainShell playVideo: ShowWebcam");
+					LOGGER.debug("MainShell playVideo: ShowWebcam");
 
 				} else {
 					setLeftPaneText("No Webcam detected", "");
@@ -930,7 +930,7 @@ public class MainShell {
 				}
 
 			} catch (Exception e) {
-				logger.error("showWebcam " + e.getLocalizedMessage(), e);
+				LOGGER.error("showWebcam " + e.getLocalizedMessage(), e);
 			}
 		}
 		return webcam != null;
@@ -956,7 +956,7 @@ public class MainShell {
 				videoScriptVar = scriptVar;
 				videoPlay = true;
 				String mrlVideo = "file:///" + video;
-				logger.debug("MainShell playVideo: {} videoLoops: {} videoTarget: videoPlay: {}",
+				LOGGER.debug("MainShell playVideo: {} videoLoops: {} videoTarget: videoPlay: {}",
 						mrlVideo, videoLoops, videoTarget, videoPlay);
 				VideoPlay videoPlayer = new VideoPlay(this);
 				videoPlayer.setVideoPlay(mediaPlayer, mrlVideo, volume);
@@ -969,7 +969,7 @@ public class MainShell {
 					videoPlayed = true;
 				}
 			} catch (Exception e) {
-				logger.error("playVideo " + e.getLocalizedMessage(), e);
+				LOGGER.error("playVideo " + e.getLocalizedMessage(), e);
 			}
 		}
 	}
@@ -985,7 +985,7 @@ public class MainShell {
 		try {
 			if (audioPlayer != null) {
 				audioPlayer.audioStop();
-				logger.trace("playAudio audioStop");
+				LOGGER.trace("playAudio audioStop");
 			}
 			String outputDevice = appSettings.getAudioOneDevice();
 			audioPlayer = new AudioPlayer(audio, startAt, stopAt, loops, target, this, jscript,
@@ -998,7 +998,7 @@ public class MainShell {
 				threadAudioPlayer.start();
 			}
 		} catch (Exception e) {
-			logger.error("playAudio " + e.getLocalizedMessage(), e);
+			LOGGER.error("playAudio " + e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -1008,7 +1008,7 @@ public class MainShell {
 		try {
 			if (audioPlayer2 != null) {
 				audioPlayer2.audioStop();
-				logger.trace("playAudio2 audioStop");
+				LOGGER.trace("playAudio2 audioStop");
 			}
 			String outputDevice = appSettings.getAudioTwoDevice();
 			audioPlayer2 = new AudioPlayer(audio, startAt, stopAt, loops, target, this, jscript,
@@ -1021,7 +1021,7 @@ public class MainShell {
 				threadAudioPlayer2.start();
 			}
 		} catch (Exception e) {
-			logger.error("playAudio2 " + e.getLocalizedMessage(), e);
+			LOGGER.error("playAudio2 " + e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -1061,7 +1061,7 @@ public class MainShell {
 
 			}
 		} catch (Exception e1) {
-			logger.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
+			LOGGER.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
 			strHTML = rightHTML.replace("DefaultStyle", overRideStyle);
 			strHTML = strHTML.replace("BodyContent", "");
 			this.brwsText.setText(strHTML);
@@ -1074,7 +1074,7 @@ public class MainShell {
 		try {
 			this.brwsText.setText(strHTML);
 		} catch (Exception e1) {
-			logger.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
+			LOGGER.error("displayPage Text Exception " + e1.getLocalizedMessage(), e1);
 			strHTML = rightHTML.replace("DefaultStyle", style);
 			strHTML = strHTML.replace("BodyContent", "");
 			this.brwsText.setText(strHTML);
@@ -1105,7 +1105,7 @@ public class MainShell {
 		try {
 			this.leftPaneBrowser.setText(strHTML);
 		} catch (Exception e1) {
-			logger.error("setLeftHtml Text Exception " + e1.getLocalizedMessage(), e1);
+			LOGGER.error("setLeftHtml Text Exception " + e1.getLocalizedMessage(), e1);
 			strHTML = leftHTML.replace("DefaultStyle", style);
 			strHTML = strHTML.replace("BodyContent", "");
 			this.leftPaneBrowser.setText(strHTML);
@@ -1125,7 +1125,7 @@ public class MainShell {
 				kid.dispose();
 			}
 		} catch (Exception e) {
-			logger.error("removeButtons " + e.getLocalizedMessage(), e);
+			LOGGER.error("removeButtons " + e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -1156,7 +1156,7 @@ public class MainShell {
 
 			delayButton.setVisible(appSettings.getDebug() && appSettings.getShowDelayBtn());
 		} catch (Exception e) {
-			logger.error("addDelayButton " + e.getLocalizedMessage(), e);
+			LOGGER.error("addDelayButton " + e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -1196,7 +1196,7 @@ public class MainShell {
 
 		btnDynamic.setData("scriptVar", button.getScriptVar());
 		btnDynamic.setData("javascript", javascript);
-		logger.debug("displayPage Button Text {} Target {} Set {} UnSet {} ", strBtnText,
+		LOGGER.debug("displayPage Button Text {} Target {} Set {} UnSet {} ", strBtnText,
 				strBtnTarget, strButtonSet, strButtonUnSet);
 
 		String hotKey = button.getHotkey();
@@ -1296,7 +1296,7 @@ public class MainShell {
 		for (String field : fields) {
 			values = field.split("¬");
 			if (values.length != 4) {
-				logger.warn("Invalid form field {}. Expected 4 segments, found {}", field,
+				LOGGER.warn("Invalid form field {}. Expected 4 segments, found {}", field,
 						values.length);
 				continue;
 			}
@@ -1327,10 +1327,10 @@ public class MainShell {
 				guideSettings.setScriptVar(name, value);
 				break;
 			default:
-				logger.warn("Invalid form field type {}", type);
+				LOGGER.warn("Invalid form field type {}", type);
 
 			}
-			logger.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
+			LOGGER.trace("FormField: {}|{}|{}|{}", name, value, type, checked);
 		}
 
 	}
@@ -1353,7 +1353,7 @@ public class MainShell {
 				button.setEnabled(true);
 			}
 		} catch (Exception ex) {
-			logger.error(" enable Button " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" enable Button " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -1367,7 +1367,7 @@ public class MainShell {
 				button.setData("Target", target);
 			}
 		} catch (Exception ex) {
-			logger.error(" change Button " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" change Button " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -1379,14 +1379,14 @@ public class MainShell {
 				button.setEnabled(false);
 			}
 		} catch (Exception ex) {
-			logger.error(" disable Button " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" disable Button " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
 	public void setMetronomeBPM(int metronomeBPM, int loops, int resolution, String rhythm) {
 		// run metronome on another thread
 
-		logger.trace("setMetronomeBPM");
+		LOGGER.trace("setMetronomeBPM");
 		if (appSettings.isMetronome()) {
 			metronome.metronomeStart(metronomeBPM, appSettings.getMidiInstrument(), loops,
 					resolution, rhythm, appSettings.getMidiVolume());
@@ -1431,7 +1431,7 @@ public class MainShell {
 				videoLoops = 0;
 				videoTarget = "";
 				videoPlay = false;
-				logger.debug(() -> "MainShell stopVideo " + mediaPlayer.media().info().mrl());
+				LOGGER.debug(() -> "MainShell stopVideo " + mediaPlayer.media().info().mrl());
 				if (mediaPlayer.media().info().mrl() != null && videoPlayed) {
 					VideoStop videoStop = new VideoStop();
 					videoStop.setMediaPlayer(mediaPlayer, shellClosing);
@@ -1443,7 +1443,7 @@ public class MainShell {
 
 				}
 			} catch (Exception e) {
-				logger.error(" stopVideo " + e.getLocalizedMessage(), e);
+				LOGGER.error(" stopVideo " + e.getLocalizedMessage(), e);
 			}
 		}
 	}
@@ -1455,7 +1455,7 @@ public class MainShell {
 				lblTimer.setText("");
 			}
 		} catch (Exception ex) {
-			logger.error(" stopDelay " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" stopDelay " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -1515,42 +1515,42 @@ public class MainShell {
 		try {
 			hotKeys = new HashMap<>();
 		} catch (Exception ex) {
-			logger.error(" stophotKeys " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" stophotKeys " + ex.getLocalizedMessage(), ex);
 		}
 		try {
 			buttons = new HashMap<>();
 		} catch (Exception ex) {
-			logger.error(" stopbuttons " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" stopbuttons " + ex.getLocalizedMessage(), ex);
 		}
 		try {
 			stopDelay();
 		} catch (Exception ex) {
-			logger.error(" stopDelay " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" stopDelay " + ex.getLocalizedMessage(), ex);
 		}
 		try {
 			stopMetronome();
 		} catch (Exception ex) {
-			logger.error(" stopMetronome " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" stopMetronome " + ex.getLocalizedMessage(), ex);
 		}
 		try {
 			stopAudio();
 		} catch (Exception ex) {
-			logger.error(" stopAudio " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" stopAudio " + ex.getLocalizedMessage(), ex);
 		}
 		try {
 			stopVideo(shellClosing);
 		} catch (Exception ex) {
-			logger.error(" stopVideo " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" stopVideo " + ex.getLocalizedMessage(), ex);
 		}
 		try {
 			stopWebcam();
 		} catch (Exception ex) {
-			logger.error(" stopWebcam " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" stopWebcam " + ex.getLocalizedMessage(), ex);
 		}
 		try {
 			timerReset();
 		} catch (Exception ex) {
-			logger.error(" timerReset " + ex.getLocalizedMessage(), ex);
+			LOGGER.error(" timerReset " + ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -1744,16 +1744,16 @@ public class MainShell {
 
 	public void playVideoUncooked(Video video) {
 		String strVideo = video.getId();
-		logger.trace("displayPage Video {}", strVideo);
+		LOGGER.trace("displayPage Video {}", strVideo);
 		String strStartAt = video.getStartAt();
-		logger.trace("displayPage Video Start At {}", strStartAt);
+		LOGGER.trace("displayPage Video Start At {}", strStartAt);
 		int intStartAt = 0;
 		if (!strStartAt.isBlank()) {
 			intStartAt = comonFunctions.getMilisecFromTime(strStartAt) / 1000;
 		}
 
 		String strStopAt = video.getStopAt();
-		logger.trace("displayPage Video Stop At {}", strStopAt);
+		LOGGER.trace("displayPage Video Stop At {}", strStopAt);
 		int intStopAt = 0;
 		if (!strStopAt.isBlank()) {
 			intStopAt = comonFunctions.getMilisecFromTime(strStopAt) / 1000;
@@ -1791,7 +1791,7 @@ public class MainShell {
 			intAudioLoops = Integer.parseInt(strIntAudio);
 		}
 		strAudio = audio.getId();
-		logger.debug("displayPage Audio {}", strAudio);
+		LOGGER.debug("displayPage Audio {}", strAudio);
 		String strStartAt = audio.getStartAt();
 		int startAtSeconds;
 		if (!strStartAt.equals("")) {
@@ -1819,7 +1819,7 @@ public class MainShell {
 			playAudio(imgPath, startAtSeconds, stopAtSeconds, intAudioLoops, strAudioTarget,
 					audio.getJscript(), audio.getScriptVar(), audio.getVolume(), true);
 		}
-		logger.debug("displayPage Audio target {}", strAudioTarget);
+		LOGGER.debug("displayPage Audio target {}", strAudioTarget);
 	}
 
 	public void addButtonUncooked(Button btn) {

@@ -57,7 +57,7 @@ public class OverRide {
 	/** @exclude */
 	private String leftCss = "";
 
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	
 	/** @exclude */
 	public synchronized void clear() {
@@ -85,7 +85,7 @@ public class OverRide {
 		try {
 			return Integer.parseInt(sOrder);
 		} catch (NumberFormatException e) {
-			logger.warn("Unable to parse button order '{}'", sOrder);
+			LOGGER.warn("Unable to parse button order '{}'", sOrder);
 			return 1;
 		}
 	}

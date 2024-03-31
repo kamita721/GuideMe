@@ -63,9 +63,9 @@ public class LeftText implements Filterable, IText  {
 		return ifNotSet;
 	}
 	public LeftText(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("LeftText")){
-			logger.warn("Error reading state file. Expected element 'LeftText', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'LeftText', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -89,7 +89,7 @@ public class LeftText implements Filterable, IText  {
 				text = ModelConverters.fromString(attrValue, text);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

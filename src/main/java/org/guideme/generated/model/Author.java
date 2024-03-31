@@ -11,7 +11,7 @@ public class Author  {
 	private String name = "";
 
 	public Author(XMLStreamReader reader) throws XMLStreamException {
-		final Logger logger = LogManager.getLogger();
+		final Logger LOGGER = LogManager.getLogger();
 		int depth = 1;
 		while (depth > 0) {
 			int eventType = reader.next();
@@ -21,7 +21,7 @@ public class Author  {
 				if(tagName.equals("Name")){
 					name = XMLReaderUtils.getStringContentOrDefault(reader, "");
 				} else {
-					logger.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
+					LOGGER.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
 					XMLReaderUtils.getStringContentUntilElementEnd(reader);
 				}
 				eventType = reader.next();

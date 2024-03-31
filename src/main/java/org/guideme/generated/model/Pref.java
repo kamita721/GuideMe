@@ -33,9 +33,9 @@ public class Pref  {
 		return screen;
 	}
 	public Pref(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("pref")){
-			logger.warn("Error reading state file. Expected element 'pref', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'pref', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -59,7 +59,7 @@ public class Pref  {
 				key = ModelConverters.fromString(attrValue, key);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

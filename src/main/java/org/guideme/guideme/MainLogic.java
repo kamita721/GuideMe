@@ -64,7 +64,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class MainLogic {
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private static MainLogic mainLogic;
 	private static ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private OverRide overRide = new OverRide();
@@ -91,7 +91,7 @@ public class MainLogic {
 		if (mainLogic == null) {
 			mainLogic = new MainLogic();
 			songPath = MainLogic.class.getResource("/tick.wav");
-			logger.info("MainLogic getMainLogic songPath {}", songPath);
+			LOGGER.info("MainLogic getMainLogic songPath {}", songPath);
 			AudioInputStream audioIn;
 			try {
 				audioIn = AudioSystem.getAudioInputStream(songPath);
@@ -103,7 +103,7 @@ public class MainLogic {
 				loadGlobalScriptVariables();
 			} catch (IllegalArgumentException | UnsupportedAudioFileException | IOException
 					| LineUnavailableException | NullPointerException e) {
-				logger.error("audio clip Exception ", e);
+				LOGGER.error("audio clip Exception ", e);
 			}
 		}
 		return mainLogic;
@@ -134,8 +134,8 @@ public class MainLogic {
 		Page objCurrPage;
 		Delay objDelay;
 
-		logger.debug("displayPage PagePassed {}", pageId);
-		logger.debug(() -> "displayPage Flags " + comonFunctions.getFlags(guide.getFlags()));
+		LOGGER.debug("displayPage PagePassed {}", pageId);
+		LOGGER.debug(() -> "displayPage Flags " + comonFunctions.getFlags(guide.getFlags()));
 
 		mainShell.stopAll(false);
 		overRide.clear();
@@ -208,7 +208,7 @@ public class MainLogic {
 
 		guide.getSettings().setPage(strPageId);
 		strFlags = comonFunctions.getFlags(guide.getFlags());
-		logger.debug("displayPage End Flags {}", strFlags);
+		LOGGER.debug("displayPage End Flags {}", strFlags);
 		guide.getSettings().setFlags(strFlags);
 		guide.getSettings().saveSettings();
 		appSettings.saveSettings();
@@ -411,7 +411,7 @@ public class MainLogic {
 
 			mainShell.setLeftPaneText(displayText, overRide.getRightCss());
 		} catch (Exception e) {
-			logger.error("displayPage BrwsText Exception " + e.getLocalizedMessage(), e);
+			LOGGER.error("displayPage BrwsText Exception " + e.getLocalizedMessage(), e);
 			mainShell.setLeftPaneText("", "");
 		}
 
@@ -455,7 +455,7 @@ public class MainLogic {
 						guideSettings, userSettings));
 			}
 		} catch (Exception e) {
-			logger.error("displayPage BrwsText Exception " + e.getLocalizedMessage(), e);
+			LOGGER.error("displayPage BrwsText Exception " + e.getLocalizedMessage(), e);
 			mainShell.setBrwsText("", "");
 		}
 
@@ -480,7 +480,7 @@ public class MainLogic {
 				guide.getSettings().removeGlobalButton(b.getId());
 				break;
 			default:
-				logger.error("displayPage Global Button invalid action " + b.getAction());
+				LOGGER.error("displayPage Global Button invalid action " + b.getAction());
 			}
 		}
 
@@ -522,7 +522,7 @@ public class MainLogic {
 		if (objMetronome != null) {
 			// Metronome
 			int intbpm = objMetronome.getBpm();
-			logger.debug("displayPage Metronome {} BPM", intbpm);
+			LOGGER.debug("displayPage Metronome {} BPM", intbpm);
 
 			mainShell.setMetronomeBPM(objMetronome.getBpm(), objMetronome.getLoops(),
 					objMetronome.getResolution(), objMetronome.getRhythm());
@@ -593,7 +593,7 @@ public class MainLogic {
 			XmlGuideReader.loadXML((appSettings.getDataDirectory() + objLoadGuide.getGuidePath()),
 					guide, appSettings, debugShell);
 		} catch (XMLStreamException | IOException e) {
-			logger.error("Error loading new guide {}", objLoadGuide.getGuidePath(), e);
+			LOGGER.error("Error loading new guide {}", objLoadGuide.getGuidePath(), e);
 			// TODO, this should go to an error page.
 			return objCurrPage;
 		}
@@ -664,7 +664,7 @@ public class MainLogic {
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			doc = docBuilder.parse(xmlFile);
 		} catch (ParserConfigurationException | SAXException | IOException e) {
-			logger.warn("Error reading in global state {}", filename, e);
+			LOGGER.warn("Error reading in global state {}", filename, e);
 			return;
 		}
 		Element rootElement = doc.getDocumentElement();
@@ -712,7 +712,7 @@ public class MainLogic {
 			ScriptableObject scope = context.initStandardObjects();
 
 			File xmlFile = new File(filename);
-			logger.trace("MainLogic saveSettings filename: {}", filename);
+			LOGGER.trace("MainLogic saveSettings filename: {}", filename);
 			Element rootElement;
 			Document doc;
 
@@ -720,14 +720,14 @@ public class MainLogic {
 			// new one.
 			// if nodes do not exist it will add them
 			if (xmlFile.exists()) {
-				logger.trace("MainLogic saveSettings file exists ");
+				LOGGER.trace("MainLogic saveSettings file exists ");
 				DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
 				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 				doc = docBuilder.parse(xmlFile);
 				rootElement = doc.getDocumentElement();
 				rootElement.normalize();
 			} else {
-				logger.trace("MainLogic saveSettings does not file exist ");
+				LOGGER.trace("MainLogic saveSettings does not file exist ");
 				DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
 				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 				doc = docBuilder.newDocument();
@@ -767,12 +767,12 @@ public class MainLogic {
 			TransformerFactory transformerFactory = XMLReaderUtils.getTransformFactory();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			logger.trace("MainLogic saveSettings save file: {}", filename);
+			LOGGER.trace("MainLogic saveSettings save file: {}", filename);
 			StreamResult result = new StreamResult(new File(filename));
 			transformer.transform(source, result);
 
 		} catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		} finally {
 			Context.exit();
 		}

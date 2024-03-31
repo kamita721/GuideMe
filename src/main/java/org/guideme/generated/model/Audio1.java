@@ -13,6 +13,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.guideme.guideme.model.ModelConverters;
 import org.apache.logging.log4j.LogManager;
 public class Audio1 implements FlagSet, Playable, Filterable, Audio  {
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private String stopAt = "";
 	private String set = "";
@@ -115,9 +116,8 @@ public class Audio1 implements FlagSet, Playable, Filterable, Audio  {
 		return stopAt;
 	}
 	public Audio1(Node n) {
-		Logger logger = LogManager.getLogger();
 		if(!n.getNodeName().equals("Audio")){
-			logger.warn("Error reading state file. Expected element 'Audio', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'Audio', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -168,7 +168,7 @@ public class Audio1 implements FlagSet, Playable, Filterable, Audio  {
 				id = ModelConverters.fromString(attrValue, id);
 				break;
 				default:
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 				break;
 			}
 		}

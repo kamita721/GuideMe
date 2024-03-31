@@ -56,7 +56,7 @@ public class GuideSettings {
 	private boolean forceStartPage;
 	private boolean globalScriptLogged;
 	private boolean convertArgumentTypes;
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private ComonFunctions comonFunctions = ComonFunctions.getComonFunctions();
 	private Scriptable scope;
 	private Scriptable globalScope;
@@ -79,13 +79,13 @@ public class GuideSettings {
 					+ comonFunctions.fixSeparator(dataDirectory, appSettings.getFileSeparator());
 			filename = dataDirectory + appSettings.getFileSeparator() + guideId + ".state";
 		}
-		logger.debug("GuideSettings appSettings.getDataDirectory(): {}",
+		LOGGER.debug("GuideSettings appSettings.getDataDirectory(): {}",
 				appSettings.getDataDirectory());
-		logger.debug("GuideSettings dataDirectory: {}", dataDirectory);
-		logger.debug("GuideSettings appSettings.getFileSeparator(): {}",
+		LOGGER.debug("GuideSettings dataDirectory: {}", dataDirectory);
+		LOGGER.debug("GuideSettings appSettings.getFileSeparator(): {}",
 				appSettings.getFileSeparator());
-		logger.debug("GuideSettings GuideId: {}", guideId);
-		logger.debug("GuideSettings filename: {}", filename);
+		LOGGER.debug("GuideSettings GuideId: {}", guideId);
+		LOGGER.debug("GuideSettings filename: {}", filename);
 
 		if (new File(filename).exists()) {
 			loadSettings(filename);
@@ -286,7 +286,7 @@ public class GuideSettings {
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			doc = docBuilder.parse(new File(filename));
 		} catch (SAXException | IOException | ParserConfigurationException e) {
-			logger.warn("Error loading guide state {}", filename, e);
+			LOGGER.warn("Error loading guide state {}", filename, e);
 			reset();
 			return;
 		}
@@ -294,7 +294,7 @@ public class GuideSettings {
 		Element rootElement = doc.getDocumentElement();
 		rootElement.normalize();
 		if (!rootElement.getNodeName().equals(SettingsNames.ROOT_ELEMENT)) {
-			logger.warn("Error loading guide state {} because root element is {} not {}", filename,
+			LOGGER.warn("Error loading guide state {} because root element is {} not {}", filename,
 					rootElement.getNodeName(), SettingsNames.ROOT_ELEMENT);
 			reset();
 			return;
@@ -341,13 +341,13 @@ public class GuideSettings {
 				loadGlobalButtons(n);
 				break;
 			default:
-				logger.warn("Unrecognized field '{}' in '{}'", n.getNodeName(), filename);
+				LOGGER.warn("Unrecognized field '{}' in '{}'", n.getNodeName(), filename);
 			}
 			break;
 		case Node.COMMENT_NODE:
 			break;
 		default:
-			logger.warn("Unexpected node type ({}) while parsing guide state {}:\n{}",
+			LOGGER.warn("Unexpected node type ({}) while parsing guide state {}:\n{}",
 					n.getNodeType(), filename);
 			break;
 		}
@@ -363,7 +363,7 @@ public class GuideSettings {
 			Node currentNode = nodeList.item(i);
 			if (currentNode.getNodeType() != Node.ELEMENT_NODE
 					|| currentNode.getNodeName().equals(SettingsNames.VAR)) {
-				logger.warn(
+				LOGGER.warn(
 						"Unexpected node type {} and name {} inside scriptVariables section of {}",
 						currentNode.getNodeType(), currentNode.getNodeName(), filename);
 				continue;
@@ -372,7 +372,7 @@ public class GuideSettings {
 			String strName = elVar.getAttribute("id");
 			String strType = elVar.getAttribute("type");
 			Object objValue;
-			logger.trace("GuideSettings scriptVariables strName {} strType {}", strName, strType);
+			LOGGER.trace("GuideSettings scriptVariables strName {} strType {}", strName, strType);
 			CharacterData elChar;
 			elChar = (CharacterData) elVar.getFirstChild();
 			if (elChar != null) {
@@ -388,7 +388,7 @@ public class GuideSettings {
 
 	private void saveScriptVariables(Element el, Document doc) {
 
-		logger.trace("GuideSettings saveSettings scriptVariables");
+		LOGGER.trace("GuideSettings saveSettings scriptVariables");
 		Iterator<String> it = scriptVariables.keySet().iterator();
 		Element elVar;
 		while (it.hasNext()) {
@@ -422,7 +422,7 @@ public class GuideSettings {
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node childNode = nodeList.item(i);
 			if (childNode.getNodeType() != Node.ELEMENT_NODE) {
-				logger.warn("Unexpected node type {} inside scriptVariables section of {}",
+				LOGGER.warn("Unexpected node type {} inside scriptVariables section of {}",
 						childNode.getNodeType(), filename);
 				continue;
 			}
@@ -477,7 +477,7 @@ public class GuideSettings {
 			Node child = nl.item(i);
 			String nodeName = child.getNodeName();
 			if (!nodeName.equals(SettingsNames.GLOBAL_BUTTON)) {
-				logger.warn(
+				LOGGER.warn(
 						"Error reading in state file. Found element '{}' where '{}' was expected",
 						nodeName, SettingsNames.GLOBAL_BUTTON);
 				continue;
@@ -496,9 +496,9 @@ public class GuideSettings {
 
 	public void saveSettings() {
 		try {
-			logger.trace("GuideSettings saveSettings filename: {}", filename);
+			LOGGER.trace("GuideSettings saveSettings filename: {}", filename);
 
-			logger.trace("GuideSettings saveSettings does not file exist ");
+			LOGGER.trace("GuideSettings saveSettings does not file exist ");
 			DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			Document doc = docBuilder.newDocument();
@@ -534,11 +534,11 @@ public class GuideSettings {
 			TransformerFactory transformerFactory = XMLReaderUtils.getTransformFactory();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			logger.trace("GuideSettings saveSettings save file: {}", filename);
+			LOGGER.trace("GuideSettings saveSettings save file: {}", filename);
 			StreamResult result = new StreamResult(new File(filename));
 			transformer.transform(source, result);
 		} catch (TransformerException | ParserConfigurationException ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 	}
 

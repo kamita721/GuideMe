@@ -22,7 +22,7 @@ class FilePreferences extends SelectionAdapter {
 	@Override
 	public void widgetSelected(SelectionEvent e) {
 		try {
-			MainShell.logger.trace("Enter FilePreferences");
+			MainShell.LOGGER.trace("Enter FilePreferences");
 			// display a modal shell to change the preferences
 			this.mainShell.inPrefShell = true;
 			Shell prefShell = new PreferenceShell().createShell(this.mainShell.myDisplay, this.mainShell.appSettings);
@@ -33,7 +33,7 @@ class FilePreferences extends SelectionAdapter {
 			}
 			this.mainShell.inPrefShell = false;
 		} catch (Exception ex) {
-			MainShell.logger.error(" FilePreferences " + ex.getLocalizedMessage());
+			MainShell.LOGGER.error(" FilePreferences " + ex.getLocalizedMessage());
 			this.mainShell.inPrefShell = false;
 		}
 		super.widgetSelected(e);

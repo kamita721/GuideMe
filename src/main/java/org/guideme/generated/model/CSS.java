@@ -31,9 +31,9 @@ public class CSS  {
 		this.text = text;
 	}
 	public CSS(Node n) {
-		Logger logger = LogManager.getLogger();
+		Logger LOGGER = LogManager.getLogger();
 		if(!n.getNodeName().equals("CSS")){
-			logger.warn("Error reading state file. Expected element 'CSS', but got '{}'", n.getNodeName());
+			LOGGER.warn("Error reading state file. Expected element 'CSS', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){
@@ -43,7 +43,7 @@ public class CSS  {
 			if(attrName.equals("text")){
 				text = ModelConverters.fromString(attrValue, text);
 			} else {
-				logger.warn("Unhandled attribute '{}'", attrName);
+				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
 	}

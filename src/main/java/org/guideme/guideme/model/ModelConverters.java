@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.graphics.Color;
 
 public class ModelConverters {
-	static Logger logger = LogManager.getLogger();
+	static Logger LOGGER = LogManager.getLogger();
 
 	private ModelConverters() {
 
@@ -35,7 +35,7 @@ public class ModelConverters {
 		}
 		String[] rgba = data.split("\\,");
 		if (rgba.length != 4) {
-			logger.warn("Cannot convert saved color description '{}' to Color", data);
+			LOGGER.warn("Cannot convert saved color description '{}' to Color", data);
 			return defaultValue;
 		}
 		int[] irgba = new int[4];
@@ -45,7 +45,7 @@ public class ModelConverters {
 			irgba[2] = Integer.parseInt(rgba[2]);
 			irgba[3] = Integer.parseInt(rgba[3]);
 		} catch (NumberFormatException e) {
-			logger.warn("Cannot convert saved color description '{}' to Color", data);
+			LOGGER.warn("Cannot convert saved color description '{}' to Color", data);
 			return defaultValue;
 		}
 		return new Color(irgba[0], irgba[1], irgba[2], irgba[3]);
@@ -73,7 +73,7 @@ public class ModelConverters {
 		try {
 			return Integer.parseInt(data);
 		} catch (NumberFormatException e) {
-			logger.warn("Cannot convert saved description '{}' to an integer.", data, e);
+			LOGGER.warn("Cannot convert saved description '{}' to an integer.", data, e);
 			return defaultValue;
 		}
 	}
@@ -104,7 +104,7 @@ public class ModelConverters {
 			long l = Long.parseLong(data);
 			return LocalTime.ofNanoOfDay(l);
 		} catch (NumberFormatException | DateTimeException e) {
-			logger.warn("Cannot convert saved description '{}' to a LocalTime.", data, e);
+			LOGGER.warn("Cannot convert saved description '{}' to a LocalTime.", data, e);
 			return defaultValue;
 		}
 	}

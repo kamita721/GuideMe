@@ -36,7 +36,7 @@ public class PreferenceShell {
 	private Shell shell = null;
 	
 	private AppSettings myAppSettings;
-	private static Logger logger = LogManager.getLogger();
+	private static Logger LOGGER = LogManager.getLogger();
 	private Font controlFont;
 	private HashMap<String, FormData> appFormdata = new HashMap<>();
 	private HashMap<String, Control> appWidgets = new HashMap<>();
@@ -50,7 +50,7 @@ public class PreferenceShell {
 
 	public Shell createShell(final Display display, AppSettings appSettings) {
   Display myDisplay;
-		logger.trace("Enter createShell");
+		LOGGER.trace("Enter createShell");
 		try {
 			//Create the main UI elements
 			myDisplay = display;
@@ -206,9 +206,9 @@ public class PreferenceShell {
 			
 		}
 		catch (Exception ex) {
-			logger.error(ex.getLocalizedMessage());
+			LOGGER.error(ex.getLocalizedMessage());
 		}
-		logger.trace("Exit createShell");
+		LOGGER.trace("Exit createShell");
 		return shell;
 	}
 	
@@ -243,7 +243,7 @@ public class PreferenceShell {
 		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
-				logger.trace("Enter SaveButtonListner");
+				LOGGER.trace("Enter SaveButtonListner");
 				Text txtTmp;
 				Button btnTmp;
 
@@ -349,9 +349,9 @@ public class PreferenceShell {
 				shell.close();
 			}
 			catch (Exception ex) {
-				logger.error(" SaveButtonListner " + ex.getLocalizedMessage());
+				LOGGER.error(" SaveButtonListner " + ex.getLocalizedMessage());
 			}
-			logger.trace("Exit SaveButtonListner");
+			LOGGER.trace("Exit SaveButtonListner");
 		}
 	}
 
@@ -360,13 +360,13 @@ public class PreferenceShell {
 		@Override
 		public void widgetSelected(SelectionEvent event) {
 			try {
-				logger.trace("Enter CancelButtonListener");
+				LOGGER.trace("Enter CancelButtonListener");
 				shell.close();
 			}
 			catch (Exception ex) {
-				logger.error(" CancelButtonListener " + ex.getLocalizedMessage());
+				LOGGER.error(" CancelButtonListener " + ex.getLocalizedMessage());
 			}
-			logger.trace("Exit CancelButtonListener");
+			LOGGER.trace("Exit CancelButtonListener");
 		}
 	}
 
@@ -443,7 +443,7 @@ public class PreferenceShell {
 				controlFont.dispose();
 			}
 			catch (Exception ex) {
-				logger.error("shellCloseListen ", ex);
+				LOGGER.error("shellCloseListen ", ex);
 			}
 			super.shellClosed(e);
 		}
