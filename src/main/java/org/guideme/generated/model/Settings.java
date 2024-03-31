@@ -17,10 +17,10 @@ public class Settings  {
 		final Logger logger = LogManager.getLogger();
 		int depth = 1;
 		while (depth > 0) {
-			 int eventType = reader.next();
-			 if (eventType == XMLStreamConstants.START_ELEMENT) {
-				  depth++;
-				  String tagName = reader.getName().getLocalPart();
+			int eventType = reader.next();
+			if (eventType == XMLStreamConstants.START_ELEMENT) {
+				depth++;
+				String tagName = reader.getName().getLocalPart();
 				switch(tagName){
 				case "PageSound":
 					pageSound = XMLReaderUtils.getStringContentOrDefault(reader, true);
@@ -39,14 +39,14 @@ public class Settings  {
 					XMLReaderUtils.getStringContentUntilElementEnd(reader);
 					break;
 				}
-				  eventType = reader.next();
-				  if (XMLReaderUtils.isAtElementEnd(reader, "Settings")) {
-					   return;
-					  }
-				 }
-			 if (eventType == XMLStreamConstants.END_ELEMENT) {
-				  depth--;
-				 }
+				eventType = reader.next();
+				if (XMLReaderUtils.isAtElementEnd(reader, "Settings")) {
+					return;
+				}
+			}
+			if (eventType == XMLStreamConstants.END_ELEMENT) {
+				depth--;
+			}
 		}
 	}
 

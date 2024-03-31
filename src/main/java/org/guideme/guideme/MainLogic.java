@@ -521,10 +521,10 @@ public class MainLogic {
 
 		if (objMetronome != null) {
 			// Metronome
-			int intbpm = objMetronome.getbpm();
+			int intbpm = objMetronome.getBpm();
 			logger.debug("displayPage Metronome {} BPM", intbpm);
 
-			mainShell.setMetronomeBPM(objMetronome.getbpm(), objMetronome.getLoops(),
+			mainShell.setMetronomeBPM(objMetronome.getBpm(), objMetronome.getLoops(),
 					objMetronome.getResolution(), objMetronome.getRhythm());
 
 		}
@@ -635,7 +635,7 @@ public class MainLogic {
 		return objCurrPage;
 	}
 
-	private static void loadGlobalScriptVariables() {
+	private static void loadGlobalScriptVariables() throws IOException {
 		// globalScriptVariables
 		String dataDirectory;
 		AppSettings appSettings = AppSettings.getAppSettings();

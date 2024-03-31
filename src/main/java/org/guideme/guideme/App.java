@@ -25,90 +25,87 @@ public class App {
 	 * This is where it all starts from main will create and display the first shell
 	 * (window)
 	 */
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 
-	public static void main(String[] args) {
-		try {
+	public static void main(String[] args) throws IOException {
 
-			System.setProperty("org.eclipse.swt.browser.IEVersion", "11000");
+		System.setProperty("org.eclipse.swt.browser.IEVersion", "11000");
 
-			logger.trace("Enter main");
-			logger.error("GuideMe Version - " + ComonFunctions.getVersion());
-			// Sleak will help diagnose SWT memory leaks
-			// if you set this to true you will get an additional window
-			// that allows you to track resources that are created and not destroyed
-			// correctly
-			boolean loadSleak = false;
-			if (args.length > 0 && args[0].equals("sleak")) {
-				loadSleak = true;
-			}
-
-			AppSettings appSettings = AppSettings.getAppSettings();
-
-			Path directory = Paths.get(appSettings.getTempDir());
-
-			try (Stream<Path> st = Files.list(directory)) {
-				st.filter(filePath -> {
-					if (filePath.toFile().isFile()) {
-						return filePath.toFile().getName().startsWith("tmpImage");
-					} else {
-						return false;
-					}
-				}).forEach(toDelete -> {
-					try {
-						java.nio.file.Files.delete(toDelete);
-					} catch (IOException e) {
-						logger.error("Failed to delete file: " + toDelete, e);
-					}
-				});
-			}
-
-			if (args.length > 1) {
-				appSettings.setDataDirectory(args[0]);
-				appSettings.setComandLineGuide(args[1]);
-			}
-
-			Display display;
-			// user debug setting
-			if (appSettings.getDebug()) {
-				Properties properties = java.lang.System.getProperties();
-				Iterator<Object> it = properties.keySet().iterator();
-				// display all the jvm properties in the log file
-				while (it.hasNext()) {
-					String key = String.valueOf(it.next());
-					String value = String.valueOf(properties.get(key));
-					// write out at error level even though it is a debug message
-					// so we can turn it on, on a users machine
-					logger.error("{} - {}", key, value);
-				}
-			}
-
-			if (loadSleak) {
-				DeviceData data = new DeviceData();
-				data.tracking = true;
-				display = new Display(data);
-				Sleak sleak = new Sleak();
-				sleak.open();
-			} else {
-				display = new Display();
-			}
-
-			DisplayKeyEventListener keylistener = new DisplayKeyEventListener();
-			display.addFilter(SWT.KeyDown, keylistener);
-
-			NativeDiscovery nativeDiscovery = new NativeDiscovery();
-			boolean vlcFound = nativeDiscovery.discover();
-			logger.trace("test for vlc: {}", vlcFound);
-
-			appSettings.setMonitorChanging(false);
-			logger.trace("create main shell");
-			MainShell mainShell = new MainShell();
-			keylistener.setMainShell(mainShell);
-			mainShell.run(display);
-			display.dispose();
-		} catch (Exception ex) {
-			logger.error("Main error " + ex.getLocalizedMessage(), ex);
+		logger.trace("Enter main");
+		logger.error("GuideMe Version - " + ComonFunctions.getVersion());
+		// Sleak will help diagnose SWT memory leaks
+		// if you set this to true you will get an additional window
+		// that allows you to track resources that are created and not destroyed
+		// correctly
+		boolean loadSleak = false;
+		if (args.length > 0 && args[0].equals("sleak")) {
+			loadSleak = true;
 		}
+
+		AppSettings appSettings = AppSettings.getAppSettings();
+
+		Path directory = Paths.get(appSettings.getTempDir());
+
+		try (Stream<Path> st = Files.list(directory)) {
+			st.filter(filePath -> {
+				if (filePath.toFile().isFile()) {
+					return filePath.toFile().getName().startsWith("tmpImage");
+				} else {
+					return false;
+				}
+			}).forEach(toDelete -> {
+				try {
+					java.nio.file.Files.delete(toDelete);
+				} catch (IOException e) {
+					logger.error("Failed to delete file: " + toDelete, e);
+				}
+			});
+		}
+
+		if (args.length > 1) {
+			appSettings.setDataDirectory(args[0]);
+			appSettings.setComandLineGuide(args[1]);
+		}
+
+		Display display;
+		// user debug setting
+		if (appSettings.getDebug()) {
+			Properties properties = java.lang.System.getProperties();
+			Iterator<Object> it = properties.keySet().iterator();
+			// display all the jvm properties in the log file
+			while (it.hasNext()) {
+				String key = String.valueOf(it.next());
+				String value = String.valueOf(properties.get(key));
+				// write out at error level even though it is a debug message
+				// so we can turn it on, on a users machine
+				logger.error("{} - {}", key, value);
+			}
+		}
+
+		if (loadSleak) {
+			DeviceData data = new DeviceData();
+			data.tracking = true;
+			display = new Display(data);
+			Sleak sleak = new Sleak();
+			sleak.open();
+		} else {
+			display = new Display();
+		}
+
+		DisplayKeyEventListener keylistener = new DisplayKeyEventListener();
+		display.addFilter(SWT.KeyDown, keylistener);
+
+		NativeDiscovery nativeDiscovery = new NativeDiscovery();
+		boolean vlcFound = nativeDiscovery.discover();
+		logger.trace("test for vlc: {}", vlcFound);
+
+		appSettings.setMonitorChanging(false);
+		logger.trace("create main shell");
+		MainShell mainShell = new MainShell();
+		keylistener.setMainShell(mainShell);
+		mainShell.run(display);
+		display.dispose();
+
 		logger.trace("Exit main");
 	}
 }

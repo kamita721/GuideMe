@@ -37,13 +37,10 @@ public class Javascript  {
 			Node child = nnm.item(i);
 			String attrName = child.getNodeName();
 			String attrValue = child.getNodeValue();
-			switch(attrName){
-			case "text":
+			if(attrName.equals("text")){
 				text = ModelConverters.fromString(attrValue, text);
-				break;
-				default:
+			} else {
 				logger.warn("Unhandled attribute '{}'", attrName);
-				break;
 			}
 		}
 	}

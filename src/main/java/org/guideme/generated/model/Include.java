@@ -31,13 +31,10 @@ public class Include  {
 			Node child = nnm.item(i);
 			String attrName = child.getNodeName();
 			String attrValue = child.getNodeValue();
-			switch(attrName){
-			case "file":
+			if(attrName.equals("file")){
 				file = ModelConverters.fromString(attrValue, file);
-				break;
-				default:
+			} else {
 				logger.warn("Unhandled attribute '{}'", attrName);
-				break;
 			}
 		}
 	}

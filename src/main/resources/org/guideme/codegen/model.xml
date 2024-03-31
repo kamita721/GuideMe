@@ -148,15 +148,14 @@
 
         <element name="Metronome" callback="page.addMetronome({})">
             <attributeSet ref="filterable"/>
-            <attribute name="bpm" type="java.lang.String"/>
+            <attribute name="bpmString" type="java.lang.String"/>
             <attribute name="rhythm" type="java.lang.String"/>
             <attribute name="beats" javaName="resolution" type="int" default="4"/>
             <attribute name="loops" type="int" default="-1"/>
             <extraImport>org.guideme.guideme.scripting.functions.ComonFunctions</extraImport>
             <extraBody><![CDATA[
-                //TODO it is kinda bad that we rely on the case distinction between getbpm and getBpm
-                public int getbpm() {
-                    return ComonFunctions.getComonFunctions().getRandom(bpm);
+                public int getBpm() {
+                    return ComonFunctions.getComonFunctions().getRandom(bpmString);
                 }
             ]]></extraBody>
         </element>

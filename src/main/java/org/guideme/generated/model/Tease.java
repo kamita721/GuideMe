@@ -39,13 +39,10 @@ public class Tease  {
 			Node child = nnm.item(i);
 			String attrName = child.getNodeName();
 			String attrValue = child.getNodeValue();
-			switch(attrName){
-			case "minimumVersion":
+			if(attrName.equals("minimumVersion")){
 				minimumVersion = ModelConverters.fromString(attrValue, minimumVersion);
-				break;
-				default:
+			} else {
 				logger.warn("Unhandled attribute '{}'", attrName);
-				break;
 			}
 		}
 	}

@@ -90,105 +90,97 @@ public class PreferenceShell {
 			grpApp.setLayout(layout5);
 			
 			//Font Size
-			AddTextField(grpApp, displayText.getString("FileAppPrefFontSize"), grpApp, grpApp, String.valueOf(myAppSettings.getFontSize()), "AppFontSize", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefFontSize"), grpApp, grpApp, String.valueOf(myAppSettings.getFontSize()), "AppFontSize", true);
 			
 			//HTML Font Size
-			AddTextField(grpApp, displayText.getString("FileAppPrefHTMLFontSize"), appWidgets.get("AppFontSizeNumCtrl"), appWidgets.get("AppFontSizeNumCtrl"), String.valueOf(myAppSettings.getHtmlFontSize()), "AppHtmlFontSize", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefHTMLFontSize"), appWidgets.get("AppFontSizeNumCtrl"), appWidgets.get("AppFontSizeNumCtrl"), String.valueOf(myAppSettings.getHtmlFontSize()), "AppHtmlFontSize", true);
 
 			//Timer Font Size
-			AddTextField(grpApp, displayText.getString("FileAppPrefTimerFontSize"), appWidgets.get("AppHtmlFontSizeNumCtrl"), appWidgets.get("AppHtmlFontSizeNumCtrl"), String.valueOf(myAppSettings.getTimerFontSize()), "AppTimerFontSize", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefTimerFontSize"), appWidgets.get("AppHtmlFontSizeNumCtrl"), appWidgets.get("AppHtmlFontSizeNumCtrl"), String.valueOf(myAppSettings.getTimerFontSize()), "AppTimerFontSize", true);
 
 			//Button Font Size
-			AddTextField(grpApp, displayText.getString("FileAppPrefButtonFontSize"), appWidgets.get("AppTimerFontSizeNumCtrl"), appWidgets.get("AppTimerFontSizeNumCtrl"), String.valueOf(myAppSettings.getButtonFontSize()), "AppButtonFontSize", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefButtonFontSize"), appWidgets.get("AppTimerFontSizeNumCtrl"), appWidgets.get("AppTimerFontSizeNumCtrl"), String.valueOf(myAppSettings.getButtonFontSize()), "AppButtonFontSize", true);
 
 			//Image Scale
-			AddTextField(grpApp, displayText.getString("FileAppPrefImageScale"), appWidgets.get("AppButtonFontSizeNumCtrl"), appWidgets.get("AppButtonFontSizeNumCtrl"), String.valueOf(myAppSettings.getMaxImageScale()), "AppImageScale", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefImageScale"), appWidgets.get("AppButtonFontSizeNumCtrl"), appWidgets.get("AppButtonFontSizeNumCtrl"), String.valueOf(myAppSettings.getMaxImageScale()), "AppImageScale", true);
 			
 			//Language
-			AddTextField(grpApp, displayText.getString("FileAppPrefLanguage"), appWidgets.get("AppImageScaleNumCtrl"), appWidgets.get("AppImageScaleNumCtrl"), String.valueOf(myAppSettings.getLanguage()), "AppLanguage", false);
+			addTextField(grpApp, displayText.getString("FileAppPrefLanguage"), appWidgets.get("AppImageScaleNumCtrl"), appWidgets.get("AppImageScaleNumCtrl"), String.valueOf(myAppSettings.getLanguage()), "AppLanguage", false);
 			
 			//Country
-			AddTextField(grpApp, displayText.getString("FileAppPrefCountry"), appWidgets.get("AppLanguageCtrl"), appWidgets.get("AppLanguageCtrl"), String.valueOf(myAppSettings.getCountry()), "AppCountry", false);
+			addTextField(grpApp, displayText.getString("FileAppPrefCountry"), appWidgets.get("AppLanguageCtrl"), appWidgets.get("AppLanguageCtrl"), String.valueOf(myAppSettings.getCountry()), "AppCountry", false);
 			
 			//Debug
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefDebug"), appWidgets.get("AppCountryCtrl"), appWidgets.get("AppCountryCtrl"), myAppSettings.getDebug(), "AppDebug");			
+			addBooleanField(grpApp, displayText.getString("FileAppPrefDebug"), appWidgets.get("AppCountryCtrl"), appWidgets.get("AppCountryCtrl"), myAppSettings.getDebug(), "AppDebug");			
 
 			//Javascript Debug
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefJsDug"), appWidgets.get("AppDebugBlnCtrl"), appWidgets.get("AppDebugBlnCtrl"), myAppSettings.getJsDebug(), "AppJsDebug");			
+			addBooleanField(grpApp, displayText.getString("FileAppPrefJsDug"), appWidgets.get("AppDebugBlnCtrl"), appWidgets.get("AppDebugBlnCtrl"), myAppSettings.getJsDebug(), "AppJsDebug");			
 
 			//Javascript window height
-			AddTextField(grpApp, displayText.getString("FileAppPrefJsHeight"), appWidgets.get("AppJsDebugBlnCtrl"), appWidgets.get("AppJsDebugBlnCtrl"), String.valueOf(myAppSettings.getJsDebugHeight()), "AppJsDebugHeight", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefJsHeight"), appWidgets.get("AppJsDebugBlnCtrl"), appWidgets.get("AppJsDebugBlnCtrl"), String.valueOf(myAppSettings.getJsDebugHeight()), "AppJsDebugHeight", true);
 
 			//Javascript window width
-			AddTextField(grpApp, displayText.getString("FileAppPrefJsWidth"), appWidgets.get("AppJsDebugHeightNumCtrl"), appWidgets.get("AppJsDebugHeightNumCtrl"), String.valueOf(myAppSettings.getJsDebugWidth()), "AppJsDebugWidth", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefJsWidth"), appWidgets.get("AppJsDebugHeightNumCtrl"), appWidgets.get("AppJsDebugHeightNumCtrl"), String.valueOf(myAppSettings.getJsDebugWidth()), "AppJsDebugWidth", true);
 
 			//Video
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefVideo"), appWidgets.get("AppJsDebugWidthNumCtrl"), appWidgets.get("AppJsDebugWidthNumCtrl"), myAppSettings.getVideoOn(), "AppVideo");			
+			addBooleanField(grpApp, displayText.getString("FileAppPrefVideo"), appWidgets.get("AppJsDebugWidthNumCtrl"), appWidgets.get("AppJsDebugWidthNumCtrl"), myAppSettings.getVideoOn(), "AppVideo");			
 
 			//Webcam
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefWebcam"), appWidgets.get("AppVideoBlnCtrl"), appWidgets.get("AppVideoBlnCtrl"), myAppSettings.getWebcamOn(), "AppWebcam");			
+			addBooleanField(grpApp, displayText.getString("FileAppPrefWebcam"), appWidgets.get("AppVideoBlnCtrl"), appWidgets.get("AppVideoBlnCtrl"), myAppSettings.getWebcamOn(), "AppWebcam");			
 
 			//Main Monitor
-			AddTextField(grpApp, displayText.getString("FileAppPrefMainMonitor"), appWidgets.get("AppWebcamBlnCtrl"), appWidgets.get("AppWebcamBlnCtrl"), String.valueOf(myAppSettings.getMainMonitor()), "AppMainMonitor", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefMainMonitor"), appWidgets.get("AppWebcamBlnCtrl"), appWidgets.get("AppWebcamBlnCtrl"), String.valueOf(myAppSettings.getMainMonitor()), "AppMainMonitor", true);
 			mainMonitor = myAppSettings.getMainMonitor();
 
 			//Full Screen
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefFullScreen"), appWidgets.get("AppMainMonitorNumCtrl"), appWidgets.get("AppMainMonitorNumCtrl"), myAppSettings.isFullScreen(), "AppFullScreen");
+			addBooleanField(grpApp, displayText.getString("FileAppPrefFullScreen"), appWidgets.get("AppMainMonitorNumCtrl"), appWidgets.get("AppMainMonitorNumCtrl"), myAppSettings.isFullScreen(), "AppFullScreen");
 			isFullScreen = myAppSettings.isFullScreen();
 
 			//Multi Monitor
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefDualMonitor"), appWidgets.get("AppFullScreenBlnCtrl"), appWidgets.get("AppFullScreenBlnCtrl"), myAppSettings.isMultiMonitor(), "AppMultiMonitor");			
+			addBooleanField(grpApp, displayText.getString("FileAppPrefDualMonitor"), appWidgets.get("AppFullScreenBlnCtrl"), appWidgets.get("AppFullScreenBlnCtrl"), myAppSettings.isMultiMonitor(), "AppMultiMonitor");			
 			isMultiMonitor = myAppSettings.isMultiMonitor();
 			
 			//Clock
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefClock"), appWidgets.get("AppMultiMonitorBlnCtrl"), appWidgets.get("AppMultiMonitorBlnCtrl"), myAppSettings.isClock(), "AppClock");			
+			addBooleanField(grpApp, displayText.getString("FileAppPrefClock"), appWidgets.get("AppMultiMonitorBlnCtrl"), appWidgets.get("AppMultiMonitorBlnCtrl"), myAppSettings.isClock(), "AppClock");			
 			
 			//Metronome
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefMetronome"), appWidgets.get("AppClockBlnCtrl"), appWidgets.get("AppClockBlnCtrl"), myAppSettings.isMetronome(), "AppMetronome");			
+			addBooleanField(grpApp, displayText.getString("FileAppPrefMetronome"), appWidgets.get("AppClockBlnCtrl"), appWidgets.get("AppClockBlnCtrl"), myAppSettings.isMetronome(), "AppMetronome");			
 			
 			//Page Sound
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefPageSound"), appWidgets.get("AppMetronomeBlnCtrl"), appWidgets.get("AppMetronomeBlnCtrl"), myAppSettings.isPageSound(), "AppPageSound");			
+			addBooleanField(grpApp, displayText.getString("FileAppPrefPageSound"), appWidgets.get("AppMetronomeBlnCtrl"), appWidgets.get("AppMetronomeBlnCtrl"), myAppSettings.isPageSound(), "AppPageSound");			
 
 			//To Clipboard (used for TTS)
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefTTSClipboard"), appWidgets.get("AppPageSoundBlnCtrl"), appWidgets.get("AppPageSoundBlnCtrl"), myAppSettings.isToclipboard(), "AppToClipboard");			
+			addBooleanField(grpApp, displayText.getString("FileAppPrefTTSClipboard"), appWidgets.get("AppPageSoundBlnCtrl"), appWidgets.get("AppPageSoundBlnCtrl"), myAppSettings.isToclipboard(), "AppToClipboard");			
 
 			//Store state in data directory
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefDataDirState"), appWidgets.get("AppToClipboardBlnCtrl"), appWidgets.get("AppToClipboardBlnCtrl"), myAppSettings.isStateInDataDir(), "AppStateInDataDir");
+			addBooleanField(grpApp, displayText.getString("FileAppPrefDataDirState"), appWidgets.get("AppToClipboardBlnCtrl"), appWidgets.get("AppToClipboardBlnCtrl"), myAppSettings.isStateInDataDir(), "AppStateInDataDir");
 
 			//Ask for confirmation on reloading or restarting guide
-			AddBooleanField(grpApp, displayText.getString("FileAppPrefFileActionConfirmations"), appWidgets.get("AppStateInDataDirBlnCtrl"), appWidgets.get("AppStateInDataDirBlnCtrl"), myAppSettings.isFileActionConfirmations(), "FileActionConfirmations");
-
-			//Auto Hide Menu
-			//AddBooleanField(grpApp, "Auto hide the menu", appWidgets.get("AppToClipboardBlnCtrl"), appWidgets.get("AppToClipboardBlnCtrl"), myAppSettings.isHideMenu(), "AppHideMenu");			
-
-			//Data Directory
-			//AddTextField(grpApp, "Data Directory", appWidgets.get("AppPageSoundBlnCtrl"), appWidgets.get("AppPageSoundBlnCtrl"), myAppSettings.getDataDirectory(), "AppDataDir", false);
+			addBooleanField(grpApp, displayText.getString("FileAppPrefFileActionConfirmations"), appWidgets.get("AppStateInDataDirBlnCtrl"), appWidgets.get("AppStateInDataDirBlnCtrl"), myAppSettings.isFileActionConfirmations(), "FileActionConfirmations");
 
 			//midiInstrument
-			//AddTextField(grpApp, "Midi Instrument (35 - 81)", appWidgets.get("AppDataDirCtrl"), appWidgets.get("AppDataDirCtrl"), String.valueOf(myAppSettings.getMidiInstrument()), "AppMidiInstrument", true);
-			AddTextField(grpApp, displayText.getString("FileAppPrefMidiInstrument"), appWidgets.get("FileActionConfirmationsBlnCtrl"), appWidgets.get("FileActionConfirmationsBlnCtrl"), String.valueOf(myAppSettings.getMidiInstrument()), "AppMidiInstrument", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefMidiInstrument"), appWidgets.get("FileActionConfirmationsBlnCtrl"), appWidgets.get("FileActionConfirmationsBlnCtrl"), String.valueOf(myAppSettings.getMidiInstrument()), "AppMidiInstrument", true);
 
 			//midiVolume
-			AddTextField(grpApp, displayText.getString("FileAppPrefMidiVol"), appWidgets.get("AppMidiInstrumentNumCtrl"), appWidgets.get("AppMidiInstrumentNumCtrl"), String.valueOf(myAppSettings.getMidiVolume()), "AppMidiVolume", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefMidiVol"), appWidgets.get("AppMidiInstrumentNumCtrl"), appWidgets.get("AppMidiInstrumentNumCtrl"), String.valueOf(myAppSettings.getMidiVolume()), "AppMidiVolume", true);
 
 			//Music Volume
-			AddTextField(grpApp, displayText.getString("FileAppPrefMusicVol"), appWidgets.get("AppMidiVolumeNumCtrl"), appWidgets.get("AppMidiVolumeNumCtrl"), String.valueOf(myAppSettings.getMusicVolume()), "AppMusicVolume", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefMusicVol"), appWidgets.get("AppMidiVolumeNumCtrl"), appWidgets.get("AppMidiVolumeNumCtrl"), String.valueOf(myAppSettings.getMusicVolume()), "AppMusicVolume", true);
 
 			//Video Volume
-			AddTextField(grpApp, displayText.getString("FileAppPrefVideoVol"), appWidgets.get("AppMusicVolumeNumCtrl"), appWidgets.get("AppMusicVolumeNumCtrl"), String.valueOf(myAppSettings.getVideoVolume()), "AppVideoVolume", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefVideoVol"), appWidgets.get("AppMusicVolumeNumCtrl"), appWidgets.get("AppMusicVolumeNumCtrl"), String.valueOf(myAppSettings.getVideoVolume()), "AppVideoVolume", true);
 
 			//Thumb Size for the Library Screen
-			AddTextField(grpApp, displayText.getString("FileAppPrefThumbSize"), appWidgets.get("AppVideoVolumeNumCtrl"), appWidgets.get("AppVideoVolumeNumCtrl"), String.valueOf(myAppSettings.getThumbnailSize()), "AppThumbnailSize", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefThumbSize"), appWidgets.get("AppVideoVolumeNumCtrl"), appWidgets.get("AppVideoVolumeNumCtrl"), String.valueOf(myAppSettings.getThumbnailSize()), "AppThumbnailSize", true);
 
 			//Image Scale Factor (hack to cope with some screens / graphic cards not displaying pictures the same size
-			AddTextField(grpApp, displayText.getString("FileAppPrefImageScaleFactor"), appWidgets.get("AppThumbnailSizeNumCtrl"), appWidgets.get("AppThumbnailSizeNumCtrl"), String.valueOf(myAppSettings.getImgOffset()), "AppImgOffset", true);
+			addTextField(grpApp, displayText.getString("FileAppPrefImageScaleFactor"), appWidgets.get("AppThumbnailSizeNumCtrl"), appWidgets.get("AppThumbnailSizeNumCtrl"), String.valueOf(myAppSettings.getImgOffset()), "AppImgOffset", true);
 
 
 			SquareButton btnCancel = new SquareButton(composite, SWT.PUSH);
 			btnCancel.setText(displayText.getString("ButtonCancel"));
 			btnCancel.setFont(controlFont);
 			FormData btnCancelFormData = new FormData();
-			//btnCancelFormData.top = new FormAttachment(grpDoubles,5);
 			btnCancelFormData.top = new FormAttachment(grpApp,5);
 			btnCancelFormData.right = new FormAttachment(100,-5);
 			btnCancel.setLayoutData(btnCancelFormData);
@@ -198,7 +190,6 @@ public class PreferenceShell {
 			btnSave.setText(displayText.getString("ButtonSave"));
 			btnSave.setFont(controlFont);
 			FormData btnSaveFormData = new FormData();
-			//btnSaveFormData.top = new FormAttachment(grpDoubles,5);
 			btnSaveFormData.top = new FormAttachment(grpApp,5);
 			btnSaveFormData.right = new FormAttachment(btnCancel,-5);
 			btnSave.setLayoutData(btnSaveFormData);
@@ -209,9 +200,9 @@ public class PreferenceShell {
 			sc.setExpandVertical(true);
 			sc.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));			
 
-			shell.addShellListener(new shellCloseListen());
+			shell.addShellListener(new ShellCloseListen());
 			
-			shell.layout();;
+			shell.layout();
 			
 		}
 		catch (Exception ex) {
@@ -330,12 +321,6 @@ public class PreferenceShell {
 
 				btnTmp = (Button) appWidgets.get("FileActionConfirmationsBlnCtrl");
 				myAppSettings.setFileActionConfirmations(btnTmp.getSelection());
-				
-				//btnTmp = (Button) appWidgets.get("AppHideMenuBlnCtrl");
-				//myAppSettings.setHideMenu(btnTmp.getSelection());
-				
-				//txtTmp = (Text) appWidgets.get("AppDataDirCtrl");
-				//myAppSettings.setDataDirectory((txtTmp.getText()));
 
 				txtTmp = (Text) appWidgets.get("AppMidiInstrumentNumCtrl");
 				myAppSettings.setMidiInstrument(Integer.parseInt(txtTmp.getText()));
@@ -385,7 +370,7 @@ public class PreferenceShell {
 		}
 	}
 
-	private void AddTextField(Group group, String labelText, Control prevControl, Control prevControl2, String value, String key, boolean addNewmeric) {
+	private void addTextField(Group group, String labelText, Control prevControl, Control prevControl2, String value, String key, boolean addNewmeric) {
 		Label lblTmp;
 		Text txtTmp;
 		String lblSufix;
@@ -399,14 +384,12 @@ public class PreferenceShell {
 		lblTmpFormData = new FormData();
 		lblTmpFormData.top = new FormAttachment(prevControl,5);
 		lblTmpFormData.left = new FormAttachment(0,5);
-		//lblTmpFormData.right = new FormAttachment(25,0);
 		lblTmp.setLayoutData(lblTmpFormData);
 		txtTmp = new Text(group, SWT.SINGLE);
 		txtTmp.setFont(controlFont);
 		txtTmp.setText(value);
 		txtTmpFormData = new FormData();
 		txtTmpFormData.top = new FormAttachment(prevControl2,5);
-		//txtTmpFormData.left = new FormAttachment(lblTmp,20);
 		txtTmpFormData.left = new FormAttachment(50,5);
 		txtTmpFormData.right = new FormAttachment(100,-5);
 		txtTmp.setLayoutData(txtTmpFormData);
@@ -424,7 +407,7 @@ public class PreferenceShell {
 		appWidgets.put(key + ctrlSufix, txtTmp);
 	}
 
-	private void AddBooleanField(Group group, String labelText, Control prevControl, Control prevControl2, boolean value, String key) {
+	private void addBooleanField(Group group, String labelText, Control prevControl, Control prevControl2, boolean value, String key) {
 		Label lblTmp;
 		Button btnTmp;
 		FormData lblTmpFormData;
@@ -436,7 +419,6 @@ public class PreferenceShell {
 		lblTmpFormData = new FormData();
 		lblTmpFormData.top = new FormAttachment(prevControl,5);
 		lblTmpFormData.left = new FormAttachment(0,5);
-		//lblTmpFormData.right = new FormAttachment(25,0);
 		lblTmp.setLayoutData(lblTmpFormData);
 		btnTmp = new Button(group, SWT.CHECK);
 		btnTmp.setFont(controlFont);
@@ -444,7 +426,6 @@ public class PreferenceShell {
 		btnTmp.setSelection(value);
 		txtTmpFormData = new FormData();
 		txtTmpFormData.top = new FormAttachment(prevControl2,5);
-		//txtTmpFormData.left = new FormAttachment(lblTmp,20);
 		txtTmpFormData.left = new FormAttachment(50,5);
 		txtTmpFormData.right = new FormAttachment(100,-5);
 		btnTmp.setLayoutData(txtTmpFormData);
@@ -454,7 +435,7 @@ public class PreferenceShell {
 		appWidgets.put(key + "BlnCtrl", btnTmp);
 	}
 
-	class shellCloseListen  extends ShellAdapter {
+	class ShellCloseListen  extends ShellAdapter {
 		// Clean up stuff when the application closes
 		@Override
 		public void shellClosed(ShellEvent e) {

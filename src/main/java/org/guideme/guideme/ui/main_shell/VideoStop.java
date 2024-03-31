@@ -15,7 +15,7 @@ class VideoStop implements Runnable {
 	public void run() {
 		try {
 			if (mediaPlayer != null && mediaPlayer.status().isPlaying()) {
-				MainShell.logger.debug("MainShell VideoStop run: Stopping media player " + mediaPlayer.media().info().mrl());
+				MainShell.logger.debug("MainShell VideoStop run: Stopping media player {}", mediaPlayer.media().info().mrl());
 				mediaPlayer.controls().pause();
 				if (shellClosing) {
 					mediaPlayer.release();

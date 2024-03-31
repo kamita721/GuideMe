@@ -56,3 +56,6 @@ Test override.page (e.g. find a real script that uses it; the orignal logic was 
 report unrecognized attributes in a guide xml file
 
 Process does not terminate on app close
+Update documentation (see gh-pages)
+
+Create a nice UI for showing errors

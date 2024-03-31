@@ -2,12 +2,14 @@ package org.guideme.guideme.settings;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.guideme.guideme.util.ErrorManager;
 
 public class AppSettings {
 	private Logger logger = LogManager.getLogger();
@@ -25,8 +27,7 @@ public class AppSettings {
 	private int jsDebugWidth = 800;
 	private int thumbnailSize = 200;
 	private double imgOffset = 0.99;
-	
-	
+
 	private boolean debug = false;
 	private boolean jsDebug = false;
 	private boolean jsDebugError = true;
@@ -64,7 +65,7 @@ public class AppSettings {
 	private String audioTwoDevice;
 
 	private boolean fileActionConfirmations = false;
-	
+
 	private static final String S_FALSE = "false";
 
 	public void setDisplayText(ResourceBundle displayText) {
@@ -72,83 +73,94 @@ public class AppSettings {
 	}
 
 	private ResourceBundle displayText;
-	
 
 	public static synchronized AppSettings getAppSettings() {
 		if (appSettings == null) {
-			appSettings = new AppSettings(false);
+			appSettings = new AppSettings();
+			try {
+				appSettings.loadAppSettings();
+			} catch (IOException e) {
+				ErrorManager.getInstance().recordError(e, "Error loading app settings");
+				appSettings = new AppSettings();
+			}
 		}
 		return appSettings;
 	}
-	
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
 
-	protected  AppSettings(boolean overrideconstructor) {
-		super();
-		if (!overrideconstructor) {
-			Properties properties = java.lang.System.getProperties();
-			userDir = String.valueOf(properties.get("user.dir"));
-			userHome = String.valueOf(properties.get("user.home"));
-			userName = String.valueOf(properties.get("user.name"));
-			fileSeparator = String.valueOf(properties.get("file.separator"));
-			settingsLocation = "data" + fileSeparator + "settings.properties";
-			tempDir = "data" + fileSeparator;
-			logger.debug("AppSettings userDir: {}", userDir);
-			logger.debug("AppSettings userHome: {}", userHome);
-			logger.debug("AppSettings userName: {}", userName);
-			logger.debug("AppSettings fileSeparator: {}", fileSeparator);
-			logger.debug("AppSettings settingsLocation: {}", settingsLocation);
-			try {
-				appSettingsProperties.loadFromXML(new FileInputStream(settingsLocation));
-				
-				fontSize = Integer.parseInt(appSettingsProperties.getProperty("FontSize", "20"));
-				htmlFontSize = Integer.parseInt(appSettingsProperties.getProperty("HtmlFontSize", "20"));
-				timerFontSize = Integer.parseInt(appSettingsProperties.getProperty("timerFontSize", "20"));
-				buttonFontSize = Integer.parseInt(appSettingsProperties.getProperty("buttonFontSize", "20"));
-				midiInstrument = Integer.parseInt(appSettingsProperties.getProperty("midiInstrument", "76"));
-				midiVolume = Integer.parseInt(appSettingsProperties.getProperty("midiVolume", "100"));
-				musicVolume = Integer.parseInt(appSettingsProperties.getProperty("musicVolume", "100"));
-				videoVolume = Integer.parseInt(appSettingsProperties.getProperty("videoVolume", "100"));
-				debug = Boolean.parseBoolean(appSettingsProperties.getProperty("Debug", S_FALSE));
-				showDelayBtn = Boolean.parseBoolean(appSettingsProperties.getProperty("showDelayBtn", String.valueOf(debug)));
-				jsDebug = Boolean.parseBoolean(appSettingsProperties.getProperty("JsDebug", S_FALSE));
-				jsDebugHeight = Integer.parseInt(appSettingsProperties.getProperty("jsDebugHeight", "600"));
-				jsDebugWidth = Integer.parseInt(appSettingsProperties.getProperty("jsDebugWidth", "800"));
-				video = Boolean.parseBoolean(appSettingsProperties.getProperty("Video", "true"));
-				webcam = Boolean.parseBoolean(appSettingsProperties.getProperty("Webcam", S_FALSE));
-				mainMonitor = Integer.parseInt(appSettingsProperties.getProperty("mainMonitor", "1"));
-				fullScreen = Boolean.parseBoolean(appSettingsProperties.getProperty("fullScreen", S_FALSE));
-				multiMonitor = Boolean.parseBoolean(appSettingsProperties.getProperty("multiMonitor", S_FALSE));
-				clock = Boolean.parseBoolean(appSettingsProperties.getProperty("clock", "true"));
-				metronome = Boolean.parseBoolean(appSettingsProperties.getProperty("metronome", "true"));
-				pageSound = Boolean.parseBoolean(appSettingsProperties.getProperty("pageSound", "true"));
-				toclipboard = Boolean.parseBoolean(appSettingsProperties.getProperty("toclipboard", S_FALSE));
-				dataDirectory = appSettingsProperties.getProperty("DataDirectory", userDir);
-				stateInDataDir = Boolean.parseBoolean(appSettingsProperties.getProperty("stateInDataDir", "true"));
-				sash1Weights[0] = Integer.parseInt(appSettingsProperties.getProperty("sash1Weights0", "350"));
-				sash1Weights[1] = Integer.parseInt(appSettingsProperties.getProperty("sash1Weights1", "350"));
-				sash2Weights[0] = Integer.parseInt(appSettingsProperties.getProperty("sash2Weights0", "150"));
-				sash2Weights[1] = Integer.parseInt(appSettingsProperties.getProperty("sash2Weights1", "700"));
-				sash2Weights[2] = Integer.parseInt(appSettingsProperties.getProperty("sash2Weights2", "150"));
-				maxImageScale = Integer.parseInt(appSettingsProperties.getProperty("maxImageScale", "0"));
-				hideMenu = Boolean.parseBoolean(appSettingsProperties.getProperty("hideMenu", S_FALSE));
-				thumbnailSize = Integer.parseInt(appSettingsProperties.getProperty("thumbnailSize", "200"));
-				imgOffset = Double.parseDouble(appSettingsProperties.getProperty("imgOffset", "0.99"));
-				language = appSettingsProperties.getProperty("language", "en");
-				country = appSettingsProperties.getProperty("country", "UK");
-				videoDevice = appSettingsProperties.getProperty("videoDevice", "");
-				audioOneDevice = appSettingsProperties.getProperty("audioOneDevice", "");
-				audioTwoDevice = appSettingsProperties.getProperty("audioTwoDevice", "");
-				fileActionConfirmations = Boolean.parseBoolean(appSettingsProperties.getProperty("fileActionConfirmations", S_FALSE));
-			}
-			catch (Exception ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
-			}
-			saveSettings();
-		}
+	private void loadAppSettings() throws IOException {
+		Properties properties = java.lang.System.getProperties();
+		userDir = String.valueOf(properties.get("user.dir"));
+		userHome = String.valueOf(properties.get("user.home"));
+		userName = String.valueOf(properties.get("user.name"));
+		fileSeparator = String.valueOf(properties.get("file.separator"));
+		settingsLocation = "data" + fileSeparator + "settings.properties";
+		tempDir = "data" + fileSeparator;
+		logger.debug("AppSettings userDir: {}", userDir);
+		logger.debug("AppSettings userHome: {}", userHome);
+		logger.debug("AppSettings userName: {}", userName);
+		logger.debug("AppSettings fileSeparator: {}", fileSeparator);
+		logger.debug("AppSettings settingsLocation: {}", settingsLocation);
+
+		appSettingsProperties.loadFromXML(new FileInputStream(settingsLocation));
+
+		fontSize = Integer.parseInt(appSettingsProperties.getProperty("FontSize", "20"));
+		htmlFontSize = Integer.parseInt(appSettingsProperties.getProperty("HtmlFontSize", "20"));
+		timerFontSize = Integer.parseInt(appSettingsProperties.getProperty("timerFontSize", "20"));
+		buttonFontSize = Integer
+				.parseInt(appSettingsProperties.getProperty("buttonFontSize", "20"));
+		midiInstrument = Integer
+				.parseInt(appSettingsProperties.getProperty("midiInstrument", "76"));
+		midiVolume = Integer.parseInt(appSettingsProperties.getProperty("midiVolume", "100"));
+		musicVolume = Integer.parseInt(appSettingsProperties.getProperty("musicVolume", "100"));
+		videoVolume = Integer.parseInt(appSettingsProperties.getProperty("videoVolume", "100"));
+		debug = Boolean.parseBoolean(appSettingsProperties.getProperty("Debug", S_FALSE));
+		showDelayBtn = Boolean.parseBoolean(
+				appSettingsProperties.getProperty("showDelayBtn", String.valueOf(debug)));
+		jsDebug = Boolean.parseBoolean(appSettingsProperties.getProperty("JsDebug", S_FALSE));
+		jsDebugHeight = Integer.parseInt(appSettingsProperties.getProperty("jsDebugHeight", "600"));
+		jsDebugWidth = Integer.parseInt(appSettingsProperties.getProperty("jsDebugWidth", "800"));
+		video = Boolean.parseBoolean(appSettingsProperties.getProperty("Video", "true"));
+		webcam = Boolean.parseBoolean(appSettingsProperties.getProperty("Webcam", S_FALSE));
+		mainMonitor = Integer.parseInt(appSettingsProperties.getProperty("mainMonitor", "1"));
+		fullScreen = Boolean.parseBoolean(appSettingsProperties.getProperty("fullScreen", S_FALSE));
+		multiMonitor = Boolean
+				.parseBoolean(appSettingsProperties.getProperty("multiMonitor", S_FALSE));
+		clock = Boolean.parseBoolean(appSettingsProperties.getProperty("clock", "true"));
+		metronome = Boolean.parseBoolean(appSettingsProperties.getProperty("metronome", "true"));
+		pageSound = Boolean.parseBoolean(appSettingsProperties.getProperty("pageSound", "true"));
+		toclipboard = Boolean
+				.parseBoolean(appSettingsProperties.getProperty("toclipboard", S_FALSE));
+		dataDirectory = appSettingsProperties.getProperty("DataDirectory", userDir);
+		stateInDataDir = Boolean
+				.parseBoolean(appSettingsProperties.getProperty("stateInDataDir", "true"));
+		sash1Weights[0] = Integer
+				.parseInt(appSettingsProperties.getProperty("sash1Weights0", "350"));
+		sash1Weights[1] = Integer
+				.parseInt(appSettingsProperties.getProperty("sash1Weights1", "350"));
+		sash2Weights[0] = Integer
+				.parseInt(appSettingsProperties.getProperty("sash2Weights0", "150"));
+		sash2Weights[1] = Integer
+				.parseInt(appSettingsProperties.getProperty("sash2Weights1", "700"));
+		sash2Weights[2] = Integer
+				.parseInt(appSettingsProperties.getProperty("sash2Weights2", "150"));
+		maxImageScale = Integer.parseInt(appSettingsProperties.getProperty("maxImageScale", "0"));
+		hideMenu = Boolean.parseBoolean(appSettingsProperties.getProperty("hideMenu", S_FALSE));
+		thumbnailSize = Integer.parseInt(appSettingsProperties.getProperty("thumbnailSize", "200"));
+		imgOffset = Double.parseDouble(appSettingsProperties.getProperty("imgOffset", "0.99"));
+		language = appSettingsProperties.getProperty("language", "en");
+		country = appSettingsProperties.getProperty("country", "UK");
+		videoDevice = appSettingsProperties.getProperty("videoDevice", "");
+		audioOneDevice = appSettingsProperties.getProperty("audioOneDevice", "");
+		audioTwoDevice = appSettingsProperties.getProperty("audioTwoDevice", "");
+		fileActionConfirmations = Boolean.parseBoolean(
+				appSettingsProperties.getProperty("fileActionConfirmations", S_FALSE));
+
+		saveSettings();
 	}
 
 	public int getFontSize() {
@@ -307,12 +319,12 @@ public class AppSettings {
 			appSettingsProperties.setProperty("videoDevice", videoDevice);
 			appSettingsProperties.setProperty("audioOneDevice", audioOneDevice);
 			appSettingsProperties.setProperty("audioTwoDevice", audioTwoDevice);
-			appSettingsProperties.setProperty("fileActionConfirmations", String.valueOf(fileActionConfirmations));
-			try(OutputStream os = new FileOutputStream(settingsLocation)){
+			appSettingsProperties.setProperty("fileActionConfirmations",
+					String.valueOf(fileActionConfirmations));
+			try (OutputStream os = new FileOutputStream(settingsLocation)) {
 				appSettingsProperties.storeToXML(os, null);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage(), e);
 		}
 	}
@@ -545,7 +557,11 @@ public class AppSettings {
 		this.videoDevice = videoDevice;
 	}
 
-	public boolean isFileActionConfirmations() { return fileActionConfirmations; }
+	public boolean isFileActionConfirmations() {
+		return fileActionConfirmations;
+	}
 
-	public void setFileActionConfirmations(boolean fileActionConfirmations) { this.fileActionConfirmations = fileActionConfirmations; }
+	public void setFileActionConfirmations(boolean fileActionConfirmations) {
+		this.fileActionConfirmations = fileActionConfirmations;
+	}
 }

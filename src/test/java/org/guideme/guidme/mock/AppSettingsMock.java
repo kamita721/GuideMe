@@ -36,7 +36,7 @@ public class AppSettingsMock extends AppSettings {
 	}
 
 	protected AppSettingsMock() {
-		super(true);
+		super();
 		logger.debug("AppSettingsMock enter constructor");
 		Properties properties = java.lang.System.getProperties();
 		userDir = String.valueOf(properties.get("user.dir"));

@@ -66,11 +66,6 @@ public class CodeFile {
 			return;
 		}
 		if (!t.isImplicitType()) {
-			if (t.getTypeFull().equals("org.guideme.guideme.util.XMLReaderUtils")) {
-				if (fileName.equals("CSS")) {
-					System.err.println(fileName);
-				}
-			}
 			imports.add(t);
 		}
 	}

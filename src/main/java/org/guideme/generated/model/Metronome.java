@@ -15,17 +15,17 @@ import org.apache.logging.log4j.LogManager;
 public class Metronome implements Filterable  {
 
 	private String ifSet = "";
+	private String bpmString = "";
 	private int loops = -1;
 	private LocalTime ifBefore;
 	private String rhythm = "";
 	private int resolution = 4;
-	private String bpm = "";
 	private LocalTime ifAfter;
 	private String ifNotSet = "";
 
 	public Metronome(XMLStreamReader reader) {
 		this.resolution = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "beats",4);
-		this.bpm = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "bpm","");
+		this.bpmString = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "bpmString","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
 		this.ifBefore = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-before",null);
 		this.ifNotSet = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "if-not-set","");
@@ -57,8 +57,8 @@ public class Metronome implements Filterable  {
 	public String getIfSet() {
 		return ifSet;
 	}
-	public void setBpm(String bpm) {
-		this.bpm = bpm;
+	public void setBpmString(String bpmString) {
+		this.bpmString = bpmString;
 	}
 	public void setLoops(int loops) {
 		this.loops = loops;
@@ -99,6 +99,9 @@ public class Metronome implements Filterable  {
 			case "if-after":
 				ifAfter = ModelConverters.fromString(attrValue, ifAfter);
 				break;
+			case "bpmString":
+				bpmString = ModelConverters.fromString(attrValue, bpmString);
+				break;
 			case "beats":
 				resolution = ModelConverters.fromString(attrValue, resolution);
 				break;
@@ -107,9 +110,6 @@ public class Metronome implements Filterable  {
 				break;
 			case "rhythm":
 				rhythm = ModelConverters.fromString(attrValue, rhythm);
-				break;
-			case "bpm":
-				bpm = ModelConverters.fromString(attrValue, bpm);
 				break;
 				default:
 				logger.warn("Unhandled attribute '{}'", attrName);
@@ -120,8 +120,8 @@ public class Metronome implements Filterable  {
 	public int getLoops() {
 		return loops;
 	}
-	public String getBpm() {
-		return bpm;
+	public String getBpmString() {
+		return bpmString;
 	}
 	@Override
 	public void setIfSet(String ifSet) {
@@ -134,7 +134,7 @@ public class Metronome implements Filterable  {
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Metronome");
 		ans.setAttribute("beats",ModelConverters.toString(resolution));
-		ans.setAttribute("bpm",ModelConverters.toString(bpm));
+		ans.setAttribute("bpmString",ModelConverters.toString(bpmString));
 		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
 		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
 		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
@@ -158,9 +158,8 @@ public class Metronome implements Filterable  {
 	}
 	
 	
-	//TODO it is kinda bad that we rely on the case distinction between getbpm and getBpm
-	public int getbpm() {
-		return ComonFunctions.getComonFunctions().getRandom(bpm);
+	public int getBpm() {
+		return ComonFunctions.getComonFunctions().getRandom(bpmString);
 	}
 	
 }

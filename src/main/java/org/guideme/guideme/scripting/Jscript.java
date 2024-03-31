@@ -211,7 +211,7 @@ public class Jscript {
 		scope.setParentScope(parentScope);
 
 		if (!inPrefGuide) {
-			UserSettings cloneUS = userSettings.clone();
+			UserSettings cloneUS =  new UserSettings(userSettings);
 			ScriptableObject.putProperty(globalScope, "userSettings", cloneUS);
 		} else {
 			ScriptableObject.putProperty(globalScope, "userSettings", userSettings);

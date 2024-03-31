@@ -12,19 +12,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+/*
+ * To recreate the generated code files, edit the hardcoded paths below
+ * modelFile should point to model.xml, which describes the generated files to be built.
+ * 
+ * srcRoot should point to the src/main/java directory of the source tree.
+ */
 public class Generate {
 
 	public static void main(String[] args)
 			throws ParserConfigurationException, SAXException, IOException {
-		args = new String[] {
-				"/overflow/Documents/programming/guideme/src/main/resources/org/guideme/codegen/model.xml",
-				"/overflow/Documents/programming/guideme/src/main/java/" };
-		if (args.length != 2) {
-			usage();
-			return;
-		}
-		String modelFile = args[0];
-		String srcRoot = args[1];
+
+		String modelFile = "/overflow/Documents/programming/guideme/src/main/resources/org/guideme/codegen/model.xml";
+		String srcRoot = "/overflow/Documents/programming/guideme/src/main/java/";
 
 		DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -36,10 +36,6 @@ public class Generate {
 		
 		model.generate(new File(srcRoot));
 
-	}
-
-	public static void usage() {
-		System.out.println("Generate <model.xml> </root/of/source/tree>");
 	}
 
 }

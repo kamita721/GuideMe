@@ -11,6 +11,7 @@ public class CodeBuilder {
 
 	public void addLine(String fmt, Object... args) {
 		String toAdd = fmt.formatted(args);
+		toAdd = toAdd.strip();
 		/* Adjust the indentation specifically for this line. */
 		int lineDeindent = 0;
 		for (char c : toAdd.toCharArray()) {

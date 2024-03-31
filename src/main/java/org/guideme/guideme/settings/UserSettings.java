@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-public class UserSettings implements Cloneable {
+public class UserSettings {
 	private String userSettingsLocation = "";
 	private Logger logger = LogManager.getLogger();
 	private HashMap<String, String> userStringPrefs = new HashMap<>();
@@ -45,6 +45,21 @@ public class UserSettings implements Cloneable {
 			userSettings = new UserSettings();
 		}
 		return userSettings;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public UserSettings(UserSettings base) {
+		userSettingsLocation = base.userSettingsLocation;
+		userStringPrefs = (HashMap<String, String>) base.userStringPrefs.clone();
+		userStringDesc = (HashMap<String, String>) base.userStringDesc.clone();
+		userStringKeys = (LinkedHashSet<String>) base.userStringKeys.clone();
+		userBooleanPrefs = (HashMap<String, Boolean>) base.userBooleanPrefs.clone();
+		userBooleanDesc = (HashMap<String, String>) base.userBooleanDesc.clone();
+		userBooleanKeys = (LinkedHashSet<String>) base.userBooleanKeys.clone();
+		userNumericPrefs = (HashMap<String, Double>) base.userNumericPrefs.clone();
+		userNumericDesc = (HashMap<String, String>) base.userNumericDesc.clone();
+		userNumericKeys = (LinkedHashSet<String>) base.userNumericKeys.clone();
+		userStringPrefs = (HashMap<String, String>) base.userStringPrefs.clone();
 	}
 
 	private UserSettings() {
@@ -281,12 +296,4 @@ public class UserSettings implements Cloneable {
 		}
 	}
 
-	@Override
-	public UserSettings clone() {
-		try {
-			return (UserSettings) super.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

@@ -30,7 +30,7 @@ public class HtmlGuideWriterReaderTest {
 	public void authorName() {
 		originalGuide.setAuthorName("Name of the author");
 
-		Guide guide = reader.loadFromString(writer.Write(originalGuide));
+		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
 		assertEquals(originalGuide.getAuthorName(), guide.getAuthorName());
 	}
@@ -39,7 +39,7 @@ public class HtmlGuideWriterReaderTest {
 	public void authorUrl() {
 		originalGuide.setAuthorUrl("http://url.to/author");
 
-		Guide guide = reader.loadFromString(writer.Write(originalGuide));
+		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
 		assertEquals(originalGuide.getAuthorUrl(), guide.getAuthorUrl());
 	}
@@ -48,7 +48,7 @@ public class HtmlGuideWriterReaderTest {
 	public void description() {
 		originalGuide.setDescription("Short description.");
 
-		Guide guide = reader.loadFromString(writer.Write(originalGuide));
+		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
 		assertEquals(originalGuide.getDescription(), guide.getDescription());
 	}
@@ -57,7 +57,7 @@ public class HtmlGuideWriterReaderTest {
 	public void keywords() {
 		originalGuide.setKeywords("A", "B", "C");
 
-		Guide guide = reader.loadFromString(writer.Write(originalGuide));
+		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
 		assertEquals(originalGuide.getKeywordsString(), guide.getKeywordsString());
 	}
@@ -66,7 +66,7 @@ public class HtmlGuideWriterReaderTest {
 	public void originalUrl() {
 		originalGuide.setOriginalUrl("http://url.to/original");
 
-		Guide guide = reader.loadFromString(writer.Write(originalGuide));
+		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
 		assertEquals(originalGuide.getOriginalUrl(), guide.getOriginalUrl());
 	}
@@ -75,7 +75,7 @@ public class HtmlGuideWriterReaderTest {
 	public void title() {
 		originalGuide.setTitle("Title of the guide");
 
-		Guide guide = reader.loadFromString(writer.Write(originalGuide));
+		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
 		assertEquals(originalGuide.getTitle(), guide.getTitle());
 	}
@@ -86,7 +86,7 @@ public class HtmlGuideWriterReaderTest {
 		img.setId("http://url.to/thumbnail.jpg");
 		originalGuide.setThumbnail(img);
 
-		Guide guide = reader.loadFromString(writer.Write(originalGuide));
+		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
 		assertNotNull(guide.getThumbnail());
 		assertEquals(originalGuide.getThumbnail().getId(), guide.getThumbnail().getId());
@@ -103,7 +103,7 @@ public class HtmlGuideWriterReaderTest {
 		originalGuide.getChapters().put("c-1", new Chapter("c-1"));
 		originalGuide.getChapters().put("c-2", new Chapter("c-2"));
 
-		Guide guide = reader.loadFromString(writer.Write(originalGuide));
+		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
 		assertNotNull(guide.getChapters().get("c-1"));
 		assertNotNull(guide.getChapters().get("c-2"));
@@ -120,7 +120,7 @@ public class HtmlGuideWriterReaderTest {
 		first.getPages().put("p-2", p2);
 		originalGuide.getChapters().put("first", first);
 
-		Guide guide = reader.loadFromString(writer.Write(originalGuide));
+		Guide guide = reader.loadFromString(writer.write(originalGuide));
 
 		assertEquals(2, guide.getChapters().get("c-1").getPages().size());
 	}

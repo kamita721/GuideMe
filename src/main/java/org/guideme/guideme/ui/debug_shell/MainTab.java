@@ -103,7 +103,7 @@ public class MainTab implements DebugTab {
 		constructTable(
 				new String[] { "metronome", "If Set", "If Unset", "Resolution", "Loops", "Rhythm" },
 				dispPage.getMetronomes(),
-				metronome -> new String[] { String.valueOf(metronome.getBpm()),
+				metronome -> new String[] { String.valueOf(metronome.getBpmString()),
 						metronome.getIfSet(), metronome.getIfNotSet(),
 						String.valueOf(metronome.getResolution()),
 						String.valueOf(metronome.getLoops()), metronome.getRhythm() });

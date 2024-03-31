@@ -1,12 +1,12 @@
 package org.guideme.guideme.model;
 
-import java.util.Date;;
+import java.util.Date;
 public class Library {
-	public String image;
-	public String title;
-	public String file;
-	public String author;
-	public Date date;
+	public final String image;
+	public final String title;
+	public final String file;
+	public final String author;
+	public final Date date;
 
 	public Library(String pimage, String ptitle, String pfile, String pauthor, Date pdate) {
 		image = pimage;
@@ -16,10 +16,4 @@ public class Library {
 		date = pdate;
 	}
 
-	/*
-	@Override
-	public int compareTo(Library other) {
-		return title.compareToIgnoreCase(other.title);
-	}
-	*/
 }

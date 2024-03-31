@@ -907,7 +907,7 @@ public class Guide {
 		timer.setJscript(jScript);
 		timer.setImageId(imageId);
 		timer.setText(text);
-		timer.setSet(unSet);
+		timer.setSet(set);
 		timer.setUnSet(unSet);
 		timer.setId(id);
 		Calendar timCountDown = Calendar.getInstance();
@@ -931,9 +931,9 @@ public class Guide {
 	public void addTimer(String delay, String jScript, String set, String unSet, String id,
 			String target) {
 		Timer timer = new Timer();
-		timer.setDelay(delay);;
+		timer.setDelay(delay);
 		timer.setJscript(jScript);
-		timer.setSet(unSet);
+		timer.setSet(set);
 		timer.setUnSet(unSet);
 		timer.setId(id);
 		timer.setTarget(target);

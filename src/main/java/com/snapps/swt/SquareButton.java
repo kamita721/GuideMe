@@ -261,9 +261,7 @@ public class SquareButton extends Canvas {
 	}
 
 	protected void keyUp(Event e) {
-		isFocused = true;
-		setSelectedColor(e);
-		redraw();
+		focusIn(e);
 	}
 
 	protected void keyDown(Event e) {

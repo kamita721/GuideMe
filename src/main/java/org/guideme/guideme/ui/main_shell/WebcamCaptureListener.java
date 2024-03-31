@@ -2,15 +2,17 @@ package org.guideme.guideme.ui.main_shell;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.swt.events.SelectionEvent;
 
 class WebcamCaptureListener extends DynamicButtonListner {
-	/**
-	 * 
-	 */
+	private Logger logger = LogManager.getLogger();
+
 	private final MainShell mainShell;
 
 	WebcamCaptureListener(MainShell mainShell) {
@@ -20,29 +22,27 @@ class WebcamCaptureListener extends DynamicButtonListner {
 
 	@Override
 	public void widgetSelected(SelectionEvent event) {
-		try {
 
-			MainShell.logger.trace("Enter WebcamCaptureListener");
-			String strFile;
-			com.snapps.swt.SquareButton btnClicked;
-			btnClicked = (com.snapps.swt.SquareButton) event.widget;
-			strFile = (String) btnClicked.getData("webcamFile");
-			if (!mainShell.comonFunctions.canCreateFile(strFile)) {
-				strFile = mainShell.comonFunctions.getMediaFullPath(strFile, mainShell.appSettings.getFileSeparator(), mainShell.appSettings,
-						mainShell.guide);
-			}
-
-			try {
-				BufferedImage image = mainShell.webcam.getImage();
-				ImageIO.write(image, "JPG", new File(strFile));
-			} catch (Exception ex) {
-				MainShell.logger.error(" WebcamCaptureListener take and save image " + ex.getLocalizedMessage(), ex);
-			}
-
-			super.widgetSelected(event);
-		} catch (Exception ex) {
-			MainShell.logger.error(" WebcamCaptureListener " + ex.getLocalizedMessage(), ex);
+		MainShell.logger.trace("Enter WebcamCaptureListener");
+		String strFile;
+		com.snapps.swt.SquareButton btnClicked;
+		btnClicked = (com.snapps.swt.SquareButton) event.widget;
+		strFile = (String) btnClicked.getData("webcamFile");
+		if (!mainShell.comonFunctions.canCreateFile(strFile)) {
+			strFile = mainShell.comonFunctions.getMediaFullPath(strFile,
+					mainShell.appSettings.getFileSeparator(), mainShell.appSettings,
+					mainShell.guide);
 		}
+
+		BufferedImage image = mainShell.webcam.getImage();
+		try {
+			ImageIO.write(image, "JPG", new File(strFile));
+		} catch (IOException e) {
+			logger.warn("Unable to save webcam image", e);
+		}
+
+		super.widgetSelected(event);
+
 		MainShell.logger.trace("Exit WebcamCaptureListener");
 	}
 }

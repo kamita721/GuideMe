@@ -26,7 +26,7 @@ class VideoPlay implements Runnable {
 		@Override
 		public void run() {
 			try {
-				MainShell.logger.debug("MainShell VideoPlay new Thread " + video);
+				MainShell.logger.debug("MainShell VideoPlay new Thread {}", video);
 
 				mediaPlayer.audio().setVolume(volume);
 				// TODO this setting seems to have disappeared
@@ -55,7 +55,7 @@ class VideoPlay implements Runnable {
 
 			this.mediaPlayer = mediaPlayer;
 			this.video = video;
-			this.volume = (int) ((double) mediaVolume * ((double) volume / (double) 100));
+			this.volume = (int) (mediaVolume * ((double) volume / (double) 100));
 
 			this.vlcArgs = new ArrayList<>();
 			if (this.mainShell.videoStartAt > 0) {

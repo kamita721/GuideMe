@@ -39,7 +39,7 @@ public class MainLogicTest {
 	private boolean allGuides = false;
 	private boolean oneGuide = true;
 	private boolean scriptedTest = false;
-
+	
 	@Test
 	public void testDisplayPageStringBooleanGuideMainShellAppSettings() throws XMLStreamException, IOException {
 		if (singlePage) {

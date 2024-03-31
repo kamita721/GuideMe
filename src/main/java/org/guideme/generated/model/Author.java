@@ -14,27 +14,24 @@ public class Author  {
 		final Logger logger = LogManager.getLogger();
 		int depth = 1;
 		while (depth > 0) {
-			 int eventType = reader.next();
-			 if (eventType == XMLStreamConstants.START_ELEMENT) {
-				  depth++;
-				  String tagName = reader.getName().getLocalPart();
-				switch(tagName){
-				case "Name":
+			int eventType = reader.next();
+			if (eventType == XMLStreamConstants.START_ELEMENT) {
+				depth++;
+				String tagName = reader.getName().getLocalPart();
+				if(tagName.equals("Name")){
 					name = XMLReaderUtils.getStringContentOrDefault(reader, "");
-					break;
-					default:
+				} else {
 					logger.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
 					XMLReaderUtils.getStringContentUntilElementEnd(reader);
-					break;
 				}
-				  eventType = reader.next();
-				  if (XMLReaderUtils.isAtElementEnd(reader, "Settings")) {
-					   return;
-					  }
-				 }
-			 if (eventType == XMLStreamConstants.END_ELEMENT) {
-				  depth--;
-				 }
+				eventType = reader.next();
+				if (XMLReaderUtils.isAtElementEnd(reader, "Settings")) {
+					return;
+				}
+			}
+			if (eventType == XMLStreamConstants.END_ELEMENT) {
+				depth--;
+			}
 		}
 	}
 

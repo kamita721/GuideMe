@@ -18,7 +18,7 @@ public class HtmlGuideReader {
 	public Guide loadFromFile(File file) {
 		try {
 			Document doc = Jsoup.parse(file, "UTF-8", "");
-			return CreateFromDocument(doc);
+			return createFromDocument(doc);
 		} catch (IOException err) {
 			log.error(err);
 			return null;
@@ -27,10 +27,10 @@ public class HtmlGuideReader {
 	
 	public Guide loadFromString(String html) { 
 		Document doc = Jsoup.parse(html, "");
-		return CreateFromDocument(doc);
+		return createFromDocument(doc);
 	}
 	
-	private Guide CreateFromDocument(Document doc) {
+	private Guide createFromDocument(Document doc) {
 		Guide guide = Guide.getGuide();
 		
 		readGeneralInformation(guide, doc);
@@ -44,13 +44,13 @@ public class HtmlGuideReader {
 		guide.setAuthorName(doc.select("head meta[name=author]").attr("content"));
 		guide.setKeywordsString(doc.select("head meta[name=keywords]").attr("content"));
 		guide.setDescription(doc.select("head meta[name=description]").attr("content"));
-		if (doc.select("head link[rel=alternate]").size() > 0) {
+		if (!doc.select("head link[rel=alternate]").isEmpty()) {
 			guide.setOriginalUrl(doc.select("head link[rel=alternate]").attr("href"));
 		}
-		if (doc.select("head link[rel=author]").size() > 0) {
+		if (!doc.select("head link[rel=author]").isEmpty()) {
 			guide.setAuthorUrl(doc.select("head link[rel=author]").attr("href"));
 		}
-		if (doc.select("head link[rel=icon]").size() > 0) {
+		if (!doc.select("head link[rel=icon]").isEmpty()) {
 			String url = doc.select("head link[rel=icon]").attr("href");
 			Image toAdd = new Image();
 			toAdd.setId(url);

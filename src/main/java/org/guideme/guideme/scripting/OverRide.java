@@ -903,7 +903,7 @@ public class OverRide {
 	 */
 	public synchronized void setMetronome(String bpm, int resolution, int loops, String rhythm) {
 		metronome = new Metronome();
-		metronome.setBpm(bpm);
+		metronome.setBpmString(bpm);
 		metronome.setResolution(resolution);
 		metronome.setLoops(loops);
 		metronome.setRhythm(rhythm);
@@ -919,7 +919,7 @@ public class OverRide {
 	 */
 	public synchronized void setMetronome(String bpm) {
 		metronome = new Metronome();
-		metronome.setBpm(bpm);
+		metronome.setBpmString(bpm);
 	}
 
 	/** @exclude */

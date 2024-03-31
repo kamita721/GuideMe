@@ -21,12 +21,11 @@ public class MilovanaHtmlReader {
 			Document doc = Jsoup.connect(url).get();
 			Guide guide = createFromDocument(doc);
 			
-			String nextPage = url;
 			int pageNr = 1;
 			
-			while (doc.select("#continue").size() > 0)
+			while (!doc.select("#continue").isEmpty())
 			{
-				nextPage = "http://www.milovana.com/" + doc.select("#continue").first().attr("href");
+				String nextPage = "http://www.milovana.com/" + doc.select("#continue").first().attr("href");
 				pageNr += 1;
 				
 				doc = Jsoup.connect(nextPage).get();
@@ -51,6 +50,7 @@ public class MilovanaHtmlReader {
 		return guide;
 	}
 	
+	@SuppressWarnings("unused")
 	private void readGeneralInformation(Guide guide, Document doc) {
 		// TODO
 	}
@@ -68,7 +68,7 @@ public class MilovanaHtmlReader {
 		page.setId(String.valueOf(pageNr));
 
 		Elements elm = doc.select("#tease_content").select(".text");
-		if (elm.size() > 0) {
+		if (!elm.isEmpty()) {
 			String text = elm.first().text().replace('\r', ' ').replace('\n', ' ');
 			text = CharSetUtils.squeeze(text, " ");
 			Text textToAdd = new Text();

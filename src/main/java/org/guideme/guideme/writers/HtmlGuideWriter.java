@@ -10,7 +10,7 @@ import org.guideme.guideme.model.Guide;
 
 public class HtmlGuideWriter {
 
-	public String Write(Guide guide) {
+	public String write(Guide guide) {
 		Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
 		Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 		Velocity.init();
