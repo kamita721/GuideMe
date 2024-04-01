@@ -31,6 +31,26 @@ public class Webcam implements Filterable  {
 		/* NOP */
 	}
 
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Webcam");
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		return ans;
+	}
 	public Webcam(Node n) {
 		if(!n.getNodeName().equals("Webcam")){
 			LOGGER.warn("Error reading state file. Expected element 'Webcam', but got '{}'", n.getNodeName());
@@ -60,44 +80,24 @@ public class Webcam implements Filterable  {
 		}
 	}
 	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	@Override
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
 	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	@Override
 	public String getIfSet() {
 		return ifSet;
 	}
 	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Webcam");
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		return ans;
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	
 	@Override

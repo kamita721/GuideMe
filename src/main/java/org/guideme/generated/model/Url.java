@@ -10,33 +10,33 @@ import org.w3c.dom.NamedNodeMap;
 import org.guideme.guideme.model.ModelConverters;
 import org.apache.logging.log4j.LogManager;
 import org.guideme.guideme.readers.xml_guide_reader.XmlGuideReader;
-public class Javascript  {
+public class Url  {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 	private String text = "";
 
-	public Javascript(XMLStreamReader reader) throws XMLStreamException {
+	public Url(XMLStreamReader reader) throws XMLStreamException {
 		this.text = XmlGuideReader.processText(reader, "text","");
 	}
 
-	public Javascript() {
+	public Url() {
 		/* NOP */
 	}
 
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("javascript");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
+	public void setText(String text) {
+		this.text = text;
 	}
 	public String getText() {
 		return text;
 	}
-	public void setText(String text) {
-		this.text = text;
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Url");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
 	}
-	public Javascript(Node n) {
-		if(!n.getNodeName().equals("javascript")){
-			LOGGER.warn("Error reading state file. Expected element 'javascript', but got '{}'", n.getNodeName());
+	public Url(Node n) {
+		if(!n.getNodeName().equals("Url")){
+			LOGGER.warn("Error reading state file. Expected element 'Url', but got '{}'", n.getNodeName());
 		}
 		NamedNodeMap nnm = n.getAttributes();
 		for(int i=0; i<nnm.getLength(); i++){

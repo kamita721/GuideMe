@@ -52,27 +52,27 @@ public class Video implements FlagSet, Playable, Filterable  {
 	}
 
 	@Override
-	public String getIfSet() {
-		return ifSet;
+	public String getStopAt() {
+		return stopAt;
 	}
 	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public int getVolume() {
+		return volume;
 	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
 	}
 	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
 	}
 	@Override
-	public void setStopAt(String stopAt) {
-		this.stopAt = stopAt;
+	public void setRepeat(String repeat) {
+		this.repeat = repeat;
+	}
+	@Override
+	public void setStartAt(String startAt) {
+		this.startAt = startAt;
 	}
 	@Override
 	public String getSet() {
@@ -83,41 +83,22 @@ public class Video implements FlagSet, Playable, Filterable  {
 		this.unSet = unSet;
 	}
 	@Override
-	public String getJscript() {
-		return jscript;
-	}
-	@Override
 	public void setVolume(int volume) {
 		this.volume = volume;
 	}
 	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public void setStopAt(String stopAt) {
+		this.stopAt = stopAt;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
+	public String getJscript() {
+		return jscript;
 	}
-	public String getTarget() {
-		return target;
-	}
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	@Override
-	public void setStartAt(String startAt) {
-		this.startAt = startAt;
-	}
-	@Override
-	public void setRepeat(String repeat) {
-		this.repeat = repeat;
-	}
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	public String getId() {
-		return id;
+	public void setTarget(String target) {
+		this.target = target;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Video");
@@ -138,20 +119,30 @@ public class Video implements FlagSet, Playable, Filterable  {
 		return ans;
 	}
 	@Override
-	public String getStopAt() {
-		return stopAt;
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
 	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	@Override
-	public void setSet(String set) {
-		this.set = set;
+	public String getIfSet() {
+		return ifSet;
 	}
 	@Override
-	public String getUnSet() {
-		return unSet;
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public String getId() {
+		return id;
+	}
+	@Override
+	public String getRepeat() {
+		return repeat;
+	}
+	public String getTarget() {
+		return target;
 	}
 	public Video(Node n) {
 		if(!n.getNodeName().equals("Video")){
@@ -211,27 +202,36 @@ public class Video implements FlagSet, Playable, Filterable  {
 			}
 		}
 	}
-	public void setId(String id) {
-		this.id = id;
+	@Override
+	public String getStartAt() {
+		return startAt;
 	}
 	@Override
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	@Override
-	public String getRepeat() {
-		return repeat;
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
 	@Override
-	public int getVolume() {
-		return volume;
+	public void setSet(String set) {
+		this.set = set;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
+	public String getUnSet() {
+		return unSet;
 	}
 	public String getScriptVar() {
 		return scriptVar;
 	}
 	@Override
-	public String getStartAt() {
-		return startAt;
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	
 	@Override

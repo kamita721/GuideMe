@@ -51,6 +51,9 @@ public class Parsers  {
 		case "Tease":
 			TeaseHandler.handle(new Tease(reader), chapter, guideSettings);
 			break;
+		case "Url":
+			guide.setOriginalUrl(new Url(reader).getText());
+			break;
 		case "Delay":
 			page.addDelay(new Delay(reader));
 			break;

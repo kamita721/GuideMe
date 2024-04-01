@@ -23,6 +23,14 @@ public class CSS  {
 		/* NOP */
 	}
 
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("CSS");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	public void setText(String text) {
+		this.text = text;
+	}
 	public String getText() {
 		return text;
 	}
@@ -41,13 +49,5 @@ public class CSS  {
 				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("CSS");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
 	}
 }

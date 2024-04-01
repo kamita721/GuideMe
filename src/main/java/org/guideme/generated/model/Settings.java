@@ -54,28 +54,28 @@ public class Settings  {
 		/* NOP */
 	}
 
-	public void setForceStartPage(boolean forceStartPage) {
-		this.forceStartPage = forceStartPage;
-	}
-	public boolean getPageSound() {
-		return pageSound;
-	}
 	public void setPageSound(boolean pageSound) {
 		this.pageSound = pageSound;
-	}
-	public boolean getConvertArgumentTypes() {
-		return convertArgumentTypes;
-	}
-	public void setAutoSetPageWhenSeen(boolean autoSetPageWhenSeen) {
-		this.autoSetPageWhenSeen = autoSetPageWhenSeen;
-	}
-	public void setConvertArgumentTypes(boolean convertArgumentTypes) {
-		this.convertArgumentTypes = convertArgumentTypes;
 	}
 	public boolean getForceStartPage() {
 		return forceStartPage;
 	}
+	public boolean getPageSound() {
+		return pageSound;
+	}
 	public boolean getAutoSetPageWhenSeen() {
 		return autoSetPageWhenSeen;
+	}
+	public void setForceStartPage(boolean forceStartPage) {
+		this.forceStartPage = forceStartPage;
+	}
+	public void setConvertArgumentTypes(boolean convertArgumentTypes) {
+		this.convertArgumentTypes = convertArgumentTypes;
+	}
+	public void setAutoSetPageWhenSeen(boolean autoSetPageWhenSeen) {
+		this.autoSetPageWhenSeen = autoSetPageWhenSeen;
+	}
+	public boolean getConvertArgumentTypes() {
+		return convertArgumentTypes;
 	}
 }

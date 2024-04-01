@@ -42,51 +42,32 @@ public class LoadGuide implements Filterable  {
 	}
 
 	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
 	public LocalTime getIfBefore() {
 		return ifBefore;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	@Override
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
-	public void setGuidePath(String guidePath) {
-		this.guidePath = guidePath;
-	}
-	public String getPostScript() {
-		return postScript;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
+	public void setPreScript(String preScript) {
+		this.preScript = preScript;
 	}
 	public void setPostScript(String postScript) {
 		this.postScript = postScript;
 	}
+	public String getPreScript() {
+		return preScript;
+	}
 	public void setReturnTarget(String returnTarget) {
 		this.returnTarget = returnTarget;
-	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	public String getReturnTarget() {
-		return returnTarget;
-	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getGuidePath() {
-		return guidePath;
-	}
-	public void setPreScript(String preScript) {
-		this.preScript = preScript;
-	}
-	public String getTarget() {
-		return target;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("LoadGuide");
@@ -101,8 +82,26 @@ public class LoadGuide implements Filterable  {
 		ans.setAttribute("target",ModelConverters.toString(target));
 		return ans;
 	}
-	public String getPreScript() {
-		return preScript;
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	public String getPostScript() {
+		return postScript;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public String getGuidePath() {
+		return guidePath;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
 	}
 	public LoadGuide(Node n) {
 		if(!n.getNodeName().equals("LoadGuide")){
@@ -147,17 +146,18 @@ public class LoadGuide implements Filterable  {
 			}
 		}
 	}
+	public void setGuidePath(String guidePath) {
+		this.guidePath = guidePath;
+	}
+	public void setTarget(String target) {
+		this.target = target;
+	}
 	@Override
 	public String getIfNotSet() {
 		return ifNotSet;
 	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
+	public String getReturnTarget() {
+		return returnTarget;
 	}
 	
 	@Override

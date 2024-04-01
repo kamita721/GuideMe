@@ -51,80 +51,69 @@ public class Timer implements FlagSet, Filterable  {
 		/* NOP */
 	}
 
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getId() {
-		return id;
-	}
 	@Override
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
-	@Override
-	public String getSet() {
-		return set;
+	public void setTarget(String target) {
+		this.target = target;
 	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Timer");
-		ans.setAttribute("",ModelConverters.toString(timerEnd));
-		ans.setAttribute("imageId",ModelConverters.toString(imageId));
-		ans.setAttribute("set",ModelConverters.toString(set));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
-		ans.setAttribute("unSet",ModelConverters.toString(unSet));
-		ans.setAttribute("target",ModelConverters.toString(target));
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("seconds",ModelConverters.toString(delay));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("id",ModelConverters.toString(id));
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
+	public String getText() {
+		return text;
 	}
-	@Override
-	public String getUnSet() {
-		return unSet;
-	}
-	public String getImageId() {
-		return imageId;
-	}
-	public void setDelay(String delay) {
-		this.delay = delay;
-	}
-	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	public void setText(String text) {
-		this.text = text;
+	public String getDelay() {
+		return delay;
 	}
 	public void setTimerEnd(Calendar timerEnd) {
 		this.timerEnd = timerEnd;
 	}
 	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	@Override
+	public String getSet() {
+		return set;
+	}
+	@Override
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public void setDelay(String delay) {
+		this.delay = delay;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	public void setText(String text) {
+		this.text = text;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
 	}
-	@Override
-	public void setSet(String set) {
-		this.set = set;
+	public String getImageId() {
+		return imageId;
 	}
 	public void setId(String id) {
 		this.id = id;
-	}
-	public void setImageId(String imageId) {
-		this.imageId = imageId;
-	}
-	public String getText() {
-		return text;
-	}
-	public String getTarget() {
-		return target;
 	}
 	public Timer(Node n) {
 		if(!n.getNodeName().equals("Timer")){
@@ -181,37 +170,48 @@ public class Timer implements FlagSet, Filterable  {
 			}
 		}
 	}
+	public Calendar getTimerEnd() {
+		return timerEnd;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Timer");
+		ans.setAttribute("",ModelConverters.toString(timerEnd));
+		ans.setAttribute("imageId",ModelConverters.toString(imageId));
+		ans.setAttribute("set",ModelConverters.toString(set));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("onTriggered",ModelConverters.toString(jscript));
+		ans.setAttribute("unSet",ModelConverters.toString(unSet));
+		ans.setAttribute("target",ModelConverters.toString(target));
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("seconds",ModelConverters.toString(delay));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("id",ModelConverters.toString(id));
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setImageId(String imageId) {
+		this.imageId = imageId;
+	}
+	public String getTarget() {
+		return target;
+	}
+	@Override
+	public String getUnSet() {
+		return unSet;
+	}
 	public String getJscript() {
 		return jscript;
 	}
 	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public void setSet(String set) {
+		this.set = set;
 	}
 	public void setJscript(String jscript) {
 		this.jscript = jscript;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	public String getDelay() {
-		return delay;
-	}
-	public Calendar getTimerEnd() {
-		return timerEnd;
-	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	@Override
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
 	}
 	
 	@Override

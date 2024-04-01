@@ -36,16 +36,41 @@ public class LeftText implements Filterable, IText  {
 	}
 
 	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("LeftText");
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	@Override
 	public String getIfSet() {
 		return ifSet;
 	}
 	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	@Override
 	public String getIfNotSet() {
 		return ifNotSet;
+	}
+	@Override
+	public String getText() {
+		return text;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	@Override
 	public void setText(String text) {
@@ -83,37 +108,12 @@ public class LeftText implements Filterable, IText  {
 		}
 	}
 	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	@Override
-	public String getText() {
-		return text;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	@Override
 	public LocalTime getIfBefore() {
 		return ifBefore;
 	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("LeftText");
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
 	
 	@Override

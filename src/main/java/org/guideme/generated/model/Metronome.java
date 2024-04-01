@@ -40,26 +40,20 @@ public class Metronome implements Filterable  {
 	}
 
 	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setBpmString(String bpmString) {
-		this.bpmString = bpmString;
-	}
-	public String getBpmString() {
-		return bpmString;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	@Override
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
 	}
 	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public String getIfSet() {
+		return ifSet;
 	}
 	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	public Metronome(Node n) {
 		if(!n.getNodeName().equals("Metronome")){
@@ -101,39 +95,14 @@ public class Metronome implements Filterable  {
 			}
 		}
 	}
-	public String getRhythm() {
-		return rhythm;
-	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setLoops(int loops) {
-		this.loops = loops;
-	}
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
 	public int getLoops() {
 		return loops;
 	}
 	public void setResolution(int resolution) {
 		this.resolution = resolution;
 	}
-	public int getResolution() {
-		return resolution;
-	}
-	public void setRhythm(String rhythm) {
-		this.rhythm = rhythm;
+	public String getBpmString() {
+		return bpmString;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Metronome");
@@ -146,6 +115,37 @@ public class Metronome implements Filterable  {
 		ans.setAttribute("loops",ModelConverters.toString(loops));
 		ans.setAttribute("rhythm",ModelConverters.toString(rhythm));
 		return ans;
+	}
+	public void setLoops(int loops) {
+		this.loops = loops;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	public String getRhythm() {
+		return rhythm;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void setRhythm(String rhythm) {
+		this.rhythm = rhythm;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public void setBpmString(String bpmString) {
+		this.bpmString = bpmString;
+	}
+	public int getResolution() {
+		return resolution;
 	}
 	
 	@Override

@@ -29,8 +29,8 @@ public class Page implements FlagSet, Filterable  {
 	private String ifSet = "";
 	private List<Delay> delay = new ArrayList<>();
 	private List<Webcam> webcam = new ArrayList<>();
-	private List<Metronome> metronome = new ArrayList<>();
 	private List<LoadGuide> loadGuide = new ArrayList<>();
+	private List<Metronome> metronome = new ArrayList<>();
 	private List<IText> leftText = new ArrayList<>();
 	private List<Audio> audio2 = new ArrayList<>();
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -54,131 +54,164 @@ public class Page implements FlagSet, Filterable  {
 		/* NOP */
 	}
 
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
+	public void setId(String id) {
+		this.id = id;
 	}
-	public int getMetronomeCount() {
-		return metronome.size();
+	public void setTimer(List<Timer> timer) {
+		this.timer = timer;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	public void addWebcamButton(WebcamButton toAdd) {
+		webcamButton.add(toAdd);
+	}
+	public void addLeftText(IText toAdd) {
+		leftText.add(toAdd);
+	}
+	public void setGlobalButton(List<GlobalButton> globalButton) {
+		this.globalButton = globalButton;
+	}
+	public void addLoadGuide(LoadGuide toAdd) {
+		loadGuide.add(toAdd);
+	}
+	public List<Webcam> getWebcams() {
+		return webcam;
+	}
+	public void setText(List<IText> text) {
+		this.text = text;
+	}
+	public void setMetronome(List<Metronome> metronome) {
+		this.metronome = metronome;
+	}
+	public void addGlobalButton(GlobalButton toAdd) {
+		globalButton.add(toAdd);
+	}
+	public List<Delay> getDelays() {
+		return delay;
+	}
+	public int getVideoCount() {
+		return video.size();
+	}
+	public void setButton(List<Button> button) {
+		this.button = button;
+	}
+	public void addImage(Image toAdd) {
+		image.add(toAdd);
 	}
 	@Override
 	public LocalTime getIfBefore() {
 		return ifBefore;
 	}
-	public List<Timer> getTimers() {
-		return timer;
+	public List<Metronome> getMetronomes() {
+		return metronome;
 	}
-	public List<GlobalButton> getGlobalButtons() {
-		return globalButton;
+	public int getButtonCount() {
+		return button.size();
 	}
-	public int getWebcamButtonCount() {
-		return webcamButton.size();
-	}
-	public void addAudio2(Audio toAdd) {
-		audio2.add(toAdd);
-	}
-	public int getTextCount() {
-		return text.size();
-	}
-	public String getJScript() {
-		return jScript;
-	}
-	public List<Delay> getDelays() {
-		return delay;
-	}
-	public void addVideo(Video toAdd) {
-		video.add(toAdd);
-	}
-	public void setAudio2(List<Audio> audio2) {
-		this.audio2 = audio2;
-	}
-	public int getGlobalButtonCount() {
-		return globalButton.size();
+	public List<Video> getVideos() {
+		return video;
 	}
 	public List<LoadGuide> getLoadGuides() {
 		return loadGuide;
 	}
-	public int getLeftTextCount() {
-		return leftText.size();
+	public int getMetronomeCount() {
+		return metronome.size();
+	}
+	public int getGlobalButtonCount() {
+		return globalButton.size();
+	}
+	public String getId() {
+		return id;
+	}
+	public void setAudio2(List<Audio> audio2) {
+		this.audio2 = audio2;
+	}
+	public List<IText> getLeftTexts() {
+		return leftText;
+	}
+	public void setDelay(List<Delay> delay) {
+		this.delay = delay;
+	}
+	public void addDelay(Delay toAdd) {
+		delay.add(toAdd);
+	}
+	public List<GlobalButton> getGlobalButtons() {
+		return globalButton;
+	}
+	public int getDelayCount() {
+		return delay.size();
+	}
+	public void addText(IText toAdd) {
+		text.add(toAdd);
+	}
+	public List<Audio> getAudios() {
+		return audio;
+	}
+	public void addVideo(Video toAdd) {
+		video.add(toAdd);
+	}
+	public void setLoadGuide(List<LoadGuide> loadGuide) {
+		this.loadGuide = loadGuide;
+	}
+	public List<Image> getImages() {
+		return image;
+	}
+	public int getTimerCount() {
+		return timer.size();
+	}
+	public List<Timer> getTimers() {
+		return timer;
+	}
+	public String getJScript() {
+		return jScript;
+	}
+	public void addAudio(Audio toAdd) {
+		audio.add(toAdd);
+	}
+	@Override
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	public List<WebcamButton> getWebcamButtons() {
+		return webcamButton;
+	}
+	@Override
+	public void setSet(String set) {
+		this.set = set;
+	}
+	public int getTextCount() {
+		return text.size();
+	}
+	public List<Button> getButtons() {
+		return button;
+	}
+	public void setAudio(List<Audio> audio) {
+		this.audio = audio;
+	}
+	public void addMetronome(Metronome toAdd) {
+		metronome.add(toAdd);
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
 	}
 	@Override
 	public String getUnSet() {
 		return unSet;
 	}
-	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	public void setWebcamButton(List<WebcamButton> webcamButton) {
-		this.webcamButton = webcamButton;
-	}
-	public void addWebcam(Webcam toAdd) {
-		webcam.add(toAdd);
-	}
-	public void addLoadGuide(LoadGuide toAdd) {
-		loadGuide.add(toAdd);
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	public void setDelay(List<Delay> delay) {
-		this.delay = delay;
-	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	public int getImageCount() {
-		return image.size();
-	}
-	public void addButton(Button toAdd) {
-		button.add(toAdd);
-	}
-	public int getVideoCount() {
-		return video.size();
-	}
-	public List<Metronome> getMetronomes() {
-		return metronome;
-	}
-	public void addWebcamButton(WebcamButton toAdd) {
-		webcamButton.add(toAdd);
-	}
-	public void setMetronome(List<Metronome> metronome) {
-		this.metronome = metronome;
-	}
-	public List<Button> getButtons() {
-		return button;
-	}
-	public void addTimer(Timer toAdd) {
-		timer.add(toAdd);
+	public List<IText> getTexts() {
+		return text;
 	}
 	public List<Audio> getAudio2s() {
 		return audio2;
 	}
-	public int getLoadGuideCount() {
-		return loadGuide.size();
+	public void addTimer(Timer toAdd) {
+		timer.add(toAdd);
 	}
-	public void addAudio(Audio toAdd) {
-		audio.add(toAdd);
-	}
-	public void setWebcam(List<Webcam> webcam) {
-		this.webcam = webcam;
-	}
-	public void addMetronome(Metronome toAdd) {
-		metronome.add(toAdd);
-	}
-	public String getId() {
-		return id;
-	}
-	public List<IText> getTexts() {
-		return text;
-	}
-	public List<Video> getVideos() {
-		return video;
-	}
-	public void addDelay(Delay toAdd) {
-		delay.add(toAdd);
+	public void addWebcam(Webcam toAdd) {
+		webcam.add(toAdd);
 	}
 	public Page(Node n) {
 		if(!n.getNodeName().equals("Page")){
@@ -191,7 +224,7 @@ public class Page implements FlagSet, Filterable  {
 			String attrValue = child.getNodeValue();
 			switch(attrName){
 			case "":
-				loadGuide = ModelConverters.fromString(attrValue, loadGuide);
+				metronome = ModelConverters.fromString(attrValue, metronome);
 				break;
 			case "if-not-set":
 				ifNotSet = ModelConverters.fromString(attrValue, ifNotSet);
@@ -223,78 +256,58 @@ public class Page implements FlagSet, Filterable  {
 			}
 		}
 	}
-	public void setButton(List<Button> button) {
-		this.button = button;
+	public void setVideo(List<Video> video) {
+		this.video = video;
 	}
-	public void setText(List<IText> text) {
-		this.text = text;
+	public void setLeftText(List<IText> leftText) {
+		this.leftText = leftText;
 	}
-	public void addGlobalButton(GlobalButton toAdd) {
-		globalButton.add(toAdd);
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
 	}
-	public int getTimerCount() {
-		return timer.size();
+	public void setWebcam(List<Webcam> webcam) {
+		this.webcam = webcam;
 	}
-	public List<IText> getLeftTexts() {
-		return leftText;
+	public void addAudio2(Audio toAdd) {
+		audio2.add(toAdd);
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
 	}
 	public void setJScript(String jScript) {
 		this.jScript = jScript;
 	}
-	public void addText(IText toAdd) {
-		text.add(toAdd);
-	}
-	public void addImage(Image toAdd) {
-		image.add(toAdd);
-	}
-	public List<Webcam> getWebcams() {
-		return webcam;
-	}
-	public List<Image> getImages() {
-		return image;
-	}
-	public int getWebcamCount() {
-		return webcam.size();
-	}
-	public int getButtonCount() {
-		return button.size();
-	}
-	@Override
-	public void setSet(String set) {
-		this.set = set;
-	}
-	public int getAudio2Count() {
-		return audio2.size();
-	}
-	public List<Audio> getAudios() {
-		return audio;
+	public int getAudioCount() {
+		return audio.size();
 	}
 	@Override
 	public String getSet() {
 		return set;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public int getLoadGuideCount() {
+		return loadGuide.size();
 	}
-	public void setVideo(List<Video> video) {
-		this.video = video;
+	public void addButton(Button toAdd) {
+		button.add(toAdd);
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Page");
-		ans.setAttribute("",ModelConverters.toString(leftText));
 		ans.setAttribute("",ModelConverters.toString(text));
+		ans.setAttribute("",ModelConverters.toString(leftText));
 		ans.setAttribute("",ModelConverters.toString(button));
 		ans.setAttribute("",ModelConverters.toString(globalButton));
 		ans.setAttribute("",ModelConverters.toString(webcamButton));
+		ans.setAttribute("",ModelConverters.toString(audio));
 		ans.setAttribute("",ModelConverters.toString(delay));
 		ans.setAttribute("",ModelConverters.toString(timer));
 		ans.setAttribute("",ModelConverters.toString(video));
-		ans.setAttribute("",ModelConverters.toString(metronome));
 		ans.setAttribute("",ModelConverters.toString(webcam));
 		ans.setAttribute("",ModelConverters.toString(audio2));
 		ans.setAttribute("",ModelConverters.toString(image));
-		ans.setAttribute("",ModelConverters.toString(audio));
 		ans.setAttribute("",ModelConverters.toString(loadGuide));
+		ans.setAttribute("",ModelConverters.toString(metronome));
 		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
 		ans.setAttribute("jScript",ModelConverters.toString(jScript));
 		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
@@ -305,51 +318,38 @@ public class Page implements FlagSet, Filterable  {
 		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
 		return ans;
 	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public int getAudio2Count() {
+		return audio2.size();
 	}
-	public List<WebcamButton> getWebcamButtons() {
-		return webcamButton;
-	}
-	public void setAudio(List<Audio> audio) {
-		this.audio = audio;
-	}
-	public int getDelayCount() {
-		return delay.size();
-	}
-	public void addLeftText(IText toAdd) {
-		leftText.add(toAdd);
-	}
-	public int getAudioCount() {
-		return audio.size();
-	}
-	public void setLoadGuide(List<LoadGuide> loadGuide) {
-		this.loadGuide = loadGuide;
-	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public void setTimer(List<Timer> timer) {
-		this.timer = timer;
-	}
-	@Override
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	public void setLeftText(List<IText> leftText) {
-		this.leftText = leftText;
+	public void setWebcamButton(List<WebcamButton> webcamButton) {
+		this.webcamButton = webcamButton;
 	}
 	public void setImage(List<Image> image) {
 		this.image = image;
 	}
-	public void setGlobalButton(List<GlobalButton> globalButton) {
-		this.globalButton = globalButton;
+	public int getImageCount() {
+		return image.size();
+	}
+	public int getWebcamButtonCount() {
+		return webcamButton.size();
 	}
 	@Override
 	public void setIfBefore(LocalTime ifBefore) {
 		this.ifBefore = ifBefore;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	public int getWebcamCount() {
+		return webcam.size();
+	}
+	public int getLeftTextCount() {
+		return leftText.size();
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
 	
 	@Override

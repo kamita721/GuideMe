@@ -23,17 +23,6 @@ public class MediaDirectory  {
 		/* NOP */
 	}
 
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("MediaDirectory");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
-	}
-	public String getText() {
-		return text;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
 	public MediaDirectory(Node n) {
 		if(!n.getNodeName().equals("MediaDirectory")){
 			LOGGER.warn("Error reading state file. Expected element 'MediaDirectory', but got '{}'", n.getNodeName());
@@ -49,5 +38,16 @@ public class MediaDirectory  {
 				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
+	}
+	public String getText() {
+		return text;
+	}
+	public void setText(String text) {
+		this.text = text;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("MediaDirectory");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
 	}
 }

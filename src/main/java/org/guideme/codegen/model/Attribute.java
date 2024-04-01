@@ -243,9 +243,24 @@ public class Attribute implements Comparable<Attribute>{
 		}
 	}
 
+	private int getSortOrder() {
+		return sortOrder;
+	}
+	
+	private int getMetaSortOrder() {
+		if(this.isText) {
+			return 1;
+		}
+		return 0;
+	}
+	
 	@Override
 	public int compareTo(Attribute o) {
-		return o.sortOrder - this.sortOrder;
+		int ans = getMetaSortOrder() - o.getMetaSortOrder();
+		if(ans == 0) {
+			ans = getSortOrder() - o.getSortOrder();
+		}
+		return ans;
 	}
 	
 	@Override

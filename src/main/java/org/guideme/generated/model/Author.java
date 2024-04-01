@@ -10,6 +10,7 @@ public class Author  {
 
 	private String name = "";
 	private static final Logger LOGGER = LogManager.getLogger();
+	private String url = "";
 
 	public Author(XMLStreamReader reader) throws XMLStreamException {
 		int depth = 1;
@@ -18,11 +19,17 @@ public class Author  {
 			if (eventType == XMLStreamConstants.START_ELEMENT) {
 				depth++;
 				String tagName = reader.getName().getLocalPart();
-				if(tagName.equals("Name")){
+				switch(tagName){
+				case "Url":
+					url = XMLReaderUtils.getStringContentOrDefault(reader, "");
+					break;
+				case "Name":
 					name = XMLReaderUtils.getStringContentOrDefault(reader, "");
-				} else {
+					break;
+					default:
 					LOGGER.warn("Unhandled tag '{}' at location \n{}", tagName, reader.getLocation());
 					XMLReaderUtils.getStringContentUntilElementEnd(reader);
+					break;
 				}
 				eventType = reader.next();
 				if (XMLReaderUtils.isAtElementEnd(reader, "Settings")) {
@@ -39,10 +46,16 @@ public class Author  {
 		/* NOP */
 	}
 
+	public String getName() {
+		return name;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getName() {
-		return name;
+	public String getUrl() {
+		return url;
 	}
 }

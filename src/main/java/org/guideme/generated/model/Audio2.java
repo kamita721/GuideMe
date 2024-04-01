@@ -52,88 +52,56 @@ public class Audio2 implements FlagSet, Playable, Filterable, Audio  {
 	}
 
 	@Override
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
+	public void setStartAt(String startAt) {
+		this.startAt = startAt;
 	}
 	@Override
-	public String getStopAt() {
-		return stopAt;
-	}
-	@Override
-	public void setRepeat(String repeat) {
-		this.repeat = repeat;
-	}
-	@Override
-	public String getUnSet() {
-		return unSet;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
+	public String getRepeat() {
+		return repeat;
 	}
 	@Override
 	public void setId(String id) {
 		this.id = id;
 	}
 	@Override
-	public void setVolume(int volume) {
-		this.volume = volume;
-	}
-	@Override
-	public void setJscript(String jscript) {
-		this.jscript = jscript;
-	}
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	@Override
-	public void setStartAt(String startAt) {
-		this.startAt = startAt;
-	}
-	@Override
-	public String getStartAt() {
-		return startAt;
+	public String getId() {
+		return id;
 	}
 	@Override
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
 	@Override
-	public String getId() {
-		return id;
+	public String getStartAt() {
+		return startAt;
 	}
 	@Override
-	public int getVolume() {
-		return volume;
+	public String getScriptVar() {
+		return scriptVar;
 	}
 	@Override
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
-	}
-	@Override
-	public String getJscript() {
-		return jscript;
-	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	@Override
-	public String getSet() {
-		return set;
+	public String getStopAt() {
+		return stopAt;
 	}
 	@Override
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
 	}
 	@Override
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	@Override
 	public void setSet(String set) {
 		this.set = set;
+	}
+	@Override
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
 	}
 	public Audio2(Node n) {
 		if(!n.getNodeName().equals("Audio2")){
@@ -194,12 +162,64 @@ public class Audio2 implements FlagSet, Playable, Filterable, Audio  {
 		}
 	}
 	@Override
-	public String getScriptVar() {
-		return scriptVar;
+	public String getUnSet() {
+		return unSet;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public String getSet() {
+		return set;
+	}
+	@Override
+	public String getTarget() {
+		return target;
+	}
+	@Override
+	public void setStopAt(String stopAt) {
+		this.stopAt = stopAt;
+	}
+	@Override
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public int getVolume() {
+		return volume;
 	}
 	@Override
 	public LocalTime getIfBefore() {
 		return ifBefore;
+	}
+	@Override
+	public String getJscript() {
+		return jscript;
+	}
+	@Override
+	public void setRepeat(String repeat) {
+		this.repeat = repeat;
+	}
+	@Override
+	public void setVolume(int volume) {
+		this.volume = volume;
+	}
+	@Override
+	public void setJscript(String jscript) {
+		this.jscript = jscript;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Audio2");
@@ -218,26 +238,6 @@ public class Audio2 implements FlagSet, Playable, Filterable, Audio  {
 		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
 		ans.setAttribute("id",ModelConverters.toString(id));
 		return ans;
-	}
-	@Override
-	public String getTarget() {
-		return target;
-	}
-	@Override
-	public void setStopAt(String stopAt) {
-		this.stopAt = stopAt;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	@Override
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	@Override
-	public String getRepeat() {
-		return repeat;
 	}
 	
 	@Override

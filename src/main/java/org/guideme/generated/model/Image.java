@@ -33,6 +33,10 @@ public class Image implements Filterable  {
 		/* NOP */
 	}
 
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -41,8 +45,16 @@ public class Image implements Filterable  {
 		this.ifNotSet = ifNotSet;
 	}
 	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	@Override
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	@Override
 	public String getIfSet() {
@@ -56,25 +68,6 @@ public class Image implements Filterable  {
 		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
 		ans.setAttribute("id",ModelConverters.toString(id));
 		return ans;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public String getId() {
-		return id;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
 	}
 	public Image(Node n) {
 		if(!n.getNodeName().equals("Image")){
@@ -108,8 +101,15 @@ public class Image implements Filterable  {
 		}
 	}
 	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	public String getId() {
+		return id;
 	}
 	
 	@Override

@@ -25,8 +25,8 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 	private String jScript = "";
 	private LocalTime ifBefore;
 	private Color bgColor1 = ComonFunctions.getComonFunctions().getSwtColor(SWT.COLOR_WHITE);
-	private Color bgColor2 = this.bgColor1;
 	private String type = "Capture";
+	private Color bgColor2 = this.bgColor1;
 	private String unSet = "";
 	private String target = "";
 	private String ifNotSet = "";
@@ -44,7 +44,6 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 	private LocalTime ifAfter;
 
 	public WebcamButton(XMLStreamReader reader) throws XMLStreamException {
-		this.bgColor2 = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "bgColor2",this.bgColor1);
 		this.image = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "image","");
 		this.set = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "set","");
 		this.ifAfter = XMLReaderUtils.getAttributeLocalTimeDefaultable(reader, "if-after",null);
@@ -65,8 +64,9 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 		this.scriptVar = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "scriptvar","");
 		this.disabled = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "disabled",false);
 		this.id = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "id","");
-		this.text = XmlGuideReader.processText(reader, "text","");
 		this.fontColor = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "fontColor",ComonFunctions.getComonFunctions().getSwtColor(SWT.COLOR_BLACK));
+		this.bgColor2 = XMLReaderUtils.getAttributeOrDefaultNoNS(reader, "bgColor2",this.bgColor1);
+		this.text = XmlGuideReader.processText(reader, "text","");
 	}
 
 	public WebcamButton() {
@@ -74,28 +74,51 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 	}
 
 	@Override
-	public void setBgColor1(Color bgColor1) {
-		this.bgColor1 = bgColor1;
-	}
-	@Override
-	public void setDefaultBtn(boolean defaultBtn) {
-		this.defaultBtn = defaultBtn;
-	}
-	@Override
-	public void setText(String text) {
-		this.text = text;
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
 	}
 	@Override
 	public void setIfNotSet(String ifNotSet) {
 		this.ifNotSet = ifNotSet;
 	}
 	@Override
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+	@Override
+	public void setUnSet(String unSet) {
+		this.unSet = unSet;
+	}
+	@Override
+	public String getTarget() {
+		return target;
+	}
+	@Override
+	public void setSet(String set) {
+		this.set = set;
+	}
+	@Override
+	public void setFontColor(Color fontColor) {
+		this.fontColor = fontColor;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	@Override
 	public String getFontName() {
 		return fontName;
 	}
 	@Override
-	public void setJScript(String jScript) {
-		this.jScript = jScript;
+	public int getFontHeight() {
+		return fontHeight;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public void setFontName(String fontName) {
+		this.fontName = fontName;
 	}
 	public WebcamButton(Node n) {
 		if(!n.getNodeName().equals("WebcamButton")){
@@ -122,11 +145,11 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 			case "bgColor1":
 				bgColor1 = ModelConverters.fromString(attrValue, bgColor1);
 				break;
-			case "bgColor2":
-				bgColor2 = ModelConverters.fromString(attrValue, bgColor2);
-				break;
 			case "type":
 				type = ModelConverters.fromString(attrValue, type);
+				break;
+			case "bgColor2":
+				bgColor2 = ModelConverters.fromString(attrValue, bgColor2);
 				break;
 			case "unSet":
 				unSet = ModelConverters.fromString(attrValue, unSet);
@@ -187,126 +210,23 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 		this.target = target;
 	}
 	@Override
-	public void setImage(String image) {
-		this.image = image;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	@Override
-	public String getHotkey() {
-		return hotkey;
-	}
-	@Override
-	public boolean getDefaultBtn() {
-		return defaultBtn;
-	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	@Override
-	public void setFontName(String fontName) {
-		this.fontName = fontName;
-	}
-	@Override
-	public void setFontColor(Color fontColor) {
-		this.fontColor = fontColor;
-	}
-	@Override
-	public String getJScript() {
-		return jScript;
-	}
-	@Override
-	public String getScriptVar() {
-		return scriptVar;
-	}
-	@Override
-	public void setBgColor2(Color bgColor2) {
-		this.bgColor2 = bgColor2;
-	}
-	@Override
-	public boolean getDisabled() {
-		return disabled;
-	}
-	public String getType() {
-		return type;
-	}
-	@Override
-	public void setDisabled(boolean disabled) {
-		this.disabled = disabled;
-	}
-	@Override
 	public void setId(String id) {
 		this.id = id;
 	}
 	@Override
-	public void setFontHeight(int fontHeight) {
-		this.fontHeight = fontHeight;
+	public String getSet() {
+		return set;
 	}
 	@Override
-	public Color getBgColor2() {
-		return bgColor2;
+	public void setText(String text) {
+		this.text = text;
 	}
 	@Override
-	public String getText() {
-		return text;
-	}
-	@Override
-	public String getId() {
-		return id;
-	}
-	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	@Override
-	public Color getBgColor1() {
-		return bgColor1;
-	}
-	@Override
-	public Color getFontColor() {
-		return fontColor;
-	}
-	@Override
-	public void setUnSet(String unSet) {
-		this.unSet = unSet;
-	}
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
-	@Override
-	public void setHotkey(String hotkey) {
-		this.hotkey = hotkey;
-	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	@Override
-	public void setSet(String set) {
-		this.set = set;
-	}
-	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	@Override
-	public int getFontHeight() {
-		return fontHeight;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
+	public int getSortOrder() {
+		return sortOrder;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("WebcamButton");
-		ans.setAttribute("bgColor2",ModelConverters.toString(bgColor2));
 		ans.setAttribute("image",ModelConverters.toString(image));
 		ans.setAttribute("set",ModelConverters.toString(set));
 		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
@@ -327,43 +247,123 @@ public class WebcamButton implements FlagSet, Button, Filterable  {
 		ans.setAttribute("scriptvar",ModelConverters.toString(scriptVar));
 		ans.setAttribute("disabled",ModelConverters.toString(disabled));
 		ans.setAttribute("id",ModelConverters.toString(id));
-		ans.setAttribute("text",ModelConverters.toString(text));
 		ans.setAttribute("fontColor",ModelConverters.toString(fontColor));
+		ans.setAttribute("bgColor2",ModelConverters.toString(bgColor2));
+		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
+	}
+	@Override
+	public String getHotkey() {
+		return hotkey;
+	}
+	@Override
+	public String getText() {
+		return text;
+	}
+	@Override
+	public String getJScript() {
+		return jScript;
+	}
+	@Override
+	public void setHotkey(String hotkey) {
+		this.hotkey = hotkey;
+	}
+	@Override
+	public void setScriptVar(String scriptVar) {
+		this.scriptVar = scriptVar;
+	}
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+	@Override
+	public boolean getDisabled() {
+		return disabled;
+	}
+	@Override
+	public String getScriptVar() {
+		return scriptVar;
+	}
+	@Override
+	public void setBgColor2(Color bgColor2) {
+		this.bgColor2 = bgColor2;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
+	}
+	@Override
+	public String getId() {
+		return id;
+	}
+	@Override
+	public void setBgColor1(Color bgColor1) {
+		this.bgColor1 = bgColor1;
+	}
+	@Override
+	public void setDefaultBtn(boolean defaultBtn) {
+		this.defaultBtn = defaultBtn;
+	}
+	@Override
+	public void setFontHeight(int fontHeight) {
+		this.fontHeight = fontHeight;
 	}
 	@Override
 	public String getUnSet() {
 		return unSet;
 	}
 	@Override
-	public void setScriptVar(String scriptVar) {
-		this.scriptVar = scriptVar;
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public void setImage(String image) {
+		this.image = image;
 	}
 	public String getDestination() {
 		return destination;
 	}
 	@Override
-	public String getSet() {
-		return set;
+	public Color getBgColor2() {
+		return bgColor2;
 	}
 	@Override
-	public String getTarget() {
-		return target;
+	public String getImage() {
+		return image;
 	}
-	public void setType(String type) {
-		this.type = type;
+	@Override
+	public Color getFontColor() {
+		return fontColor;
+	}
+	@Override
+	public Color getBgColor1() {
+		return bgColor1;
 	}
 	@Override
 	public void setSortOrder(int sortOrder) {
 		this.sortOrder = sortOrder;
 	}
 	@Override
-	public int getSortOrder() {
-		return sortOrder;
+	public boolean getDefaultBtn() {
+		return defaultBtn;
+	}
+	public String getType() {
+		return type;
 	}
 	@Override
-	public String getImage() {
-		return image;
+	public void setJScript(String jScript) {
+		this.jScript = jScript;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	
 	@Override

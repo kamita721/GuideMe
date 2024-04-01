@@ -99,8 +99,15 @@
             <attribute ref="text"/>
         </element>
 
+        <element name="Url" callback="guide.setOriginalUrl({}.getText())">
+            <attribute ref="text"/>
+        </element>
+
         <element name="Author" callback="AuthorHandler.handle({}, guide)">
             <element name="Name" callback="">
+                <attribute ref="text"/>
+            </element>
+            <element name="Url" callback="">
                 <attribute ref="text"/>
             </element>
         </element>
