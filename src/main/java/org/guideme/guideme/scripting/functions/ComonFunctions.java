@@ -89,7 +89,7 @@ public class ComonFunctions {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private XPathFactory factory = XPathFactory.newInstance();
 	private XPath xpath = factory.newXPath();
-	private static final String VERSION = "0.4.5";
+	private static final String VERSION = "0.5.0";
 	private OSFamily osFamily;
 
 	public enum OSFamily {
