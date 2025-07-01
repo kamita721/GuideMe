@@ -9,8 +9,10 @@ VLC_INNER=vlc-3.0.11
 
 all: test jar dist
 
-jar: target/linux32/GuideMe.jar target/linux64/GuideMe.jar target/mac64/GuideMe.jar target/win32/GuideMe.jar target/win64/GuideMe.jar
-dist:target/artifacts/GuideMe.Linux.32-bit.zip target/artifacts/GuideMe.Linux.64-bit.zip target/artifacts/GuideMe.Mac.64-bit.zip target/artifacts/GuideMe.Windows.Slim.zip target/artifacts/GuideMe.Windows.32-bit.zip target/artifacts/GuideMe.Windows.64-bit.zip
+#jar: target/linux32/GuideMe.jar target/linux64/GuideMe.jar target/mac64/GuideMe.jar target/win32/GuideMe.jar target/win64/GuideMe.jar
+#dist:target/artifacts/GuideMe.Linux.32-bit.zip target/artifacts/GuideMe.Linux.64-bit.zip target/artifacts/GuideMe.Mac.64-bit.zip target/artifacts/GuideMe.Windows.Slim.zip target/artifacts/GuideMe.Windows.32-bit.zip target/artifacts/GuideMe.Windows.64-bit.zip
+jar: target/linux64/GuideMe.jar target/mac64/GuideMe.jar target/win64/GuideMe.jar
+dist:target/artifacts/GuideMe.Linux.64-bit.zip target/artifacts/GuideMe.Mac.64-bit.zip target/artifacts/GuideMe.Windows.Slim.zip target/artifacts/GuideMe.Windows.64-bit.zip
 
 test:
 	mvn -B test
