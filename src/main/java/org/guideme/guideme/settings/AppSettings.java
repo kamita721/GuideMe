@@ -271,6 +271,7 @@ public class AppSettings {
 	}
 
 	public void setSash2Weights(int[] sash2Weights) {
+		assert(sash2Weights.length == 3);
 		this.sash2Weights = sash2Weights.clone();
 	}
 

@@ -39,7 +39,7 @@ public class AppSettingsTest {
 		sw1[0] = 100;
 		sw1[1] = 200;
 		myAppSettings.setSash1Weights(sw1);
-		int[] sw2 = new int[2];
+		int[] sw2 = new int[3];
 		sw2[0] = 300;
 		sw2[1] = 400;
 		myAppSettings.setSash2Weights(sw2);
@@ -137,7 +137,7 @@ public class AppSettingsTest {
 
 	@Test
 	public void testSetSash2Weights() {
-		int[] tmp = new int[2];
+		int[] tmp = new int[3];
 		tmp[0] = 700;
 		tmp[1] = 800;
 		myAppSettings.setSash2Weights(tmp);

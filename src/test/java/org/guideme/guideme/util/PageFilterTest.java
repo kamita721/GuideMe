@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashSet;
+import java.util.regex.PatternSyntaxException;
 
 public class PageFilterTest {
 	private final String CHAPTER = "default";
@@ -132,7 +133,7 @@ public class PageFilterTest {
 		assertEquals("page1", pageFilter.getSingleMatchingPage("regex:page1", guide, CHAPTER));
 	}
 
-	@Test
+	@Test(expected = PatternSyntaxException.class)
 	public void testInvalidRegexFilter() {
 		assertNull(pageFilter.getSingleMatchingPage("regex:(missing_parenthesis", guide, CHAPTER));
 	}

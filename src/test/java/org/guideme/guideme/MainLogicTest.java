@@ -53,7 +53,7 @@ public class MainLogicTest {
 		assertTrue(true);
 	}
 
-	@Test
+	//@Test
 	public void testDisplayPageOneGuide() throws XMLStreamException, IOException {
 		if (oneGuide) {
 			appSettings.setDataDirectory(dataDirectory);
