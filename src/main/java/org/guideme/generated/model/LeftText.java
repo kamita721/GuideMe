@@ -36,16 +36,12 @@ public class LeftText implements Filterable, IText  {
 	}
 
 	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	@Override
 	public void setIfSet(String ifSet) {
 		this.ifSet = ifSet;
 	}
 	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("LeftText");
@@ -55,26 +51,6 @@ public class LeftText implements Filterable, IText  {
 		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
 		ans.setAttribute("text",ModelConverters.toString(text));
 		return ans;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
-	}
-	@Override
-	public String getText() {
-		return text;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	@Override
-	public void setText(String text) {
-		this.text = text;
 	}
 	public LeftText(Node n) {
 		if(!n.getNodeName().equals("LeftText")){
@@ -108,12 +84,36 @@ public class LeftText implements Filterable, IText  {
 		}
 	}
 	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	@Override
+	public void setText(String text) {
+		this.text = text;
 	}
 	@Override
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
+	}
+	@Override
+	public String getText() {
+		return text;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
 	}
 	
 	@Override

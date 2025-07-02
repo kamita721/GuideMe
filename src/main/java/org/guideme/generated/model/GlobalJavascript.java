@@ -26,10 +26,8 @@ public class GlobalJavascript  {
 	public void setText(String text) {
 		this.text = text;
 	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("GlobalJavascript");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
+	public String getText() {
+		return text;
 	}
 	public GlobalJavascript(Node n) {
 		if(!n.getNodeName().equals("GlobalJavascript")){
@@ -47,7 +45,9 @@ public class GlobalJavascript  {
 			}
 		}
 	}
-	public String getText() {
-		return text;
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("GlobalJavascript");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
 	}
 }

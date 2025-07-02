@@ -39,21 +39,8 @@ public class Metronome implements Filterable  {
 		/* NOP */
 	}
 
-	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
+	public int getResolution() {
+		return resolution;
 	}
 	public Metronome(Node n) {
 		if(!n.getNodeName().equals("Metronome")){
@@ -95,14 +82,42 @@ public class Metronome implements Filterable  {
 			}
 		}
 	}
-	public int getLoops() {
-		return loops;
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
-	public void setResolution(int resolution) {
-		this.resolution = resolution;
+	public void setLoops(int loops) {
+		this.loops = loops;
 	}
-	public String getBpmString() {
-		return bpmString;
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	@Override
+	public String getIfSet() {
+		return ifSet;
+	}
+	public String getRhythm() {
+		return rhythm;
+	}
+	@Override
+	public String getIfNotSet() {
+		return ifNotSet;
+	}
+	@Override
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	public void setRhythm(String rhythm) {
+		this.rhythm = rhythm;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Metronome");
@@ -116,36 +131,21 @@ public class Metronome implements Filterable  {
 		ans.setAttribute("rhythm",ModelConverters.toString(rhythm));
 		return ans;
 	}
-	public void setLoops(int loops) {
-		this.loops = loops;
+	public String getBpmString() {
+		return bpmString;
+	}
+	public void setResolution(int resolution) {
+		this.resolution = resolution;
+	}
+	public int getLoops() {
+		return loops;
 	}
 	@Override
 	public void setIfAfter(LocalTime ifAfter) {
 		this.ifAfter = ifAfter;
 	}
-	public String getRhythm() {
-		return rhythm;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	public void setRhythm(String rhythm) {
-		this.rhythm = rhythm;
-	}
-	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
-	}
-	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
 	public void setBpmString(String bpmString) {
 		this.bpmString = bpmString;
-	}
-	public int getResolution() {
-		return resolution;
 	}
 	
 	@Override

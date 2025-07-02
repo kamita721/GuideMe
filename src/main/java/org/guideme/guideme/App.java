@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.logging.log4j.Logger;
+import org.bridj.NativeLibrary;
 import org.apache.logging.log4j.LogManager;
 
 import org.eclipse.swt.SWT;
@@ -94,7 +95,7 @@ public class App {
 
 		DisplayKeyEventListener keylistener = new DisplayKeyEventListener();
 		display.addFilter(SWT.KeyDown, keylistener);
-
+		
 		NativeDiscovery nativeDiscovery = new NativeDiscovery();
 		boolean vlcFound = nativeDiscovery.discover();
 		LOGGER.trace("test for vlc: {}", vlcFound);

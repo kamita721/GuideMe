@@ -23,17 +23,6 @@ public class Javascript  {
 		/* NOP */
 	}
 
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("javascript");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
-	}
-	public String getText() {
-		return text;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
 	public Javascript(Node n) {
 		if(!n.getNodeName().equals("javascript")){
 			LOGGER.warn("Error reading state file. Expected element 'javascript', but got '{}'", n.getNodeName());
@@ -49,5 +38,16 @@ public class Javascript  {
 				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
+	}
+	public String getText() {
+		return text;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("javascript");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	public void setText(String text) {
+		this.text = text;
 	}
 }

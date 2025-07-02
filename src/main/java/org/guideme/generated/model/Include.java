@@ -22,9 +22,6 @@ public class Include  {
 		/* NOP */
 	}
 
-	public void setFile(String file) {
-		this.file = file;
-	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Include");
 		ans.setAttribute("file",ModelConverters.toString(file));
@@ -45,6 +42,9 @@ public class Include  {
 				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
+	}
+	public void setFile(String file) {
+		this.file = file;
 	}
 	public String getFile() {
 		return file;

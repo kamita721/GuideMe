@@ -6,24 +6,24 @@ import javax.xml.stream.XMLStreamReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.apache.logging.log4j.LogManager;
-public class NOVALUE  {
+public class Tdata  {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public NOVALUE(XMLStreamReader reader) {
+	public Tdata(XMLStreamReader reader) {
 		/* NOP */
 	}
 
-	public NOVALUE() {
+	public Tdata() {
 		/* NOP */
 	}
 
 	public Element asXml(Document doc) {
-		return doc.createElement("NOVALUE");
+		return doc.createElement("tdata");
 	}
-	public NOVALUE(Node n) {
-		if(!n.getNodeName().equals("NOVALUE")){
-			LOGGER.warn("Error reading state file. Expected element 'NOVALUE', but got '{}'", n.getNodeName());
+	public Tdata(Node n) {
+		if(!n.getNodeName().equals("tdata")){
+			LOGGER.warn("Error reading state file. Expected element 'tdata', but got '{}'", n.getNodeName());
 		}
 	}
 }

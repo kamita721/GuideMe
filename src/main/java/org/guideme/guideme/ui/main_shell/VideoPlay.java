@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.guideme.guideme.ui.SwtEmbeddedMediaPlayer;
+
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
 
 class VideoPlay implements Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -21,7 +22,7 @@ class VideoPlay implements Runnable {
 	}
 
 	// code to start the video on a separate thread
-	private SwtEmbeddedMediaPlayer mediaPlayer;
+	private MediaPlayer mediaPlayer;
 	private String video;
 	private int volume;
 	private ArrayList<String> vlcArgs;
@@ -45,7 +46,7 @@ class VideoPlay implements Runnable {
 		}
 	}
 
-	public void setVideoPlay(SwtEmbeddedMediaPlayer mediaPlayer, String video, int volume) {
+	public void setVideoPlay(MediaPlayer mediaPlayer, String video, int volume) {
 		int mediaVolume = this.mainShell.appSettings.getVideoVolume();
 		volume = Math.min(Math.max(volume, 0), 100); // Bound between 0 and
 														// 100

@@ -41,12 +41,12 @@ public class Tease  {
 			}
 		}
 	}
-	public String getMinimumVersion() {
-		return minimumVersion;
-	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("Tease");
 		ans.setAttribute("minimumVersion",ModelConverters.toString(minimumVersion));
 		return ans;
+	}
+	public String getMinimumVersion() {
+		return minimumVersion;
 	}
 }

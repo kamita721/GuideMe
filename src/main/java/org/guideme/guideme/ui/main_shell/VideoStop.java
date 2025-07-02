@@ -2,14 +2,15 @@ package org.guideme.guideme.ui.main_shell;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.guideme.guideme.ui.SwtEmbeddedMediaPlayer;
+
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
 
 class VideoStop implements Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private SwtEmbeddedMediaPlayer mediaPlayer;
+	private MediaPlayer mediaPlayer;
 	private boolean shellClosing;
 
-	public void setMediaPlayer(SwtEmbeddedMediaPlayer mediaPlayer, boolean shellClosing) {
+	public void setMediaPlayer(MediaPlayer mediaPlayer, boolean shellClosing) {
 		this.mediaPlayer = mediaPlayer;
 		this.shellClosing = shellClosing;
 	}

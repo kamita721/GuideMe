@@ -30,29 +30,8 @@ public class Pref  {
 		/* NOP */
 	}
 
-	public void setSortOrder(String sortOrder) {
-		this.sortOrder = sortOrder;
-	}
-	public String getKey() {
-		return key;
-	}
-	public String getScreen() {
-		return screen;
-	}
-	public String getSortOrder() {
-		return sortOrder;
-	}
-	public String getType() {
-		return type;
-	}
 	public void setType(String type) {
 		this.type = type;
-	}
-	public void setValue(String value) {
-		this.value = value;
-	}
-	public void setKey(String key) {
-		this.key = key;
 	}
 	public Element asXml(Document doc) {
 		Element ans = doc.createElement("pref");
@@ -63,8 +42,23 @@ public class Pref  {
 		ans.setAttribute("key",ModelConverters.toString(key));
 		return ans;
 	}
-	public String getValue() {
-		return value;
+	public String getSortOrder() {
+		return sortOrder;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setSortOrder(String sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	public String getKey() {
+		return key;
+	}
+	public String getScreen() {
+		return screen;
+	}
+	public void setValue(String value) {
+		this.value = value;
 	}
 	public Pref(Node n) {
 		if(!n.getNodeName().equals("pref")){
@@ -97,7 +91,13 @@ public class Pref  {
 			}
 		}
 	}
+	public void setKey(String key) {
+		this.key = key;
+	}
 	public void setScreen(String screen) {
 		this.screen = screen;
+	}
+	public String getValue() {
+		return value;
 	}
 }

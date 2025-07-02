@@ -17,14 +17,17 @@ import org.xml.sax.SAXException;
  * modelFile should point to model.xml, which describes the generated files to be built.
  * 
  * srcRoot should point to the src/main/java directory of the source tree.
+ * 
+ * Running this is a bit ugly. You need to uncomment the relevent portion of pop.xml, which will then generate a jar
+ * to run this script.
  */
 public class Generate {
 
 	public static void main(String[] args)
 			throws ParserConfigurationException, SAXException, IOException {
 
-		String modelFile = "/overflow/Documents/programming/guideme/src/main/resources/org/guideme/codegen/model.xml";
-		String srcRoot = "/overflow/Documents/programming/guideme/src/main/java/";
+		String modelFile = "/opt/home/Documents/programming/guideme/src/main/resources/org/guideme/codegen/model.xml";
+		String srcRoot = "/opt/home/Documents/programming/guideme/src/main/java/";
 
 		DocumentBuilderFactory docFactory = XMLReaderUtils.getDocumentBuilderFactory();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();

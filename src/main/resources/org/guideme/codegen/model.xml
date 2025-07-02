@@ -83,6 +83,12 @@
     </attributes>
 
     <elements>
+        <!-- Some guides wrap their entire XML in a "root" element. Specifically observed in Denial Goddess. -->
+        <element name="root" callback=""/>
+        
+        <!-- Some guides (DenialGoddess) use a tdata element for their own purposes. -->
+        <element name="tdata" callback=""/>
+
         <element name="Tease" callback="TeaseHandler.handle({}, chapter, guideSettings)">
             <attribute name="minimumVersion" type="java.lang.String" />
         </element>

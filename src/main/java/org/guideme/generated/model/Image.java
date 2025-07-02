@@ -34,40 +34,12 @@ public class Image implements Filterable  {
 	}
 
 	@Override
-	public void setIfSet(String ifSet) {
-		this.ifSet = ifSet;
-	}
-	public void setId(String id) {
-		this.id = id;
+	public void setIfBefore(LocalTime ifBefore) {
+		this.ifBefore = ifBefore;
 	}
 	@Override
-	public void setIfNotSet(String ifNotSet) {
-		this.ifNotSet = ifNotSet;
-	}
-	@Override
-	public LocalTime getIfBefore() {
-		return ifBefore;
-	}
-	@Override
-	public void setIfAfter(LocalTime ifAfter) {
-		this.ifAfter = ifAfter;
-	}
-	@Override
-	public LocalTime getIfAfter() {
-		return ifAfter;
-	}
-	@Override
-	public String getIfSet() {
-		return ifSet;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Image");
-		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
-		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
-		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
-		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
-		ans.setAttribute("id",ModelConverters.toString(id));
-		return ans;
+	public String getIfNotSet() {
+		return ifNotSet;
 	}
 	public Image(Node n) {
 		if(!n.getNodeName().equals("Image")){
@@ -100,16 +72,44 @@ public class Image implements Filterable  {
 			}
 		}
 	}
-	@Override
-	public String getIfNotSet() {
-		return ifNotSet;
+	public void setId(String id) {
+		this.id = id;
 	}
 	@Override
-	public void setIfBefore(LocalTime ifBefore) {
-		this.ifBefore = ifBefore;
+	public String getIfSet() {
+		return ifSet;
+	}
+	@Override
+	public void setIfNotSet(String ifNotSet) {
+		this.ifNotSet = ifNotSet;
+	}
+	@Override
+	public LocalTime getIfAfter() {
+		return ifAfter;
 	}
 	public String getId() {
 		return id;
+	}
+	@Override
+	public void setIfSet(String ifSet) {
+		this.ifSet = ifSet;
+	}
+	@Override
+	public void setIfAfter(LocalTime ifAfter) {
+		this.ifAfter = ifAfter;
+	}
+	@Override
+	public LocalTime getIfBefore() {
+		return ifBefore;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Image");
+		ans.setAttribute("if-not-set",ModelConverters.toString(ifNotSet));
+		ans.setAttribute("if-set",ModelConverters.toString(ifSet));
+		ans.setAttribute("if-before",ModelConverters.toString(ifBefore));
+		ans.setAttribute("if-after",ModelConverters.toString(ifAfter));
+		ans.setAttribute("id",ModelConverters.toString(id));
+		return ans;
 	}
 	
 	@Override

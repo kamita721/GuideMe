@@ -23,8 +23,16 @@ public class Title  {
 		/* NOP */
 	}
 
+	public String getText() {
+		return text;
+	}
 	public void setText(String text) {
 		this.text = text;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Title");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
 	}
 	public Title(Node n) {
 		if(!n.getNodeName().equals("Title")){
@@ -41,13 +49,5 @@ public class Title  {
 				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Title");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
-	}
-	public String getText() {
-		return text;
 	}
 }

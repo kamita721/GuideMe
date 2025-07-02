@@ -23,17 +23,6 @@ public class CSS  {
 		/* NOP */
 	}
 
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("CSS");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	public String getText() {
-		return text;
-	}
 	public CSS(Node n) {
 		if(!n.getNodeName().equals("CSS")){
 			LOGGER.warn("Error reading state file. Expected element 'CSS', but got '{}'", n.getNodeName());
@@ -49,5 +38,16 @@ public class CSS  {
 				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
+	}
+	public String getText() {
+		return text;
+	}
+	public void setText(String text) {
+		this.text = text;
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("CSS");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
 	}
 }

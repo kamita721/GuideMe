@@ -23,17 +23,6 @@ public class Url  {
 		/* NOP */
 	}
 
-	public void setText(String text) {
-		this.text = text;
-	}
-	public String getText() {
-		return text;
-	}
-	public Element asXml(Document doc) {
-		Element ans = doc.createElement("Url");
-		ans.setAttribute("text",ModelConverters.toString(text));
-		return ans;
-	}
 	public Url(Node n) {
 		if(!n.getNodeName().equals("Url")){
 			LOGGER.warn("Error reading state file. Expected element 'Url', but got '{}'", n.getNodeName());
@@ -49,5 +38,16 @@ public class Url  {
 				LOGGER.warn("Unhandled attribute '{}'", attrName);
 			}
 		}
+	}
+	public Element asXml(Document doc) {
+		Element ans = doc.createElement("Url");
+		ans.setAttribute("text",ModelConverters.toString(text));
+		return ans;
+	}
+	public String getText() {
+		return text;
+	}
+	public void setText(String text) {
+		this.text = text;
 	}
 }

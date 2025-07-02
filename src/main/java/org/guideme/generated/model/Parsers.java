@@ -57,11 +57,15 @@ public class Parsers  {
 		case "Delay":
 			page.addDelay(new Delay(reader));
 			break;
+		case "tdata":
+			break;
 		case "GlobalButton":
 			page.addGlobalButton(new GlobalButton(reader));
 			break;
 		case "Button":
 			page.addButton(new BasicButton(reader));
+			break;
+		case "root":
 			break;
 		case "pref":
 			PrefHandler.handle(new Pref(reader), guideSettings);

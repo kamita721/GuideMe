@@ -64,7 +64,6 @@ import org.guideme.guideme.settings.UserSettings;
 import org.guideme.guideme.ui.AudioPlayer;
 import org.guideme.guideme.ui.CompositeVideoSurface;
 import org.guideme.guideme.ui.MetronomePlayer;
-import org.guideme.guideme.ui.SwtEmbeddedMediaPlayer;
 import org.guideme.guideme.ui.debug_shell.DebugShell;
 import org.guideme.guideme.util.ErrorManager;
 import org.guideme.guideme.util.ImageManager;
@@ -73,10 +72,11 @@ import org.mozilla.javascript.ContextFactory;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 
-import uk.co.caprica.vlcj.binding.internal.libvlc_instance_t;
-import uk.co.caprica.vlcj.binding.lib.LibVlc;
 import uk.co.caprica.vlcj.binding.support.runtime.RuntimeUtil;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.base.AudioDevice;
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.videosurface.VideoSurfaceAdapter;
 import uk.co.caprica.vlcj.player.embedded.videosurface.LinuxVideoSurfaceAdapter;
 import uk.co.caprica.vlcj.player.embedded.videosurface.OsxVideoSurfaceAdapter;
@@ -138,7 +138,7 @@ public class MainShell {
 	Font buttonFont;
 	Font timerFont;
 	Composite mediaPanel;
-	SwtEmbeddedMediaPlayer mediaPlayer;
+	MediaPlayer mediaPlayer;
 	Composite webcamPanel;
 	Webcam webcam;
 	private WebcamPanel panel;
@@ -267,11 +267,10 @@ public class MainShell {
 
 		if (appSettings.getVideoOn()) {
 			LOGGER.trace("Video Enter");
-			libvlc_instance_t instance = LibVlc.libvlc_new(0, null);
+			MediaPlayerFactory mpf = new MediaPlayerFactory();
+			mediaPlayer = mpf.mediaPlayers().newMediaPlayer();
+			new CompositeVideoSurface(mediaPanel, getVideoSurfaceAdapter()).attach(mediaPlayer);
 
-			mediaPlayer = new SwtEmbeddedMediaPlayer(instance);
-			mediaPlayer.setVideoSurface(
-					new CompositeVideoSurface(mediaPanel, getVideoSurfaceAdapter()));
 			mediaPlayer.events().addMediaPlayerEventListener(new MediaListener(this));
 
 			String videoOutputDevice = appSettings.getVideoDevice();
@@ -357,7 +356,11 @@ public class MainShell {
 		/*
 		 * Monitor "1" is the "first" monitor, which is of course, at index 0.
 		 */
-		Monitor primaryMonitor = monitors[mainMonitor == 1 ? 0 : 1];
+		int monitorI = mainMonitor == 1 ? 0:1;
+		if (monitorI >= monitors.length) {
+			monitorI = 0;
+		}
+		Monitor primaryMonitor = monitors[monitorI];
 
 		Rectangle clientArea;
 		if (appSettings.isFullScreen()) {
