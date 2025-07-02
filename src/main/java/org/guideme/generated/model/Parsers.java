@@ -58,6 +58,7 @@ public class Parsers  {
 			page.addDelay(new Delay(reader));
 			break;
 		case "tdata":
+			XMLReaderUtils.consumeToEndOfElement(reader);
 			break;
 		case "GlobalButton":
 			page.addGlobalButton(new GlobalButton(reader));

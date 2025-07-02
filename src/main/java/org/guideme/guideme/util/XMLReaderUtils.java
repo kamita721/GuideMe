@@ -215,4 +215,20 @@ public class XMLReaderUtils {
 		}
 		return defaultValue;
 	}
+
+	/*
+	 * Consume input until we consume the end element event for the current element
+	 */
+	public static void consumeToEndOfElement(XMLStreamReader reader) throws XMLStreamException {
+		int depth = 1;
+		while (depth > 0) {
+			int eventType = reader.next();
+			if (eventType == XMLStreamConstants.START_ELEMENT) {
+				depth++;
+			}
+			if (eventType == XMLStreamConstants.END_ELEMENT) {
+				depth--;
+			}
+		}
+	}
 }

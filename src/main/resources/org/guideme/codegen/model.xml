@@ -87,7 +87,7 @@
         <element name="root" callback=""/>
         
         <!-- Some guides (DenialGoddess) use a tdata element for their own purposes. -->
-        <element name="tdata" callback=""/>
+        <element name="tdata" callback="XMLReaderUtils.consumeToEndOfElement(reader)"/>
 
         <element name="Tease" callback="TeaseHandler.handle({}, chapter, guideSettings)">
             <attribute name="minimumVersion" type="java.lang.String" />
