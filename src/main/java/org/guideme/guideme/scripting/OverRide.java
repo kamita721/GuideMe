@@ -61,6 +61,7 @@ public class OverRide {
 	
 	/** @exclude */
 	public synchronized void clear() {
+		System.out.println("Clear()");
 		button = new ArrayList<>();
 		globalButton = new ArrayList<>();
 		webcamButton = new ArrayList<>();
@@ -572,6 +573,7 @@ public class OverRide {
 
 	/** @exclude */
 	public synchronized Delay getDelay() {
+		System.out.println("GetDelay() "+ delay);
 		return delay;
 	}
 
@@ -603,6 +605,7 @@ public class OverRide {
 		this.delay.setSet(set);
 		this.delay.setUnSet(unSet);
 		this.delay.setJscript(jScript);
+		System.out.println("SetDelay() "+ this.delay);
 	}
 
 	/** @exclude */

@@ -117,8 +117,8 @@ public class MainLogic {
 		Page objCurrPage;
 		Delay objDelay;
 
-		LOGGER.debug("displayPage PagePassed {}", pageId);
-		LOGGER.debug(() -> "displayPage Flags " + comonFunctions.getFlags(guide.getFlags()));
+		LOGGER.debug("displayPage PageId = {}", pageId);
+		LOGGER.debug(() -> "Flags = " + comonFunctions.getFlags(guide.getFlags()));
 
 		mainShell.stopAll(false);
 		overRide.clear();
@@ -163,6 +163,11 @@ public class MainLogic {
 					debugShell);
 		}
 
+		if (objDelay != null) {
+			Calendar cal = guide.setDelay(objDelay);
+			mainShell.setCalCountDown(cal);
+		}
+
 		if (!reDisplay) {
 			// Audio / Metronome
 			blnMetronome = processMetronome(objCurrPage, guide, mainShell);
@@ -191,7 +196,8 @@ public class MainLogic {
 
 		guide.getSettings().setPage(strPageId);
 		strFlags = comonFunctions.getFlags(guide.getFlags());
-		LOGGER.debug("displayPage End Flags {}", strFlags);
+		LOGGER.debug("displayPage Flags = {}", strFlags);
+		LOGGER.debug("displayPage done pageID = {}", pageId);
 		guide.getSettings().setFlags(strFlags);
 		guide.getSettings().saveSettings();
 		appSettings.saveSettings();
