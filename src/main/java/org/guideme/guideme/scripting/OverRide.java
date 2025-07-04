@@ -18,6 +18,8 @@ import org.guideme.generated.model.Video;
 import org.guideme.generated.model.Webcam;
 import org.guideme.generated.model.WebcamButton;
 import org.guideme.guideme.model.*;
+import org.guideme.guideme.scripting.functions.ComonFunctions;
+import static org.guideme.guideme.scripting.functions.ComonFunctions.runOnDisplayThread;
 
 public class OverRide {
 	/** @exclude */
@@ -98,10 +100,12 @@ public class OverRide {
 	 * @param text   the text to be displayed on the button
 	 */
 	public synchronized void addButton(String target, String text) {
-		Button toAdd = new BasicButton();
-		toAdd.setTarget(target);
-		toAdd.setText(text);
-		button.add(toAdd);
+		runOnDisplayThread(() -> {
+			Button toAdd = new BasicButton();
+			toAdd.setTarget(target);
+			toAdd.setText(text);
+			button.add(toAdd);
+		});
 	}
 
 	/**
@@ -116,14 +120,18 @@ public class OverRide {
 	 */
 	public synchronized void addButton(String target, String text, String set, String unSet,
 			String jScript, String image) {
-		Button toAdd = new BasicButton();
-		toAdd.setTarget(target);
-		toAdd.setText(text);
-		toAdd.setSet(set);
-		toAdd.setUnSet(unSet);
-		toAdd.setJScript(jScript);
-		toAdd.setImage(image);
-		button.add(toAdd);
+
+		runOnDisplayThread(() -> {
+			Button toAdd = new BasicButton();
+			toAdd.setTarget(target);
+			toAdd.setText(text);
+			toAdd.setSet(set);
+			toAdd.setUnSet(unSet);
+			toAdd.setJScript(jScript);
+			toAdd.setImage(image);
+			button.add(toAdd);
+			
+		});
 	}
 
 	/**
@@ -139,15 +147,17 @@ public class OverRide {
 	 */
 	public synchronized void addButton(String target, String text, String set, String unSet,
 			String jScript, String image, String hotKey) {
-		Button toAdd = new BasicButton();
-		toAdd.setTarget(target);
-		toAdd.setText(text);
-		toAdd.setSet(set);
-		toAdd.setUnSet(unSet);
-		toAdd.setJScript(jScript);
-		toAdd.setImage(image);
-		toAdd.setHotkey(hotKey);
-		button.add(toAdd);
+				runOnDisplayThread(() -> {
+					Button toAdd = new BasicButton();
+					toAdd.setTarget(target);
+					toAdd.setText(text);
+					toAdd.setSet(set);
+					toAdd.setUnSet(unSet);
+					toAdd.setJScript(jScript);
+					toAdd.setImage(image);
+					toAdd.setHotkey(hotKey);
+					button.add(toAdd);
+				});
 	}
 
 	/**
@@ -167,19 +177,20 @@ public class OverRide {
 	public synchronized void addButton(String target, String text, String set, String unSet,
 			String jScript, String image, String hotKey, String sortOrder, boolean disabled,
 			String id) {
-
-		Button toAdd = new BasicButton();
-		toAdd.setTarget(target);
-		toAdd.setText(text);
-		toAdd.setSet(set);
-		toAdd.setUnSet(unSet);
-		toAdd.setJScript(jScript);
-		toAdd.setImage(image);
-		toAdd.setHotkey(hotKey);
-		toAdd.setSortOrder(parseSortOrder(sortOrder));
-		toAdd.setDisabled(disabled);
-		toAdd.setId(id);
-		button.add(toAdd);
+		runOnDisplayThread( () -> {
+			Button toAdd = new BasicButton();
+			toAdd.setTarget(target);
+			toAdd.setText(text);
+			toAdd.setSet(set);
+			toAdd.setUnSet(unSet);
+			toAdd.setJScript(jScript);
+			toAdd.setImage(image);
+			toAdd.setHotkey(hotKey);
+			toAdd.setSortOrder(parseSortOrder(sortOrder));
+			toAdd.setDisabled(disabled);
+			toAdd.setId(id);
+			button.add(toAdd);
+		});
 	}
 
 	/**
@@ -200,20 +211,21 @@ public class OverRide {
 	public synchronized void addButton(String target, String text, String set, String unSet,
 			String jScript, String image, String hotKey, String sortOrder, boolean disabled,
 			String id, boolean defaultBtn) {
-		
-		Button toAdd = new BasicButton();
-		toAdd.setTarget(target);
-		toAdd.setText(text);
-		toAdd.setSet(set);
-		toAdd.setUnSet(unSet);
-		toAdd.setJScript(jScript);
-		toAdd.setImage(image);
-		toAdd.setHotkey(hotKey);
-		toAdd.setSortOrder(parseSortOrder(sortOrder));
-		toAdd.setDisabled(disabled);
-		toAdd.setId(id);
-		toAdd.setDefaultBtn(defaultBtn);
-		button.add(toAdd);
+		runOnDisplayThread(() -> {
+			Button toAdd = new BasicButton();
+			toAdd.setTarget(target);
+			toAdd.setText(text);
+			toAdd.setSet(set);
+			toAdd.setUnSet(unSet);
+			toAdd.setJScript(jScript);
+			toAdd.setImage(image);
+			toAdd.setHotkey(hotKey);
+			toAdd.setSortOrder(parseSortOrder(sortOrder));
+			toAdd.setDisabled(disabled);
+			toAdd.setId(id);
+			toAdd.setDefaultBtn(defaultBtn);
+			button.add(toAdd);
+		});
 	}
 
 	/** @exclude */

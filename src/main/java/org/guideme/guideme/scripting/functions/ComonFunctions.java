@@ -115,6 +115,10 @@ public class ComonFunctions {
 		throw new CloneNotSupportedException();
 	}
 
+	public static void runOnDisplayThread(Runnable r){
+		comonFunctions.display.execute(r);
+	}
+
 	private OSFamily getOS() {
 		OSFamily osval = OSFamily.Unknown;
 		String os = System.getProperty("os.name").toLowerCase();
