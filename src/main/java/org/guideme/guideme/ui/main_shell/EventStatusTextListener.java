@@ -45,11 +45,11 @@ class EventStatusTextListener implements StatusTextListener {
 				String strTag;
 				strTag = eventArgs[1];// Set
 				if (!strTag.equals("")) {
-					mainShell.comonFunctions.setFlags(strTag, mainShell.guide.getFlags());
+					mainShell.comonFunctions.SetFlags(strTag, mainShell.guide.GetFlags());
 				}
 				strTag = eventArgs[2];// UnSet
 				if (!strTag.equals("")) {
-					mainShell.comonFunctions.unsetFlags(strTag, mainShell.guide.getFlags());
+					mainShell.comonFunctions.UnSetFlags(strTag, mainShell.guide.GetFlags());
 				}
 				String scriptVar = eventArgs[3];// scriptVar
 				mainShell.comonFunctions.processSrciptVars(scriptVar, mainShell.guideSettings);

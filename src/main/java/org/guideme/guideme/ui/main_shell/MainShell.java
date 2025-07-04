@@ -190,7 +190,7 @@ public class MainShell {
 		appSettings.setDisplayText(displayText);
 
 		// array to hold the various flags
-		guideSettings.setFlags("");
+		guideSettings.SetFlags("");
 
 		strGuidePath = appSettings.getDataDirectory();
 
@@ -1616,10 +1616,10 @@ public class MainShell {
 		setLeftPaneText(uncookedText, css);
 	}
 
-	public void setUnsetFlagsUncooked(String setFlags, String unSetFlags) {
+	public void setUnSetFlagsUncooked(String SetFlags, String UnSetFlags) {
 
-		comonFunctions.setFlags(setFlags, guide.getFlags());
-		comonFunctions.unsetFlags(unSetFlags, guide.getFlags());
+		comonFunctions.SetFlags(SetFlags, guide.GetFlags());
+		comonFunctions.UnSetFlags(UnSetFlags, guide.GetFlags());
 	}
 
 	public void setFontUncooked(Control control, Font baseFont, String fontName, int fontHeight) {

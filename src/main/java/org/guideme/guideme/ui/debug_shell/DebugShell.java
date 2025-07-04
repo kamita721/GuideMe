@@ -281,16 +281,16 @@ public class DebugShell {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			String flags = comonFuctions.getFlags(guide.getFlags());
+			String flags = comonFuctions.GetFlags(guide.GetFlags());
 			Map<String, Object> scriptVars = guide.getSettings().getScriptVariables();
 
 			Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
 
 			if (txtVarKey.getText().equals("Flags")) {
 				List<String> flagsarray = new ArrayList<>();
-				comonFuctions.setFlags(txtVarValue.getText(), flagsarray);
-				guide.setFlags(flagsarray);
-				flags = comonFuctions.getFlags(guide.getFlags());
+				comonFuctions.SetFlags(txtVarValue.getText(), flagsarray);
+				guide.SetFlags(flagsarray);
+				flags = comonFuctions.GetFlags(guide.GetFlags());
 			} else {
 				scriptVars.put(txtVarKey.getText(), txtVarValue.getText());
 				guide.getSettings().setScriptVariables(scriptVars);
@@ -354,7 +354,7 @@ public class DebugShell {
 		dispPage = guide.getChapter("default").getPage(page);
 		StringBuilder txtBuilder = new StringBuilder();
 		for (IText objText : dispPage.getTexts()) {
-			if (objText.canShow(guide.getFlags())) {
+			if (objText.canShow(guide.GetFlags())) {
 				txtBuilder.append(objText.getText());
 			}
 
@@ -405,7 +405,7 @@ public class DebugShell {
 	public void refreshVars() {
 		Color color = myDisplay.getSystemColor(SWT.COLOR_YELLOW);
 		Map<String, Object> treeMap = new TreeMap<>(guide.getSettings().getScriptVariables());
-		String flags = comonFuctions.getFlags(guide.getFlags());
+		String flags = comonFuctions.GetFlags(guide.GetFlags());
 
 		varTable.removeAll();
 

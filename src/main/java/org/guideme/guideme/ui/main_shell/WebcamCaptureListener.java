@@ -28,7 +28,7 @@ class WebcamCaptureListener extends DynamicButtonListner {
 		com.snapps.swt.SquareButton btnClicked;
 		btnClicked = (com.snapps.swt.SquareButton) event.widget;
 		strFile = (String) btnClicked.getData("webcamFile");
-		if (!mainShell.comonFunctions.canCreateFile(strFile)) {
+		if (!mainShell.comonFunctions.CanCreateFile(strFile)) {
 			strFile = mainShell.comonFunctions.getMediaFullPath(strFile,
 					mainShell.appSettings.getFileSeparator(), mainShell.appSettings,
 					mainShell.guide);

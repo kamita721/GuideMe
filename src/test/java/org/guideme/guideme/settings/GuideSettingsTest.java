@@ -58,17 +58,17 @@ public class GuideSettingsTest {
 
 	@Test
 	public void testGetFlags() {
-		String returned = guideSettings.getFlags();
+		String returned = guideSettings.GetFlags();
 		assertEquals("", returned);
 	}
 
 	@Test
 	public void testSetFlags() {
-		guideSettings.setFlags("page3,page4");
-		String returned = guideSettings.getFlags();
+		guideSettings.SetFlags("page3,page4");
+		String returned = guideSettings.GetFlags();
 		assertEquals("page3,page4", returned);
-		guideSettings.setFlags("page1,page2");
-		returned = guideSettings.getFlags();
+		guideSettings.SetFlags("page1,page2");
+		returned = guideSettings.GetFlags();
 		assertEquals("page1,page2", returned);
 	}
 

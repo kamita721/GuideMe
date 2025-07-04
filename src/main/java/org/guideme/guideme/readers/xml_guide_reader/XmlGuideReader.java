@@ -57,9 +57,9 @@ public class XmlGuideReader {
 				&& !guideSettings.getPage().equals("GuideMeVersionNotMet")) {
 			guideSettings.setPage("start");
 		}
-		strFlags = guideSettings.getFlags();
+		strFlags = guideSettings.GetFlags();
 		if (!strFlags.isEmpty()) {
-			comonFunctions.setFlags(strFlags, guide.getFlags());
+			comonFunctions.SetFlags(strFlags, guide.GetFlags());
 		}
 		guide.setSettings(guideSettings);
 		guide.getSettings().saveSettings();

@@ -43,7 +43,7 @@ public class PageFilter {
 
 		// If we aren't asking for an absolute patch, filter on canShow
 		if (!usingAbsoluteMatch) {
-			pageStream = pageStream.filter(p -> p.canShow(guide.getFlags()));
+			pageStream = pageStream.filter(p -> p.canShow(guide.GetFlags()));
 		}
 
 		// Return list of page IDs

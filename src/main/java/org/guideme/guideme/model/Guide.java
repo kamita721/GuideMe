@@ -282,12 +282,12 @@ public class Guide {
 	}
 
 	/** @exclude */
-	public List<String> getFlags() {
+	public List<String> GetFlags() {
 		return flags;
 	}
 
 	/** @exclude */
-	public void setFlags(List<String> flags) {
+	public void SetFlags(List<String> flags) {
 		this.flags = flags;
 	}
 
@@ -598,8 +598,8 @@ public class Guide {
 	 * 
 	 * @param flagNames comma separated list of flags to set
 	 */
-	public void setFlags(String flagNames) {
-		comonFunctions.setFlags(flagNames, flags);
+	public void SetFlags(String flagNames) {
+		comonFunctions.SetFlags(flagNames, flags);
 	}
 
 	/**
@@ -607,8 +607,8 @@ public class Guide {
 	 * 
 	 * @param flagNames comma separated list of flags to clear
 	 */
-	public void unsetFlags(String flagNames) {
-		comonFunctions.unsetFlags(flagNames, flags);
+	public void UnSetFlags(String flagNames) {
+		comonFunctions.UnSetFlags(flagNames, flags);
 	}
 
 	/**
@@ -704,7 +704,7 @@ public class Guide {
 	 * @return a list of the files
 	 */
 	public String listFiles(String folderName) {
-		return comonFunctions.listFiles(folderName);
+		return comonFunctions.ListFiles(folderName);
 	}
 
 	/**
@@ -714,7 +714,7 @@ public class Guide {
 	 * @return a list of the folders
 	 */
 	public String listSubFolders(String folderName) {
-		return comonFunctions.listSubFolders(folderName, false);
+		return comonFunctions.ListSubFolders(folderName, false);
 	}
 
 	/**
@@ -726,7 +726,7 @@ public class Guide {
 	 * @return the path and name of the file
 	 */
 	public String getRandomFile(String wildcard, String strSubDir) {
-		return comonFunctions.getRandomFile(wildcard, strSubDir);
+		return comonFunctions.GetRandomFile(wildcard, strSubDir);
 	}
 
 	/**
@@ -1115,8 +1115,8 @@ public class Guide {
 	}
 
 	public void restart() {
-		getFlags().clear();
-		getSettings().setFlags(comonFunctions.getFlags(getFlags()));
+		GetFlags().clear();
+		getSettings().SetFlags(comonFunctions.GetFlags(GetFlags()));
 		getSettings().restart();
 		getSettings().saveSettings();
 

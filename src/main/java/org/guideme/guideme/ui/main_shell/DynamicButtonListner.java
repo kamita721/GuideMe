@@ -32,11 +32,11 @@ class DynamicButtonListner extends SelectionAdapter {
 		com.snapps.swt.SquareButton btnClicked = (com.snapps.swt.SquareButton) event.widget;
 		strTag = (String) btnClicked.getData("Set");
 		if (!strTag.equals("")) {
-			mainShell.comonFunctions.setFlags(strTag, mainShell.guide.getFlags());
+			mainShell.comonFunctions.SetFlags(strTag, mainShell.guide.GetFlags());
 		}
 		strTag = (String) btnClicked.getData("UnSet");
 		if (!strTag.equals("")) {
-			mainShell.comonFunctions.unsetFlags(strTag, mainShell.guide.getFlags());
+			mainShell.comonFunctions.UnSetFlags(strTag, mainShell.guide.GetFlags());
 		}
 		String scriptVar = (String) btnClicked.getData("scriptVar");
 		mainShell.comonFunctions.processSrciptVars(scriptVar, mainShell.guideSettings);

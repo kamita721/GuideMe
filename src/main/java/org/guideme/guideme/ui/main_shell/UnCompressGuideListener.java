@@ -43,7 +43,7 @@ class UnCompressGuideListener extends SelectionAdapter {
 			this.mainShell.appSettings.setDataDirectory(this.mainShell.strGuidePath);
 			// load the file it will return the start page and
 			// populate the guide object
-			this.mainShell.comonFunctions.unCompressGuide(strFileToLoad);
+			this.mainShell.comonFunctions.UnCompressGuide(strFileToLoad);
 		}
 
 		LOGGER.trace("Exit Menu UnCompressGuide");

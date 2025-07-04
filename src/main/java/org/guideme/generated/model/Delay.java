@@ -212,8 +212,8 @@ public class Delay implements FlagSet, Filterable  {
 	
 	@Override
 	public void setUnSet(List<String> setList) {
-		ComonFunctions.getComonFunctions().setFlags(set, setList);
-		ComonFunctions.getComonFunctions().unsetFlags(unSet, setList);
+		ComonFunctions.getComonFunctions().SetFlags(set, setList);
+		ComonFunctions.getComonFunctions().UnSetFlags(unSet, setList);
 	}
 	
 	

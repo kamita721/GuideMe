@@ -285,7 +285,7 @@ public class ComonFunctions {
 	}
 
 	// functions to handle set flags go here
-	public void setFlags(String flagNames, List<String> setList) {
+	public void SetFlags(String flagNames, List<String> setList) {
 		String[] flags;
 		try {
 			flags = flagNames.split(",", -1);
@@ -301,7 +301,7 @@ public class ComonFunctions {
 		}
 	}
 
-	public String getFlags(List<String> setList) {
+	public String GetFlags(List<String> setList) {
 		StringBuilder strFlags = new StringBuilder();
 		try {
 			for (String s : setList) {
@@ -317,7 +317,7 @@ public class ComonFunctions {
 		return strFlags.toString();
 	}
 
-	public void unsetFlags(String flagNames, List<String> setList) {
+	public void UnSetFlags(String flagNames, List<String> setList) {
 		String[] flags;
 		try {
 			flags = flagNames.split(",", -1);
@@ -835,11 +835,11 @@ public class ComonFunctions {
 		return returnVal.toString();
 	}
 
-	public String listSubFolders(String folderName) {
-		return listSubFolders(folderName, true);
+	public String ListSubFolders(String folderName) {
+		return ListSubFolders(folderName, true);
 	}
 
-	public String listSubFolders(String folderName, boolean blnArr) {
+	public String ListSubFolders(String folderName, boolean blnArr) {
 		String folders = "";
 		AppSettings appSettings = AppSettings.getAppSettings();
 		Guide guide = Guide.getGuide();
@@ -890,7 +890,7 @@ public class ComonFunctions {
 
 	}
 
-	public String listFiles(String folderName) {
+	public String ListFiles(String folderName) {
 		String files = "";
 		AppSettings appSettings = AppSettings.getAppSettings();
 		Guide guide = Guide.getGuide();
@@ -932,7 +932,7 @@ public class ComonFunctions {
 
 	}
 
-	public List<Library> listGuides() {
+	public List<Library> ListGuides() {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		String fileSeparator = appSettings.getFileSeparator();
 		ArrayList<Library> guides = new ArrayList<>();
@@ -1020,7 +1020,7 @@ public class ComonFunctions {
 						streamReader.next();
 					}
 					if (!foundimage && foundmedia) {
-						image = getRandomFile("*.jpg", "", false, media);
+						image = GetRandomFile("*.jpg", "", false, media);
 						foundimage = true;
 					}
 					if (title.equals("")) {
@@ -1097,17 +1097,17 @@ public class ComonFunctions {
 
 	}
 
-	public String getRandomFile(String wildcard, String strSubDir) {
-		return getRandomFile(wildcard, strSubDir, false);
+	public String GetRandomFile(String wildcard, String strSubDir) {
+		return GetRandomFile(wildcard, strSubDir, false);
 	}
 
-	public String getRandomFile(String wildcard, String strSubDir, boolean fullPath) {
+	public String GetRandomFile(String wildcard, String strSubDir, boolean fullPath) {
 		Guide guide = Guide.getGuide();
 		String guideMediaDirectory = guide.getMediaDirectory();
-		return getRandomFile(wildcard, strSubDir, fullPath, guideMediaDirectory);
+		return GetRandomFile(wildcard, strSubDir, fullPath, guideMediaDirectory);
 	}
 
-	public String getRandomFile(String wildcard, String strSubDir, boolean fullPath,
+	public String GetRandomFile(String wildcard, String strSubDir, boolean fullPath,
 			String guideMediaDirectory) {
 		String mediaFound = "";
 		AppSettings appSettings = AppSettings.getAppSettings();
@@ -1345,7 +1345,7 @@ public class ComonFunctions {
 		// String strSubDir
 		// Handle wildcard *
 		if (media.indexOf("*") > -1) {
-			mediaFound = comonFunctions.getRandomFile(media, strSubDir, true);
+			mediaFound = comonFunctions.GetRandomFile(media, strSubDir, true);
 		} else {
 			// no wildcard so just use the file name
 			if (strSubDir.equals("")) {
@@ -1551,7 +1551,7 @@ public class ComonFunctions {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		String password = "Gu1deM3!";
 		int pos = guide.lastIndexOf(appSettings.getFileSeparator());
-		String mediaDir = guide.substring(0, pos + 1) + getMediaDirFromGuide(guide);
+		String mediaDir = guide.substring(0, pos + 1) + GetMediaDirFromGuide(guide);
 		File guideFile = new File(guide);
 		File mediaFolder = new File(mediaDir);
 		String zipFileName = guide.replace(".xml", ".zip");
@@ -1570,7 +1570,7 @@ public class ComonFunctions {
 		}
 	}
 
-	public void unCompressGuide(String guide) {
+	public void UnCompressGuide(String guide) {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		String password = "Gu1deM3!";
 		try {
@@ -1584,10 +1584,10 @@ public class ComonFunctions {
 		}
 	}
 
-	public void resizeGuideImages(String guide, ImageManager imageManager) {
+	public void ResizeGuideImages(String guide, ImageManager imageManager) {
 		AppSettings appSettings = AppSettings.getAppSettings();
 		int pos = guide.lastIndexOf(appSettings.getFileSeparator());
-		String mediaDir = guide.substring(0, pos + 1) + getMediaDirFromGuide(guide);
+		String mediaDir = guide.substring(0, pos + 1) + GetMediaDirFromGuide(guide);
 		File mediaFolder = new File(mediaDir);
 		resizeFolderImages(mediaFolder, imageManager);
 	}
@@ -1601,7 +1601,7 @@ public class ComonFunctions {
 		}
 	}
 
-	public String getMediaDirFromGuide(String fileName) {
+	public String GetMediaDirFromGuide(String fileName) {
 		String media = "";
 		try {
 			XMLInputFactory inputFactory = XMLInputFactory.newInstance();
@@ -1732,7 +1732,7 @@ public class ComonFunctions {
 		return convertedImg;
 	}
 
-	public boolean canCreateFile(String fileName) {
+	public boolean CanCreateFile(String fileName) {
 		File file = new File(fileName);
 		if (!file.isDirectory()) {
 			file = file.getParentFile();

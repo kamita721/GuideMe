@@ -110,11 +110,11 @@ public class GuideSettings {
 		this.page = page;
 	}
 
-	public String getFlags() {
+	public String GetFlags() {
 		return flags;
 	}
 
-	public void setFlags(String flags) {
+	public void SetFlags(String flags) {
 		this.flags = flags;
 	}
 
@@ -320,7 +320,7 @@ public class GuideSettings {
 				setPrevPage(n.getTextContent());
 				break;
 			case SettingsNames.FLAGS:
-				setFlags(n.getTextContent());
+				SetFlags(n.getTextContent());
 				break;
 			case SettingsNames.SCRIPT_VARIABLES:
 				loadScriptVariables(n);
@@ -512,7 +512,7 @@ public class GuideSettings {
 			comonFunctions.addElement(SettingsNames.PREV_PAGE, rootElement, doc)
 					.setTextContent(getPrevPage());
 			comonFunctions.addElement(SettingsNames.FLAGS, rootElement, doc)
-					.setTextContent(getFlags());
+					.setTextContent(GetFlags());
 
 			Element elScriptVariables = comonFunctions.addElement(SettingsNames.SCRIPT_VARIABLES,
 					rootElement, doc);

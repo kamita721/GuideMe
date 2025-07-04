@@ -42,7 +42,7 @@ class ResizeGuideListener extends SelectionAdapter {
 			this.mainShell.appSettings.setDataDirectory(this.mainShell.strGuidePath);
 			// load the file it will return the start page and
 			// populate the guide object
-			this.mainShell.comonFunctions.resizeGuideImages(strFileToLoad, mainShell.imageManager);
+			this.mainShell.comonFunctions.ResizeGuideImages(strFileToLoad, mainShell.imageManager);
 		}
 		LOGGER.trace("Exit Menu CompressGuide");
 		super.widgetSelected(e);

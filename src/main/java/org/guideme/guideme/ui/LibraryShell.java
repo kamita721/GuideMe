@@ -172,7 +172,7 @@ public class LibraryShell {
 		composite = new Composite(sc, SWT.NONE);
 		composite.setLayout(new FormLayout());
 
-		originalGuides = comonFunctions.listGuides();
+		originalGuides = comonFunctions.ListGuides();
 		guides = originalGuides;
 		setPageSize();
 		sortTitle();
@@ -477,7 +477,7 @@ public class LibraryShell {
 			if (folder != null) {
 				appSettings.setDataDirectory(folder);
 				appSettings.saveSettings();
-				originalGuides = comonFunctions.listGuides();
+				originalGuides = comonFunctions.ListGuides();
 				guides = originalGuides;
 				setPageSize();
 				sortGuides();

@@ -64,7 +64,7 @@ class ShellTimer implements Runnable {
 
 	private void onTimerTrigger(Timer timer) {
 		LOGGER.debug("Timer: " + timer.getId() + " Triggered");
-		mainShell.setUnsetFlagsUncooked(timer.getSet(), timer.getUnSet());
+		mainShell.setUnSetFlagsUncooked(timer.getSet(), timer.getUnSet());
 		mainShell.setImageByUncooked(timer.getImageId());
 		mainShell.setBrwsTextUncooked(timer.getText());
 		mainShell.runJscriptUncooked(timer.getJscript(), false);
@@ -109,10 +109,10 @@ class ShellTimer implements Runnable {
 	private void onDelayEnd() {
 		mainShell.calCountDown = null;
 		mainShell.lblTimer.setText("");
-		mainShell.comonFunctions.setFlags(mainShell.guide.getDelaySet(),
-				mainShell.guide.getFlags());
-		mainShell.comonFunctions.unsetFlags(mainShell.guide.getDelayUnSet(),
-				mainShell.guide.getFlags());
+		mainShell.comonFunctions.SetFlags(mainShell.guide.getDelaySet(),
+				mainShell.guide.GetFlags());
+		mainShell.comonFunctions.UnSetFlags(mainShell.guide.getDelayUnSet(),
+				mainShell.guide.GetFlags());
 		mainShell.comonFunctions.processSrciptVars(mainShell.guide.getDelayScriptVar(),
 				mainShell.guideSettings);
 		String javascript = mainShell.guide.getDelayjScript();

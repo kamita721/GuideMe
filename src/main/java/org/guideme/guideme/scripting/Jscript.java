@@ -230,7 +230,7 @@ public class Jscript {
 		// Deprecated should use guide now
 		ScriptableObject.putProperty(scope, "guideSettings", guide.getSettings());
 		LOGGER.debug(JSCRIPT_MARKER, "Starting ScriptVariables: {}", scriptVars);
-		LOGGER.debug(JSCRIPT_MARKER, "Starting Flags {{}}", guide.getSettings().getFlags());
+		LOGGER.debug(JSCRIPT_MARKER, "Starting Flags {{}}", guide.getSettings().GetFlags());
 
 		if (pageloading) {
 			ScriptableObject.putProperty(globalScope, "overRide", overRide);
@@ -287,10 +287,10 @@ public class Jscript {
 			LOGGER.error(" FileRunScript " + ex.getLocalizedMessage(), ex);
 		}
 		LOGGER.debug(JSCRIPT_MARKER, "Ending ScriptVariables: {}", scriptVars);
-		LOGGER.debug(JSCRIPT_MARKER, "Ending Flags {" + guide.getSettings().getFlags() + "}");
+		LOGGER.debug(JSCRIPT_MARKER, "Ending Flags {" + guide.getSettings().GetFlags() + "}");
 		Context.exit();
 
-		guide.getSettings().setFlags(comonFunctions.getFlags(guide.getFlags()));
+		guide.getSettings().SetFlags(comonFunctions.GetFlags(guide.GetFlags()));
 		guide.getSettings().saveSettings();
 		MainLogic.saveGlobalScriptVariables();
 		if (inPrefGuide) {

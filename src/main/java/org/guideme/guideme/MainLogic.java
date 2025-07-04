@@ -118,7 +118,7 @@ public class MainLogic {
 		Delay objDelay;
 
 		LOGGER.debug("displayPage PageId = {}", pageId);
-		LOGGER.debug(() -> "Flags = " + comonFunctions.getFlags(guide.getFlags()));
+		LOGGER.debug(() -> "Flags = " + comonFunctions.GetFlags(guide.GetFlags()));
 
 		mainShell.stopAll(false);
 		overRide.clear();
@@ -185,20 +185,20 @@ public class MainLogic {
 		// Save current page and flags
 		// set page
 		if (guide.getAutoSetPage()) {
-			comonFunctions.setFlags(strPageId, guide.getFlags());
+			comonFunctions.SetFlags(strPageId, guide.GetFlags());
 		}
 
 		// do page set / unset
-		objCurrPage.setUnSet(guide.getFlags());
+		objCurrPage.setUnSet(guide.GetFlags());
 
 		// Start all media at the same time
 		mainShell.startDeferredMedia();
 
 		guide.getSettings().setPage(strPageId);
-		strFlags = comonFunctions.getFlags(guide.getFlags());
+		strFlags = comonFunctions.GetFlags(guide.GetFlags());
 		LOGGER.debug("displayPage Flags = {}", strFlags);
 		LOGGER.debug("displayPage done pageID = {}", pageId);
-		guide.getSettings().setFlags(strFlags);
+		guide.getSettings().SetFlags(strFlags);
 		guide.getSettings().saveSettings();
 		appSettings.saveSettings();
 		guide.getSettings().formFieldsReset();
@@ -294,7 +294,7 @@ public class MainLogic {
 
 		if (objCurrPage.getDelayCount() > 0) {
 			for (Delay d : objCurrPage.getDelays()) {
-				if (d.canShow(guide.getFlags())) {
+				if (d.canShow(guide.GetFlags())) {
 					return d;
 				}
 			}
@@ -312,7 +312,7 @@ public class MainLogic {
 			mainShell.addTimer(objTimer);
 		}
 		for (Timer objTimer : objCurrPage.getTimers()) {
-			if (objTimer.canShow(guide.getFlags())) {
+			if (objTimer.canShow(guide.GetFlags())) {
 				Calendar timCountDown = Calendar.getInstance();
 				timCountDown.add(Calendar.SECOND, objTimer.getTimerSec());
 				objTimer.setTimerEnd(timCountDown);
@@ -329,7 +329,7 @@ public class MainLogic {
 		}
 
 		for (Video video : objCurrPage.getVideos()) {
-			if (video.canShow(guide.getFlags())) {
+			if (video.canShow(guide.GetFlags())) {
 				return video;
 			}
 		}
@@ -345,7 +345,7 @@ public class MainLogic {
 		}
 
 		for (Webcam webcam : objCurrPage.getWebcams()) {
-			if (webcam.canShow(guide.getFlags())) {
+			if (webcam.canShow(guide.GetFlags())) {
 				return webcam;
 			}
 		}
@@ -363,7 +363,7 @@ public class MainLogic {
 		}
 
 		for (Image img : objCurrPage.getImages()) {
-			if (img.canShow(guide.getFlags())) {
+			if (img.canShow(guide.GetFlags())) {
 				strImage = mainShell.cookImage(img.getId());
 				if (strImage != null) {
 					return strImage;
@@ -380,7 +380,7 @@ public class MainLogic {
 		// they are encoded #prefName#
 		StringBuilder displayTextBuilder = new StringBuilder();
 		for (IText objText : objCurrPage.getTexts()) {
-			if (objText.canShow(guide.getFlags())) {
+			if (objText.canShow(guide.GetFlags())) {
 				displayTextBuilder.append(objText.getText());
 			}
 
@@ -410,7 +410,7 @@ public class MainLogic {
 		if (overRide.getHtml().equals("") && overRide.getRightHtml().equals("")) {
 			StringBuilder displayTextBuilder = new StringBuilder();
 			for (IText objText : objCurrPage.getTexts()) {
-				if (objText.canShow(guide.getFlags())) {
+				if (objText.canShow(guide.GetFlags())) {
 					displayTextBuilder.append(objText.getText());
 				}
 			}
@@ -469,13 +469,13 @@ public class MainLogic {
 		Collections.addAll(button, overRide.getButtons());
 		Collections.addAll(button, overRide.getWebcamButtons());
 
-		button.removeIf(btn -> !btn.canShow(guide.getFlags()));
+		button.removeIf(btn -> !btn.canShow(guide.GetFlags()));
 		debugShell.addOverrideButtons(button);
 
 		button.addAll(objCurrPage.getButtons());
 		button.addAll(objCurrPage.getWebcamButtons());
 
-		button.removeIf(btn -> !btn.canShow(guide.getFlags()));
+		button.removeIf(btn -> !btn.canShow(guide.GetFlags()));
 
 		Collections.sort(button, new ButtonSorter());
 
@@ -491,7 +491,7 @@ public class MainLogic {
 		Metronome objMetronome = overRide.getMetronome();
 
 		for (Metronome metronome : objCurrPage.getMetronomes()) {
-			if (metronome.canShow(guide.getFlags())) {
+			if (metronome.canShow(guide.GetFlags())) {
 				objMetronome = metronome;
 				break;
 			}
@@ -516,7 +516,7 @@ public class MainLogic {
 			return objAudio;
 		}
 		for (Audio aud : objCurrPage.getAudios()) {
-			if (aud.canShow(guide.getFlags())) {
+			if (aud.canShow(guide.GetFlags())) {
 				return aud;
 			}
 		}
@@ -530,7 +530,7 @@ public class MainLogic {
 			return objAudio;
 		} else {
 			for (Audio audio : objCurrPage.getAudio2s()) {
-				if (audio.canShow(guide.getFlags())) {
+				if (audio.canShow(guide.GetFlags())) {
 					return audio;
 				}
 			}
@@ -545,7 +545,7 @@ public class MainLogic {
 		String strPageId = "";
 		String pageJavascript = objCurrPage.getJScript();
 		for (LoadGuide lg : objCurrPage.getLoadGuides()) {
-			if (lg.canShow(guide.getFlags())) {
+			if (lg.canShow(guide.GetFlags())) {
 				objLoadGuide = lg;
 				break;
 			}

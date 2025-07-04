@@ -51,11 +51,11 @@ class ShellKeyEventListener implements Listener {
 			String strTag;
 			strTag = (String) hotKeyButton.getData("Set");
 			if (!strTag.equals("")) {
-				mainShell.comonFunctions.setFlags(strTag, mainShell.guide.getFlags());
+				mainShell.comonFunctions.SetFlags(strTag, mainShell.guide.GetFlags());
 			}
 			strTag = (String) hotKeyButton.getData("UnSet");
 			if (!strTag.equals("")) {
-				mainShell.comonFunctions.unsetFlags(strTag, mainShell.guide.getFlags());
+				mainShell.comonFunctions.UnSetFlags(strTag, mainShell.guide.GetFlags());
 			}
 			strTag = (String) hotKeyButton.getData("Target");
 			String javascript = (String) hotKeyButton.getData("javascript");
