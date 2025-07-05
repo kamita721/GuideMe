@@ -1,6 +1,7 @@
 package org.guideme.guideme.readers.xml_guide_reader;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
@@ -27,6 +28,7 @@ import org.guideme.guideme.scripting.functions.ComonFunctions;
 import org.guideme.guideme.settings.AppSettings;
 import org.guideme.guideme.settings.GuideSettings;
 import org.guideme.guideme.ui.debug_shell.DebugShell;
+import org.guideme.guideme.util.ErrorManager;
 import org.guideme.guideme.util.XMLReaderUtils;
 
 public class XmlGuideReader {
@@ -85,7 +87,10 @@ public class XmlGuideReader {
 			factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
 			reader = factory.createXMLStreamReader(ubis);
 			parseGuideXML(reader, chapter, guideSettings, guide, appSettings, presName, debugShell);
-		} finally {
+		} catch (FileNotFoundException e) {
+			ErrorManager.getInstance().recordError(e, "File not found" + xmlFileName);
+		} 
+		finally {
 			if (reader != null)
 				reader.close();
 		}
