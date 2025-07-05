@@ -525,6 +525,7 @@ public class ComonFunctions {
 		case "US_ASCII":
 			encodeSet = StandardCharsets.US_ASCII;
 			break;
+		case "UTF-8":
 		case "UTF_8":
 			encodeSet = StandardCharsets.UTF_8;
 			break;
