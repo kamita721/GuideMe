@@ -32,10 +32,10 @@
     </RollingFile>
   </appenders>
   <loggers>
-    <logger name="uk.co.caprica.vlcj" level="debug" additivity="false">
+    <logger name="uk.co.caprica.vlcj" level="warn" additivity="false">
       <appender-ref ref="Vlcj" />
     </logger>
-    <root level="debug">
+    <root level="warn">
       <appender-ref ref="File" />
       <appender-ref ref="Jscript" />
       <appender-ref ref="Console"/>
