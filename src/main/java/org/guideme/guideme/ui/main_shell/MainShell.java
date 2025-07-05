@@ -409,6 +409,7 @@ public class MainShell {
 		brwsText.setText(strHtml);
 		brwsText.setBackground(colourBlack);
 		brwsText.addStatusTextListener(new EventStatusTextListener(this));
+		brwsText.addLocationListener((new BrowserLocationListener()));
 
 		btnComp = new Composite(ans, SWT.SHADOW_NONE);
 		btnComp.setBackground(colourBlack);
@@ -1270,10 +1271,8 @@ public class MainShell {
 				}
 				break;
 			case "text":
-				if (type.equals("textarea")) {
-					guideSettings.setFormField(name, value);
-					guideSettings.setScriptVar(name, value);
-				}
+				guideSettings.setFormField(name, value);
+				guideSettings.setScriptVar(name, value);
 				break;
 			case "file":
 			case "select-one":
