@@ -63,7 +63,6 @@ public class OverRide {
 	
 	/** @exclude */
 	public synchronized void clear() {
-		System.out.println("Clear()");
 		button = new ArrayList<>();
 		globalButton = new ArrayList<>();
 		webcamButton = new ArrayList<>();
