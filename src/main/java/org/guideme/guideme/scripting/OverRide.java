@@ -585,7 +585,6 @@ public class OverRide {
 
 	/** @exclude */
 	public synchronized Delay getDelay() {
-		System.out.println("GetDelay() "+ delay);
 		return delay;
 	}
 
