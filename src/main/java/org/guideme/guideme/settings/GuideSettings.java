@@ -362,7 +362,7 @@ public class GuideSettings {
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node currentNode = nodeList.item(i);
 			if (currentNode.getNodeType() != Node.ELEMENT_NODE
-					|| currentNode.getNodeName().equals(SettingsNames.VAR)) {
+					|| !currentNode.getNodeName().equals(SettingsNames.VAR)) {
 				LOGGER.warn(
 						"Unexpected node type {} and name {} inside scriptVariables section of {}",
 						currentNode.getNodeType(), currentNode.getNodeName(), filename);
