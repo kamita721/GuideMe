@@ -1239,7 +1239,7 @@ public class MainShell {
 					+ "return vreturn;";
 			//@formatter:on
 		String node = (String) brwsr.evaluate(evaluateScript);
-		if (node == null) {
+		if (node == null || node.isEmpty()) {
 			return;
 		}
 		String[] fields = node.split("\\|");
